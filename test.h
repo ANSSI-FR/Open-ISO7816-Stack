@@ -20,8 +20,7 @@ void setup_io_out(void);
 void set_io_state(uint8_t);
 
 void setup_pin_vcc(void);
-void set_vcc_on(void);
-void set_vcc_off(void);
+void set_vcc(uint8_t state);
 
 void do_activation(void);
 void do_cold_reset(void);

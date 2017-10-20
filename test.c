@@ -111,13 +111,19 @@ void setup_pin_vcc(void){
 	PINB &= ~(0x01 << PIN_VCC); // No Toggle
 }
 
-void set_vcc_on(void){
-	PORTB |= (0x01 << PIN_VCC);
-}
-
-
-void set_vcc_off(void){
-	PORTB &= ~(0x01 << PIN_VCC);
+void set_vcc(uint8_t state){
+	switch(state){
+		case ON:
+			PORTB |= (0x01 << PIN_VCC);
+			break;
+		case OFF:
+			PORTB &= ~(0x01 << PIN_VCC);
+			break;
+		default:
+			return;
+	}
+	
+	
 }
 
 
@@ -165,13 +171,13 @@ void do_activation(void){
 	
 	
 	set_clock(STATE_L);
-	set_vcc_off();
+	set_vcc(OFF);
 	set_rst_state_L();
 	//set_io_state_L();
 	
 	wait_cycles(50);
 	
-	set_vcc_on();
+	set_vcc(ON);
 	wait_cycles(2000);
 	setup_io_in();
 	wait_cycles(200);

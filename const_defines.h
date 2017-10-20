@@ -20,6 +20,8 @@
 
 #define STATE_H 1
 #define STATE_L 0
+#define ON 1
+#define OFF 0
 
 #define COLD_RESET_RST_NB_CYCLES 18000 // ISO7816-3 Section 6.2.1 (400 cycles mini)
 
