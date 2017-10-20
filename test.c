@@ -104,6 +104,8 @@ void setup_pin_io(uint8_t type){
 			DDRB |= (0x01 << PIN_IO);   // Output
 			PINB &= ~(0x01 << PIN_IO);  // No Toggle
 			break;
+		default:
+			return;
 	}	
 }
 
