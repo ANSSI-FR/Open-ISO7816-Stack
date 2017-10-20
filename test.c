@@ -109,14 +109,18 @@ void setup_pin_io(uint8_t type){
 	}	
 }
 
-void set_io_state_H(void){
-	PORTB |= (0x01 << PIN_IO);
+void set_io_state(uint8_t state){
+	switch(state){
+		case STATE_H:
+			PORTB |= (0x01 << PIN_IO);
+			break;
+		case STATE_L:
+			PORTB &= ~(0x01 << PIN_IO);
+			break;
+		default:
+			return;
+	}
 }
-
-void set_io_state_L(void){
-	PORTB &= ~(0x01 << PIN_IO);
-}
-
 
 
 void setup_pin_vcc(void){
@@ -177,13 +181,11 @@ void do_activation(void){
 	setup_clock_config();
 	setup_pin_vcc();
 	setup_pin_rst();
-	//setup_io_out();
 	
 	
 	set_clock_state(STATE_L);
 	set_vcc(OFF);
 	set_rst_state(STATE_L);
-	//set_io_state_L();
 	
 	wait_cycles(50);
 	
