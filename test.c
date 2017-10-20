@@ -38,25 +38,31 @@ void setup_clock_config(void){
 
 
 
-void set_clock_on(void){
-	/* On remets a zero le compteur                                           */
-	TCNT0 = 0x00;
-	
-	/* Positionnement du prescaler du timer 0 a 1 (TCCR0B.CS[2:0] = 0x1)      */
-	TCCR0B &= ~(BIT_2);         /* CS2 = 0                                    */
-	TCCR0B &= ~(BIT_1);         /* CS1 = 0                                    */
-	TCCR0B |= BIT_0;            /* CS0 = 1                                    */
-}
-
-
-void set_clock_off(void){
-	/* Positionnement du prescaler du timer 0 a 0 (No clock Source) (TCCR0B.CS0[2:0] = 0x00)   */
-	TCCR0B &= ~(BIT_2);         /* CS2 = 0                                    */
-	TCCR0B &= ~(BIT_1);         /* CS1 = 0                                    */
-	TCCR0B &= ~(BIT_0);         /* CS0 = 0                                    */
-}
-
 void set_clock(uint8_t state){
+	switch(state){
+		case ON: 
+			/* On remets a zero le compteur                                           */
+			TCNT0 = 0x00;
+				
+			/* Positionnement du prescaler du timer 0 a 1 (TCCR0B.CS0[2:0] = 0x1)      */
+			TCCR0B = ((TCCR0B & ~(0x01<<CS02)) & ~(0x01<<CS01)) | (0x01<<CS00) ;
+
+			break;
+		case OFF:
+			/* Positionnement du prescaler du timer 0 a 0 (No clock Source) (TCCR0B.CS0[2:0] = 0x00)   */
+			TCCR0B = ((TCCR0B & ~(0x01<<CS02)) & ~(0x01<<CS01)) & ~(0x01<<CS00);
+			break;
+		default:
+			return;
+	}	
+}
+
+
+void set_clock_state(uint8_t state){
+	/* PD6 en sortie (pin OC0A) */
+	DDRD |= (0x01 << PIN_CLK);              /* On mets DDRD6 a 1 (output)                 */
+	PIND &= ~(0x01 << PIN_CLK);             /* No Toggle                                  */
+	
 	switch(state){
 		case STATE_L:
 			PORTD &= ~(0x01 << PIN_CLK);
@@ -170,7 +176,7 @@ void do_activation(void){
 	//setup_io_out();
 	
 	
-	set_clock(STATE_L);
+	set_clock_state(STATE_L);
 	set_vcc(OFF);
 	set_rst_state_L();
 	//set_io_state_L();
@@ -181,7 +187,7 @@ void do_activation(void){
 	wait_cycles(2000);
 	setup_io_in();
 	wait_cycles(200);
-	set_clock_on();
+	set_clock(ON);
 }
 
 void do_cold_reset(void){
