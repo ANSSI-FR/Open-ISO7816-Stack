@@ -11,8 +11,7 @@ void set_clock_off(void);
 void set_clock_state(uint8_t state);
 
 void setup_pin_rst(void);
-void set_rst_state_H(void);
-void set_rst_state_L(void);
+void set_rst_state(uint8_t state);
 
 void setup_io_in(void);
 void setup_io_out(void);

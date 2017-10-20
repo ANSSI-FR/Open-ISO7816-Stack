@@ -79,14 +79,19 @@ void setup_pin_rst(void){
 }
 
 
-void set_rst_state_H(void){
-	PORTB |= (0x01 << PIN_RST);
+void set_rst_state(uint8_t state){
+	switch(state){
+		case STATE_H:
+			PORTB |= (0x01 << PIN_RST);
+			break;
+		case STATE_L:
+			PORTB &= ~(0x01 << PIN_RST);
+			break;
+		default:
+			return;
+	}	
 }
 
-
-void set_rst_state_L(void){
-	PORTB &= ~(0x01 << PIN_RST);
-}
 
 void setup_io_in(void){
 	DDRB &= ~(0x01 << PIN_IO); // Input
@@ -175,7 +180,7 @@ void do_activation(void){
 	
 	set_clock_state(STATE_L);
 	set_vcc(OFF);
-	set_rst_state_L();
+	set_rst_state(STATE_L);
 	//set_io_state_L();
 	
 	wait_cycles(50);
@@ -188,9 +193,9 @@ void do_activation(void){
 }
 
 void do_cold_reset(void){
-	set_rst_state_L();
+	set_rst_state(STATE_L);
 	wait_cycles(COLD_RESET_RST_NB_CYCLES);
-	set_rst_state_H();
+	set_rst_state(STATE_H);
 }
 
 void do_warm_reset(void){
