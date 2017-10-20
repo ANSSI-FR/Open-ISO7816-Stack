@@ -56,13 +56,17 @@ void set_clock_off(void){
 	TCCR0B &= ~(BIT_0);         /* CS0 = 0                                    */
 }
 
-void set_clock_L(void){
-	PORTD &= ~(0x01 << PIN_CLK);
-}
-
-
-void set_clock_H(void){
-	PORTD |= (0x01 << PIN_CLK);
+void set_clock(uint8_t state){
+	switch(state){
+		case STATE_L:
+			PORTD &= ~(0x01 << PIN_CLK);
+			break;
+		case STATE_H:
+			PORTD |= (0x01 << PIN_CLK);
+			break;
+		default:
+			return;
+	}	
 }
 
 
@@ -160,7 +164,7 @@ void do_activation(void){
 	//setup_io_out();
 	
 	
-	set_clock_L();
+	set_clock(STATE_L);
 	set_vcc_off();
 	set_rst_state_L();
 	//set_io_state_L();
@@ -183,3 +187,12 @@ void do_cold_reset(void){
 void do_warm_reset(void){
 	
 }
+
+
+//void setup_usart_receiver(void){
+	/* Setting the baudrate */
+	//UBRR0 = (F_DEFAULT / D_DEFAULT) - 1;  // Table 24-1 section 24.4.1
+	
+	/* Setting the frame format*/
+	/* Enablinf the receiver */
+//}

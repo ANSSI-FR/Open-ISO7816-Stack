@@ -17,8 +17,7 @@ void set_rst_state_L(void);
 
 void setup_io_in(void);
 void setup_io_out(void);
-void set_io_state_H(void);
-void set_io_state_L(void);
+void set_io_state(uint8_t);
 
 void setup_pin_vcc(void);
 void set_vcc_on(void);

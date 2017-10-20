@@ -18,6 +18,9 @@
 #define PIN_VCC 2             // PORTB   Digital pin 10
 
 
+#define STATE_H 1
+#define STATE_L 0
+
 #define COLD_RESET_RST_NB_CYCLES 18000 // ISO7816-3 Section 6.2.1 (400 cycles mini)
 
 
