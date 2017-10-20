@@ -5,7 +5,7 @@
 void loop(void);
 void setup(void);
 
-void setup_clock_config(void);
+void setup_clock_config(uint32_t card_freq);
 void set_clock_on(void);
 void set_clock_off(void);
 void set_clock_state(uint8_t state);

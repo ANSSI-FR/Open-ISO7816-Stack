@@ -25,6 +25,8 @@
 #define INPUT 0
 #define OUTPUT 1
 
+#define CARD_FREQ 2000000  // Hz
+
 #define COLD_RESET_RST_NB_CYCLES 18000 // ISO7816-3 Section 6.2.1 (400 cycles mini)
 
 

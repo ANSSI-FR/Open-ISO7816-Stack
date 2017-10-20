@@ -20,7 +20,7 @@ void loop(){
 }
 
 
-void setup_clock_config(void){	
+void setup_clock_config(uint32_t card_freq){	
 	/* PD6 en sortie (pin OC0A) */
 	//DDRD |= (0x01 << PIN_CLK);              /* On mets DDRD6 a 1 (output)                 */
 	//PIND &= ~(0x01 << PIN_CLK);             /* No Toggle                                  */
@@ -32,8 +32,8 @@ void setup_clock_config(void){
 	/* Configuration du pin OC0A en toggle (TCCRA.COM[1:0] = 0x1)             */
 	TCCR0A = (TCCR0A & ~(0x01<<COM0A1)) | (0x01<<COM0A0);
 																	          
-	/* Comparateur A du timer 0 a 3 pour diviser clock par 8                  */
-	OCR0A = 0x03;  // 2MHz
+	/* Comparateur A du timer pour diviser clock                  */
+	OCR0A = F_CPU / CARD_FREQ / 2 - 1;
 }
 
 
@@ -178,7 +178,7 @@ void wait_cycles(uint16_t nb_cycles){
 
 
 void do_activation(void){
-	setup_clock_config();
+	setup_clock_config(CARD_FREQ);
 	setup_pin_vcc();
 	setup_pin_rst();
 	
