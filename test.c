@@ -22,8 +22,8 @@ void loop(){
 
 void setup_clock_config(void){	
 	/* PD6 en sortie (pin OC0A) */
-	DDRD |= (0x01 << PIN_CLK);              /* On mets DDRD6 a 1 (output)                 */
-	PIND &= ~(0x01 << PIN_CLK);             /* No Toggle                                  */
+	//DDRD |= (0x01 << PIN_CLK);              /* On mets DDRD6 a 1 (output)                 */
+	//PIND &= ~(0x01 << PIN_CLK);             /* No Toggle                                  */
 																	          
 	/* Configuration du timer 0 en mode CTC (TCCR0x.WGM[2:0] = 0x2)                       */
 	TCCR0B &= ~(0x01<<WGM02);         /* WGM2 = 0                                         */
@@ -155,7 +155,7 @@ void wait_cycles(uint16_t nb_cycles){
 	TCCR1B = ((TCCR1B & ~(0x01<<WGM13)) | (0x01<<WGM12));
 	TCCR1A = ((TCCR1A & ~(0x01<<WGM11)) & ~(0x01<<WGM10));		
 	
-	/* On positionne le flag OCFA (Dans reg TIFR1) (Output Compare Match Flag) a 0            */
+	/* On positionne le flag OCFA (Dans reg TIFR1) (Output Compare Match Flag) a 0   s*/
 	TIFR1 |= (0x01<<OCF1A);		
 	
 	/* On initialise le timer 1 a 0 (TCNT1)                                  */
