@@ -93,15 +93,18 @@ void set_rst_state(uint8_t state){
 }
 
 
-void setup_io_in(void){
-	DDRB &= ~(0x01 << PIN_IO); // Input
-	PORTB |= (0X01 << PIN_IO); // Pull Up
-	//PORTB &= ~(0X01 << PIN_IO); // Tri-State
-}
-
-void setup_io_out(void){
-	DDRB |= (0x01 << PIN_IO);   // Output
-	PINB &= ~(0x01 << PIN_IO);  // No Toggle
+void setup_pin_io(uint8_t type){
+	switch(type){
+		case INPUT:
+			DDRB &= ~(0x01 << PIN_IO); // Input
+			PORTB |= (0X01 << PIN_IO); // Pull Up
+			//PORTB &= ~(0X01 << PIN_IO); // Tri-State
+			break;
+		case OUTPUT:
+			DDRB |= (0x01 << PIN_IO);   // Output
+			PINB &= ~(0x01 << PIN_IO);  // No Toggle
+			break;
+	}	
 }
 
 void set_io_state_H(void){
@@ -130,10 +133,7 @@ void set_vcc(uint8_t state){
 		default:
 			return;
 	}
-	
-	
 }
-
 
 
 void wait_cycles(uint16_t nb_cycles){
@@ -187,7 +187,7 @@ void do_activation(void){
 	
 	set_vcc(ON);
 	wait_cycles(2000);
-	setup_io_in();
+	setup_pin_io(INPUT);
 	wait_cycles(200);
 	set_clock(ON);
 }
