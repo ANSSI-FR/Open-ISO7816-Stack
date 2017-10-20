@@ -41,9 +41,6 @@ void setup_clock_config(void){
 void set_clock(uint8_t state){
 	switch(state){
 		case ON: 
-			/* On remets a zero le compteur                                           */
-			TCNT0 = 0x00;
-				
 			/* Positionnement du prescaler du timer 0 a 1 (TCCR0B.CS0[2:0] = 0x1)      */
 			TCCR0B = ((TCCR0B & ~(0x01<<CS02)) & ~(0x01<<CS01)) | (0x01<<CS00) ;
 
