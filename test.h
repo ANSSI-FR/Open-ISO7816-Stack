@@ -5,7 +5,7 @@
 void loop(void);
 void setup(void);
 
-void setup_clock_config(uint32_t card_freq);
+void setup_clock_config(uint32_t f_card);
 void set_clock_on(void);
 void set_clock_off(void);
 void set_clock_state(uint8_t state);
@@ -26,7 +26,8 @@ void do_warm_reset(void);
 
 
 // Patiente/bloque n cycles + duree necessaire pour config le timer
-void wait_cycles(uint16_t nb_cycles);
+// peut attendre au maximum 8191 cycles
+void wait_cycles(uint16_t nb_cycles, uint32_t f_card);
 
 
 #endif

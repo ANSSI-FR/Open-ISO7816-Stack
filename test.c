@@ -20,7 +20,7 @@ void loop(){
 }
 
 
-void setup_clock_config(uint32_t card_freq){	
+void setup_clock_config(uint32_t f_card){	
 	/* PD6 en sortie (pin OC0A) */
 	//DDRD |= (0x01 << PIN_CLK);              /* On mets DDRD6 a 1 (output)                 */
 	//PIND &= ~(0x01 << PIN_CLK);             /* No Toggle                                  */
@@ -33,7 +33,7 @@ void setup_clock_config(uint32_t card_freq){
 	TCCR0A = (TCCR0A & ~(0x01<<COM0A1)) | (0x01<<COM0A0);
 																	          
 	/* Comparateur A du timer pour diviser clock                  */
-	OCR0A = F_CPU / CARD_FREQ / 2 - 1;
+	OCR0A = F_CPU / f_card / 2 - 1;
 }
 
 
@@ -142,43 +142,38 @@ void set_vcc(uint8_t state){
 }
 
 
-void wait_cycles(uint16_t nb_cycles){
+void wait_cycles(uint16_t nb_cycles, uint32_t f_card){
 	/* On stoppe le timer 1 (Prescaler = 0)                                  */
 	/* TCCR1B.CS1[2:0] = 0x00 */
 	TCCR1B &= ~((0x01<<CS12) | (0x01<<CS11) | (0x01<<CS10));      
 	
 	/* On met le timer 1 en mode CTC (Clear Timer On Compare Match)          */
-	/* WGM13 = 0                                    */
-	/* WGM12 = 1                                    */
-	/* WGM11 = 0                                    */
-	/* WGM10 = 0                                    */
+	/* TCCR1x.WGM[3:0] = 0x04                                                */
 	TCCR1B = ((TCCR1B & ~(0x01<<WGM13)) | (0x01<<WGM12));
 	TCCR1A = ((TCCR1A & ~(0x01<<WGM11)) & ~(0x01<<WGM10));		
 	
-	/* On positionne le flag OCFA (Dans reg TIFR1) (Output Compare Match Flag) a 0   s*/
+	/* On clear le flag OCFA (Dans reg TIFR1) (Output Compare Match Flag) */
 	TIFR1 |= (0x01<<OCF1A);		
 	
 	/* On initialise le timer 1 a 0 (TCNT1)                                  */
 	TCNT1 = 0x0000;													 
 																		 
 	/* On fixe la valeur du comparateur A (On charge H avant L)              */
-	OCR1A = nb_cycles;
-																			 
-																			 
-	/* On demarre le compteur (Prescaler = 8)                                */
-	/* CS12 = 0                                     */
-	/* CS11 = 1                                     */
-	/* CS10 = 0                                     */
-	TCCR1B = (((TCCR1B & ~(0x01<<CS12)) | (0x01<<CS11)) & ~(0x01<<CS10));
+	OCR1A = nb_cycles * (F_CPU / f_card);
+																			 																	 
+	/* On demarre le compteur (Prescaler = 1)                                */
+	/* TCCR1B.CS1[2:0] = 0x02                                                */
+	TCCR1B = (((TCCR1B & ~(0x01<<CS12)) & ~(0x01<<CS11)) | (0x01<<CS10));
 													 
 	/* On attend que OCFA (Output Compare Match Flag) passe a 1              */
+	// Desactiver les interruptions pendant l'attente ??
 	while(!(TIFR1 & (0x01<<OCF1A)));	
 }
 
 
 
 void do_activation(void){
-	setup_clock_config(CARD_FREQ);
+	setup_clock_config(F_CARD);
 	setup_pin_vcc();
 	setup_pin_rst();
 	
@@ -187,18 +182,18 @@ void do_activation(void){
 	set_vcc(OFF);
 	set_rst_state(STATE_L);
 	
-	wait_cycles(50);
+	wait_cycles(50, F_CARD);
 	
 	set_vcc(ON);
-	wait_cycles(2000);
+	wait_cycles(2000, F_CARD);
 	setup_pin_io(INPUT);
-	wait_cycles(200);
+	wait_cycles(200, F_CARD);
 	set_clock(ON);
 }
 
 void do_cold_reset(void){
 	set_rst_state(STATE_L);
-	wait_cycles(COLD_RESET_RST_NB_CYCLES);
+	wait_cycles(COLD_RESET_RST_NB_CYCLES, F_CARD);
 	set_rst_state(STATE_H);
 }
 
