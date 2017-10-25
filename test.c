@@ -207,7 +207,9 @@ void do_warm_reset(void){
 void usart_init(uint32_t f_card){
 	/* Configurer le mode de l'UART                 */
 	
+	
 	/* Configurer le prescaler, horloge de l'UART   */
+	usart_set_baudrate(F_DEFAULT, D_DEFAULT, f_card);
 	
 	/* Configurer le Frame Format                   */
 	
@@ -217,7 +219,13 @@ void usart_init(uint32_t f_card){
 }
 
 void usart_set_mode(uint8_t mode){
-	
+	if(mode == USART_MODE_SYNCHRONOUS){
+		/* Mode Synchrone UCSR0C.UMSEL0[1:0] = 0x01 */
+		UCSR0C = (UCSR0C & ~(0x01<<UMSEL01)) | (0x01<<UMSEL00);
+	}
+	else{
+		return;
+	}
 }
 
 

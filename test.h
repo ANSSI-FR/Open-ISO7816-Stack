@@ -31,6 +31,7 @@ void wait_cycles(uint16_t nb_cycles, uint32_t f_card);
 
 
 void usart_set_baudrate(uint16_t F, uint16_t D, uint32_t f_card);
+void usart_set_mode(uint8_t mode);
 
 
 #endif

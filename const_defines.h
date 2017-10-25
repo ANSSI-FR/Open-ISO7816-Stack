@@ -33,5 +33,7 @@
 #define D_DEFAULT 1                  // baud rate adjustement integer
 #define COLD_RESET_RST_NB_CYCLES 500 // ISO7816-3 Section 6.2.1 (400 cycles mini)
 
+#define USART_MODE_SYNCHRONOUS 0
+
 
 #endif
