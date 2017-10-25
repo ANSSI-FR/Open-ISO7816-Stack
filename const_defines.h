@@ -22,12 +22,15 @@
 #define STATE_L 0
 #define ON 1
 #define OFF 0
-#define INPUT 0
-#define OUTPUT 1
+#define INPUT_PIN 0
+#define OUTPUT_PIN 1
 
 #define F_CARD 2000000  // Hz
 //#define F_CPU 16000000  // Hz
 
+
+#define F_DEFAULT 372                // cock rate convertion integer
+#define D_DEFAULT 1                  // baud rate adjustement integer
 #define COLD_RESET_RST_NB_CYCLES 500 // ISO7816-3 Section 6.2.1 (400 cycles mini)
 
 

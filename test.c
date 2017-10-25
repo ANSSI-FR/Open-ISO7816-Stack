@@ -7,6 +7,7 @@
 
 #include "test.h"
 #include "const_defines.h"
+//#include "/usr/share/arduino/hardware/arduino/cores/arduino/Arduino.h"
 
 
 void setup(void){	
@@ -95,12 +96,12 @@ void set_rst_state(uint8_t state){
 
 void setup_pin_io(uint8_t type){
 	switch(type){
-		case INPUT:
+		case INPUT_PIN:
 			DDRB &= ~(0x01 << PIN_IO); // Input
 			PORTB |= (0X01 << PIN_IO); // Pull Up
 			//PORTB &= ~(0X01 << PIN_IO); // Tri-State
 			break;
-		case OUTPUT:
+		case OUTPUT_PIN:
 			DDRB |= (0x01 << PIN_IO);   // Output
 			PINB &= ~(0x01 << PIN_IO);  // No Toggle
 			break;
@@ -186,7 +187,7 @@ void do_activation(void){
 	
 	set_vcc(ON);
 	wait_cycles(2000, F_CARD);
-	setup_pin_io(INPUT);
+	setup_pin_io(INPUT_PIN);
 	wait_cycles(200, F_CARD);
 	set_clock(ON);
 }
@@ -202,10 +203,25 @@ void do_warm_reset(void){
 }
 
 
-//void setup_usart_receiver(void){
-	/* Setting the baudrate */
-	//UBRR0 = (F_DEFAULT / D_DEFAULT) - 1;  // Table 24-1 section 24.4.1
+
+void usart_init(uint32_t f_card){
+	/* Configurer le mode de l'UART                 */
 	
-	/* Setting the frame format*/
-	/* Enablinf the receiver */
-//}
+	/* Configurer le prescaler, horloge de l'UART   */
+	
+	/* Configurer le Frame Format                   */
+	
+	/* Configurer les intérruptions                 */
+	
+	/* Enable le Receiver                           */
+}
+
+void usart_set_mode(uint8_t mode){
+	
+}
+
+
+void usart_set_baudrate(uint16_t F, uint16_t D, uint32_t f_card){
+	/* Registre servant a set la valeur initiale du decompteur */
+	UBRR0 = (F / D) * (F_CPU / f_card) - 1;
+}
