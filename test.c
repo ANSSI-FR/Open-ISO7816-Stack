@@ -212,10 +212,12 @@ void usart_init(uint32_t f_card){
 	usart_set_baudrate(F_DEFAULT, D_DEFAULT, f_card);
 	
 	/* Configurer le Frame Format                   */
+	usart_set_frame_format();
 	
-	/* Configurer les intérruptions                 */
+	/* Configurer les interruptions                 */
 	
 	/* Enable le Receiver                           */
+	usart_set_receiver(ON);
 }
 
 void usart_set_mode(uint8_t mode){
@@ -241,4 +243,14 @@ void usart_set_frame_format(void){
 	/* Number of Data Bits = 8       UCSR0.UCSZ0[2:0] = 0x03         */
 	
 	UCSR0C = (((((UCSR0C | (0x01<<UPM01)) & ~(0x01<<UPM00)) & ~(0x01<<USBS0)) & ~(0x01<<UCSZ02)) | (0x01<<UCSZ01)) | (0x01<<UCSZ00);
+}
+
+
+void usart_set_receiver(uint8_t state){
+	if(state == ON){
+		UCSR0B |= (0x01<<RXEN0);
+	}
+	else{
+		UCSR0B &= ~(0x01<<RXEN0);
+	}
 }
