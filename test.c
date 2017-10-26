@@ -4,12 +4,14 @@
 
 
 #include <avr/io.h>
+#include <Arduino.h>
 
 #include "test.h"
 #include "const_defines.h"
 #include "usart.h"
 
 
+//#include "/usr/share/arduino/hardware/arduino/cores/arduino/Arduino.h"
 //#include "/usr/share/arduino/hardware/arduino/cores/arduino/Arduino.h"
 
 
