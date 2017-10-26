@@ -4,7 +4,6 @@ LDFLAGS=
 EXEC_ELF=test.elf
 EXEC_HEX=test.hex
 SERIAL_PORT=/dev/ttyACM0
-ARDUINO_LIB_PATH=./arduino
 MMCU=atmega328p
 
 
@@ -23,12 +22,12 @@ $(EXEC_HEX): $(EXEC_ELF)
 	
 	
 $(EXEC_ELF): main.o test.o usart.o
-	$(CC) -mmcu=$(MMCU) -I $(ARDUINO_LIB_PATH) $^ -o $@
+	$(CC) -mmcu=$(MMCU) $^ -o $@
 
 
 main.o: main.c const_defines.h
-	$(CC) -Wall -Os -DF_CPU=16000000UL -mmcu=$(MMCU) -I $(ARDUINO_LIB_PATH) -c -o $@ $<
+	$(CC) -Wall -Os -DF_CPU=16000000UL -mmcu=$(MMCU) -c -o $@ $<
 
 %.o: %.c %.h const_defines.h
-	$(CC) -Wall -Os -DF_CPU=16000000UL -mmcu=$(MMCU) -I $(ARDUINO_LIB_PATH) -c -o $@ $<
+	$(CC) -Wall -Os -DF_CPU=16000000UL -mmcu=$(MMCU) -c -o $@ $<
 	
