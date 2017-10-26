@@ -15,7 +15,11 @@ void usart_init(uint32_t f_card){
 	/* Configurer le Frame Format                   */
 	usart_set_frame_format();
 	
+	/* On configure le sampling mode de l'USART     */
+	usart_set_sampling_mode(USART_SAMPLE_ON_FALLING_EDGE);
+	
 	/* Configurer les interruptions                 */
+	usart_set_receive_interrupt(ON)
 	
 	/* Enable le Receiver                           */
 	usart_set_receiver(ON);
