@@ -19,7 +19,7 @@ void usart_init(uint32_t f_card){
 	usart_set_sampling_mode(USART_SAMPLE_ON_FALLING_EDGE);
 	
 	/* Configurer les interruptions                 */
-	usart_set_receive_interrupt(ON)
+	usart_set_receive_interrupt(ON);
 	
 	/* Enable le Receiver                           */
 	usart_set_receiver(ON);
