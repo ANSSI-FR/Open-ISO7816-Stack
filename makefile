@@ -13,14 +13,14 @@ upload: all
 	avrdude -c arduino -p m328p -P $(SERIAL_PORT) -U flash:w:$(EXEC_HEX)
 	
 clean:
-	rm -f main.o test.o $(EXEC_ELF) $(EXEC_HEX)
+	rm -f main.o test.o usart.o $(EXEC_ELF) $(EXEC_HEX)
 
 
 $(EXEC_HEX): $(EXEC_ELF)
 	avr-objcopy -O ihex -R .eeprom $< $@
 	
 	
-$(EXEC_ELF): main.o test.o
+$(EXEC_ELF): main.o test.o usart.o
 	$(CC) -mmcu=atmega328p $^ -o $@
 
 
