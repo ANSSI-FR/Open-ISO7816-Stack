@@ -3,7 +3,8 @@
 #include "const_defines.h"
 #include "usart.h"
 
-
+uint8_t usart_buffer[100];
+uint8_t usart_buffer_counter=0;
 
 void usart_init(uint32_t f_card){
 	/* Configurer le mode de l'UART                 */
@@ -99,6 +100,20 @@ void usart_get_receiver_error_flags(uint8_t *flag_FE, uint8_t *flag_DOR, uint8_t
 }
 
 /* Interruption sur reception termine USART, no nested interrupts */
-//ISR(USART_RX_Vect, ISR_BLOCK){
-//	
-//}
+int ISR(int USART_RX_Vect, int ISR_BLOCK){
+	uint8_t flag_FE, flag_DOR, flag_UPE;
+	uint8_t rcv_data;
+	
+	usart_get_receiver_error_flags(&flag_FE, &flag_DOR, &flag_UPE);
+	rcv_data = UDR0;                                                               // Dans tous les cas on lit le buffer pour clear le flag d'interrupt
+	
+	if(!flag_FE && !flag_DOR && !flag_UPE){
+		usart_buffer[usart_buffer_counter] = rcv_data;
+		usart_buffer_counter++;
+	}
+	else{
+		
+	}
+	
+	return 0;
+}
