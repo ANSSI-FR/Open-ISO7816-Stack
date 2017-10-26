@@ -56,8 +56,11 @@ void usart_set_receiver(uint8_t state){
 	if(state == ON){
 		UCSR0B |= (0x01<<RXEN0);
 	}
-	else{
+	else if(state == OFF){
 		UCSR0B &= ~(0x01<<RXEN0);
+	}
+	else{
+		return;
 	}
 }
 
