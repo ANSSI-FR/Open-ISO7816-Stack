@@ -61,6 +61,18 @@ void usart_set_receiver(uint8_t state){
 	}
 }
 
+void usart_set_transmiter(uint8_t state){
+	if(state == ON){
+		UCSR0B |= (0x01<<TXEN0);
+	}
+	else if(state == OFF){
+		UCSR0B &= ~(0x01<<TXEN0);
+	}
+	else{
+		return;
+	}
+}
+
 
 void usart_set_receive_interrupt(uint8_t state){
 	if(state == ON){
