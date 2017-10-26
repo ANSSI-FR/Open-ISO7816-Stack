@@ -12,5 +12,6 @@ void usart_set_frame_format(void);
 void usart_set_receiver(uint8_t state);
 void usart_set_receive_interrupt(uint8_t state);
 void usart_set_sampling_mode(uint8_t mode);
+void usart_get_receiver_error_flags(uint8_t *flag_FE, uint8_t *flag_DOR, uint8_t *flag_UPE);
 
 #endif

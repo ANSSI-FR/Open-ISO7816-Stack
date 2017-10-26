@@ -86,3 +86,19 @@ void usart_set_sampling_mode(uint8_t mode){
 		return;
 	}
 }
+
+
+void usart_get_receiver_error_flags(uint8_t *flag_FE, uint8_t *flag_DOR, uint8_t *flag_UPE){
+	uint8_t data = 0;
+	
+	data = UDR0;
+	
+	(*flag_FE) = data & (0x01<<FE0);
+	(*flag_DOR) = data & (0x01<<DOR0);
+	(*flag_UPE) = data & (0x01<<UPE0);
+}
+
+/* Interruption sur reception termine USART, no nested interrupts */
+//ISR(USART_RX_Vect, ISR_BLOCK){
+//	
+//}
