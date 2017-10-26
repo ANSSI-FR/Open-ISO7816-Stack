@@ -8,7 +8,7 @@ uint8_t usart_buffer_counter=0;
 
 void usart_init(uint32_t f_card){
 	/* Configurer le mode de l'UART                                 */
-	usart_set_mode(USART_MODE_SYNCHRONOUS);
+	usart_set_mode(USART_MODE_SYNCHRONOUS_MASTER);
 	
 	/* Configurer le prescaler, horloge de l'UART                   */
 	usart_set_baudrate(F_DEFAULT, D_DEFAULT, f_card);
@@ -20,27 +20,43 @@ void usart_init(uint32_t f_card){
 	usart_set_sampling_mode(USART_SAMPLE_ON_FALLING_EDGE);
 	
 	/* Configurer les interruptions                                 */
-	usart_set_receive_interrupt(ON);
+	//usart_set_receive_interrupt(ON);
 	
 	/* Enable le Receiver et le Transmiter                          */
-	usart_set_receiver(ON);
-	usart_set_transmiter(ON);
+	//usart_set_receiver(ON);
+	usart_set_transmitter(ON);
 }
 
 void usart_set_mode(uint8_t mode){
-	if(mode == USART_MODE_SYNCHRONOUS){
-		/* Mode Synchrone UCSR0C.UMSEL0[1:0] = 0x01 */
-		UCSR0C = (UCSR0C & ~(0x01<<UMSEL01)) | (0x01<<UMSEL00);
-	}
-	else{
-		return;
+	switch(mode){
+		case USART_MODE_SYNCHRONOUS_MASTER:
+			UCSR0C = (UCSR0C & ~(0x01<<UMSEL01)) | (0x01<<UMSEL00);                /* Mode Synchrone UCSR0C.UMSEL0[1:0] = 0x01                                              */																               
+			XCK_DDR |= (0x01<<XCK_BIT);                                            /* On mets le DDR du pin de l'horloge en sortie (section 24.4.0)                         */														               
+			UCSR0A &= ~(0x01<<U2X0);                                               /* On mets U2X0 a 0 (sert uniquement pour l'asynchrone et doit etre a 0 en synchrone)    */
+			break;
+		case USART_MODE_SYNCHRONOUS_SLAVE:
+			UCSR0C = (UCSR0C & ~(0x01<<UMSEL01)) | (0x01<<UMSEL00);                /* Mode Synchrone UCSR0C.UMSEL0[1:0] = 0x01                                              */
+			XCK_DDR &= ~(0x01<<XCK_BIT);                                           /* On mets le DDR du pin de l'horloge en entree (section 24.4.0)                         */
+			UCSR0A &= ~(0x01<<U2X0);                                               /* On mets U2X0 a 0 (sert uniquement pour l'asynchrone et doit etre a 0 en synchrone)    */
+			break;
+		case USART_MODE_ASYNCHRONOUS_SIMPLE_SPEED:
+			UCSR0C = (UCSR0C & ~(0x01<<UMSEL01)) & ~(0x01<<UMSEL00);               /* Mode Asynchrone UCSR0C.UMSEL0[1:0] = 0x00                                             */
+			UCSR0A &= ~(0x01<<U2X0);                                               /* UCSR01.U2X0 = 0 (Simple Speed)                                                        */
+			break;                                                                                                                                                          
+		case USART_MODE_ASYNCHRONOUS_DOUBLE_SPEED:                                                                                                                          
+			UCSR0C = (UCSR0C & ~(0x01<<UMSEL01)) & ~(0x01<<UMSEL00);               /* Mode Asynchrone UCSR0C.UMSEL0[1:0] = 0x00                                             */
+			UCSR0A |= (0x01<<U2X0);                                                /* UCSR01.U2X0 = 1 (Double Speed)                                                        */
+			break;
+		default:
+			return;
 	}
 }
 
 
 void usart_set_baudrate(uint16_t F, uint16_t D, uint32_t f_card){
 	/* Registre servant a set la valeur initiale du decompteur */
-	UBRR0 = (F / D) * (F_CPU / f_card) - 1;
+	//UBRR0 = (F / D) * (F_CPU / f_card) - 1;
+	UBRR0 = 1666;
 }
 
 
@@ -65,7 +81,7 @@ void usart_set_receiver(uint8_t state){
 	}
 }
 
-void usart_set_transmiter(uint8_t state){
+void usart_set_transmitter(uint8_t state){
 	if(state == ON){
 		UCSR0B |= (0x01<<TXEN0);
 	}
