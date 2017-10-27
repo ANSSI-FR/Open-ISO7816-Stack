@@ -2,14 +2,14 @@
 
 #include "const_defines.h"
 #include "usart.h"
-#include "buffer.h"
+//#include "buffer.h"
 
 
 
 void usart_init(uint32_t f_card){
 	
 	usart_set_mode(USART_MODE_SYNCHRONOUS_MASTER);                                 /* Configurer le mode de l'UART                                 */	                      
-	usart_set_baudrate(F_DEFAULT, D_DEFAULT, f_card);                              /* Configurer le prescaler, horloge de l'UART                   */												                      
+	usart_set_baudrate_etu(F_DEFAULT, D_DEFAULT, f_card);                              /* Configurer le prescaler, horloge de l'UART                   */												                      
 	usart_set_frame_format();                                                      /* Configurer le Frame Format                                   */
 	usart_set_sampling_mode(USART_SAMPLE_ON_FALLING_EDGE);                         /* On configure le sampling mode de l'USART                     */												                      
 	//usart_set_receive_interrupt(ON);                                             /* Configurer les interruptions                                 */												                      													                      
@@ -43,10 +43,9 @@ void usart_set_mode(uint8_t mode){
 }
 
 
-void usart_set_baudrate(uint16_t F, uint16_t D, uint32_t f_card){
+void usart_set_baudrate_etu(uint16_t F, uint16_t D, uint32_t f_card){
 	/* Registre servant a set la valeur initiale du decompteur */
-	UBRR0 = (F / D) * (F_CPU / f_card) - 1;
-	//UBRR0 = 1666;
+	UBRR0 = (F / D) * (F_CPU / f_card) / 2 - 1;                      // valeur initiale du decompteur qui toggle l'horloge (On toggle deux fois plus vite que la frequence (deux etats par periode))
 }
 
 
