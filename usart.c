@@ -2,18 +2,17 @@
 
 #include "const_defines.h"
 #include "usart.h"
+#include "test.h"
 //#include "buffer.h"
 
 
-
 void usart_init(uint32_t f_card){
-	
 	usart_set_mode(USART_MODE_SYNCHRONOUS_MASTER);                                 /* Configurer le mode de l'UART                                 */	                      
-	usart_set_baudrate_etu(F_DEFAULT, D_DEFAULT, f_card);                              /* Configurer le prescaler, horloge de l'UART                   */												                      
+	usart_set_baudrate_etu(F_DEFAULT, D_DEFAULT, f_card);                          /* Configurer le prescaler, horloge de l'UART                   */												                      
 	usart_set_frame_format();                                                      /* Configurer le Frame Format                                   */
 	usart_set_sampling_mode(USART_SAMPLE_ON_FALLING_EDGE);                         /* On configure le sampling mode de l'USART                     */												                      
-	//usart_set_receive_interrupt(ON);                                             /* Configurer les interruptions                                 */												                      													                      
-	//usart_set_receiver(ON);                                                      /* Enable le Receiver et le Transmiter                          */
+	usart_set_receive_interrupt(ON);                                               /* Configurer les interruptions                                 */												                      													                      
+	usart_set_receiver(ON);                                                        /* Enable le Receiver et le Transmiter                          */
 	usart_set_transmitter(ON);
 }
 
@@ -50,7 +49,7 @@ void usart_set_baudrate_etu(uint16_t F, uint16_t D, uint32_t f_card){
 
 
 void usart_set_baudrate(uint32_t bauds, uint32_t f_card){
-	UBRR0 = (F_CPU/(2*bauds)) - 1;
+	UBRR0 = (F_CPU/(2*bauds)) - 1;                                   // Voir Table 24-1, ligne 3 datasheet
 }
 
 
@@ -125,19 +124,34 @@ void usart_get_receiver_error_flags(uint8_t *flag_FE, uint8_t *flag_DOR, uint8_t
 	(*flag_UPE) = data & (0x01<<UPE0);
 }
 
+
+void usart_wait_transmitter_ready(void){
+	while ( !( UCSR0A & (1<<UDRE0)) );
+}
+
+
+void usart_send_byte(uint8_t byte){
+	
+}
+
+void usart_send_frame(uint8_t *frame, uint16_t count){
+	
+}
+
 /* Interruption sur reception termine USART, no nested interrupts */
 int ISR(int USART_RX_Vect, int ISR_BLOCK){
 	uint8_t flag_FE, flag_DOR, flag_UPE;
-	uint8_t rcv_data;
+	uint8_t rx_data;
 	
 	usart_get_receiver_error_flags(&flag_FE, &flag_DOR, &flag_UPE);
-	rcv_data = UDR0;                                                               // Dans tous les cas on lit le buffer pour clear le flag d'interrupt
+	rx_data = UDR0;                                                               // Dans tous les cas on lit le buffer pour clear le flag d'interrupt
 	
 	if(!flag_FE && !flag_DOR && !flag_UPE){
-		
+		rx_buffer[rx_counter] = rx_data;
+		rx_counter++;
 	}
 	else{
-		
+		// signal d'erreur
 	}
 	
 	return 0;
