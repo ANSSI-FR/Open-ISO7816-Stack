@@ -131,11 +131,16 @@ void usart_wait_transmitter_ready(void){
 
 
 void usart_send_byte(uint8_t byte){
-	
+	usart_wait_transmitter_ready();
+	UDR0 = byte;
 }
 
 void usart_send_frame(uint8_t *frame, uint16_t count){
+	uint16_t i;
 	
+	for(i=0; i<count; i++){
+		usart_send_byte(frame[i]);
+	}
 }
 
 /* Interruption sur reception termine USART, no nested interrupts */
