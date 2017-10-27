@@ -2,9 +2,9 @@
 
 #include "const_defines.h"
 #include "usart.h"
+#include "buffer.h"
 
-uint8_t usart_buffer[100];
-uint8_t usart_buffer_counter=0;
+
 
 void usart_init(uint32_t f_card){
 	
@@ -45,8 +45,8 @@ void usart_set_mode(uint8_t mode){
 
 void usart_set_baudrate(uint16_t F, uint16_t D, uint32_t f_card){
 	/* Registre servant a set la valeur initiale du decompteur */
-	//UBRR0 = (F / D) * (F_CPU / f_card) - 1;
-	UBRR0 = 1666;
+	UBRR0 = (F / D) * (F_CPU / f_card) - 1;
+	//UBRR0 = 1666;
 }
 
 
@@ -130,8 +130,7 @@ int ISR(int USART_RX_Vect, int ISR_BLOCK){
 	rcv_data = UDR0;                                                               // Dans tous les cas on lit le buffer pour clear le flag d'interrupt
 	
 	if(!flag_FE && !flag_DOR && !flag_UPE){
-		usart_buffer[usart_buffer_counter] = rcv_data;
-		usart_buffer_counter++;
+		
 	}
 	else{
 		

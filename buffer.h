@@ -1,4 +1,4 @@
-#indef _BUFFER_H_
+#ifndef _BUFFER_H_
 #define _BUFFER_H_
 
 
@@ -9,18 +9,19 @@
 
 
 
+typedef struct buffer_elem buffer_elem;
 struct buffer_elem{
 	buffer_elem *prev_elem;
 	uint8_t elem_data;
 };
-typedef struct buffer_element buffer_element;
 
 
+typedef struct buffer buffer;
 struct buffer{
 	buffer_elem *top_elem;
 	buffer_elem *bottom_elem;
 };
-typedef struct buffer buffer;
+
 
 
 
