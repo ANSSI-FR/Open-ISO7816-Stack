@@ -14,7 +14,7 @@
 
 #define PIN_RST 0             // PORTB   Digital pin 8
 #define PIN_CLK 6             // PORTD   ie Pin OC0A !
-#define PIN_IO  3             // PORTB   Digital pin 11
+#define PIN_IO  0             // PORTD   Digital pin 0
 #define PIN_VCC 2             // PORTB   Digital pin 10
 
 
@@ -32,6 +32,9 @@
 #define F_DEFAULT 372                // cock rate convertion integer
 #define D_DEFAULT 1                  // baud rate adjustement integer
 #define COLD_RESET_RST_NB_CYCLES 500 // ISO7816-3 Section 6.2.1 (400 cycles mini)
+
+
+#define MAX_WAIT_CYCLES 8191
 
 
 #endif

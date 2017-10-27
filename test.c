@@ -9,16 +9,40 @@
 #include "const_defines.h"
 #include "usart.h"
 
+extern uint8_t rx_buffer[100];
+extern uint8_t rx_counter;
 
-
-void setup(void){	
+void setup(void){
+	rx_counter=0;
+	
 	do_activation();
 	do_cold_reset();
+	
+	wait_cycles_long(1000000, F_CARD);	
+	blink_led(3);
+	wait_cycles_long(1000000, F_CARD);
+	blink_led(rx_counter);
+	
+	//usart_set_baudrate(9600, F_CARD);
+	//
+	//usart_send_byte(0x41);
+	//usart_send_byte(0x42);
+	//usart_send_byte(0x43);
+	//usart_send_byte(0x44);
+	//usart_send_byte(0x45);
+	//usart_send_byte(0x0A);
 }
 
 
 void loop(){
-	
+	//usart_send_frame(rx_buffer, rx_counter);
+	//usart_send_byte(0x45);
+	//usart_send_byte(0x4E);
+	//usart_send_byte(0x44);
+	//usart_send_byte(0x0A);
+	//
+	//wait_cycles_long(2000000, F_CARD);
+
 }
 
 
@@ -98,13 +122,13 @@ void set_rst_state(uint8_t state){
 void setup_pin_io(uint8_t type){
 	switch(type){
 		case INPUT_PIN:
-			DDRB &= ~(0x01 << PIN_IO); // Input
-			PORTB |= (0X01 << PIN_IO); // Pull Up
+			DDRD &= ~(0x01 << PIN_IO); // Input
+			PORTD |= (0X01 << PIN_IO); // Pull Up
 			//PORTB &= ~(0X01 << PIN_IO); // Tri-State
 			break;
 		case OUTPUT_PIN:
-			DDRB |= (0x01 << PIN_IO);   // Output
-			PINB &= ~(0x01 << PIN_IO);  // No Toggle
+			DDRD |= (0x01 << PIN_IO);   // Output
+			PIND &= ~(0x01 << PIN_IO);  // No Toggle
 			break;
 		default:
 			return;
@@ -114,10 +138,10 @@ void setup_pin_io(uint8_t type){
 void set_io_state(uint8_t state){
 	switch(state){
 		case STATE_H:
-			PORTB |= (0x01 << PIN_IO);
+			PORTD |= (0x01 << PIN_IO);
 			break;
 		case STATE_L:
-			PORTB &= ~(0x01 << PIN_IO);
+			PORTD &= ~(0x01 << PIN_IO);
 			break;
 		default:
 			return;
@@ -174,6 +198,19 @@ void wait_cycles(uint16_t nb_cycles, uint32_t f_card){
 
 
 
+void wait_cycles_long(uint32_t nb_cycles, uint32_t f_card){
+	uint32_t i,n,p;
+	
+	n = nb_cycles / MAX_WAIT_CYCLES;
+	p = nb_cycles % MAX_WAIT_CYCLES;
+	
+	for(i=0; i<n; i++){
+		wait_cycles(MAX_WAIT_CYCLES, f_card);
+	}
+	wait_cycles(p, f_card);
+}
+
+
 void do_activation(void){
 	setup_clock_config(F_CARD);
 	setup_pin_vcc();
@@ -188,7 +225,8 @@ void do_activation(void){
 	
 	set_vcc(ON);
 	wait_cycles(2000, F_CARD);
-	setup_pin_io(INPUT_PIN);
+	//setup_pin_io(INPUT_PIN);
+	usart_init(F_CARD);
 	wait_cycles(200, F_CARD);
 	set_clock(ON);
 }
@@ -201,6 +239,25 @@ void do_cold_reset(void){
 
 void do_warm_reset(void){
 	
+}
+
+
+void blink_led(uint16_t n){
+	uint8_t i;
+	uint16_t j;
+	
+	for(j=0; j<n; j++){
+		for(i=0; i<3; i++){
+			DDRB = DDRB | BIT_5;                                     /* On mets DDRB5 a 1 (output)      */
+			PORTB = PORTB & (~BIT_5);                                /* On mets PORTB5 a 0 (Driven Low) */
+																	
+			PINB = PINB & (~BIT_5);                                  /* On mets PINB5 a 0 (state L)     */
+			wait_cycles_long(50000, F_CARD);
+			PINB = PINB | BIT_5;
+			wait_cycles_long(50000, F_CARD);
+		}
+		wait_cycles_long(500000, F_CARD);
+	}
 }
 
 
