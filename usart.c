@@ -49,6 +49,11 @@ void usart_set_baudrate_etu(uint16_t F, uint16_t D, uint32_t f_card){
 }
 
 
+void usart_set_baudrate(uint32_t bauds, uint32_t f_card){
+	UBRR0 = (F_CPU/(2*bauds)) - 1;
+}
+
+
 void usart_set_frame_format(void){
 	/* Parity Mode Even              UCSR0C.UPM0[1:0] = 0x02         */
 	/* Number of Stop Bits = 1       UCSR0.USBS0 = 0x00              */
