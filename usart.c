@@ -89,10 +89,10 @@ void usart_set_transmitter(uint8_t state){
 
 void usart_set_receive_interrupt(uint8_t state){
 	if(state == ON){
-		UCSR0B |= (0x01<<RXEN0);
+		UCSR0B |= (0x01<<RXCIE0);
 	}
 	else if(state == OFF){
-		UCSR0B &= ~(0x01<<RXEN0);
+		UCSR0B &= ~(0x01<<RXCIE0);
 	}
 	else{
 		return;
@@ -115,7 +115,7 @@ void usart_set_sampling_mode(uint8_t mode){
 
 
 void usart_get_receiver_error_flags(uint8_t *flag_FE, uint8_t *flag_DOR, uint8_t *flag_UPE){
-	uint8_t data = 0;
+	uint8_t data;
 	
 	data = UDR0;
 	
@@ -154,9 +154,11 @@ int ISR(int USART_RX_Vect, int ISR_BLOCK){
 	if(!flag_FE && !flag_DOR && !flag_UPE){
 		rx_buffer[rx_counter] = rx_data;
 		rx_counter++;
+		//blink_led(2);
 	}
 	else{
 		// signal d'erreur
+		// blink_led(2);
 	}
 	
 	return 0;

@@ -11,7 +11,7 @@
 #define USART_MODE_ASYNCHRONOUS_DOUBLE_SPEED 3
 
 #define XCK_DDR DDRD
-#define XCK_BIT 4
+#define XCK_BIT 4              // Datasheet section 24.4.0
 
 
 void usart_init(uint32_t f_card);

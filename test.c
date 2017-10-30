@@ -18,8 +18,8 @@ void setup(void){
 	do_activation();
 	do_cold_reset();
 	
-	wait_cycles_long(1000000, F_CARD);	
-	blink_led(3);
+	//wait_cycles_long(1000000, F_CARD);	
+	//blink_led(3);
 	wait_cycles_long(1000000, F_CARD);
 	blink_led(rx_counter);
 	
