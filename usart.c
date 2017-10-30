@@ -1,4 +1,5 @@
 #include <avr/io.h>
+#include <avr/interrupt.h>
 
 #include "const_defines.h"
 #include "usart.h"
@@ -144,7 +145,7 @@ void usart_send_frame(uint8_t *frame, uint16_t count){
 }
 
 /* Interruption sur reception termine USART, no nested interrupts */
-int ISR(int USART_RX_Vect, int ISR_BLOCK){
+ISR(USART_RX_vect, ISR_BLOCK){
 	uint8_t flag_FE, flag_DOR, flag_UPE;
 	uint8_t rx_data;
 	
@@ -160,6 +161,4 @@ int ISR(int USART_RX_Vect, int ISR_BLOCK){
 		// signal d'erreur
 		// blink_led(2);
 	}
-	
-	return 0;
 }
