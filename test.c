@@ -13,7 +13,8 @@ extern uint8_t rx_buffer[100];
 extern uint8_t rx_counter;
 
 void setup(void){
-	rx_counter=0;
+	rx_counter=1;
+	blink_led(3);
 	
 	do_activation();
 	do_cold_reset();
@@ -25,21 +26,21 @@ void setup(void){
 	
 	/*usart_set_baudrate(9600, F_CARD);
 	
-	usart_send_byte(0x41);
-	usart_send_byte(0x42);
-	usart_send_byte(0x43);
-	usart_send_byte(0x44);
-	usart_send_byte(0x45);
-	usart_send_byte(0x0A);*/
+	usart_polling_send_byte(0x41);
+	usart_polling_send_byte(0x42);
+	usart_polling_send_byte(0x43);
+	usart_polling_send_byte(0x44);
+	usart_polling_send_byte(0x45);
+	usart_polling_send_byte(0x0A);*/
 }
 
 
 void loop(){
-	/*usart_send_frame(rx_buffer, rx_counter);
-	usart_send_byte(0x45);
-	usart_send_byte(0x4E);
-	usart_send_byte(0x44);
-	usart_send_byte(0x0A);
+	/*usart_polling_send_frame(rx_buffer, rx_counter);
+	usart_polling_send_byte(0x45);
+	usart_polling_send_byte(0x4E);
+	usart_polling_send_byte(0x44);
+	usart_polling_send_byte(0x0A);
 	
 	wait_cycles_long(2000000, F_CARD);
     */
@@ -67,7 +68,7 @@ void setup_clock_config(uint32_t f_card){
 void set_clock(uint8_t state){
 	switch(state){
 		case ON: 
-			/* Positionnement du prescaler du timer 0 a 1 (TCCR0B.CS0[2:0] = 0x1)      */
+			/* Positionnement du prescaler du timer 0 a 1 (TCCR0B.CS0[2:0] = 0x1)         */
 			TCCR0B = ((TCCR0B & ~(0x01<<CS02)) & ~(0x01<<CS01)) | (0x01<<CS00) ;
 
 			break;
@@ -258,7 +259,3 @@ void blink_led(uint16_t n){
 		wait_cycles_long(500000, F_CARD);
 	}
 }
-
-
-
-

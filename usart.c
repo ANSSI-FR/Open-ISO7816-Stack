@@ -7,6 +7,7 @@
 
 
 void usart_init(uint32_t f_card){
+	sei();
 	usart_set_mode(USART_MODE_SYNCHRONOUS_MASTER);                                 /* Configurer le mode de l'UART                                 */	                      
 	usart_set_baudrate_etu(F_DEFAULT, D_DEFAULT, f_card);                          /* Configurer le prescaler, horloge de l'UART                   */												                      
 	usart_set_frame_format();                                                      /* Configurer le Frame Format                                   */
@@ -130,23 +131,26 @@ void usart_wait_transmitter_ready(void){
 }
 
 
-void usart_send_byte(uint8_t byte){
+void usart_polling_send_byte(uint8_t byte){
 	usart_wait_transmitter_ready();
 	UDR0 = byte;
 }
 
-void usart_send_frame(uint8_t *frame, uint16_t count){
+void usart_polling_send_frame(uint8_t *frame, uint16_t count){
 	uint16_t i;
 	
 	for(i=0; i<count; i++){
-		usart_send_byte(frame[i]);
+		usart_polling_send_byte(frame[i]);
 	}
 }
+
 
 /* Interruption sur reception termine USART, no nested interrupts */
 ISR(USART_RX_vect, ISR_BLOCK){
 	uint8_t flag_FE, flag_DOR, flag_UPE;
 	uint8_t rx_data;
+
+	rx_counter++;  /* DEBUG */
 	
 	usart_get_receiver_error_flags(&flag_FE, &flag_DOR, &flag_UPE);
 	rx_data = UDR0;                                                               /* Dans tous les cas on lit le buffer pour clear le flag d'interrupt   */
@@ -154,10 +158,10 @@ ISR(USART_RX_vect, ISR_BLOCK){
 	if(!flag_FE && !flag_DOR && !flag_UPE){
 		rx_buffer[rx_counter] = rx_data;
 		rx_counter++;
-		/* blink_led(2);  */
+		
 	}
 	else{
 		/* signal d'erreur */
-		/* blink_led(2);   */
+
 	}
 }
