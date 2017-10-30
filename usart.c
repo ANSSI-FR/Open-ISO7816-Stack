@@ -4,7 +4,6 @@
 #include "const_defines.h"
 #include "usart.h"
 #include "test.h"
-//#include "buffer.h"
 
 
 void usart_init(uint32_t f_card){
@@ -45,12 +44,12 @@ void usart_set_mode(uint8_t mode){
 
 void usart_set_baudrate_etu(uint16_t F, uint16_t D, uint32_t f_card){
 	/* Registre servant a set la valeur initiale du decompteur */
-	UBRR0 = (F / D) * (F_CPU / f_card) / 2 - 1;                      // valeur initiale du decompteur qui toggle l'horloge (On toggle deux fois plus vite que la frequence (deux etats par periode))
+	UBRR0 = (F / D) * (F_CPU / f_card) / 2 - 1;                      /* valeur initiale du decompteur qui toggle l'horloge (On toggle deux fois plus vite que la frequence (deux etats par periode))   */
 }
 
 
 void usart_set_baudrate(uint32_t bauds, uint32_t f_card){
-	UBRR0 = (F_CPU/(2*bauds)) - 1;                                   // Voir Table 24-1, ligne 3 datasheet
+	UBRR0 = (F_CPU/(2*bauds)) - 1;                                   /* Voir Table 24-1, ligne 3 datasheet  */
 }
 
 
@@ -150,15 +149,15 @@ ISR(USART_RX_vect, ISR_BLOCK){
 	uint8_t rx_data;
 	
 	usart_get_receiver_error_flags(&flag_FE, &flag_DOR, &flag_UPE);
-	rx_data = UDR0;                                                               // Dans tous les cas on lit le buffer pour clear le flag d'interrupt
+	rx_data = UDR0;                                                               /* Dans tous les cas on lit le buffer pour clear le flag d'interrupt   */
 	
 	if(!flag_FE && !flag_DOR && !flag_UPE){
 		rx_buffer[rx_counter] = rx_data;
 		rx_counter++;
-		//blink_led(2);
+		/* blink_led(2);  */
 	}
 	else{
-		// signal d'erreur
-		// blink_led(2);
+		/* signal d'erreur */
+		/* blink_led(2);   */
 	}
 }

@@ -25,8 +25,8 @@ void do_cold_reset(void);
 void do_warm_reset(void);
 
 
-// Patiente/bloque n cycles + duree necessaire pour config le timer
-// peut attendre au maximum 8191 cycles
+/* Patiente/bloque n cycles + duree necessaire pour config le timer */
+/* peut attendre au maximum 8191 cycles                             */
 void wait_cycles(uint16_t nb_cycles, uint32_t f_card);
 void wait_cycles_long(uint32_t nb_cycles, uint32_t f_card);
 

@@ -18,47 +18,47 @@ void setup(void){
 	do_activation();
 	do_cold_reset();
 	
-	//wait_cycles_long(1000000, F_CARD);	
-	//blink_led(3);
+	/* wait_cycles_long(1000000, F_CARD);	*/
+	/* blink_led(3);                        */
 	wait_cycles_long(1000000, F_CARD);
 	blink_led(rx_counter);
 	
-	//usart_set_baudrate(9600, F_CARD);
-	//
-	//usart_send_byte(0x41);
-	//usart_send_byte(0x42);
-	//usart_send_byte(0x43);
-	//usart_send_byte(0x44);
-	//usart_send_byte(0x45);
-	//usart_send_byte(0x0A);
+	/*usart_set_baudrate(9600, F_CARD);
+	
+	usart_send_byte(0x41);
+	usart_send_byte(0x42);
+	usart_send_byte(0x43);
+	usart_send_byte(0x44);
+	usart_send_byte(0x45);
+	usart_send_byte(0x0A);*/
 }
 
 
 void loop(){
-	//usart_send_frame(rx_buffer, rx_counter);
-	//usart_send_byte(0x45);
-	//usart_send_byte(0x4E);
-	//usart_send_byte(0x44);
-	//usart_send_byte(0x0A);
-	//
-	//wait_cycles_long(2000000, F_CARD);
-
+	/*usart_send_frame(rx_buffer, rx_counter);
+	usart_send_byte(0x45);
+	usart_send_byte(0x4E);
+	usart_send_byte(0x44);
+	usart_send_byte(0x0A);
+	
+	wait_cycles_long(2000000, F_CARD);
+    */
 }
 
 
 void setup_clock_config(uint32_t f_card){	
-	/* PD6 en sortie (pin OC0A) */
-	//DDRD |= (0x01 << PIN_CLK);              /* On mets DDRD6 a 1 (output)                 */
-	//PIND &= ~(0x01 << PIN_CLK);             /* No Toggle                                  */
+	/* PD6 en sortie (pin OC0A)                                                           */
+	/* DDRD |= (0x01 << PIN_CLK);              On mets DDRD6 a 1 (output)                 */
+	/* PIND &= ~(0x01 << PIN_CLK);             No Toggle                                  */
 																	          
 	/* Configuration du timer 0 en mode CTC (TCCR0x.WGM[2:0] = 0x2)                       */
 	TCCR0B &= ~(0x01<<WGM02);         /* WGM2 = 0                                         */
 	TCCR0A = (TCCR0A | (0x01<<WGM01)) & ~(0x01<<WGM00);
 																	          
-	/* Configuration du pin OC0A en toggle (TCCRA.COM[1:0] = 0x1)             */
+	/* Configuration du pin OC0A en toggle (TCCRA.COM[1:0] = 0x1)                         */
 	TCCR0A = (TCCR0A & ~(0x01<<COM0A1)) | (0x01<<COM0A0);
 																	          
-	/* Comparateur A du timer pour diviser clock                  */
+	/* Comparateur A du timer pour diviser clock                                          */
 	OCR0A = F_CPU / f_card / 2 - 1;
 }
 
@@ -100,8 +100,8 @@ void set_clock_state(uint8_t state){
 
 
 void setup_pin_rst(void){
-	DDRB |= (0x01 << PIN_RST);    // Output
-	PINB &= ~(0x01<<PIN_RST);     // No Toggle
+	DDRB |= (0x01 << PIN_RST);    /* Output    */
+	PINB &= ~(0x01<<PIN_RST);     /* No Toggle */
 }
 
 
@@ -122,13 +122,13 @@ void set_rst_state(uint8_t state){
 void setup_pin_io(uint8_t type){
 	switch(type){
 		case INPUT_PIN:
-			DDRD &= ~(0x01 << PIN_IO); // Input
-			PORTD |= (0X01 << PIN_IO); // Pull Up
-			//PORTB &= ~(0X01 << PIN_IO); // Tri-State
+			DDRD &= ~(0x01 << PIN_IO);       /* Input     */
+			PORTD |= (0X01 << PIN_IO);       /* Pull Up   */
+			/*PORTB &= ~(0X01 << PIN_IO);       Tri-State */
 			break;
 		case OUTPUT_PIN:
-			DDRD |= (0x01 << PIN_IO);   // Output
-			PIND &= ~(0x01 << PIN_IO);  // No Toggle
+			DDRD |= (0x01 << PIN_IO);        /* Output    */
+			PIND &= ~(0x01 << PIN_IO);       /* No Toggle */
 			break;
 		default:
 			return;
@@ -150,8 +150,8 @@ void set_io_state(uint8_t state){
 
 
 void setup_pin_vcc(void){
-	DDRB |= (0x01 << PIN_VCC);    // Output
-	PINB &= ~(0x01 << PIN_VCC); // No Toggle
+	DDRB |= (0x01 << PIN_VCC);    /* Output     */
+	PINB &= ~(0x01 << PIN_VCC);   /* No Toggle  */
 }
 
 void set_vcc(uint8_t state){
@@ -192,7 +192,6 @@ void wait_cycles(uint16_t nb_cycles, uint32_t f_card){
 	TCCR1B = (((TCCR1B & ~(0x01<<CS12)) & ~(0x01<<CS11)) | (0x01<<CS10));
 													 
 	/* On attend que OCFA (Output Compare Match Flag) passe a 1              */
-	// Desactiver les interruptions pendant l'attente ??
 	while(!(TIFR1 & (0x01<<OCF1A)));	
 }
 
@@ -225,7 +224,7 @@ void do_activation(void){
 	
 	set_vcc(ON);
 	wait_cycles(2000, F_CARD);
-	//setup_pin_io(INPUT_PIN);
+	/* setup_pin_io(INPUT_PIN); */
 	usart_init(F_CARD);
 	wait_cycles(200, F_CARD);
 	set_clock(ON);
