@@ -22,12 +22,12 @@ $(EXEC_HEX): $(EXEC_ELF)
 	
 	
 $(EXEC_ELF): main.o test.o usart.o
-	$(CC) -mmcu=$(MMCU) $^ -o $@
+	$(CC) -ansi -pedantic -mmcu=$(MMCU) $^ -o $@
 
 
 main.o: main.c const_defines.h
-	$(CC) -Wall -Os -DF_CPU=16000000UL -mmcu=$(MMCU) -c -o $@ $<
+	$(CC) -Wall -ansi -pedantic -Os -DF_CPU=16000000UL -mmcu=$(MMCU) -c -o $@ $<
 
 %.o: %.c %.h const_defines.h
-	$(CC) -Wall -Os -DF_CPU=16000000UL -mmcu=$(MMCU) -c -o $@ $<
+	$(CC) -Wall -ansi -pedantic -Os -DF_CPU=16000000UL -mmcu=$(MMCU) -c -o $@ $<
 	
