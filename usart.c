@@ -136,8 +136,8 @@ void usart_polling_send_byte(uint8_t byte){
 	UDR0 = byte;
 }
 
-void usart_polling_send_frame(uint8_t *frame, uint16_t count){
-	uint16_t i;
+void usart_polling_send_frame(uint8_t *frame, uint32_t count){
+	uint32_t i;
 	
 	for(i=0; i<count; i++){
 		usart_polling_send_byte(frame[i]);
@@ -157,7 +157,7 @@ void usart_polling_get_frame(uint32_t nb_bytes, uint8_t *bytes_buffer){
 			bytes_buffer[i] = UDR0;
 		}
 		else{
-			/* Signal d'erreur */
+			/* Envoi d'un Signal d'erreur */
 			/* Ne pas compter ce byte dans le compteur (On atted la reception une deuxiemme fois de ce meme byte) */
 		}
 	}
