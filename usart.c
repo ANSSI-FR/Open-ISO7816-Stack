@@ -145,6 +145,25 @@ void usart_polling_send_frame(uint8_t *frame, uint16_t count){
 }
 
 
+void usart_polling_get_frame(uint32_t nb_bytes, uint8_t *bytes_buffer){
+	uint32_t i;
+	uint8_t flag_FE, flag_DOR, flag_UPE;
+	
+	for(i=0; i<nb_bytes; i++){
+		while ( !(UCSR0A & (1<<RXC0)) ); 
+		usart_get_receiver_error_flags(&flag_FE, &flag_DOR, &flag_UPE);                                          /* On attend que le buffer USART RX soit remplit */
+		
+		if(!flag_FE && !flag_DOR && !flag_UPE){
+			bytes_buffer[i] = UDR0;
+		}
+		else{
+			/* Signal d'erreur */
+			/* Ne pas compter ce byte dans le compteur (On atted la reception une deuxiemme fois de ce meme byte) */
+		}
+	}
+}
+
+
 /* Interruption sur reception termine USART, no nested interrupts */
 ISR(USART_RX_vect, ISR_BLOCK){
 	uint8_t flag_FE, flag_DOR, flag_UPE;

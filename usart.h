@@ -27,6 +27,7 @@ void usart_get_receiver_error_flags(uint8_t *flag_FE, uint8_t *flag_DOR, uint8_t
 void usart_wait_transmitter_ready(void);
 void usart_polling_send_byte(uint8_t byte);
 void usart_polling_send_frame(uint8_t *frame, uint16_t count);
+void usart_polling_get_frame(uint32_t nb_bytes, uint8_t *bytes_buffer);
 
 
 uint8_t rx_buffer[100];
