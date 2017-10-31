@@ -131,6 +131,11 @@ void usart_wait_transmitter_ready(void){
 }
 
 
+void usart_wait_receive_complete(void){
+	while ( !(UCSR0A & (1<<RXC0)) ); 
+}
+
+
 void usart_polling_send_byte(uint8_t byte){
 	usart_wait_transmitter_ready();
 	UDR0 = byte;
