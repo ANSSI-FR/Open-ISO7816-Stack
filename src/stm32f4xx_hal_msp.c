@@ -68,7 +68,9 @@ void HAL_MspInit(void)
 {
 	static RCC_ClkInitTypeDef RCC_ClkInitStruct;
 	static RCC_OscInitTypeDef RCC_OscInitStruct;
-	GPIO_InitTypeDef gpio;
+	
+	GPIO_InitTypeDef GPIO_LedVerteInitStruct;
+	GPIO_InitTypeDef GPIO_BoutonBleuInitStruct;
 	
 	
 	/* Initialisation de l'horloge */
@@ -96,12 +98,23 @@ void HAL_MspInit(void)
 	/* Initialisation du pin de la led verte (board Discovery) */
 	__GPIOD_CLK_ENABLE();
 
-	gpio.Pin = GPIO_PIN_12;
-	gpio.Mode = GPIO_MODE_OUTPUT_PP;
-	gpio.Pull = GPIO_NOPULL;
-	gpio.Speed = GPIO_SPEED_FREQ_MEDIUM;
+	GPIO_LedVerteInitStruct.Pin = PIN_LED_VERTE;
+	GPIO_LedVerteInitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+	GPIO_LedVerteInitStruct.Pull = GPIO_NOPULL;
+	GPIO_LedVerteInitStruct.Speed = GPIO_SPEED_FREQ_MEDIUM;
 	
-	HAL_GPIO_Init(GPIOD, &gpio);
+	HAL_GPIO_Init(GPIOD, &GPIO_LedVerteInitStruct);
+	
+	
+	/* Initialisation du bouton bleu (board Discovery) */
+	__GPIOA_CLK_ENABLE();
+
+	GPIO_BoutonBleuInitStruct.Pin = PIN_BOUTON_BLEU;
+	GPIO_BoutonBleuInitStruct.Mode = GPIO_MODE_INPUT;
+	GPIO_BoutonBleuInitStruct.Pull = GPIO_PULLDOWN;
+	GPIO_BoutonBleuInitStruct.Speed = GPIO_SPEED_FREQ_MEDIUM;
+	
+	HAL_GPIO_Init(GPIOA, &GPIO_BoutonBleuInitStruct);
 }
 
 /**
