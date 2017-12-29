@@ -68,8 +68,10 @@ void HAL_MspInit(void)
 {
 	static RCC_ClkInitTypeDef RCC_ClkInitStruct;
 	static RCC_OscInitTypeDef RCC_OscInitStruct;
+	GPIO_InitTypeDef gpio;
 	
 	
+	/* Initialisation de l'horloge */
 	RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSE;
 	RCC_OscInitStruct.HSEState = RCC_HSE_ON;
 	RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
@@ -89,6 +91,17 @@ void HAL_MspInit(void)
 	RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV2; 
 
 	HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_5);
+	
+	
+	/* Initialisation du pin de la led verte (board Discovery) */
+	__GPIOD_CLK_ENABLE();
+
+	gpio.Pin = GPIO_PIN_12;
+	gpio.Mode = GPIO_MODE_OUTPUT_PP;
+	gpio.Pull = GPIO_NOPULL;
+	gpio.Speed = GPIO_SPEED_FREQ_MEDIUM;
+	
+	HAL_GPIO_Init(GPIOD, &gpio);
 }
 
 /**

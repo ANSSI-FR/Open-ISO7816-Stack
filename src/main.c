@@ -5,26 +5,12 @@
 
 
 
-int main(void){
-	GPIO_InitTypeDef gpio;
-	
+int main(void){	
 	HAL_Init();
 	
-
-	__GPIOD_CLK_ENABLE();
-
-	gpio.Pin = GPIO_PIN_12;
-	gpio.Mode = GPIO_MODE_OUTPUT_PP;
-	gpio.Pull = GPIO_NOPULL;
-	gpio.Speed = GPIO_SPEED_FREQ_MEDIUM;
-	
-	HAL_GPIO_Init(GPIOD, &gpio);
 	HAL_GPIO_WritePin(GPIOD, GPIO_PIN_12, GPIO_PIN_SET);
 	
-	
-	
 	while(1);
-	
 	
 	return 0;
 }
