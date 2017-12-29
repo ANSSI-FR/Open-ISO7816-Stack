@@ -8,9 +8,14 @@
 int main(void){	
 	HAL_Init();
 	
-	HAL_GPIO_WritePin(GPIOD, GPIO_PIN_12, GPIO_PIN_SET);
-	
-	while(1);
+	while(1){
+		if(HAL_GPIO_ReadPin(GPIOA, PIN_BOUTON_BLEU) == GPIO_PIN_SET){
+			HAL_GPIO_WritePin(GPIOD, PIN_LED_VERTE, GPIO_PIN_SET);
+		}
+		else{
+			HAL_GPIO_WritePin(GPIOD, PIN_LED_VERTE, GPIO_PIN_RESET);
+		}
+	}
 	
 	return 0;
 }
