@@ -111,11 +111,14 @@ void HAL_MspInit(void)
 	__GPIOA_CLK_ENABLE();
 
 	GPIO_BoutonBleuInitStruct.Pin = PIN_BOUTON_BLEU;
-	GPIO_BoutonBleuInitStruct.Mode = GPIO_MODE_INPUT;
+	GPIO_BoutonBleuInitStruct.Mode = GPIO_MODE_IT_RISING;
 	GPIO_BoutonBleuInitStruct.Pull = GPIO_PULLDOWN;
 	GPIO_BoutonBleuInitStruct.Speed = GPIO_SPEED_FREQ_MEDIUM;
 	
 	HAL_GPIO_Init(GPIOA, &GPIO_BoutonBleuInitStruct);
+	
+	HAL_NVIC_EnableIRQ(EXTI0_IRQn);
+	HAL_NVIC_SetPriority(EXTI0_IRQn, 15, 15);
 }
 
 /**
