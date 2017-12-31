@@ -52,6 +52,8 @@
 /* Private define ------------------------------------------------------------*/
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
+extern RCC_ClkInitTypeDef RCC_ClkInitStruct;
+extern RCC_OscInitTypeDef RCC_OscInitStruct;
 /* Private function prototypes -----------------------------------------------*/
 /* Private functions ---------------------------------------------------------*/
 
@@ -66,38 +68,17 @@
   * @retval None
   */
 void HAL_MspInit(void)
-{
-	static RCC_ClkInitTypeDef RCC_ClkInitStruct;
-	static RCC_OscInitTypeDef RCC_OscInitStruct;
-	
+{	
 	GPIO_InitTypeDef GPIO_LedVerteInitStruct;
 	GPIO_InitTypeDef GPIO_BoutonBleuInitStruct;
 	
 	
-	/* Initialisation de l'horloge */
-	RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSE;
-	RCC_OscInitStruct.HSEState = RCC_HSE_ON;
-	RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
-	RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
-	RCC_OscInitStruct.PLL.PLLM = 8;
-	RCC_OscInitStruct.PLL.PLLN = 336;
-	RCC_OscInitStruct.PLL.PLLP = RCC_PLLP_DIV2;
-	RCC_OscInitStruct.PLL.PLLQ = 7;
-	
-	HAL_RCC_OscConfig(&RCC_OscInitStruct);
-	
-	
-	RCC_ClkInitStruct.ClockType = (RCC_CLOCKTYPE_SYSCLK | RCC_CLOCKTYPE_HCLK | RCC_CLOCKTYPE_PCLK1 | RCC_CLOCKTYPE_PCLK2);
-	RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
-	RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
-	RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV4;  
-	RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV2; 
-
-	HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_5);
+	/* Initialisation de l'Horloge */
+	init_horloge(&RCC_ClkInitStruct, &RCC_OscInitStruct);
 	
 	
 	/* Initialisation du pin de la led verte (board Discovery) */
-	__GPIOD_CLK_ENABLE();
+	__HAL_RCC_GPIOD_CLK_ENABLE();
 
 	GPIO_LedVerteInitStruct.Pin = PIN_LED_VERTE;
 	GPIO_LedVerteInitStruct.Mode = GPIO_MODE_OUTPUT_PP;
@@ -107,8 +88,19 @@ void HAL_MspInit(void)
 	HAL_GPIO_Init(GPIOD, &GPIO_LedVerteInitStruct);
 	
 	
+	/* Initialisation du pin de la led rouge (board Discovery) */
+	__HAL_RCC_GPIOD_CLK_ENABLE();
+
+	GPIO_LedVerteInitStruct.Pin = PIN_LED_ROUGE;
+	GPIO_LedVerteInitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+	GPIO_LedVerteInitStruct.Pull = GPIO_NOPULL;
+	GPIO_LedVerteInitStruct.Speed = GPIO_SPEED_FREQ_MEDIUM;
+	
+	HAL_GPIO_Init(GPIOD, &GPIO_LedVerteInitStruct);
+	
+	
 	/* Initialisation du bouton bleu (board Discovery) */
-	__GPIOA_CLK_ENABLE();
+	__HAL_RCC_GPIOA_CLK_ENABLE();
 
 	GPIO_BoutonBleuInitStruct.Pin = PIN_BOUTON_BLEU;
 	GPIO_BoutonBleuInitStruct.Mode = GPIO_MODE_IT_RISING;
@@ -132,6 +124,7 @@ void HAL_MspDeInit(void)
 
 }
 
+
 /**
   * @brief  Initializes the PPP MSP.
   * @note   This functiona is called from HAL_PPP_Init() function to perform 
@@ -140,7 +133,8 @@ void HAL_MspDeInit(void)
   */
 void HAL_PPP_MspInit(void)
 {
-
+	init_usart_handle(&usartHandleStruct);
+	HAL_USART_Init(&usartHandleStruct);
 }
 
 /**
@@ -152,6 +146,37 @@ void HAL_PPP_MspInit(void)
 void HAL_PPP_MspDeInit(void)
 {
 
+}
+
+
+
+void HAL_USART_MspInit(USART_HandleTypeDef *husart){
+	GPIO_InitTypeDef gpio;
+	
+	/* Voir en.DM00105879 (usermanual HAL et LL) section 68.2.1 */
+	/* Initialisation de l'USART 1 */
+	__HAL_RCC_USART1_CLK_ENABLE();
+	__HAL_RCC_GPIOA_CLK_ENABLE();
+	
+	/* Initialisation du pin TX */
+	gpio.Pin = GPIO_PIN_9;                /* Voir : https://stm32f4-discovery.net/2014/04/library-04-connect-stm32f429-discovery-to-computer-with-usart/ */
+	gpio.Mode = GPIO_MODE_AF_PP;
+	gpio.Pull = GPIO_PULLUP;
+	gpio.Speed = GPIO_SPEED_FREQ_MEDIUM;
+	gpio.Alternate = GPIO_AF7_USART1;     /* Voir manuel DM00105879 section 29.3.1 */
+	HAL_GPIO_Init(GPIOA, &gpio);
+	
+	/* Initialisation du pin RX */
+	gpio.Pin = GPIO_PIN_10;
+	gpio.Mode = GPIO_MODE_INPUT;
+	gpio.Pull = GPIO_PULLUP;
+	gpio.Speed = GPIO_SPEED_FREQ_MEDIUM;
+	gpio.Alternate = GPIO_AF7_USART1;
+	HAL_GPIO_Init(GPIOA, &gpio);
+	
+	/* Config interruptions de l'USART1 */
+	HAL_NVIC_SetPriority(USART1_IRQn, 0, 1);
+	HAL_NVIC_EnableIRQ(USART1_IRQn);
 }
 
 /**
