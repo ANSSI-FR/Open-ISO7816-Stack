@@ -133,8 +133,7 @@ void HAL_MspDeInit(void)
   */
 void HAL_PPP_MspInit(void)
 {
-	init_usart_handle(&usartHandleStruct);
-	HAL_USART_Init(&usartHandleStruct);
+	
 }
 
 /**
@@ -150,7 +149,7 @@ void HAL_PPP_MspDeInit(void)
 
 
 
-void HAL_USART_MspInit(USART_HandleTypeDef *husart){
+void HAL_UART_MspInit(UART_HandleTypeDef *huart){
 	GPIO_InitTypeDef gpio;
 	
 	/* Voir en.DM00105879 (usermanual HAL et LL) section 68.2.1 */

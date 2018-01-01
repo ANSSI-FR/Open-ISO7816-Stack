@@ -1,3 +1,6 @@
+#include "stm32f4xx_hal.h"
+
+
 #ifndef _MAIN_H_
 #define _MAIN_H_
 
@@ -9,8 +12,8 @@
 
 
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin);
-void init_usart_handle(USART_HandleTypeDef *usartHandleStruct);
-void init_horloge(RCC_ClkInitStruct *RCC_ClkInitStruct, RCC_OscInitStruct *RCC_OscInitStruct);
+void init_uart_handle(UART_HandleTypeDef *uartHandleStruct);
+void init_horloge(RCC_ClkInitTypeDef *RCC_ClkInitStruct, RCC_OscInitTypeDef *RCC_OscInitStruct);
 
 
 

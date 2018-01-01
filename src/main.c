@@ -1,5 +1,4 @@
 #include "stm32f4xx_hal.h"
-#include "stm32f4xx.h"
 
 #include "main.h"
 
@@ -7,46 +6,49 @@
 RCC_ClkInitTypeDef RCC_ClkInitStruct;
 RCC_OscInitTypeDef RCC_OscInitStruct;
 	
-USART_HandleTypeDef usartHandleStruct;
-uint8_t pUsartTxBuff[100];
-uint8_t pUsartRxBuff[100];
+UART_HandleTypeDef uartHandleStruct;
+uint8_t pUartTxBuff[100];
+uint8_t pUartRxBuff[100];
 
 
 
 int main(void){	
 	HAL_Init();
 	
-	pUsartTxBuff[0] = 'H';
-	pUsartTxBuff[1] = 'E';
-	pUsartTxBuff[2] = 'L';
-	pUsartTxBuff[3] = 'L';
-	pUsartTxBuff[4] = 'O';
-	pUsartTxBuff[5] = ' ';
-	pUsartTxBuff[6] = 'W';
-	pUsartTxBuff[7] = 'O';
-	pUsartTxBuff[8] = 'R';
-	pUsartTxBuff[9] = 'L';
-	pUsartTxBuff[10] = 'D';
-	pUsartTxBuff[11] = ' ';
-	pUsartTxBuff[12] = '!';
+	init_uart_handle(&uartHandleStruct);
+	HAL_UART_Init(&uartHandleStruct);
 	
-	pUsartTxBuff[0+13] = 'H';
-	pUsartTxBuff[1+13] = 'E';
-	pUsartTxBuff[2+13] = 'L';
-	pUsartTxBuff[3+13] = 'L';
-	pUsartTxBuff[4+13] = 'O';
-	pUsartTxBuff[5+13] = ' ';
-	pUsartTxBuff[6+13] = 'W';
-	pUsartTxBuff[7+13] = 'O';
-	pUsartTxBuff[8+13] = 'R';
-	pUsartTxBuff[9+13] = 'L';
-	pUsartTxBuff[10+13] = 'D';
-	pUsartTxBuff[11+13] = ' ';
-	pUsartTxBuff[12+13] = '!';
+	pUartTxBuff[0] = 'H';
+	pUartTxBuff[1] = 'E';
+	pUartTxBuff[2] = 'L';
+	pUartTxBuff[3] = 'L';
+	pUartTxBuff[4] = 'O';
+	pUartTxBuff[5] = ' ';
+	pUartTxBuff[6] = 'W';
+	pUartTxBuff[7] = 'O';
+	pUartTxBuff[8] = 'R';
+	pUartTxBuff[9] = 'L';
+	pUartTxBuff[10] = 'D';
+	pUartTxBuff[11] = ' ';
+	pUartTxBuff[12] = '!';
+	
+	pUartTxBuff[0+13] = 'H';
+	pUartTxBuff[1+13] = 'E';
+	pUartTxBuff[2+13] = 'L';
+	pUartTxBuff[3+13] = 'L';
+	pUartTxBuff[4+13] = 'O';
+	pUartTxBuff[5+13] = ' ';
+	pUartTxBuff[6+13] = 'W';
+	pUartTxBuff[7+13] = 'O';
+	pUartTxBuff[8+13] = 'R';
+	pUartTxBuff[9+13] = 'L';
+	pUartTxBuff[10+13] = 'D';
+	pUartTxBuff[11+13] = ' ';
+	pUartTxBuff[12+13] = '!';
 
 	while(1){
 		HAL_GPIO_WritePin(GPIOD, PIN_LED_VERTE, GPIO_PIN_SET);
-		HAL_USART_TransmitReceive_IT(&usartHandleStruct, pUsartTxBuff, pUsartRxBuff, 26);
+		HAL_UART_Transmit_IT(&uartHandleStruct, pUartTxBuff, 26);
 		HAL_Delay(1000);
 	}
 	
@@ -54,11 +56,11 @@ int main(void){
 }
 
 
-void HAL_USART_TxCpltCallback(USART_HandleTypeDef *husart){
+void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart){
 	HAL_GPIO_WritePin(GPIOD, PIN_LED_VERTE, GPIO_PIN_RESET);
 }
 
-void HAL_USART_RxCpltCallback(USART_HandleTypeDef *husart){
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart){
 	HAL_GPIO_WritePin(GPIOD, PIN_LED_ROUGE, GPIO_PIN_SET);
 	HAL_Delay(100);
 	HAL_GPIO_WritePin(GPIOD, PIN_LED_ROUGE, GPIO_PIN_RESET);
@@ -75,40 +77,39 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
 }
 
 
-void init_usart_handle(USART_HandleTypeDef *usartHandleStruct){
-	/* Initialisation de l'USART1 */	
-	usartHandleStruct->Instance = USART1;
-	usartHandleStruct->Init->BaudRate = 9600;
-	usartHandleStruct->Init->WordLength = USART_WORDLENGTH_8B;
-	usartHandleStruct->Init->StopBits = USART_STOPBITS_1;
-	usartHandleStruct->Init->Parity = USART_PARITY_NONE;
-	usartHandleStruct->Init->Mode = USART_MODE_TX_RX;
-	usartHandleStruct->Init->CLKPolarity = USART_POLARITY_HIGH;
-	usartHandleStruct->Init->CLKPhase = USART_PHASE_1EDGE;
-	usartHandleStruct->Init->CLKLastBit = USART_LASTBIT_DISABLE;
-	usartHandleStruct->pTxBuffPtr = NULL;
-	usartHandleStruct->TxXferSize = 0;
-	usartHandleStruct->pRxBuffPtr = NULL;
-	usartHandleStruct->RxXferSize = 0;
-	usartHandleStruct->hdmatx = NULL;
-	usartHandleStruct->hdmarx = NULL;
-	usartHandleStruct->Lock = HAL_UNLOCKED;
+void init_uart_handle(UART_HandleTypeDef *uartHandleStruct){
+	/* Initialisation de l'UART1 */	
+	uartHandleStruct->Instance = USART1;
+	uartHandleStruct->Init.BaudRate = 9600;
+	uartHandleStruct->Init.WordLength = UART_WORDLENGTH_8B;
+	uartHandleStruct->Init.StopBits = UART_STOPBITS_1;
+	uartHandleStruct->Init.Parity = UART_PARITY_NONE;
+	uartHandleStruct->Init.Mode = UART_MODE_TX_RX;
+	uartHandleStruct->Init.HwFlowCtl = UART_HWCONTROL_NONE;
+	uartHandleStruct->Init.OverSampling = UART_OVERSAMPLING_8;
+	uartHandleStruct->pTxBuffPtr = NULL;
+	uartHandleStruct->TxXferSize = 0;
+	uartHandleStruct->pRxBuffPtr = NULL;
+	uartHandleStruct->RxXferSize = 0;
+	uartHandleStruct->hdmatx = NULL;
+	uartHandleStruct->hdmarx = NULL;
+	uartHandleStruct->Lock = HAL_UNLOCKED;
 }
 
 
 
-void init_horloge(RCC_ClkInitStruct *RCC_ClkInitStruct, RCC_OscInitStruct *RCC_OscInitStruct){
+void init_horloge(RCC_ClkInitTypeDef *RCC_ClkInitStruct, RCC_OscInitTypeDef *RCC_OscInitStruct){
 	/* Initialisation de l'horloge */
 	RCC_OscInitStruct->OscillatorType = RCC_OSCILLATORTYPE_HSE;
 	RCC_OscInitStruct->HSEState = RCC_HSE_ON;
-	RCC_OscInitStruct->PLL->PLLState = RCC_PLL_ON;
-	RCC_OscInitStruct->PLL->PLLSource = RCC_PLLSOURCE_HSE;
-	RCC_OscInitStruct->PLL->PLLM = 8;
-	RCC_OscInitStruct->PLL->PLLN = 336;
-	RCC_OscInitStruct->PLL->PLLP = RCC_PLLP_DIV2;
-	RCC_OscInitStruct->PLL->PLLQ = 7;
+	RCC_OscInitStruct->PLL.PLLState = RCC_PLL_ON;
+	RCC_OscInitStruct->PLL.PLLSource = RCC_PLLSOURCE_HSE;
+	RCC_OscInitStruct->PLL.PLLM = 8;
+	RCC_OscInitStruct->PLL.PLLN = 336;
+	RCC_OscInitStruct->PLL.PLLP = RCC_PLLP_DIV2;
+	RCC_OscInitStruct->PLL.PLLQ = 7;
 	
-	HAL_RCC_OscConfig(&RCC_OscInitStruct);
+	HAL_RCC_OscConfig(RCC_OscInitStruct);
 	
 	
 	RCC_ClkInitStruct->ClockType = (RCC_CLOCKTYPE_SYSCLK | RCC_CLOCKTYPE_HCLK | RCC_CLOCKTYPE_PCLK1 | RCC_CLOCKTYPE_PCLK2);
@@ -117,5 +118,5 @@ void init_horloge(RCC_ClkInitStruct *RCC_ClkInitStruct, RCC_OscInitStruct *RCC_O
 	RCC_ClkInitStruct->APB1CLKDivider = RCC_HCLK_DIV4;  
 	RCC_ClkInitStruct->APB2CLKDivider = RCC_HCLK_DIV2; 
 
-	HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_5);
+	HAL_RCC_ClockConfig(RCC_ClkInitStruct, FLASH_LATENCY_5);
 }

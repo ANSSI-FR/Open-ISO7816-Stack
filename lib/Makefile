@@ -54,6 +54,7 @@ SRCS+=stm32f4xx_hal_dma.c
 SRCS+=stm32f4xx_hal_flash.c
 SRCS+=stm32f4xx_hal_cortex.c
 SRCS+=stm32f4xx_hal_usart.c
+SRCS+=stm32f4xx_hal_uart.c
 
 DEPS=$(addprefix dep/,$(SRCS:.c=.d))
 OBJS=$(addprefix obj/,$(SRCS:.c=.o))
