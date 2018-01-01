@@ -178,6 +178,37 @@ void HAL_UART_MspInit(UART_HandleTypeDef *huart){
 	HAL_NVIC_EnableIRQ(USART1_IRQn);
 }
 
+
+void HAL_SMARTCARD_MspInit(SMARTCARD_HandleTypeDef *hsc){
+	GPIO_InitTypeDef gpio;
+	
+	/* Debloquer horloge du peripherique USART2 */
+	__HAL_RCC_USART2_CLK_ENABLE();
+	/* Debloquer horloge du GPIOA */
+	__HAL_RCC_GPIOA_CLK_ENABLE();
+	
+	
+	/* Configurer pin TX */
+	gpio.Pin = GPIO_PIN_2;
+	gpio.Mode = GPIO_MODE_AF_OD;              /* Voir en.DM00105879 section 30.3.11  - TX Open-Drain */
+	gpio.Pull = GPIO_PULLUP;
+	gpio.Speed = GPIO_SPEED_FREQ_MEDIUM;
+	gpio.Alternate = GPIO_AF7_USART2;
+	HAL_GPIO_Init(GPIOA, &gpio);
+	
+	/* Configurer pin CK */
+	gpio.Pin = GPIO_PIN_4;
+	gpio.Mode = GPIO_MODE_AF_PP; 
+	gpio.Pull = GPIO_PULLUP;
+	gpio.Speed = GPIO_SPEED_FREQ_MEDIUM;
+	gpio.Alternate = GPIO_AF7_USART2;
+	HAL_GPIO_Init(GPIOA, &gpio);
+	
+	/* Configuration des interruptions */
+	HAL_NVIC_SetPriority(USART2_IRQn, 0, 1);
+	HAL_NVIC_EnableIRQ(USART2_IRQn);
+}
+
 /**
   * @}
   */

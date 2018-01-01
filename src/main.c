@@ -10,6 +10,11 @@ UART_HandleTypeDef uartHandleStruct;
 uint8_t pUartTxBuff[100];
 uint8_t pUartRxBuff[100];
 
+SMARTCARD_HandleTypeDef smartcardHandleStruct;
+uint8_t pSmartCardTxBuff[100];
+uint8_t pSmartcardRxBuff[100];
+
+
 
 
 int main(void){	
@@ -17,6 +22,9 @@ int main(void){
 	
 	init_uart_handle(&uartHandleStruct);
 	HAL_UART_Init(&uartHandleStruct);
+	
+	init_smartcard_handle(&smartcardHandleStruct);
+	HAL_SMARTCARD_Init(&smartcardHandleStruct);
 	
 	pUartTxBuff[0] = 'H';
 	pUartTxBuff[1] = 'E';
@@ -97,6 +105,28 @@ void init_uart_handle(UART_HandleTypeDef *uartHandleStruct){
 }
 
 
+void init_smartcard_handle(SMARTCARD_HandleTypeDef *smartcardHandleStruct){
+	smartcardHandleStruct->Instance = USART2;
+	smartcardHandleStruct->Init.BaudRate = 9600;
+	smartcardHandleStruct->Init.WordLength = SMARTCARD_WORDLENGTH_9B;
+	smartcardHandleStruct->Init.StopBits = SMARTCARD_STOPBITS_1_5;
+	smartcardHandleStruct->Init.Parity = SMARTCARD_PARITY_EVEN;
+	smartcardHandleStruct->Init.Mode = SMARTCARD_MODE_TX_RX;
+	smartcardHandleStruct->Init.CLKPolarity = SMARTCARD_POLARITY_HIGH;
+	smartcardHandleStruct->Init.CLKLastBit = SMARTCARD_LASTBIT_DISABLE;
+	smartcardHandleStruct->Init.Prescaler = SMARTCARD_PRESCALER_SYSCLK_DIV42;
+	smartcardHandleStruct->Init.GuardTime = 12;
+	smartcardHandleStruct->Init.NACKState = SMARTCARD_NACK_ENABLE;
+	smartcardHandleStruct->pTxBuffPtr = NULL;
+	smartcardHandleStruct->TxXferSize = 0;
+	smartcardHandleStruct->pRxBuffPtr = NULL;
+	smartcardHandleStruct->RxXferSize = 0;
+	smartcardHandleStruct->hdmatx = NULL;
+	smartcardHandleStruct->hdmarx = NULL;
+	smartcardHandleStruct->Lock = HAL_UNLOCKED;
+}
+
+
 
 void init_horloge(RCC_ClkInitTypeDef *RCC_ClkInitStruct, RCC_OscInitTypeDef *RCC_OscInitStruct){
 	/* Initialisation de l'horloge */
@@ -120,3 +150,4 @@ void init_horloge(RCC_ClkInitTypeDef *RCC_ClkInitStruct, RCC_OscInitTypeDef *RCC
 
 	HAL_RCC_ClockConfig(RCC_ClkInitStruct, FLASH_LATENCY_5);
 }
+
