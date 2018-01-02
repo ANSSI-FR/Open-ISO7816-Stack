@@ -1,9 +1,9 @@
 #include "stm32f4xx_hal.h"
 #include "card_interfaces.h"
 
+
+
 SMARTCARD_HandleTypeDef smartcardHandleStruct;
-uint8_t pSmartCardTxBuff[100];
-uint8_t pSmartcardRxBuff[100];
 
 
 void CARD_InitIOLine(void){
@@ -141,6 +141,20 @@ void CARD_InitSmartcardHandle(SMARTCARD_HandleTypeDef *smartcardHandleStruct){
 	smartcardHandleStruct->Lock = HAL_UNLOCKED;
 }
 
+
+void CARD_ReceiveBytes(uint8_t *rcvBuff, uint16_t buffSize){
+	HAL_SMARTCARD_Receive_IT(&smartcardHandleStruct, rcvBuff, buffSize);
+}
+
+
+void HAL_SMARTCARD_RxCpltCallback(SMARTCARD_HandleTypeDef *hsc){
+	CARD_ReceiveCallback(hsc->pRxBuffPtr, hsc->RxXferSize);
+}
+
+
+__weak void CARD_ReceiveCallback(uint8_t *rcvBuff, uint16_t buffSize){
+	
+}
 
 void CARD_ErrorHandler(void){
 	while(1);

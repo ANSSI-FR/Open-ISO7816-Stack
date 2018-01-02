@@ -11,6 +11,8 @@ UART_HandleTypeDef uartHandleStruct;
 uint8_t pUartTxBuff[100];
 uint8_t pUartRxBuff[100];
 
+uint8_t pSmartCardTxBuff[100];
+uint8_t pSmartcardRxBuff[100];
 
 
 
@@ -20,43 +22,28 @@ int main(void){
 	init_uart_handle(&uartHandleStruct);
 	HAL_UART_Init(&uartHandleStruct);
 	
+	CARD_SetUSARTPeriph(STATE_ON);
+	CARD_ColdReset();
 	
-	pUartTxBuff[0] = 'H';
-	pUartTxBuff[1] = 'E';
-	pUartTxBuff[2] = 'L';
-	pUartTxBuff[3] = 'L';
-	pUartTxBuff[4] = 'O';
-	pUartTxBuff[5] = ' ';
-	pUartTxBuff[6] = 'W';
-	pUartTxBuff[7] = 'O';
-	pUartTxBuff[8] = 'R';
-	pUartTxBuff[9] = 'L';
-	pUartTxBuff[10] = 'D';
-	pUartTxBuff[11] = ' ';
-	pUartTxBuff[12] = '!';
+	CARD_ReceiveBytes(pSmartcardRxBuff, 10);
 	
-	pUartTxBuff[0+13] = 'H';
-	pUartTxBuff[1+13] = 'E';
-	pUartTxBuff[2+13] = 'L';
-	pUartTxBuff[3+13] = 'L';
-	pUartTxBuff[4+13] = 'O';
-	pUartTxBuff[5+13] = ' ';
-	pUartTxBuff[6+13] = 'W';
-	pUartTxBuff[7+13] = 'O';
-	pUartTxBuff[8+13] = 'R';
-	pUartTxBuff[9+13] = 'L';
-	pUartTxBuff[10+13] = 'D';
-	pUartTxBuff[11+13] = ' ';
-	pUartTxBuff[12+13] = '!';
 
 	while(1){
-		HAL_GPIO_WritePin(GPIOD, PIN_LED_VERTE, GPIO_PIN_SET);
-		HAL_UART_Transmit_IT(&uartHandleStruct, pUartTxBuff, 26);
-		HAL_Delay(1000);
 	}
 	
 	return 0;
 }
+
+void CARD_ReceiveCallback(uint8_t *rcvBuff, uint16_t buffSize){
+	HAL_GPIO_WritePin(GPIOD, PIN_LED_ROUGE, GPIO_PIN_SET);
+	HAL_Delay(100);
+	HAL_GPIO_WritePin(GPIOD, PIN_LED_ROUGE, GPIO_PIN_RESET);
+	
+	HAL_GPIO_WritePin(GPIOD, PIN_LED_VERTE, GPIO_PIN_SET);
+	HAL_UART_Transmit_IT(&uartHandleStruct, rcvBuff, buffSize);
+}
+
+
 
 
 void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart){

@@ -21,6 +21,9 @@ void CARD_SetPwrLine(State pwrState);
 void CARD_SetRstLine(State rstState);
 void CARD_SetUSARTPeriph(State USARTState);
 
+void CARD_ReceiveBytes(uint8_t *rcvBuff, uint16_t buffSize);
+__weak void CARD_ReceiveCallback(uint8_t *rcvBuff, uint16_t buffSize);
+
 void CARD_ColdReset(void);
 
 void CARD_ErrorHandler(void);
