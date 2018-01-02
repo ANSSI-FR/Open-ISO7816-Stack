@@ -14,7 +14,6 @@
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin);
 void init_uart_handle(UART_HandleTypeDef *uartHandleStruct);
 void init_horloge(RCC_ClkInitTypeDef *RCC_ClkInitStruct, RCC_OscInitTypeDef *RCC_OscInitStruct);
-void init_smartcard_handle(SMARTCARD_HandleTypeDef *smartcardHandleStruct);
 
 
 
