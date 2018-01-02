@@ -18,7 +18,6 @@ int main(void){
 	HAL_Init();
 	
 	init_uart_handle(&uartHandleStruct);
-	
 	HAL_UART_Init(&uartHandleStruct);
 	
 	
@@ -90,7 +89,7 @@ void init_uart_handle(UART_HandleTypeDef *uartHandleStruct){
 	uartHandleStruct->Init.Parity = UART_PARITY_NONE;
 	uartHandleStruct->Init.Mode = UART_MODE_TX_RX;
 	uartHandleStruct->Init.HwFlowCtl = UART_HWCONTROL_NONE;
-	uartHandleStruct->Init.OverSampling = UART_OVERSAMPLING_8;
+	uartHandleStruct->Init.OverSampling = UART_OVERSAMPLING_16;
 	uartHandleStruct->pTxBuffPtr = NULL;
 	uartHandleStruct->TxXferSize = 0;
 	uartHandleStruct->pRxBuffPtr = NULL;
@@ -103,6 +102,9 @@ void init_uart_handle(UART_HandleTypeDef *uartHandleStruct){
 
 
 void init_horloge(RCC_ClkInitTypeDef *RCC_ClkInitStruct, RCC_OscInitTypeDef *RCC_OscInitStruct){
+	  /* Enable Power Control clock */
+	__HAL_RCC_PWR_CLK_ENABLE();
+  
 	/* Initialisation de l'horloge */
 	RCC_OscInitStruct->OscillatorType = RCC_OSCILLATORTYPE_HSE;
 	RCC_OscInitStruct->HSEState = RCC_HSE_ON;

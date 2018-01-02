@@ -156,18 +156,18 @@ void HAL_UART_MspInit(UART_HandleTypeDef *huart){
 	/* Voir en.DM00105879 (usermanual HAL et LL) section 68.2.1 */
 	/* Initialisation de l'USART 1 */
 	__HAL_RCC_USART1_CLK_ENABLE();
-	__HAL_RCC_GPIOA_CLK_ENABLE();
+	__HAL_RCC_GPIOB_CLK_ENABLE();
 	
 	/* Initialisation du pin TX */
-	gpio.Pin = GPIO_PIN_9;                /* Voir : https://stm32f4-discovery.net/2014/04/library-04-connect-stm32f429-discovery-to-computer-with-usart/ */
+	gpio.Pin = GPIO_PIN_6;                /* Voir : https://stm32f4-discovery.net/2014/04/library-04-connect-stm32f429-discovery-to-computer-with-usart/ */
 	gpio.Mode = GPIO_MODE_AF_PP;
 	gpio.Pull = GPIO_PULLUP;
-	gpio.Speed = GPIO_SPEED_FREQ_MEDIUM;
+	gpio.Speed = GPIO_SPEED_FREQ_HIGH;
 	gpio.Alternate = GPIO_AF7_USART1;     /* Voir manuel DM00105879 section 29.3.1 */
-	HAL_GPIO_Init(GPIOA, &gpio);
+	HAL_GPIO_Init(GPIOB, &gpio);
 	
 	/* Initialisation du pin RX */
-	gpio.Pin = GPIO_PIN_10;
+	gpio.Pin = GPIO_PIN_7;
 	gpio.Mode = GPIO_MODE_INPUT;
 	gpio.Pull = GPIO_PULLUP;
 	gpio.Speed = GPIO_SPEED_FREQ_MEDIUM;
