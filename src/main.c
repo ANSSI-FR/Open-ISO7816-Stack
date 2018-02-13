@@ -19,13 +19,34 @@ uint8_t pSmartcardRxBuff[100];
 int main(void){	
 	HAL_Init();
 	
+	/* Initialisation de l'UART */
 	init_uart_handle(&uartHandleStruct);
 	HAL_UART_Init(&uartHandleStruct);
 	
-	CARD_SetUSARTPeriph(STATE_ON);
-	CARD_ColdReset();
 	
-	CARD_ReceiveBytes(pSmartcardRxBuff, 10);
+	/* Initialisation des E/S */
+	CARD_InitPwrLine();
+	CARD_InitRstLine();
+	CARD_InitClkLine();
+	CARD_InitIOLine();
+	
+	/* Parametrage du périphérique SmartCard */
+	CARD_InitSmartcardHandle(&smartcardHandleStruct);
+	
+	HAL_Delay(100);
+	
+	/* reveil de la carte et declenchement de l'ATR */
+	CARD_SetRstLine(STATE_OFF);
+	HAL_Delay(2);
+	CARD_SetPwrLine(STATE_ON);
+	HAL_Delay(2);
+	HAL_SMARTCARD_Init(&smartcardHandleStruct);
+	HAL_Delay(4);
+	CARD_SetRstLine(STATE_ON);
+	
+	/* Receion de l'ATR */
+	HAL_SMARTCARD_Receive(&smartcardHandleStruct, pSmartcardRxBuff, 33, 30);
+	
 	
 
 	while(1){
@@ -47,7 +68,7 @@ void CARD_ReceiveCallback(uint8_t *rcvBuff, uint16_t buffSize){
 
 
 void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart){
-	HAL_GPIO_WritePin(GPIOD, PIN_LED_VERTE, GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(GPIOD, GPIO_PIN_14, GPIO_PIN_RESET);
 }
 
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart){
@@ -76,7 +97,7 @@ void init_uart_handle(UART_HandleTypeDef *uartHandleStruct){
 	uartHandleStruct->Init.Parity = UART_PARITY_NONE;
 	uartHandleStruct->Init.Mode = UART_MODE_TX_RX;
 	uartHandleStruct->Init.HwFlowCtl = UART_HWCONTROL_NONE;
-	uartHandleStruct->Init.OverSampling = UART_OVERSAMPLING_16;
+	uartHandleStruct->Init.OverSampling = UART_OVERSAMPLING_8;
 	uartHandleStruct->pTxBuffPtr = NULL;
 	uartHandleStruct->TxXferSize = 0;
 	uartHandleStruct->pRxBuffPtr = NULL;

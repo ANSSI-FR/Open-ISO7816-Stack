@@ -3,8 +3,11 @@
 
 
 
-SMARTCARD_HandleTypeDef smartcardHandleStruct;
+extern UART_HandleTypeDef uartHandleStruct;
 
+SMARTCARD_HandleTypeDef smartcardHandleStruct;
+uint8_t test[40];
+uint8_t test2[] = "HELLO WOLD !  HELLO WOLD !  HELLO WOLD !\n";
 
 void CARD_InitIOLine(void){
 	GPIO_InitTypeDef gpio;
@@ -108,37 +111,42 @@ void CARD_SetUSARTPeriph(State USARTState){
 
 
 void CARD_ColdReset(void){
-	CARD_SetUSARTPeriph(STATE_OFF);
-	HAL_Delay(1);
-	
-	CARD_SetRstLine(STATE_OFF);
-	HAL_Delay(1);
-	CARD_SetPwrLine(STATE_ON);
-	HAL_Delay(1);
-	CARD_SetUSARTPeriph(STATE_ON);
+	//CARD_SetUSARTPeriph(STATE_OFF);
+	//CARD_SetRstLine(STATE_ON);
+	//CARD_SetPwrLine(STATE_OFF);
+	//HAL_Delay(1000);
+	//
+	//CARD_SetRstLine(STATE_OFF);
+	//HAL_Delay(4);
+	//CARD_SetPwrLine(STATE_ON);
+	//HAL_Delay(4);
+	//CARD_SetUSARTPeriph(STATE_ON);
+	//HAL_Delay(5);
+	//CARD_SetRstLine(STATE_ON);
 }
 
 
 
 void CARD_InitSmartcardHandle(SMARTCARD_HandleTypeDef *smartcardHandleStruct){
 	smartcardHandleStruct->Instance = USART2;
-	smartcardHandleStruct->Init.BaudRate = 9600;
+	smartcardHandleStruct->Init.BaudRate = 8065;
 	smartcardHandleStruct->Init.WordLength = SMARTCARD_WORDLENGTH_9B;
 	smartcardHandleStruct->Init.StopBits = SMARTCARD_STOPBITS_1_5;
 	smartcardHandleStruct->Init.Parity = SMARTCARD_PARITY_EVEN;
 	smartcardHandleStruct->Init.Mode = SMARTCARD_MODE_TX_RX;
-	smartcardHandleStruct->Init.CLKPolarity = SMARTCARD_POLARITY_HIGH;
-	smartcardHandleStruct->Init.CLKLastBit = SMARTCARD_LASTBIT_DISABLE;
-	smartcardHandleStruct->Init.Prescaler = SMARTCARD_PRESCALER_SYSCLK_DIV42;
+	smartcardHandleStruct->Init.CLKPolarity = SMARTCARD_POLARITY_LOW;
+	smartcardHandleStruct->Init.CLKPhase = SMARTCARD_PHASE_1EDGE;
+	smartcardHandleStruct->Init.CLKLastBit = SMARTCARD_LASTBIT_ENABLE;
+	smartcardHandleStruct->Init.Prescaler = SMARTCARD_PRESCALER_SYSCLK_DIV14;
 	smartcardHandleStruct->Init.GuardTime = 12;
 	smartcardHandleStruct->Init.NACKState = SMARTCARD_NACK_ENABLE;
-	smartcardHandleStruct->pTxBuffPtr = NULL;
-	smartcardHandleStruct->TxXferSize = 0;
-	smartcardHandleStruct->pRxBuffPtr = NULL;
-	smartcardHandleStruct->RxXferSize = 0;
-	smartcardHandleStruct->hdmatx = NULL;
-	smartcardHandleStruct->hdmarx = NULL;
-	smartcardHandleStruct->Lock = HAL_UNLOCKED;
+	//smartcardHandleStruct->pTxBuffPtr = NULL;
+	//smartcardHandleStruct->TxXferSize = 0;
+	//smartcardHandleStruct->pRxBuffPtr = NULL;
+	//smartcardHandleStruct->RxXferSize = 0;
+	//smartcardHandleStruct->hdmatx = NULL;
+	//smartcardHandleStruct->hdmarx = NULL;
+	//smartcardHandleStruct->Lock = HAL_UNLOCKED;
 }
 
 
@@ -148,7 +156,16 @@ void CARD_ReceiveBytes(uint8_t *rcvBuff, uint16_t buffSize){
 
 
 void HAL_SMARTCARD_RxCpltCallback(SMARTCARD_HandleTypeDef *hsc){
-	CARD_ReceiveCallback(hsc->pRxBuffPtr, hsc->RxXferSize);
+	uint32_t i;
+	//CARD_ReceiveCallback(hsc->pRxBuffPtr, hsc->RxXferSize);
+	
+	HAL_GPIO_WritePin(GPIOD, GPIO_PIN_14, GPIO_PIN_SET);
+	//HAL_UART_Transmit_IT(&uartHandleStruct, hsc->pRxBuffPtr, hsc->RxXferSize);
+	for(i=0;i<10;i++){
+		test[i] = reverseBits(test[i]);
+	}
+	HAL_UART_Transmit_IT(&uartHandleStruct, test, 10);
+	//HAL_UART_Transmit_IT(&uartHandleStruct, test2, 42);
 }
 
 
@@ -156,6 +173,61 @@ __weak void CARD_ReceiveCallback(uint8_t *rcvBuff, uint16_t buffSize){
 	
 }
 
+
+void CARD_Init(void){	
+	CARD_InitPwrLine();
+	CARD_InitRstLine();
+	CARD_InitClkLine();
+	CARD_InitIOLine();
+	
+	CARD_InitSmartcardHandle(&smartcardHandleStruct);
+	
+	HAL_Delay(100);
+	
+	
+	CARD_SetRstLine(STATE_OFF);
+	HAL_Delay(2);
+	CARD_SetPwrLine(STATE_ON);
+	HAL_Delay(2);
+	HAL_SMARTCARD_Init(&smartcardHandleStruct);
+	HAL_Delay(4);
+	CARD_SetRstLine(STATE_ON);
+	
+	
+	HAL_SMARTCARD_Receive_IT(&smartcardHandleStruct, test, 10);
+	
+	
+	//CARD_SetRstLine(STATE_OFF);
+	//CARD_SetPwrLine(STATE_ON);
+	//CARD_SetUSARTPeriph(STATE_ON);
+	//HAL_Delay(4);
+	//CARD_SetRstLine(STATE_ON);
+	//HAL_SMARTCARD_Receive_IT(&smartcardHandleStruct, test, 3);
+}
+
+
 void CARD_ErrorHandler(void){
 	while(1);
+}
+
+
+
+
+
+
+uint8_t reverseBits(uint8_t num)
+{
+    uint8_t count = sizeof(num) * 8 - 1;
+    uint8_t reverse_num = num;
+     
+    num >>= 1; 
+    while(num)
+    {
+       reverse_num <<= 1;       
+       reverse_num |= num & 1;
+       num >>= 1;
+       count--;
+    }
+    reverse_num <<= count;
+    return reverse_num;
 }

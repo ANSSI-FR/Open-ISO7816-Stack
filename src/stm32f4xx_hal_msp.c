@@ -172,7 +172,7 @@ void HAL_UART_MspInit(UART_HandleTypeDef *huart){
 	gpio.Pull = GPIO_PULLUP;
 	gpio.Speed = GPIO_SPEED_FREQ_MEDIUM;
 	gpio.Alternate = GPIO_AF7_USART1;
-	HAL_GPIO_Init(GPIOA, &gpio);
+	HAL_GPIO_Init(GPIOB, &gpio);
 	
 	/* Config interruptions de l'USART1 */
 	HAL_NVIC_SetPriority(USART1_IRQn, 0, 1);
@@ -185,10 +185,10 @@ void HAL_SMARTCARD_MspInit(SMARTCARD_HandleTypeDef *hsc){
 	__HAL_RCC_USART2_CLK_ENABLE();
 
 	/* Configuraion pin TX */
-	CARD_InitIOLine();
+	//CARD_InitIOLine();
 	
 	/* Configurer pin CK */
-	CARD_InitClkLine();
+	//CARD_InitClkLine();
 	
 	/* Configuration des interruptions */
 	HAL_NVIC_SetPriority(USART2_IRQn, 0, 1);

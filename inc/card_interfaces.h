@@ -5,12 +5,13 @@ typedef enum{
 
 
 
-#define CARD_CLK_PIN       GPIO_PIN_4
-#define CARD_IO_PIN        GPIO_PIN_2
-#define CARD_RST_PIN       GPIO_PIN_5
-#define CARD_PWR_PIN       GPIO_PIN_6
+#define CARD_CLK_PIN          GPIO_PIN_4
+#define CARD_IO_PIN           GPIO_PIN_2
+#define CARD_RST_PIN          GPIO_PIN_5
+#define CARD_PWR_PIN          GPIO_PIN_6
 
 
+void CARD_Init(void);
 
 void CARD_InitIOLine(void);
 void CARD_InitClkLine(void);
@@ -31,6 +32,9 @@ void CARD_ErrorHandler(void);
 void CARD_InitSmartcardHandle(SMARTCARD_HandleTypeDef *smartcardHandleStruct);
 
 
+uint8_t reverseBits(uint8_t num);
+
+
 // DeInit de smartcard !
 // coder des les fonctions de base manipulation IO
 // generation d'un delai court
@@ -40,7 +44,7 @@ void CARD_InitSmartcardHandle(SMARTCARD_HandleTypeDef *smartcardHandleStruct);
 // verifier le declanchement ATR
 // decoder ATR
 // Automate negociation param transm
-
+// Ameliorer les delais -> timers
 
 
 //Alluemr led errhandler
