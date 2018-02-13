@@ -5,7 +5,7 @@
 
 extern UART_HandleTypeDef uartHandleStruct;
 
-SMARTCARD_HandleTypeDef smartcardHandleStruct;
+extern SMARTCARD_HandleTypeDef smartcardHandleStruct;
 uint8_t test[40];
 uint8_t test2[] = "HELLO WOLD !  HELLO WOLD !  HELLO WOLD !\n";
 
@@ -137,7 +137,7 @@ void CARD_InitSmartcardHandle(SMARTCARD_HandleTypeDef *smartcardHandleStruct){
 	smartcardHandleStruct->Init.CLKPolarity = SMARTCARD_POLARITY_LOW;
 	smartcardHandleStruct->Init.CLKPhase = SMARTCARD_PHASE_1EDGE;
 	smartcardHandleStruct->Init.CLKLastBit = SMARTCARD_LASTBIT_ENABLE;
-	smartcardHandleStruct->Init.Prescaler = SMARTCARD_PRESCALER_SYSCLK_DIV14;
+	smartcardHandleStruct->Init.Prescaler = SMARTCARD_PRESCALER_SYSCLK_DIV10;   //DIV14
 	smartcardHandleStruct->Init.GuardTime = 12;
 	smartcardHandleStruct->Init.NACKState = SMARTCARD_NACK_ENABLE;
 	//smartcardHandleStruct->pTxBuffPtr = NULL;
@@ -161,9 +161,6 @@ void HAL_SMARTCARD_RxCpltCallback(SMARTCARD_HandleTypeDef *hsc){
 	
 	HAL_GPIO_WritePin(GPIOD, GPIO_PIN_14, GPIO_PIN_SET);
 	//HAL_UART_Transmit_IT(&uartHandleStruct, hsc->pRxBuffPtr, hsc->RxXferSize);
-	for(i=0;i<10;i++){
-		test[i] = reverseBits(test[i]);
-	}
 	HAL_UART_Transmit_IT(&uartHandleStruct, test, 10);
 	//HAL_UART_Transmit_IT(&uartHandleStruct, test2, 42);
 }
@@ -208,26 +205,4 @@ void CARD_Init(void){
 
 void CARD_ErrorHandler(void){
 	while(1);
-}
-
-
-
-
-
-
-uint8_t reverseBits(uint8_t num)
-{
-    uint8_t count = sizeof(num) * 8 - 1;
-    uint8_t reverse_num = num;
-     
-    num >>= 1; 
-    while(num)
-    {
-       reverse_num <<= 1;       
-       reverse_num |= num & 1;
-       num >>= 1;
-       count--;
-    }
-    reverse_num <<= count;
-    return reverse_num;
 }

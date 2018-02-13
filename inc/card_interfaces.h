@@ -32,7 +32,6 @@ void CARD_ErrorHandler(void);
 void CARD_InitSmartcardHandle(SMARTCARD_HandleTypeDef *smartcardHandleStruct);
 
 
-uint8_t reverseBits(uint8_t num);
 
 
 // DeInit de smartcard !

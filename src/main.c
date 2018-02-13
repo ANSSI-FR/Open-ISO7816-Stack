@@ -11,12 +11,15 @@ UART_HandleTypeDef uartHandleStruct;
 uint8_t pUartTxBuff[100];
 uint8_t pUartRxBuff[100];
 
+SMARTCARD_HandleTypeDef smartcardHandleStruct;
 uint8_t pSmartCardTxBuff[100];
 uint8_t pSmartcardRxBuff[100];
 
+uint8_t atrBuffer[33];
 
 
-int main(void){	
+
+int main(void){		
 	HAL_Init();
 	
 	/* Initialisation de l'UART */
@@ -44,8 +47,39 @@ int main(void){
 	HAL_Delay(4);
 	CARD_SetRstLine(STATE_ON);
 	
-	/* Receion de l'ATR */
-	HAL_SMARTCARD_Receive(&smartcardHandleStruct, pSmartcardRxBuff, 33, 30);
+	/* Reception de l'ATR */
+	HAL_SMARTCARD_Receive(&smartcardHandleStruct, atrBuffer, 33, 300);    /* Reception de 1 + 32 octets et timeout */
+	//HAL_UART_Transmit_IT(&uartHandleStruct, atrBuffer, 33);
+	
+	HAL_Delay(300);
+	
+	/* Envoi d'une commande SELECT */
+	
+	/* Fabrication de la trame TPDU */
+	pSmartCardTxBuff[0] = 0x00;        // CLA
+	pSmartCardTxBuff[1] = 0xA4;        // INS
+	pSmartCardTxBuff[2] = 0x04;        // P1
+	pSmartCardTxBuff[3] = 0x00;        // P2
+	pSmartCardTxBuff[4] = 0x0D;        // Lc = P3
+	
+	pSmartCardTxBuff[5] = 0x48;
+	pSmartCardTxBuff[6] = 0x65;
+	pSmartCardTxBuff[7] = 0x6C;
+	pSmartCardTxBuff[8] = 0x6C;
+	pSmartCardTxBuff[9] = 0x6F;
+	pSmartCardTxBuff[10] = 0x57;
+	pSmartCardTxBuff[11] = 0x6F;
+	pSmartCardTxBuff[12] = 0x72;
+	pSmartCardTxBuff[13] = 0x6C;
+	pSmartCardTxBuff[14] = 0x64;
+	pSmartCardTxBuff[15] = 0x41;
+	pSmartCardTxBuff[16] = 0x70;
+	pSmartCardTxBuff[17] = 0x70;
+	
+	HAL_SMARTCARD_Transmit(&smartcardHandleStruct, pSmartCardTxBuff, 18, 20000);
+	HAL_SMARTCARD_Receive(&smartcardHandleStruct, pSmartcardRxBuff, 1, 20000);
+	
+	HAL_UART_Transmit_IT(&uartHandleStruct, pSmartcardRxBuff, 1);
 	
 	
 
@@ -55,37 +89,7 @@ int main(void){
 	return 0;
 }
 
-void CARD_ReceiveCallback(uint8_t *rcvBuff, uint16_t buffSize){
-	HAL_GPIO_WritePin(GPIOD, PIN_LED_ROUGE, GPIO_PIN_SET);
-	HAL_Delay(100);
-	HAL_GPIO_WritePin(GPIOD, PIN_LED_ROUGE, GPIO_PIN_RESET);
-	
-	HAL_GPIO_WritePin(GPIOD, PIN_LED_VERTE, GPIO_PIN_SET);
-	HAL_UART_Transmit_IT(&uartHandleStruct, rcvBuff, buffSize);
-}
 
-
-
-
-void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart){
-	HAL_GPIO_WritePin(GPIOD, GPIO_PIN_14, GPIO_PIN_RESET);
-}
-
-void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart){
-	HAL_GPIO_WritePin(GPIOD, PIN_LED_ROUGE, GPIO_PIN_SET);
-	HAL_Delay(100);
-	HAL_GPIO_WritePin(GPIOD, PIN_LED_ROUGE, GPIO_PIN_RESET);
-}
-
-
-void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
-	if(GPIO_Pin == PIN_BOUTON_BLEU){
-		HAL_GPIO_TogglePin(GPIOD, PIN_LED_VERTE);
-	}
-	else{
-		return;
-	}
-}
 
 
 void init_uart_handle(UART_HandleTypeDef *uartHandleStruct){
