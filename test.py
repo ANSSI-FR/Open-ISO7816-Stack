@@ -3,6 +3,6 @@
 import sys
 import serial
 
-ser = serial.Serial('/dev/ttyUSB1')
+ser = serial.Serial('/dev/ttyUSB0')
 
 print(repr(ser.read(int(sys.argv[1]))))

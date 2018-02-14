@@ -129,7 +129,7 @@ void CARD_ColdReset(void){
 
 void CARD_InitSmartcardHandle(SMARTCARD_HandleTypeDef *smartcardHandleStruct){
 	smartcardHandleStruct->Instance = USART2;
-	smartcardHandleStruct->Init.BaudRate = 8065;
+	smartcardHandleStruct->Init.BaudRate = 11290;
 	smartcardHandleStruct->Init.WordLength = SMARTCARD_WORDLENGTH_9B;
 	smartcardHandleStruct->Init.StopBits = SMARTCARD_STOPBITS_1_5;
 	smartcardHandleStruct->Init.Parity = SMARTCARD_PARITY_EVEN;
