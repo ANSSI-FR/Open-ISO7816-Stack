@@ -138,7 +138,7 @@ void CARD_InitSmartcardHandle(SMARTCARD_HandleTypeDef *smartcardHandleStruct){
 	smartcardHandleStruct->Init.CLKPhase = SMARTCARD_PHASE_1EDGE;
 	smartcardHandleStruct->Init.CLKLastBit = SMARTCARD_LASTBIT_ENABLE;
 	smartcardHandleStruct->Init.Prescaler = SMARTCARD_PRESCALER_SYSCLK_DIV10;   //DIV14
-	smartcardHandleStruct->Init.GuardTime = 12;
+	smartcardHandleStruct->Init.GuardTime = 16;
 	smartcardHandleStruct->Init.NACKState = SMARTCARD_NACK_ENABLE;
 	//smartcardHandleStruct->pTxBuffPtr = NULL;
 	//smartcardHandleStruct->TxXferSize = 0;
