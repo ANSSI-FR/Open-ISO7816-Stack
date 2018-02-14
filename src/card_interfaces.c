@@ -15,7 +15,7 @@ void CARD_InitIOLine(void){
 	gpio.Pin = CARD_IO_PIN;
 	gpio.Mode = GPIO_MODE_AF_OD;              /* Voir en.DM00105879 section 30.3.11  - TX Open-Drain */
 	gpio.Pull = GPIO_PULLUP;
-	//gpio.Speed = GPIO_SPEED_FREQ_MEDIUM;
+	gpio.Speed = GPIO_SPEED_FREQ_HIGH;
 	gpio.Alternate = GPIO_AF7_USART2;
 	
 	__HAL_RCC_GPIOA_CLK_ENABLE();
