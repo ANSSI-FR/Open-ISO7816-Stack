@@ -1,4 +1,5 @@
 #include "stm32f4xx_hal.h"
+#include "reader_periph.h"
 
 
 void READER_PERIPH_InitIOLine(void){
@@ -110,6 +111,15 @@ void READER_PERIPH_SetClkLine(READER_PERIPH_State state){
 	else{
 		READER_PERIPH_ErrHandler();
 	}
+}
+
+
+
+void READER_PERIPH_Init(void){
+	READER_PERIPH_InitIOLine();
+	READER_PERIPH_InitClkLine();
+	READER_PERIPH_InitRstLine();
+	READER_PERIPH_InitPwrLine();
 }
 
 
