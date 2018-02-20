@@ -1,3 +1,6 @@
+#ifndef __READER_PERIPH_H__
+#define __READER_PERIPH_H__
+
 #include "stm32f4xx_hal.h"
 
 
@@ -34,3 +37,7 @@ void READER_PERIPH_SetRstLine(READER_PERIPH_State state);
 void READER_PERIPH_SetClkLine(READER_PERIPH_State state);
 void READER_PERIPH_SetIOLine(READER_PERIPH_State state);
 
+void READER_PERIPH_ErrHandler(void);
+
+
+#endif
