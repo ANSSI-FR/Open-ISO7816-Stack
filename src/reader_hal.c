@@ -5,6 +5,12 @@
 
 
 
+READER_Status READER_HAL_Init(void){
+	
+}
+
+
+
 READER_Status READER_HAL_SendCharFrame(uint8_t *frame, uint32_t frameSize, uint32_t timeout){
 	
 }
