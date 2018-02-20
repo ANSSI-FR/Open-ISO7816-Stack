@@ -1,4 +1,9 @@
 #include "reader_hal.h"
+#include "reader_periph.h"
+
+#include "stm32f4xx_hal.h"
+
+
 
 READER_Status READER_HAL_SendCharFrame(uint8_t *frame, uint32_t frameSize, uint32_t timeout){
 	
