@@ -1,7 +1,6 @@
 #include "stm32f4xx_hal.h"
 
 #include "main.h"
-#include "card_interfaces.h"
 
 
 RCC_ClkInitTypeDef RCC_ClkInitStruct;
@@ -23,63 +22,8 @@ int main(void){
 	HAL_Init();
 	
 	/* Initialisation de l'UART */
-	//init_uart_handle(&uartHandleStruct);
-	//HAL_UART_Init(&uartHandleStruct);
-	
-	
-	/* Initialisation des E/S */
-	CARD_InitPwrLine();
-	CARD_InitRstLine();
-	CARD_InitClkLine();
-	CARD_InitIOLine();
-	
-	/* Parametrage du périphérique SmartCard */
-	CARD_InitSmartcardHandle(&smartcardHandleStruct);
-	
-	HAL_Delay(100);
-	
-	/* reveil de la carte et declenchement de l'ATR */
-	CARD_SetRstLine(STATE_OFF);
-	HAL_Delay(2);
-	CARD_SetPwrLine(STATE_ON);
-	HAL_Delay(2);
-	HAL_SMARTCARD_Init(&smartcardHandleStruct);
-	HAL_Delay(70);//HAL_Delay(4);
-	CARD_SetRstLine(STATE_ON);
-	
-	/* Reception de l'ATR */
-	HAL_SMARTCARD_Receive(&smartcardHandleStruct, atrBuffer, 33, 3000);    /* Reception de 1 + 32 octets et timeout */
-	//HAL_UART_Transmit_IT(&uartHandleStruct, atrBuffer, 33);
-	
-	//HAL_Delay(300);
-	
-	/* Envoi d'une commande SELECT */
-	
-	/* Fabrication de la trame TPDU */
-	//pSmartCardTxBuff[0] = 0x00;        // CLA
-	//pSmartCardTxBuff[1] = 0xA4;        // INS
-	//pSmartCardTxBuff[2] = 0x04;        // P1
-	//pSmartCardTxBuff[3] = 0x00;        // P2
-	//pSmartCardTxBuff[4] = 0x0D;        // Lc = P3
-	//
-	//pSmartCardTxBuff[5] = 0x48;
-	//pSmartCardTxBuff[6] = 0x65;
-	//pSmartCardTxBuff[7] = 0x6C;
-	//pSmartCardTxBuff[8] = 0x6C;
-	//pSmartCardTxBuff[9] = 0x6F;
-	//pSmartCardTxBuff[10] = 0x57;
-	//pSmartCardTxBuff[11] = 0x6F;
-	//pSmartCardTxBuff[12] = 0x72;
-	//pSmartCardTxBuff[13] = 0x6C;
-	//pSmartCardTxBuff[14] = 0x64;
-	//pSmartCardTxBuff[15] = 0x41;
-	//pSmartCardTxBuff[16] = 0x70;
-	//pSmartCardTxBuff[17] = 0x70;
-	
-	//HAL_SMARTCARD_Transmit(&smartcardHandleStruct, pSmartCardTxBuff, 18, 20000);
-	//HAL_SMARTCARD_Receive(&smartcardHandleStruct, pSmartcardRxBuff, 1, 20000);
-	
-	//HAL_UART_Transmit_IT(&uartHandleStruct, pSmartcardRxBuff, 1);
+	init_uart_handle(&uartHandleStruct);
+	HAL_UART_Init(&uartHandleStruct);
 	
 	
 

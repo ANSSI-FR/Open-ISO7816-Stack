@@ -1,5 +1,0 @@
-QUESTIONS/PROBLEMMES
-
--> Que mettre dans systemInit() quand on prefere configurer a clck par l'intermediare de la HAL ?
--> uint32_t PreemptPriority, uint32_t SubPriority
--> Macro activation clock pour les pins GPIO ???
