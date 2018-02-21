@@ -56,8 +56,18 @@ READER_Status READER_HAL_RcvCharFrame(uint8_t *frame, uint32_t frameSize, uint32
 }
 
 
-READER_Status READER_HAL_SetFreq(uint32_t freq){
+READER_Status READER_HAL_SetFreq(uint32_t newFreq){
+	uint32_t oldFreq, oldBaudRate;
 	
+	oldFreq = READER_UTILS_GetCardFreq(168000000, 1, 4, smartcardHandleStruct.Init.Prescaler);
+	oldBaudRate = smartcardHandleStruct.Init.BaudRate;
+	
+	smartcardHandleStruct.Init.BaudRate = READER_UTILS_ComputeNewBaudRate(oldBaudRate, oldFreq, newFreq);
+	smartcardHandleStruct.Init.Prescaler = READER_UTILS_ComputePrescFromFreq(newFreq);
+	
+	if(HAL_SMARTCARD_Init(&smartcardHandleStruct) != HAL_OK) return READER_ERR;
+	
+	return READER_OK;
 }
 
 
@@ -103,6 +113,9 @@ READER_Status READER_HAL_SetRstLine(READER_HAL_State state){
 
 
 READER_Status READER_HAL_SetIOLine(READER_HAL_State state){
+	/* On veut forcer l'etat de la ligne IO, donc on deconnecte le GPIO du bloc USART. PB: Quand est ce que on rend la main au bloc usart ? */
+	/* Peut etre possible de pull down la ligne meme lorsque l'UART est dessus */
+	
 	if(state == READER_HAL_STATE_ON){
 		/* Chgt alternate fct, chgt etat ... mais apres la main par l'uart est perdue */
 	}
