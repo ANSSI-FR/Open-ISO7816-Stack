@@ -5,7 +5,7 @@
 extern SMARTCARD_HandleTypeDef smartcardHandleStruct;
 
 
-void READER_PERIPH_InitIOLine(void){
+READER_Status READER_PERIPH_InitIOLine(void){
 	GPIO_InitTypeDef gpioInitStruct;
 	
 	gpioInitStruct.Pin = READER_PERIPH_IO_PIN;
@@ -16,11 +16,13 @@ void READER_PERIPH_InitIOLine(void){
 	
 	__HAL_RCC_GPIOA_CLK_ENABLE();
 	HAL_GPIO_Init(GPIOA, &gpioInitStruct);
+	
+	return READER_OK;
 }
 
 
 
-void READER_PERIPH_InitClkLine(void){
+READER_Status READER_PERIPH_InitClkLine(void){
 	GPIO_InitTypeDef gpioInitStruct;
 	
 	gpioInitStruct.Pin = READER_PERIPH_CLK_PIN;
@@ -31,11 +33,13 @@ void READER_PERIPH_InitClkLine(void){
 	
 	__HAL_RCC_GPIOA_CLK_ENABLE();
 	HAL_GPIO_Init(GPIOA, &gpioInitStruct);
+	
+	return READER_OK;
 }
 
 
 
-void READER_PERIPH_InitRstLine(void){
+READER_Status READER_PERIPH_InitRstLine(void){
 	GPIO_InitTypeDef gpioInitStruct;
 	
 	gpioInitStruct.Pin = READER_PERIPH_RST_PIN;
@@ -45,11 +49,13 @@ void READER_PERIPH_InitRstLine(void){
 	
 	__HAL_RCC_GPIOA_CLK_ENABLE();
 	HAL_GPIO_Init(GPIOA, &gpioInitStruct);
+	
+	return READER_OK;
 }
 
 
 
-void READER_PERIPH_InitPwrLine(void){
+READER_Status READER_PERIPH_InitPwrLine(void){
 	GPIO_InitTypeDef gpioInitStruct;
 	
 	gpioInitStruct.Pin = READER_PERIPH_PWR_PIN;
@@ -59,20 +65,22 @@ void READER_PERIPH_InitPwrLine(void){
 	
 	__HAL_RCC_GPIOA_CLK_ENABLE();
 	HAL_GPIO_Init(GPIOA, &gpioInitStruct);
+	
+	return READER_OK;
 }
 
 
 
 
 
-void READER_PERIPH_Init(void){
-	READER_PERIPH_InitIOLine();
-	READER_PERIPH_InitClkLine();
-	READER_PERIPH_InitRstLine();
-	READER_PERIPH_InitPwrLine();
+READER_Status READER_PERIPH_Init(void){
+	if(READER_PERIPH_InitIOLine() != READER_OK) return READER_ERR;
+	if(READER_PERIPH_InitClkLine() != READER_OK) return READER_ERR;
+	if(READER_PERIPH_InitRstLine() != READER_OK) return READER_ERR;
+	if(READER_PERIPH_InitPwrLine() != READER_OK) return READER_ERR;
 	
 	smartcardHandleStruct.Instance = USART2;
-	smartcardHandleStruct.Init.BaudRate = 11290;  // Valeur Bidon
+	smartcardHandleStruct.Init.BaudRate = READER_UTILS_ComputeBaudRate(READER_DEFAULT_FREQ, READER_DEFAULT_FI, READER_DEFAULT_DI); 
 	smartcardHandleStruct.Init.WordLength = SMARTCARD_WORDLENGTH_9B;
 	smartcardHandleStruct.Init.StopBits = SMARTCARD_STOPBITS_1_5;
 	smartcardHandleStruct.Init.Parity = SMARTCARD_PARITY_EVEN;
@@ -80,11 +88,19 @@ void READER_PERIPH_Init(void){
 	smartcardHandleStruct.Init.CLKPolarity = SMARTCARD_POLARITY_LOW;
 	smartcardHandleStruct.Init.CLKPhase = SMARTCARD_PHASE_1EDGE;
 	smartcardHandleStruct.Init.CLKLastBit = SMARTCARD_LASTBIT_ENABLE;
-	smartcardHandleStruct.Init.Prescaler = SMARTCARD_PRESCALER_SYSCLK_DIV10; // Valeur Bidon
-	smartcardHandleStruct.Init.GuardTime = 12;
+	smartcardHandleStruct.Init.GuardTime = READER_DEFAULT_GT;
 	smartcardHandleStruct.Init.NACKState = SMARTCARD_NACK_ENABLE;
 	
-	HAL_SMARTCARD_Init(&smartcardHandleStruct);
+	switch(READER_DEFAULT_FREQ){
+		case 4200000:
+			smartcardHandleStruct.Init.Prescaler = SMARTCARD_PRESCALER_SYSCLK_DIV10;
+			break;
+		default:
+			smartcardHandleStruct.Init.Prescaler = SMARTCARD_PRESCALER_SYSCLK_DIV10;
+			break;
+	}
+	
+	if(HAL_SMARTCARD_Init(&smartcardHandleStruct) != HAL_OK) return READER_ERR;
 }
 
 
