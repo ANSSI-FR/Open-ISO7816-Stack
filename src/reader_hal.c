@@ -72,7 +72,7 @@ READER_Status READER_HAL_SetPwrLine(READER_HAL_State state){
 	if(state == READER_PERIPH_STATE_ON){
 		HAL_GPIO_WritePin(GPIOA, READER_PERIPH_PWR_PIN, GPIO_PIN_SET);
 	}
-	else if(state == READER_PERIPH_STATE_OFF){
+	else if(state == READER_HAL_STATE_OFF){
 		HAL_GPIO_WritePin(GPIOA, READER_PERIPH_PWR_PIN, GPIO_PIN_RESET);
 	}
 	else{
@@ -89,7 +89,7 @@ READER_Status READER_HAL_SetRstLine(READER_HAL_State state){
 	if(state == READER_PERIPH_STATE_ON){
 		HAL_GPIO_WritePin(GPIOA, READER_PERIPH_RST_PIN, GPIO_PIN_SET);
 	}
-	else if(state == READER_PERIPH_STATE_OFF){
+	else if(state == READER_HAL_STATE_OFF){
 		HAL_GPIO_WritePin(GPIOA, READER_PERIPH_RST_PIN, GPIO_PIN_RESET);
 	}
 	else{
@@ -103,10 +103,10 @@ READER_Status READER_HAL_SetRstLine(READER_HAL_State state){
 
 
 READER_Status READER_HAL_SetIOLine(READER_HAL_State state){
-	if(state == READER_PERIPH_STATE_ON){
+	if(state == READER_HAL_STATE_ON){
 		/* Chgt alternate fct, chgt etat ... mais apres la main par l'uart est perdue */
 	}
-	else if(state == READER_PERIPH_STATE_OFF){
+	else if(state == READER_HAL_STATE_OFF){
 		
 	}
 	else{
@@ -121,7 +121,7 @@ READER_Status READER_HAL_SetIOLine(READER_HAL_State state){
 READER_Status READER_HAL_SetClkLine(READER_HAL_State state){
 	GPIO_InitTypeDef gpioInitStruct;
 	
-	if(state == READER_PERIPH_STATE_ON){
+	if(state == READER_HAL_STATE_ON){
 		/* On connecte le GPIO sur la clock du block UART */
 		gpioInitStruct.Pin = READER_PERIPH_CLK_PIN;
 		gpioInitStruct.Mode = GPIO_MODE_AF_PP; 
@@ -132,7 +132,7 @@ READER_Status READER_HAL_SetClkLine(READER_HAL_State state){
 		__HAL_RCC_GPIOA_CLK_ENABLE();
 		HAL_GPIO_Init(READER_PERIPH_CLK_PORT, &gpioInitStruct);
 	}
-	else if(state == READER_PERIPH_STATE_OFF){
+	else if(state == READER_HAL_STATE_OFF){
 		/* On connecte le GPIO sur la clock du block UART */
 		gpioInitStruct.Pin = READER_PERIPH_CLK_PIN;
 		gpioInitStruct.Mode = GPIO_MODE_PP; 
