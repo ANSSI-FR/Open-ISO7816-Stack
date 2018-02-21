@@ -15,7 +15,7 @@ READER_Status READER_PERIPH_InitIOLine(void){
 	gpioInitStruct.Alternate = GPIO_AF7_USART2;
 	
 	__HAL_RCC_GPIOA_CLK_ENABLE();
-	HAL_GPIO_Init(GPIOA, &gpioInitStruct);
+	HAL_GPIO_Init(READER_PERIPH_IO_PORT, &gpioInitStruct);
 	
 	return READER_OK;
 }
@@ -32,7 +32,7 @@ READER_Status READER_PERIPH_InitClkLine(void){
 	//gpioInitStruct.Alternate = GPIO_AF7_USART2;
 	
 	__HAL_RCC_GPIOA_CLK_ENABLE();
-	HAL_GPIO_Init(GPIOA, &gpioInitStruct);
+	HAL_GPIO_Init(READER_PERIPH_CLK_PORT, &gpioInitStruct);
 	
 	return READER_OK;
 }
@@ -48,7 +48,7 @@ READER_Status READER_PERIPH_InitRstLine(void){
 	gpioInitStruct.Speed = GPIO_SPEED_FREQ_MEDIUM;
 	
 	__HAL_RCC_GPIOA_CLK_ENABLE();
-	HAL_GPIO_Init(GPIOA, &gpioInitStruct);
+	HAL_GPIO_Init(READER_PERIPH_RST_PORT, &gpioInitStruct);
 	
 	return READER_OK;
 }
@@ -64,7 +64,7 @@ READER_Status READER_PERIPH_InitPwrLine(void){
 	gpioInitStruct.Speed = GPIO_SPEED_FREQ_MEDIUM;
 	
 	__HAL_RCC_GPIOA_CLK_ENABLE();
-	HAL_GPIO_Init(GPIOA, &gpioInitStruct);
+	HAL_GPIO_Init(READER_PERIPH_PWR_PORT, &gpioInitStruct);
 	
 	return READER_OK;
 }
