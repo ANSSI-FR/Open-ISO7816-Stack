@@ -13,3 +13,13 @@ uint32_t READER_UTILS_GetCardFreq(uint32_t SYSCLK, uint32_t AHB, uint32_t APB1, 
 uint32_t READER_UTILS_ComputeNewBaudRate(uint32_t oldBaudRate, uint32_t oldFreq, uint32_t newFreq){
 	return (newFreq / oldFreq) * oldBaudRate;
 }
+
+uint32_t READER_UTILS_ComputePrescFromFreq(uint32_t freq){
+	switch(freq){
+		case 4200000:
+			return SMARTCARD_PRESCALER_SYSCLK_DIV10;
+			break;
+		default:
+			return SMARTCARD_PRESCALER_SYSCLK_DIV10;
+	}
+}
