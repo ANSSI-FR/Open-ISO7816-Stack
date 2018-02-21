@@ -68,7 +68,7 @@ READER_Status READER_HAL_SetEtu(uint32_t F, uint32_t D){
 
 
 
-void READER_HAL_SetPwrLine(READER_HAL_State state){
+READER_Status READER_HAL_SetPwrLine(READER_HAL_State state){
 	if(state == READER_PERIPH_STATE_ON){
 		HAL_GPIO_WritePin(GPIOA, READER_PERIPH_PWR_PIN, GPIO_PIN_SET);
 	}
@@ -77,12 +77,15 @@ void READER_HAL_SetPwrLine(READER_HAL_State state){
 	}
 	else{
 		READER_PERIPH_ErrHandler();
+		return READER_ERR;
 	}
+	
+	return READER_OK;
 }
 
 
 
-void READER_HAL_SetRstLine(READER_HAL_State state){
+READER_Status READER_HAL_SetRstLine(READER_HAL_State state){
 	if(state == READER_PERIPH_STATE_ON){
 		HAL_GPIO_WritePin(GPIOA, READER_PERIPH_RST_PIN, GPIO_PIN_SET);
 	}
@@ -91,12 +94,15 @@ void READER_HAL_SetRstLine(READER_HAL_State state){
 	}
 	else{
 		READER_PERIPH_ErrHandler();
+		return READER_ERR;
 	}
+	
+	return READER_OK;
 }
 
 
 
-void READER_HAL_SetIOLine(READER_HAL_State state){
+READER_Status READER_HAL_SetIOLine(READER_HAL_State state){
 	if(state == READER_PERIPH_STATE_ON){
 		/* Chgt alternate fct, chgt etat ... mais apres la main par l'uart est perdue */
 	}
@@ -105,11 +111,14 @@ void READER_HAL_SetIOLine(READER_HAL_State state){
 	}
 	else{
 		READER_PERIPH_ErrHandler();
+		return READER_ERR;
 	}
+	
+	return READER_OK;
 }
 
 
-void READER_HAL_SetClkLine(READER_HAL_State state){
+READER_Status READER_HAL_SetClkLine(READER_HAL_State state){
 	GPIO_InitTypeDef gpioInitStruct;
 	
 	if(state == READER_PERIPH_STATE_ON){
@@ -136,5 +145,8 @@ void READER_HAL_SetClkLine(READER_HAL_State state){
 	}
 	else{
 		READER_HAL_ErrHandler();
+		return READER_ERR;
 	}
+	
+	return READER_OK;
 }
