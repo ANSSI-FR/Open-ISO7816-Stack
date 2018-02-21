@@ -26,10 +26,10 @@ READER_Status READER_PERIPH_InitClkLine(void){
 	GPIO_InitTypeDef gpioInitStruct;
 	
 	gpioInitStruct.Pin = READER_PERIPH_CLK_PIN;
-	gpioInitStruct.Mode = GPIO_MODE_AF_PP; 
+	gpioInitStruct.Mode = GPIO_MODE_PP; 
 	gpioInitStruct.Pull = GPIO_PULLUP;
 	//gpioInitStruct.Speed = GPIO_SPEED_FREQ_MEDIUM;
-	gpioInitStruct.Alternate = GPIO_AF7_USART2;
+	//gpioInitStruct.Alternate = GPIO_AF7_USART2;
 	
 	__HAL_RCC_GPIOA_CLK_ENABLE();
 	HAL_GPIO_Init(GPIOA, &gpioInitStruct);
