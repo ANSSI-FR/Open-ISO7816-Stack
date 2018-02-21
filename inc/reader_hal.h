@@ -4,12 +4,13 @@
 
 #include "stm32f4xx_hal.h"
 #include "reader.h"
+#include "reader_utils.h"
 
 
 typedef READER_HAL_State enum READER_HAL_State;
 enum READER_HAL_State{
-	READER_PERIPH_STATE_ON = 1,
-	READER_PERIPH_STATE_OFF = 0
+	READER_HAL_STATE_ON = 1,
+	READER_HAL_STATE_OFF = 0
 }
 
 
