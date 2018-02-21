@@ -56,7 +56,7 @@ READER_Status READER_HAL_RcvCharFrame(uint8_t *frame, uint32_t frameSize, uint32
 }
 
 
-READER_Status READER_HAL_SetClk(uint32_t freq){
+READER_Status READER_HAL_SetFreq(uint32_t freq){
 	
 }
 
@@ -135,6 +135,6 @@ void READER_HAL_SetClkLine(READER_HAL_State state){
 		HAL_GPIO_Init(READER_PERIPH_CLK_PORT, &gpioInitStruct);
 	}
 	else{
-		READER_PERIPH_ErrHandler();
+		READER_HAL_ErrHandler();
 	}
 }

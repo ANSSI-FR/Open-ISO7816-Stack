@@ -19,7 +19,7 @@ enum READER_HAL_State{
 READER_Status READER_HAL_Init(void);
 READER_Status READER_HAL_SendCharFrame(uint8_t *frame, uint32_t frameSize, uint32_t timeout);
 READER_Status READER_HAL_RcvCharFrame(uint8_t *frame, uint32_t frameSize, uint32_t timeout);
-READER_Status READER_HAL_SetClk(uint32_t freq);
+READER_Status READER_HAL_SetFreq(uint32_t freq);
 READER_Status READER_HAL_SetEtu(uint32_t Fi, uint32_t Di);
 
 READER_Status READER_HAL_SetPwrLine(READER_HAL_State state);
