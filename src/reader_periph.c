@@ -2,6 +2,9 @@
 #include "reader_periph.h"
 
 
+extern SMARTCARD_HandleTypeDef smartcardHandleStruct;
+
+
 void READER_PERIPH_InitIOLine(void){
 	GPIO_InitTypeDef gpioInitStruct;
 	
@@ -60,59 +63,6 @@ void READER_PERIPH_InitPwrLine(void){
 
 
 
-void READER_PERIPH_SetPwrLine(READER_PERIPH_State state){
-	if(state == READER_PERIPH_STATE_ON){
-		HAL_GPIO_WritePin(GPIOA, READER_PERIPH_PWR_PIN, GPIO_PIN_SET);
-	}
-	else if(state == READER_PERIPH_STATE_OFF){
-		HAL_GPIO_WritePin(GPIOA, READER_PERIPH_PWR_PIN, GPIO_PIN_RESET);
-	}
-	else{
-		READER_PERIPH_ErrHandler();
-	}
-}
-
-
-
-void READER_PERIPH_SetRstLine(READER_PERIPH_State state){
-	if(state == READER_PERIPH_STATE_ON){
-		HAL_GPIO_WritePin(GPIOA, READER_PERIPH_RST_PIN, GPIO_PIN_SET);
-	}
-	else if(state == READER_PERIPH_STATE_OFF){
-		HAL_GPIO_WritePin(GPIOA, READER_PERIPH_RST_PIN, GPIO_PIN_RESET);
-	}
-	else{
-		READER_PERIPH_ErrHandler();
-	}
-}
-
-
-
-void READER_PERIPH_SetIOLine(READER_PERIPH_State state){
-	if(state == READER_PERIPH_STATE_ON){
-		/* Chgt alternate fct, chgt etat ... mais apres la main par l'uart est perdue */
-	}
-	else if(state == READER_PERIPH_STATE_OFF){
-		
-	}
-	else{
-		READER_PERIPH_ErrHandler();
-	}
-}
-
-
-void READER_PERIPH_SetClkLine(READER_PERIPH_State state){
-	if(state == READER_PERIPH_STATE_ON){
-		
-	}
-	else if(state == READER_PERIPH_STATE_OFF){
-		
-	}
-	else{
-		READER_PERIPH_ErrHandler();
-	}
-}
-
 
 
 void READER_PERIPH_Init(void){
@@ -120,6 +70,21 @@ void READER_PERIPH_Init(void){
 	READER_PERIPH_InitClkLine();
 	READER_PERIPH_InitRstLine();
 	READER_PERIPH_InitPwrLine();
+	
+	smartcardHandleStruct.Instance = USART2;
+	smartcardHandleStruct.Init.BaudRate = 11290;  // Valeur Bidon
+	smartcardHandleStruct.Init.WordLength = SMARTCARD_WORDLENGTH_9B;
+	smartcardHandleStruct.Init.StopBits = SMARTCARD_STOPBITS_1_5;
+	smartcardHandleStruct.Init.Parity = SMARTCARD_PARITY_EVEN;
+	smartcardHandleStruct.Init.Mode = SMARTCARD_MODE_TX_RX;
+	smartcardHandleStruct.Init.CLKPolarity = SMARTCARD_POLARITY_LOW;
+	smartcardHandleStruct.Init.CLKPhase = SMARTCARD_PHASE_1EDGE;
+	smartcardHandleStruct.Init.CLKLastBit = SMARTCARD_LASTBIT_ENABLE;
+	smartcardHandleStruct.Init.Prescaler = SMARTCARD_PRESCALER_SYSCLK_DIV10; // Valeur Bidon
+	smartcardHandleStruct.Init.GuardTime = 12;
+	smartcardHandleStruct.Init.NACKState = SMARTCARD_NACK_ENABLE;
+	
+	HAL_SMARTCARD_Init(&smartcardHandleStruct);
 }
 
 

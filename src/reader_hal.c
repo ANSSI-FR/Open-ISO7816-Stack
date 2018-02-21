@@ -42,17 +42,6 @@ READER_Status READER_HAL_Init(void){
 
 	HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_5);
 	
-	
-	
-	/* Initialisation de l'USART/SMARTCARD */
-	uartHandleStruct.Instance = USART1;
-	uartHandleStruct.Init.BaudRate = 9600;
-	uartHandleStruct.Init.WordLength = UART_WORDLENGTH_8B;
-	uartHandleStruct.Init.StopBits = UART_STOPBITS_1;
-	uartHandleStruct.Init.Parity = UART_PARITY_NONE;
-	uartHandleStruct.Init.Mode = UART_MODE_TX_RX;
-	uartHandleStruct.Init.HwFlowCtl = UART_HWCONTROL_NONE;
-	uartHandleStruct.Init.OverSampling = UART_OVERSAMPLING_8;
 }
 
 
@@ -74,4 +63,60 @@ READER_Status READER_HAL_SetClk(uint32_t freq){
 
 READER_Status READER_HAL_SetEtu(uint32_t F, uint32_t D){
 	
+}
+
+
+
+
+void READER_HAL_SetPwrLine(READER_PERIPH_State state){
+	if(state == READER_PERIPH_STATE_ON){
+		HAL_GPIO_WritePin(GPIOA, READER_PERIPH_PWR_PIN, GPIO_PIN_SET);
+	}
+	else if(state == READER_PERIPH_STATE_OFF){
+		HAL_GPIO_WritePin(GPIOA, READER_PERIPH_PWR_PIN, GPIO_PIN_RESET);
+	}
+	else{
+		READER_PERIPH_ErrHandler();
+	}
+}
+
+
+
+void READER_HAL_SetRstLine(READER_PERIPH_State state){
+	if(state == READER_PERIPH_STATE_ON){
+		HAL_GPIO_WritePin(GPIOA, READER_PERIPH_RST_PIN, GPIO_PIN_SET);
+	}
+	else if(state == READER_PERIPH_STATE_OFF){
+		HAL_GPIO_WritePin(GPIOA, READER_PERIPH_RST_PIN, GPIO_PIN_RESET);
+	}
+	else{
+		READER_PERIPH_ErrHandler();
+	}
+}
+
+
+
+void READER_HAL_SetIOLine(READER_PERIPH_State state){
+	if(state == READER_PERIPH_STATE_ON){
+		/* Chgt alternate fct, chgt etat ... mais apres la main par l'uart est perdue */
+	}
+	else if(state == READER_PERIPH_STATE_OFF){
+		
+	}
+	else{
+		READER_PERIPH_ErrHandler();
+	}
+}
+
+
+void READER_HAL_SetClkLine(READER_PERIPH_State state){
+	if(state == READER_PERIPH_STATE_ON){
+		
+	}
+	else if(state == READER_PERIPH_STATE_OFF){
+		
+	}
+	else{
+		READER_PERIPH_ErrHandler();
+	}
 }
