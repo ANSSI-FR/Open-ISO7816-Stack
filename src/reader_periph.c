@@ -101,6 +101,8 @@ READER_Status READER_PERIPH_Init(void){
 	}
 	
 	if(HAL_SMARTCARD_Init(&smartcardHandleStruct) != HAL_OK) return READER_ERR;
+	
+	return READER_OK;
 }
 
 
