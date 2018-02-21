@@ -1,5 +1,7 @@
 #include "stm32f4xx_hal.h"
 #include "reader_periph.h"
+#include "reader_hal_utils.h"
+#include "reader.h"
 
 
 extern SMARTCARD_HandleTypeDef smartcardHandleStruct;

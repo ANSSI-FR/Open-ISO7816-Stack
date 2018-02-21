@@ -2,12 +2,19 @@
 #define __READER_PERIPH_H__
 
 #include "stm32f4xx_hal.h"
+#include "reader_hal_utils.h"
+#include "reader.h"
 
 
 #define READER_PERIPH_CLK_PIN          GPIO_PIN_4
 #define READER_PERIPH_IO_PIN           GPIO_PIN_2
 #define READER_PERIPH_RST_PIN          GPIO_PIN_5
 #define READER_PERIPH_PWR_PIN          GPIO_PIN_6
+
+#define READER_PERIPH_CLK_PORT         GPIOA
+#define READER_PERIPH_IO_PORT          GPIOA
+#define READER_PERIPH_RST_PORT         GPIOA
+#define READER_PERIPH_PWR_PORT         GPIOA
 
 
 
