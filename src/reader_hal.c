@@ -57,7 +57,17 @@ READER_Status READER_HAL_RcvCharFrame(uint8_t *frame, uint32_t frameSize, uint32
 
 
 READER_Status READER_HAL_SetClk(uint32_t freq){
+	/* On connecte le GPIO sur la clock du block UART */
+	GPIO_InitTypeDef gpioInitStruct;
 	
+	gpioInitStruct.Pin = READER_PERIPH_CLK_PIN;
+	gpioInitStruct.Mode = GPIO_MODE_AF_PP; 
+	gpioInitStruct.Pull = GPIO_PULLUP;
+	//gpioInitStruct.Speed = GPIO_SPEED_FREQ_MEDIUM;
+	gpioInitStruct.Alternate = GPIO_AF7_USART2;
+	
+	__HAL_RCC_GPIOA_CLK_ENABLE();
+	HAL_GPIO_Init(READER_PERIPH_CLK_PORT, &gpioInitStruct);
 }
 
 
