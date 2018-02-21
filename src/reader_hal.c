@@ -48,12 +48,12 @@ READER_Status READER_HAL_Init(void){
 
 
 READER_Status READER_HAL_SendCharFrame(uint8_t *frame, uint32_t frameSize, uint32_t timeout){
-	
+	if(HAL_SMARTCARD_Transmit(&smartcardHandleStruct, frame, frameSize, timeout) != HAL_OK) return READER_ERR;
 }
 
 
 READER_Status READER_HAL_RcvCharFrame(uint8_t *frame, uint32_t frameSize, uint32_t timeout){
-	
+	if(HAL_SMARTCARD_Receive(&smartcardHandleStruct, frame, frameSize, timeout) != HAL_OK) return READER_ERR;
 }
 
 
