@@ -71,8 +71,17 @@ READER_Status READER_HAL_SetFreq(uint32_t newFreq){
 }
 
 
-READER_Status READER_HAL_SetEtu(uint32_t F, uint32_t D){
+READER_Status READER_HAL_SetEtu(uint32_t Fi, uint32_t Di){
+	uint32_t freq, newBaudRate;
 	
+	freq = READER_UTILS_GetCardFreq(168000000, 1, 4, smartcardHandleStruct.Init.Prescaler);
+	newBaudRate = freq / (Fi / Di);
+	
+	smartcardHandleStruct.Init.BaudRate = newBaudRate;
+	
+	if(HAL_SMARTCARD_Init(&smartcardHandleStruct) != HAL_OK) return READER_ERR;
+	
+	return READER_OK;	
 }
 
 
