@@ -1,8 +1,10 @@
 #ifndef __READER_PERIPH_H__
 #define __READER_PERIPH_H__
 
+
+
 #include "stm32f4xx_hal.h"
-#include "reader_hal_utils.h"
+#include "reader_utils.h"
 #include "reader.h"
 
 
@@ -18,7 +20,8 @@
 
 
 
-typedef READER_PERIPH_Status enum READER_PERIPH_Status;
+
+typedef enum READER_PERIPH_Status READER_PERIPH_Status;
 enum READER_PERIPH_Status{
 	READER_PERIPH_OK = 1,
 	READER_PERIPH_NO = 0,

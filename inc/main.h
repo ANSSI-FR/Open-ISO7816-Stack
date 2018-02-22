@@ -1,8 +1,8 @@
 #include "stm32f4xx_hal.h"
 
 
-#ifndef _MAIN_H_
-#define _MAIN_H_
+#ifndef __MAIN_H__
+#define __MAIN_H__
 
 
 #define PIN_LED_VERTE GPIO_PIN_12       /* PD12 */

@@ -38,7 +38,6 @@
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f4xx_hal.h"
 #include "main.h"
-#include "card_interfaces.h"
 
 /** @addtogroup STM32F4xx_HAL_Driver
   * @{
@@ -53,8 +52,6 @@
 /* Private define ------------------------------------------------------------*/
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
-extern RCC_ClkInitTypeDef RCC_ClkInitStruct;
-extern RCC_OscInitTypeDef RCC_OscInitStruct;
 /* Private function prototypes -----------------------------------------------*/
 /* Private functions ---------------------------------------------------------*/
 
@@ -71,22 +68,6 @@ extern RCC_OscInitTypeDef RCC_OscInitStruct;
 void HAL_MspInit(void)
 {	
 	GPIO_InitTypeDef GPIO_LedVerteInitStruct;
-	GPIO_InitTypeDef GPIO_BoutonBleuInitStruct;
-	
-	
-	/* Initialisation de l'Horloge */
-	init_horloge(&RCC_ClkInitStruct, &RCC_OscInitStruct);
-	
-	
-	/* Initialisation du pin de la led verte (board Discovery) */
-	__HAL_RCC_GPIOD_CLK_ENABLE();
-
-	GPIO_LedVerteInitStruct.Pin = PIN_LED_VERTE;
-	GPIO_LedVerteInitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-	GPIO_LedVerteInitStruct.Pull = GPIO_NOPULL;
-	GPIO_LedVerteInitStruct.Speed = GPIO_SPEED_FREQ_MEDIUM;
-	
-	HAL_GPIO_Init(GPIOD, &GPIO_LedVerteInitStruct);
 	
 	
 	/* Initialisation du pin de la led rouge (board Discovery) */
@@ -98,20 +79,6 @@ void HAL_MspInit(void)
 	GPIO_LedVerteInitStruct.Speed = GPIO_SPEED_FREQ_MEDIUM;
 	
 	HAL_GPIO_Init(GPIOD, &GPIO_LedVerteInitStruct);
-	
-	
-	/* Initialisation du bouton bleu (board Discovery) */
-	__HAL_RCC_GPIOA_CLK_ENABLE();
-
-	GPIO_BoutonBleuInitStruct.Pin = PIN_BOUTON_BLEU;
-	GPIO_BoutonBleuInitStruct.Mode = GPIO_MODE_IT_RISING;
-	GPIO_BoutonBleuInitStruct.Pull = GPIO_PULLDOWN;
-	GPIO_BoutonBleuInitStruct.Speed = GPIO_SPEED_FREQ_MEDIUM;
-	
-	HAL_GPIO_Init(GPIOA, &GPIO_BoutonBleuInitStruct);
-	
-	HAL_NVIC_EnableIRQ(EXTI0_IRQn);
-	HAL_NVIC_SetPriority(EXTI0_IRQn, 15, 15);
 }
 
 /**

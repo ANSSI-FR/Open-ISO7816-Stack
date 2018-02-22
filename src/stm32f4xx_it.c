@@ -53,7 +53,6 @@
 /* Private define ------------------------------------------------------------*/
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
-extern UART_HandleTypeDef uartHandleStruct;
 extern SMARTCARD_HandleTypeDef smartcardHandleStruct;
 /* Private function prototypes -----------------------------------------------*/
 /* Private functions ---------------------------------------------------------*/
@@ -174,12 +173,12 @@ void SysTick_Handler(void)
   */
 void EXTI0_IRQHandler(void)
 {
-  HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_0);
+
 }
 
 
 void USART1_IRQHandler(void){
-	HAL_UART_IRQHandler(&uartHandleStruct);
+
 }
 
 

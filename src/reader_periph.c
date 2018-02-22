@@ -1,6 +1,6 @@
 #include "stm32f4xx_hal.h"
 #include "reader_periph.h"
-#include "reader_hal_utils.h"
+#include "reader_utils.h"
 #include "reader.h"
 
 
@@ -28,8 +28,8 @@ READER_Status READER_PERIPH_InitClkLine(void){
 	GPIO_InitTypeDef gpioInitStruct;
 	
 	gpioInitStruct.Pin = READER_PERIPH_CLK_PIN;
-	gpioInitStruct.Mode = GPIO_MODE_PP; 
-	gpioInitStruct.Pull = GPIO_PULLUP;
+	gpioInitStruct.Mode = GPIO_MODE_OUTPUT_PP; 
+	gpioInitStruct.Pull = GPIO_NOPULL;
 	//gpioInitStruct.Speed = GPIO_SPEED_FREQ_MEDIUM;
 	//gpioInitStruct.Alternate = GPIO_AF7_USART2;
 	
@@ -110,6 +110,7 @@ READER_Status READER_PERIPH_Init(void){
 
 void READER_PERIPH_ErrHandler(void){
 	while(1){
-		
+		HAL_GPIO_TogglePin(GPIOD, GPIO_PIN_14);
+		HAL_Delay(100);
 	}
 }
