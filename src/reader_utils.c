@@ -20,6 +20,15 @@ uint32_t READER_UTILS_ComputePrescFromFreq(uint32_t freq){
 		case 4200000:
 			return SMARTCARD_PRESCALER_SYSCLK_DIV10;
 			break;
+		case 3500000:
+			return SMARTCARD_PRESCALER_SYSCLK_DIV12;
+			break;
+		case 3000000:
+			return SMARTCARD_PRESCALER_SYSCLK_DIV14;
+			break;
+		case 5250000:
+			return SMARTCARD_PRESCALER_SYSCLK_DIV8;
+			break;
 		default:
 			return SMARTCARD_PRESCALER_SYSCLK_DIV10;
 	}
