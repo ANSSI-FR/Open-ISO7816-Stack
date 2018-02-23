@@ -65,7 +65,7 @@ READER_Status READER_HAL_Init(void){
 READER_Status READER_HAL_SendCharFrame(uint8_t *frame, uint32_t frameSize){
 	uint32_t timeoutMili;
 	
-	timeoutMili = READER_UTILS_ComputeTimeoutMiliSec(smartcardHandleStruct.Init.BaudRate);
+	timeoutMili = READER_UTILS_ComputeTimeoutMiliSec(smartcardHandleStruct.Init.BaudRate, globalWaitTime);
 	if(HAL_SMARTCARD_Transmit(&smartcardHandleStruct, frame, frameSize, timeoutMili) != HAL_OK) return READER_ERR;
 	
 	return READER_OK;
@@ -75,7 +75,7 @@ READER_Status READER_HAL_SendCharFrame(uint8_t *frame, uint32_t frameSize){
 READER_Status READER_HAL_RcvCharFrame(uint8_t *frame, uint32_t frameSize){
 	uint32_t timeoutMili;
 	
-	timeoutMili = READER_UTILS_ComputeTimeoutMiliSec(smartcardHandleStruct.Init.BaudRate);
+	timeoutMili = READER_UTILS_ComputeTimeoutMiliSec(smartcardHandleStruct.Init.BaudRate, globalWaitTime);
 	if(HAL_SMARTCARD_Receive(&smartcardHandleStruct, frame, frameSize, timeoutMili) != HAL_OK) return READER_ERR;
 	
 	return READER_OK;
@@ -85,7 +85,7 @@ READER_Status READER_HAL_RcvCharFrame(uint8_t *frame, uint32_t frameSize){
 READER_Status READER_HAL_RcvChar(uint8_t *character){
 	uint32_t timeoutMili;
 	
-	timeoutMili = READER_UTILS_ComputeTimeoutMiliSec(smartcardHandleStruct.Init.BaudRate);
+	timeoutMili = READER_UTILS_ComputeTimeoutMiliSec(smartcardHandleStruct.Init.BaudRate, globalWaitTime);
 	if(HAL_SMARTCARD_Receive(&smartcardHandleStruct, character, 1, timeoutMili) != HAL_OK) return READER_ERR;
 	
 	return READER_OK;
@@ -95,7 +95,7 @@ READER_Status READER_HAL_RcvChar(uint8_t *character){
 READER_Status READER_HAL_SendChar(uint8_t character){
 	uint32_t timeoutMili;
 	
-	timeoutMili = READER_UTILS_ComputeTimeoutMiliSec(smartcardHandleStruct.Init.BaudRate);
+	timeoutMili = READER_UTILS_ComputeTimeoutMiliSec(smartcardHandleStruct.Init.BaudRate, globalWaitTime);
 	if(HAL_SMARTCARD_Transmit(&smartcardHandleStruct, &character, 1, timeoutMili) != HAL_OK) return READER_ERR;
 	
 	return READER_OK;
@@ -228,6 +228,8 @@ READER_Status READER_HAL_SetGT(uint32_t newGT){
 
 READER_Status READER_HAL_SetWT(uint32_t newWT){
 	globalWaitTime = newWT;
+	
+	return READER_OK;
 }
 
 
