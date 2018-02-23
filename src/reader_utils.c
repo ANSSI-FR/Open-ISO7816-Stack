@@ -33,3 +33,8 @@ uint32_t READER_UTILS_ComputePrescFromFreq(uint32_t freq){
 			return SMARTCARD_PRESCALER_SYSCLK_DIV10;
 	}
 }
+
+
+uint32_t READER_UTILS_ComputeTimeoutMiliSec(uint32_t baudRate, uint32_t freq){
+	return ((1000 * globalWaitTime) / baudRate) + 1;
+}
