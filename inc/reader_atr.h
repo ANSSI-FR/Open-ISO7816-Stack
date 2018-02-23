@@ -1,3 +1,7 @@
+#include <stdint.h>
+#include "reader_hal.h"
+
+
 #define READER_ATR_MAX_HIST_BYTES 15;
 
 
@@ -41,3 +45,15 @@ struct READER_ATR_Atr{
 	uint32_t K;
 	uint8_t histBytes[READER_ATR_MAX_HIST_BYTES];
 };
+
+
+
+
+READER_Status READER_ATR_IsDataToRead(uint8_t Y);
+READER_Status READER_ATR_IsTAToRead(uint8_t Y));
+READER_Status READER_ATR_IsTBToRead(uint8_t Y));
+READER_Status READER_ATR_IsTCToRead(uint8_t Y));
+READER_Status READER_ATR_IsTDToRead(uint8_t Y));
+
+READER_Status READER_ATR_GetYFromTD(uint8_t TD);
+READER_Status READER_ATR_GetTFromTD(uint8_t TD);
