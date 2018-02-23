@@ -62,29 +62,41 @@ READER_Status READER_HAL_Init(void){
 
 
 
-READER_Status READER_HAL_SendCharFrame(uint8_t *frame, uint32_t frameSize, uint32_t timeout){
-	if(HAL_SMARTCARD_Transmit(&smartcardHandleStruct, frame, frameSize, timeout) != HAL_OK) return READER_ERR;
+READER_Status READER_HAL_SendCharFrame(uint8_t *frame, uint32_t frameSize){
+	uint32_t timeoutMili;
+	
+	timeoutMili = READER_UTILS_ComputeTimeoutMiliSec(smartcardHandleStruct.Init.BaudRate);
+	if(HAL_SMARTCARD_Transmit(&smartcardHandleStruct, frame, frameSize, timeoutMili) != HAL_OK) return READER_ERR;
 	
 	return READER_OK;
 }
 
 
-READER_Status READER_HAL_RcvCharFrame(uint8_t *frame, uint32_t frameSize, uint32_t timeout){
-	if(HAL_SMARTCARD_Receive(&smartcardHandleStruct, frame, frameSize, timeout) != HAL_OK) return READER_ERR;
+READER_Status READER_HAL_RcvCharFrame(uint8_t *frame, uint32_t frameSize){
+	uint32_t timeoutMili;
+	
+	timeoutMili = READER_UTILS_ComputeTimeoutMiliSec(smartcardHandleStruct.Init.BaudRate);
+	if(HAL_SMARTCARD_Receive(&smartcardHandleStruct, frame, frameSize, timeoutMili) != HAL_OK) return READER_ERR;
 	
 	return READER_OK;
 }
 
 
-READER_Status READER_HAL_RcvChar(uint8_t *character, uint32_t timeout){
-	if(HAL_SMARTCARD_Receive(&smartcardHandleStruct, character, 1, timeout) != HAL_OK) return READER_ERR;
+READER_Status READER_HAL_RcvChar(uint8_t *character){
+	uint32_t timeoutMili;
+	
+	timeoutMili = READER_UTILS_ComputeTimeoutMiliSec(smartcardHandleStruct.Init.BaudRate);
+	if(HAL_SMARTCARD_Receive(&smartcardHandleStruct, character, 1, timeoutMili) != HAL_OK) return READER_ERR;
 	
 	return READER_OK;
 }
 
 
-READER_Status READER_HAL_SendChar(uint8_t character, uint32_t timeout){
-	if(HAL_SMARTCARD_Transmit(&smartcardHandleStruct, &character, 1, timeout) != HAL_OK) return READER_ERR;
+READER_Status READER_HAL_SendChar(uint8_t character){
+	uint32_t timeoutMili;
+	
+	timeoutMili = READER_UTILS_ComputeTimeoutMiliSec(smartcardHandleStruct.Init.BaudRate);
+	if(HAL_SMARTCARD_Transmit(&smartcardHandleStruct, &character, 1, timeoutMili) != HAL_OK) return READER_ERR;
 	
 	return READER_OK;
 }
