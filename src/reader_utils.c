@@ -35,6 +35,6 @@ uint32_t READER_UTILS_ComputePrescFromFreq(uint32_t freq){
 }
 
 
-uint32_t READER_UTILS_ComputeTimeoutMiliSec(uint32_t baudRate){
-	return ((1000 * globalWaitTime) / baudRate) + 1;
+uint32_t READER_UTILS_ComputeTimeoutMiliSec(uint32_t baudRate, uint32_t WT){
+	return ((1000 * WT) / baudRate) + 1;
 }
