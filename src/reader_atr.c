@@ -54,3 +54,14 @@ READER_Status READER_ATR_IsTDToRead(uint8_t Y){
 		return READER_NO;
 	}
 }
+
+
+uint8_t READER_ATR_GetY(uint8_t TD){
+	return (TD >> 4) & 0xF0;
+}
+
+
+uint8_t READER_ATR_GetT(uint8_t TD){
+	return TD & 0x0F;
+}
+
