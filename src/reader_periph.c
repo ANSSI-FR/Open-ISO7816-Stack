@@ -93,14 +93,8 @@ READER_Status READER_PERIPH_Init(void){
 	smartcardHandleStruct.Init.GuardTime = READER_DEFAULT_GT;
 	smartcardHandleStruct.Init.NACKState = SMARTCARD_NACK_ENABLE;
 	
-	switch(READER_DEFAULT_FREQ){
-		case 4200000:
-			smartcardHandleStruct.Init.Prescaler = SMARTCARD_PRESCALER_SYSCLK_DIV10;
-			break;
-		default:
-			smartcardHandleStruct.Init.Prescaler = SMARTCARD_PRESCALER_SYSCLK_DIV10;
-			break;
-	}
+	smartcardHandleStruct.Init.Prescaler = READER_UTILS_ComputePrescFromFreq(READER_DEFAULT_FREQ);
+	
 	
 	if(HAL_SMARTCARD_Init(&smartcardHandleStruct) != HAL_OK) return READER_ERR;
 	
