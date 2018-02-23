@@ -19,7 +19,8 @@ int main(void){
 	HAL_Delay(1);
 	READER_HAL_SetRstLine(READER_HAL_STATE_ON);
 	
-	READER_HAL_RcvCharFrame(pSmartcardRxBuff, 33);
+	READER_HAL_RcvCharFrame(pSmartcardRxBuff, 17);
+	HAL_Delay(5);
 	
 	/* Fabrication du header TPDU */
 	pSmartCardTxBuff[0] = 0x00;        // CLA
