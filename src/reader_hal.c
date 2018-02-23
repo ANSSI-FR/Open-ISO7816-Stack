@@ -8,7 +8,7 @@
 
 SMARTCARD_HandleTypeDef smartcardHandleStruct;
 
-uint32_t globalWaitTimeSec;
+uint32_t globalWaitTime;
 
 
 
@@ -215,7 +215,7 @@ READER_Status READER_HAL_SetGT(uint32_t newGT){
 
 
 READER_Status READER_HAL_SetWT(uint32_t newWT){
-	globalWaitTimeSec = newWT;
+	globalWaitTime = newWT;
 }
 
 
