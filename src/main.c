@@ -19,7 +19,7 @@ int main(void){
 	HAL_Delay(1);
 	READER_HAL_SetRstLine(READER_HAL_STATE_ON);
 	
-	READER_HAL_RcvCharFrame(pSmartcardRxBuff, 33, 500);
+	READER_HAL_RcvCharFrame(pSmartcardRxBuff, 33);
 	
 	/* Fabrication du header TPDU */
 	pSmartCardTxBuff[0] = 0x00;        // CLA
@@ -28,12 +28,12 @@ int main(void){
 	pSmartCardTxBuff[3] = 0x00;        // P2
 	pSmartCardTxBuff[4] = 0x0D;        // Lc = P3
 	
-	READER_HAL_SendCharFrame(pSmartCardTxBuff, 5, 2000);
+	READER_HAL_SendCharFrame(pSmartCardTxBuff, 5);
 	
 	
 	/* Attente du ACK */
 	do{
-		READER_HAL_RcvCharFrame(pSmartcardRxBuff, 1, 2000);
+		READER_HAL_RcvCharFrame(pSmartcardRxBuff, 1);
 	}while(pSmartcardRxBuff[0] != 0xA4);
 	
 	HAL_Delay(10);
@@ -54,7 +54,9 @@ int main(void){
 	pSmartCardTxBuff[12] = 0x70;
 	
 	
-	READER_HAL_SendCharFrame(pSmartCardTxBuff, 0x0D, 2000);
+	READER_HAL_SendCharFrame(pSmartCardTxBuff, 0x0D);
+	
+	READER_HAL_SetFreq(3500000);
 
 	while(1){
 		

@@ -8,7 +8,7 @@
 
 SMARTCARD_HandleTypeDef smartcardHandleStruct;
 
-uint32_t globalWaitTime;
+uint32_t globalWaitTimeMili;
 
 
 
@@ -55,7 +55,7 @@ READER_Status READER_HAL_Init(void){
 	if(READER_HAL_SetClkLine(READER_HAL_STATE_OFF) != READER_OK) return READER_ERR;
 	
 	/* Initialisation du WT (Wait Time) */
-	READER_HAL_SetWT(READER_DEFAULT_WT);
+	READER_HAL_SetWT(READER_DEFAULT_WT_MILI);
 	
 	return READER_OK;
 }
@@ -65,7 +65,7 @@ READER_Status READER_HAL_Init(void){
 READER_Status READER_HAL_SendCharFrame(uint8_t *frame, uint32_t frameSize){
 	uint32_t timeoutMili;
 	
-	timeoutMili = READER_UTILS_ComputeTimeoutMiliSec(smartcardHandleStruct.Init.BaudRate, globalWaitTime);
+	timeoutMili = globalWaitTimeMili * frameSize; //On prevoit un WT pour chaque byte envoye  //READER_UTILS_ComputeTimeoutMiliSec(smartcardHandleStruct.Init.BaudRate, globalWaitTimeMili);
 	if(HAL_SMARTCARD_Transmit(&smartcardHandleStruct, frame, frameSize, timeoutMili) != HAL_OK) return READER_ERR;
 	
 	return READER_OK;
@@ -75,7 +75,7 @@ READER_Status READER_HAL_SendCharFrame(uint8_t *frame, uint32_t frameSize){
 READER_Status READER_HAL_RcvCharFrame(uint8_t *frame, uint32_t frameSize){
 	uint32_t timeoutMili;
 	
-	timeoutMili = READER_UTILS_ComputeTimeoutMiliSec(smartcardHandleStruct.Init.BaudRate, globalWaitTime);
+	timeoutMili = globalWaitTimeMili * frameSize; //On prevoit un WT pour chaque byte envoye  //READER_UTILS_ComputeTimeoutMiliSec(smartcardHandleStruct.Init.BaudRate, globalWaitTimeMili);
 	if(HAL_SMARTCARD_Receive(&smartcardHandleStruct, frame, frameSize, timeoutMili) != HAL_OK) return READER_ERR;
 	
 	return READER_OK;
@@ -85,7 +85,7 @@ READER_Status READER_HAL_RcvCharFrame(uint8_t *frame, uint32_t frameSize){
 READER_Status READER_HAL_RcvChar(uint8_t *character){
 	uint32_t timeoutMili;
 	
-	timeoutMili = READER_UTILS_ComputeTimeoutMiliSec(smartcardHandleStruct.Init.BaudRate, globalWaitTime);
+	timeoutMili = globalWaitTimeMili; //READER_UTILS_ComputeTimeoutMiliSec(smartcardHandleStruct.Init.BaudRate, globalWaitTimeMili);
 	if(HAL_SMARTCARD_Receive(&smartcardHandleStruct, character, 1, timeoutMili) != HAL_OK) return READER_ERR;
 	
 	return READER_OK;
@@ -95,7 +95,7 @@ READER_Status READER_HAL_RcvChar(uint8_t *character){
 READER_Status READER_HAL_SendChar(uint8_t character){
 	uint32_t timeoutMili;
 	
-	timeoutMili = READER_UTILS_ComputeTimeoutMiliSec(smartcardHandleStruct.Init.BaudRate, globalWaitTime);
+	timeoutMili = globalWaitTimeMili; //READER_UTILS_ComputeTimeoutMiliSec(smartcardHandleStruct.Init.BaudRate, globalWaitTimeMili);
 	if(HAL_SMARTCARD_Transmit(&smartcardHandleStruct, &character, 1, timeoutMili) != HAL_OK) return READER_ERR;
 	
 	return READER_OK;
@@ -227,7 +227,7 @@ READER_Status READER_HAL_SetGT(uint32_t newGT){
 
 
 READER_Status READER_HAL_SetWT(uint32_t newWT){
-	globalWaitTime = newWT;
+	globalWaitTimeMili = newWT;
 	
 	return READER_OK;
 }
