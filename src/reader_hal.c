@@ -8,6 +8,9 @@
 
 SMARTCARD_HandleTypeDef smartcardHandleStruct;
 
+uint32_t globalWaitTimeSec;
+
+
 
 READER_Status READER_HAL_Init(void){
 	RCC_ClkInitTypeDef RCC_ClkInitStruct;
@@ -50,6 +53,9 @@ READER_Status READER_HAL_Init(void){
 	if(READER_HAL_SetPwrLine(READER_HAL_STATE_OFF) != READER_OK) return READER_ERR;
 	if(READER_HAL_SetRstLine(READER_HAL_STATE_OFF) != READER_OK) return READER_ERR;
 	if(READER_HAL_SetClkLine(READER_HAL_STATE_OFF) != READER_OK) return READER_ERR;
+	
+	/* Initialisation du WT (Wait Time) */
+	READER_HAL_SetWT(READER_DEFAULT_WT);
 	
 	return READER_OK;
 }
@@ -196,6 +202,20 @@ READER_Status READER_HAL_SetClkLine(READER_HAL_State state){
 	}
 	
 	return READER_OK;
+}
+
+
+READER_Status READER_HAL_SetGT(uint32_t newGT){
+	smartcardHandleStruct.Init.GuardTime = newGT;
+	
+	if(HAL_SMARTCARD_Init(&smartcardHandleStruct) != HAL_OK) return READER_ERR;
+	
+	return READER_OK;	
+}
+
+
+READER_Status READER_HAL_SetWT(uint32_t newWT){
+	globalWaitTimeSec = newWT;
 }
 
 

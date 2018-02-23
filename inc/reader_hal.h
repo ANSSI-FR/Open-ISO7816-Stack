@@ -23,6 +23,8 @@ READER_Status READER_HAL_RcvChar(uint8_t *character, uint32_t timeout);
 READER_Status READER_HAL_SendChar(uint8_t character, uint32_t timeout);
 READER_Status READER_HAL_SetFreq(uint32_t newFreq);
 READER_Status READER_HAL_SetEtu(uint32_t Fi, uint32_t Di);
+READER_Status READER_HAL_SetGT(uint32_t newGT);
+READER_Status READER_HAL_SetWT(uint32_t newWT);
 
 READER_Status READER_HAL_SetPwrLine(READER_HAL_State state);
 READER_Status READER_HAL_SetRstLine(READER_HAL_State state);
