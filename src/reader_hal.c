@@ -70,6 +70,20 @@ READER_Status READER_HAL_RcvCharFrame(uint8_t *frame, uint32_t frameSize, uint32
 }
 
 
+READER_Status READER_HAL_RcvChar(uint8_t *character, uint32_t timeout){
+	if(HAL_SMARTCARD_Receive(&smartcardHandleStruct, character, 1, timeout) != HAL_OK) return READER_ERR;
+	
+	return READER_OK;
+}
+
+
+READER_Status READER_HAL_SendChar(uint8_t character, uint32_t timeout){
+	if(HAL_SMARTCARD_Transmit(&smartcardHandleStruct, &character, 1, timeout) != HAL_OK) return READER_ERR;
+	
+	return READER_OK;
+}
+
+
 READER_Status READER_HAL_SetFreq(uint32_t newFreq){
 	uint32_t oldFreq, oldBaudRate;
 	
