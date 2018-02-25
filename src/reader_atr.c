@@ -7,16 +7,52 @@
 
 
 READER_Status READER_ATR_Receive(READER_ATR_Atr *atr){
+	uint32_t i = 0;
 	uint8_t TS, T0;
+	uint8_t TA, TB, TC, TD;
+	uint8_t Y, T;
 	
+	
+	/* Recuperation de TS et T0 */
 	if(READER_HAL_RcvChar(&TS) != READER_OK) return READER_ERR;
 	if(READER_ATR_CheckTS(TS) != READER_OK) return READER_ERR;
-	atr->encodingConv = READER_ATR_RetrieveEncoding(TS);
+	atr->encodingConv = READER_ATR_GetEncoding(TS);
 	
 	if(READER_HAL_RcvChar(&T0) != READER_OK) return READER_ERR;
+	atr->K = READER_ATR_GetK(T0);
+	
+	Y = READER_ATR_GetY(T0);
+	
+	/* Recupertion de tous les Interfaces Bytes */
+	while(READER_ATR_IsInterfacesBytesToRead(Y)){
+		if(READER_ATR_IsTAToRead(Y)){
+			if(READER_HAL_RcvChar(&TA) != READER_OK) return READER_ERR;
+		}
+		if(READER_ATR_IsTBToRead(Y)){
+			if(READER_HAL_RcvChar(&TB) != READER_OK) return READER_ERR;
+		}
+		if(READER_ATR_IsTCToRead(Y)){
+			if(READER_HAL_RcvChar(&TC) != READER_OK) return READER_ERR;
+		}
+		if(READER_ATR_IsTDToRead(Y)){
+			if(READER_HAL_RcvChar(&TD) != READER_OK) return READER_ERR;
+			Y = READER_ATR_GetY(TD);
+			T = READER_ATR_GetT(TD);
+		}
+		else{
+			Y = 0x00;
+		}
+		
+		i++;
+	}
+	
+	/* Recuperation de tous les Historical Bytes */
 	
 	
+	/* Recuperation du Check Byte */
 	
+	
+	return READER_OK;
 }
 
 
@@ -107,7 +143,7 @@ READER_Status READER_ATR_CheckTS(uint8_t TS){
 }
 
 
-READER_ATR_EncodingConv READER_ATR_RetrieveEncoding(uint8_t TS){
+READER_ATR_EncodingConv READER_ATR_GetEncoding(uint8_t TS){
 	if(TS == READER_ATR_ENCODING_DIRECT){
 		return READER_ATR_ENCODING_DIRECT;
 	}
@@ -115,3 +151,26 @@ READER_ATR_EncodingConv READER_ATR_RetrieveEncoding(uint8_t TS){
 		return READER_ATR_ENCODING_REVERSE;
 	}
 }
+
+
+READER_Status READER_ATR_ProcessTA(READER_ATR_Atr *atr, uint8_t TA, uint32_t i, uint8_t T){
+	if(i == 1){
+		
+	}
+	else{
+		
+	}
+	
+	return READER_OK;
+}
+
+
+READER_Status READER_ATR_ProcessTB(READER_ATR_Atr *atr, uint8_t TB, uint32_t i, uint8_t T){
+	
+}
+
+
+READER_Status READER_ATR_ProcessTC(READER_ATR_Atr *atr, uint8_t TC, uint32_t i, uint8_t T){
+	
+}
+

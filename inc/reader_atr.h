@@ -63,6 +63,10 @@ READER_Status READER_ATR_IsTBToRead(uint8_t Y);
 READER_Status READER_ATR_IsTCToRead(uint8_t Y);
 READER_Status READER_ATR_IsTDToRead(uint8_t Y);
 
+READER_Status READER_ATR_ProcessTA(READER_ATR_Atr *atr, uint8_t TA, uint32_t i, uint8_t T);
+READER_Status READER_ATR_ProcessTB(READER_ATR_Atr *atr, uint8_t TB, uint32_t i, uint8_t T);
+READER_Status READER_ATR_ProcessTC(READER_ATR_Atr *atr, uint8_t TC, uint32_t i, uint8_t T);
+
 uint8_t READER_ATR_GetY(uint8_t TD);
 uint8_t READER_ATR_GetT(uint8_t TD);
 uint8_t READER_ATR_GetK(uint8_t T0);
@@ -73,4 +77,4 @@ void READER_ATR_ErrHandler(void);
 
 READER_Status READER_ATR_CheckTS(uint8_t TS);
 
-READER_ATR_EncodingConv READER_ATR_RetrieveEncoding(uint8_t TS);
+READER_ATR_EncodingConv READER_ATR_GetEncoding(uint8_t TS);
