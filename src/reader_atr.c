@@ -6,6 +6,15 @@
 
 
 
+READER_Status READER_ATR_Receive(READER_ATR_Atr *atr){
+	uint8_t TS, T0;
+	
+	
+}
+
+
+
+
 READER_Status READER_ATR_IsInterfacesBytesToRead(uint8_t Y){
 	if(Y != 0){
 		return READER_OK;
@@ -65,3 +74,9 @@ uint8_t READER_ATR_GetT(uint8_t TD){
 	return TD & 0x0F;
 }
 
+
+void READER_ATR_ErrHandler(void){
+	while(1){
+		
+	}
+}

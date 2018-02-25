@@ -57,3 +57,7 @@ READER_Status READER_ATR_IsTDToRead(uint8_t Y);
 
 uint8_t READER_ATR_GetY(uint8_t TD);
 uint8_t READER_ATR_GetT(uint8_t TD);
+
+READER_Status READER_ATR_Receive(READER_ATR_Atr *atr);
+
+void READER_ATR_ErrHandler(void);
