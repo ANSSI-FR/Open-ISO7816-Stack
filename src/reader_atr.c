@@ -88,13 +88,23 @@ void READER_ATR_ErrHandler(void){
 
 
 READER_Status READER_ATR_CheckTS(uint8_t TS){
-	if(TS == 0x3B){
+	if(TS == READER_ATR_ENCODING_DIRECT){
 		return READER_OK;
 	}
-	else if(TS == 0x03){
+	else if(TS == READER_ATR_ENCODING_REVERSE){
 		return READER_OK;
 	}
 	else{
 		return READER_ERR;
+	}
+}
+
+
+READER_ATR_EncodingConv READER_ATR_RetrieveEncoding(uint8_t TS){
+	if(TS == READER_ATR_ENCODING_DIRECT){
+		return READER_ATR_ENCODING_DIRECT;
+	}
+	else{
+		return READER_ATR_ENCODING_REVERSE;
 	}
 }
