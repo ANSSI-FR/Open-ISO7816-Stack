@@ -4,6 +4,11 @@
 
 
 
+/* Voire table 7 section 8.3 ISO7816_3 */
+static uint16_t globalFiConvTable[0x10] = {372, 372, 558, 744, 1116, 1488, 1860, 372, 372, 512, 768, 1024, 1536, 2048, 372, 372};
+static uint8_t  globalDiConvTable[0x10] = {1, 1, 2, 4, 8, 16, 32, 64, 12, 20, 1, 1, 1, 1, 1, 1};
+static uint32_t globalFMaxConvTable[0x10] = {4000000, 5000000, 6000000, 8000000, 12000000, 16000000, 20000000, 0xFFFFFFFF, 0xFFFFFFFF, 5000000, 7500000, 10000000, 15000000, 20000000, 0xFFFFFFFF, 0xFFFFFFFF};
+
 
 
 READER_Status READER_ATR_Receive(READER_ATR_Atr *atr){
@@ -119,6 +124,30 @@ uint8_t READER_ATR_GetT(uint8_t TD){
 
 uint8_t READER_ATR_GetK(uint8_t T0){
 	return T0 & 0x0F;
+}
+
+
+uint32_t READER_ATR_GetFi(uint8_t TA1){
+	uint8_t k;
+	
+	k = (TA1 >> 4) & 0x0F;
+	return globalFiConvTable[k];
+}
+
+
+uint32_t READER_ATR_GetFMax(uint8_t TA1){
+	uint8_t k;
+	
+	k = (TA1 >> 4) & 0x0F;
+	return globalFMaxConvTable[k];
+}
+
+
+uint32_t READER_ATR_GetDi(uint8_t TA1){
+	uint8_t k;
+	
+	k = TA1 & 0xF0;
+	return globalDiConvTable[k];
 }
 
 

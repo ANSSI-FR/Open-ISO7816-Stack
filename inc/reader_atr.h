@@ -70,6 +70,9 @@ READER_Status READER_ATR_ProcessTC(READER_ATR_Atr *atr, uint8_t TC, uint32_t i, 
 uint8_t READER_ATR_GetY(uint8_t TD);
 uint8_t READER_ATR_GetT(uint8_t TD);
 uint8_t READER_ATR_GetK(uint8_t T0);
+uint32_t READER_ATR_GetFi(uint8_t TA1);
+uint32_t READER_ATR_GetFMax(uint8_t TA1);
+uint32_t READER_ATR_GetDi(uint8_t TA1);
 
 READER_Status READER_ATR_Receive(READER_ATR_Atr *atr);
 
