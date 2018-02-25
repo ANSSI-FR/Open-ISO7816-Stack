@@ -84,3 +84,17 @@ void READER_ATR_ErrHandler(void){
 		
 	}
 }
+
+
+
+READER_Status READER_ATR_CheckTS(uint8_t TS){
+	if(TS == 0x3B){
+		return READER_OK;
+	}
+	else if(TS == 0x03){
+		return READER_OK;
+	}
+	else{
+		return READER_ERR;
+	}
+}

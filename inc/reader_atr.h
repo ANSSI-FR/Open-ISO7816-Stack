@@ -69,3 +69,5 @@ uint8_t READER_ATR_GetT(uint8_t TD);
 READER_Status READER_ATR_Receive(READER_ATR_Atr *atr);
 
 void READER_ATR_ErrHandler(void);
+
+READER_Status READER_ATR_CheckTS(uint8_t TS);
