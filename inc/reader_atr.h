@@ -49,7 +49,7 @@ struct READER_ATR_Atr{
 	READER_ATR_ClockStopIndicator clockStopIndicator;
 	READER_ATR_ClassIndicator classIndicator;
 	READER_ATR_UseOfSPU useOfSPU;
-	READER_ATR_EncodingConv;
+	READER_ATR_EncodingConv encodingConv;
 	uint32_t K;
 	uint8_t histBytes[READER_ATR_MAX_HIST_BYTES];
 };
@@ -65,6 +65,7 @@ READER_Status READER_ATR_IsTDToRead(uint8_t Y);
 
 uint8_t READER_ATR_GetY(uint8_t TD);
 uint8_t READER_ATR_GetT(uint8_t TD);
+uint8_t READER_ATR_GetK(uint8_t T0);
 
 READER_Status READER_ATR_Receive(READER_ATR_Atr *atr);
 

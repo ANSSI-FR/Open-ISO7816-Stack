@@ -10,6 +10,9 @@ READER_Status READER_ATR_Receive(READER_ATR_Atr *atr){
 	uint8_t TS, T0;
 	
 	if(READER_HAL_RcvChar(&TS) != READER_OK) return READER_ERR;
+	if(READER_ATR_CheckTS(TS) != READER_OK) return READER_ERR;
+	atr->encodingConv = READER_ATR_RetrieveEncoding(TS);
+	
 	if(READER_HAL_RcvChar(&T0) != READER_OK) return READER_ERR;
 	
 	
@@ -76,6 +79,10 @@ uint8_t READER_ATR_GetY(uint8_t TD){
 
 uint8_t READER_ATR_GetT(uint8_t TD){
 	return TD & 0x0F;
+}
+
+uint8_t READER_ATR_GetK(uint8_t T0){
+	return T0 & 0x0F;
 }
 
 
