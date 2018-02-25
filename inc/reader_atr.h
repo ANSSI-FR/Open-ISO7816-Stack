@@ -34,6 +34,13 @@ enum READER_ATR_UseOfSPU{
 };
 
 
+typedef enum READER_ATR_EncodingConvention READER_ATR_EncodingConvention;
+enum READER_ATR_EncodingConvention{
+	READER_ATR_ENCODING_DIRECT           =   (uint32_t)(0x00000001),
+	READER_ATR_ENCODING_REVERSE          =   (uint32_t)(0x00000000)
+};
+
+
 typedef struct READER_ATR_Atr READER_ATR_Atr;
 struct READER_ATR_Atr{
 	uint32_t Fi;
@@ -42,6 +49,7 @@ struct READER_ATR_Atr{
 	READER_ATR_ClockStopIndicator clockStopIndicator;
 	READER_ATR_ClassIndicator classIndicator;
 	READER_ATR_UseOfSPU useOfSPU;
+	READER_ATR_EncodingConvention;
 	uint32_t K;
 	uint8_t histBytes[READER_ATR_MAX_HIST_BYTES];
 };

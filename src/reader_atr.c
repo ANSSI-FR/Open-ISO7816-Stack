@@ -9,6 +9,10 @@
 READER_Status READER_ATR_Receive(READER_ATR_Atr *atr){
 	uint8_t TS, T0;
 	
+	if(READER_HAL_RcvChar(&TS) != READER_OK) return READER_ERR;
+	if(READER_HAL_RcvChar(&T0) != READER_OK) return READER_ERR;
+	
+	
 	
 }
 
