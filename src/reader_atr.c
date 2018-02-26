@@ -214,10 +214,12 @@ READER_Status READER_ATR_ProcessTA(READER_ATR_Atr *atr, uint8_t TA, uint32_t i, 
 		atr->classIndicator = READER_ATR_GetClassIndic(TA);
 	}
 	else if(T == 0){
-		
+		atr->T0Protocol.TABytes[atr->T0Protocol.TABytesCount] = TA;
+		atr->T0Protocol.TABytesCount++;
 	}
 	else if(T == 1){
-		
+		atr->T1Protocol.TABytes[atr->T1Protocol.TABytesCount] = TA;
+		atr->T1Protocol.TABytesCount++;
 	}
 	else{
 		return READER_ERR;
@@ -228,8 +230,6 @@ READER_Status READER_ATR_ProcessTA(READER_ATR_Atr *atr, uint8_t TA, uint32_t i, 
 
 
 READER_Status READER_ATR_ProcessTB(READER_ATR_Atr *atr, uint8_t TB, uint32_t i, uint8_t T){
-	uint8_t k;
-	
 	if((i == 1) || (i == 2)){
 		return READER_OK;        /* TB1 et TB2 sont deprecated voir section 8.3  ISO7816_3. Ils doivent etre ignores */
 	}
@@ -237,12 +237,12 @@ READER_Status READER_ATR_ProcessTB(READER_ATR_Atr *atr, uint8_t TB, uint32_t i, 
 		atr->useOfSPU = READER_ATR_GetUseSPU();
 	}
 	else if(T == 0){
-		k = atr->T0Protocol.specificBytesCount;
-		atr->T0Protocol->specificBytes[k].TB = TB;
-		atr->T0Protocol.specificBytesCount++
+		atr->T0Protocol.TBBytes[atr->T0Protocol.TBBytesCount] = TB;
+		atr->T0Protocol.TBBytesCount++;
 	}
 	else if(T == 1){
-		
+		atr->T1Protocol.TBBytes[atr->T1Protocol.TBBytesCount] = TB;
+		atr->T1Protocol.TBBytesCount++;
 	}
 	else{
 		return READER_ERR;
