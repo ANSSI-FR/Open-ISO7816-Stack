@@ -2,7 +2,8 @@
 #include "reader_hal.h"
 
 
-#define READER_ATR_MAX_HIST_BYTES 15;
+#define READER_ATR_MAX_HIST_BYTES        15
+#define READER_ATR_MAX_SPECIFIC_BYTES    8
 
 
 typedef enum READER_ATR_ClockStopIndicator READER_ATR_ClockStopIndicator:
@@ -41,6 +42,21 @@ enum READER_ATR_EncodingConv{
 };
 
 
+typedef struct READER_ATR_SpecificBytes READER_ATR_SpecificBytes;
+struct READER_ATR_SpecificBytes{
+	uint8_t TA;
+	uint8_t TB;
+	uint8_t TC;
+};
+
+
+typedef struct READER_ATR_ProtocolSpecificBytes READER_ATR_ProtocolSpecificBytes;
+struct READER_ATR_ProtocolSpecificBytes{
+	uint32_t specificBytesCount = 0;
+	READER_ATR_SpecificBytes specificBytes[READER_ATR_MAX_SPECIFIC_BYTES];
+};
+
+
 typedef struct READER_ATR_Atr READER_ATR_Atr;
 struct READER_ATR_Atr{
 	uint32_t Fi;
@@ -50,6 +66,8 @@ struct READER_ATR_Atr{
 	READER_ATR_ClassIndicator classIndicator;
 	READER_ATR_UseOfSPU useOfSPU;
 	READER_ATR_EncodingConv encodingConv;
+	READER_ATR_ProtocolSpecificBytes T0Protocol;
+	READER_ATR_ProtocolSpecificBytes T1Protocol;
 	uint32_t K;
 	uint8_t histBytes[READER_ATR_MAX_HIST_BYTES];
 };
