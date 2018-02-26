@@ -61,6 +61,7 @@ struct READER_ATR_Atr{
 	uint32_t Fi;
 	uint32_t Di;
 	uint32_t fMax;
+	uint8_t N;
 	READER_ATR_ClockStopIndicator clockStopIndicator;
 	READER_ATR_ClassIndicator classIndicator;
 	READER_ATR_UseOfSPU useOfSPU;
