@@ -218,7 +218,12 @@ READER_Status READER_ATR_ProcessTA(READER_ATR_Atr *atr, uint8_t TA, uint32_t i, 
 
 
 READER_Status READER_ATR_ProcessTB(READER_ATR_Atr *atr, uint8_t TB, uint32_t i, uint8_t T){
-	
+	if((i == 1) || (i == 2)){
+		return READER_OK;        /* TB1 et TB2 sont deprecated voir section 8.3  ISO7816_3. Ils doivent etre ignores */
+	}
+	else if(TB == 15){
+		
+	}
 }
 
 
