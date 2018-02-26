@@ -159,6 +159,18 @@ uint32_t READER_ATR_GetClassIndic(uint8_t TA15){
 	return  TA15 & 0x40;
 }
 
+READER_ATR_UseOfSPU READER_ATR_GetUseSPU(uint8_t TB15){
+	if(TB15 == 0x00){
+		return READER_ATR_SPU_NOTUSED;
+	}
+	else if((TB15 & 0x80) == 0){
+		return READER_ATR_SPU_PROPRIETARY;
+	}
+	else{
+		return READER_ATR_SPU_STANDARD;
+	}
+}
+
 
 void READER_ATR_ErrHandler(void){
 	while(1){

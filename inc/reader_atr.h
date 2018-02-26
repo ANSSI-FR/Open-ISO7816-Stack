@@ -93,6 +93,7 @@ uint32_t READER_ATR_GetFMax(uint8_t TA1);
 uint32_t READER_ATR_GetDi(uint8_t TA1);
 uint32_t READER_ATR_GetClockStopIndic(uint8_t TA15);
 uint32_t READER_ATR_GetClassIndic(uint8_t TA15);
+READER_ATR_UseOfSPU READER_ATR_GetUseSPU(uint8_t TB15);
 
 READER_Status READER_ATR_Receive(READER_ATR_Atr *atr);
 
