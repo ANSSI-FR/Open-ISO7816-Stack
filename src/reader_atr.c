@@ -253,6 +253,21 @@ READER_Status READER_ATR_ProcessTB(READER_ATR_Atr *atr, uint8_t TB, uint32_t i, 
 
 
 READER_Status READER_ATR_ProcessTC(READER_ATR_Atr *atr, uint8_t TC, uint32_t i, uint8_t T){
+	if(i == 1){
+		atr->N = TC;  /* Extra guardtime */
+	}
+	else if(T == 0){
+		atr->T0Protocol.TCBytes[atr->T0Protocol.TCBytesCount] = TC;
+		atr->T0Protocol.TCBytesCount++;
+	}
+	else if(T == 1){
+		atr->T1Protocol.TCBytes[atr->T1Protocol.TCBytesCount] = TC;
+		atr->T1Protocol.TCBytesCount++;
+	}
+	else{
+		return READER_ERR;
+	}
 	
+	return READER_OK;
 }
 
