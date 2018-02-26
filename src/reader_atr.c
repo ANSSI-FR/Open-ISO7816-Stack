@@ -1,4 +1,5 @@
 #include <stdint.h>
+#include "reader_atr.h"
 #include "reader_hal.h"
 
 
@@ -12,11 +13,18 @@ static uint32_t globalFMaxConvTable[0x10] = {4000000, 5000000, 6000000, 8000000,
 
 
 READER_Status READER_ATR_Receive(READER_ATR_Atr *atr){
-	uint32_t i = 0;
+	uint32_t i = 1;
 	uint8_t TS, T0;
 	uint8_t TA, TB, TC, TD;
 	uint8_t Y, T = 0;
 	
+	/* Initialisation des certains elements de la structure ATR */
+	atr->T0Protocol.TABytesCount = 0;
+	atr->T0Protocol.TBBytesCount = 0;
+	atr->T0Protocol.TCBytesCount = 0;
+	atr->T1Protocol.TABytesCount = 0;
+	atr->T1Protocol.TBBytesCount = 0;
+	atr->T1Protocol.TCBytesCount = 0;
 	
 	/* Recuperation de TS et T0 */
 	if(READER_HAL_RcvChar(&TS) != READER_OK) return READER_ERR;
@@ -55,7 +63,7 @@ READER_Status READER_ATR_Receive(READER_ATR_Atr *atr){
 	}
 	
 	/* Recuperation de tous les Historical Bytes */
-	
+	READER_HAL_RcvCharFrame(atr->histBytes, atr->K);
 	
 	/* Recuperation du Check Byte */
 	
@@ -237,7 +245,7 @@ READER_Status READER_ATR_ProcessTB(READER_ATR_Atr *atr, uint8_t TB, uint32_t i, 
 		return READER_OK;        /* TB1 et TB2 sont deprecated voir section 8.3  ISO7816_3. Ils doivent etre ignores */
 	}
 	else if(TB == 15){
-		atr->useOfSPU = READER_ATR_GetUseSPU();
+		atr->useOfSPU = READER_ATR_GetUseSPU(TB);
 	}
 	else if(T == 0){
 		atr->T0Protocol.TBBytes[atr->T0Protocol.TBBytesCount] = TB;

@@ -1,13 +1,16 @@
 #include "main.h"
 #include "reader_hal.h"
 #include "stm32f4xx_hal.h"
+#include "reader_atr.h"
 
 
 uint8_t pSmartCardTxBuff[100];
 uint8_t pSmartcardRxBuff[100];
 
 
-int main(void){	
+int main(void){
+	READER_ATR_Atr atr;
+	
 	if(READER_HAL_Init() != READER_OK){
 		READER_HAL_ErrHandler();
 	}
@@ -19,7 +22,8 @@ int main(void){
 	HAL_Delay(1);
 	READER_HAL_SetRstLine(READER_HAL_STATE_ON);
 	
-	READER_HAL_RcvCharFrame(pSmartcardRxBuff, 17);
+	//READER_HAL_RcvCharFrame(pSmartcardRxBuff, 17);
+	READER_ATR_Receive(&atr);
 	HAL_Delay(5);
 	
 	/* Fabrication du header TPDU */

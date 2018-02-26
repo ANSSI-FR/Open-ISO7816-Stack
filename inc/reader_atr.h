@@ -6,7 +6,7 @@
 #define READER_ATR_MAX_SPECIFIC_BYTES    8
 
 
-typedef enum READER_ATR_ClockStopIndicator READER_ATR_ClockStopIndicator:
+typedef enum READER_ATR_ClockStopIndicator READER_ATR_ClockStopIndicator;
 enum READER_ATR_ClockStopIndicator{
 	READER_ATR_CLOCKSTOP_NOTSUPPORTED    =   (uint32_t)(0x00000000),
 	READER_ATR_CLOCKSTOP_STATE_L         =   (uint32_t)(0x00000001),
@@ -17,7 +17,7 @@ enum READER_ATR_ClockStopIndicator{
 
 
 typedef enum READER_ATR_ClassIndicator READER_ATR_ClassIndicator;
-READER_ATR_ClassIndicator{
+enum READER_ATR_ClassIndicator{
 	READER_ATR_CLASS_A_ONLY              =   (uint32_t)(0x00000001),
 	READER_ATR_CLASS_B_ONLY              =   (uint32_t)(0x00000002),
 	READER_ATR_CLASS_C_ONLY              =   (uint32_t)(0x00000004),
@@ -46,9 +46,9 @@ enum READER_ATR_EncodingConv{
 
 typedef struct READER_ATR_ProtocolSpecificBytes READER_ATR_ProtocolSpecificBytes;
 struct READER_ATR_ProtocolSpecificBytes{
-	uint8_t TABytesCount = 0;
-	uint8_t TBBytesCount = 0;
-	uint8_t TCBytesCount = 0;
+	uint8_t TABytesCount;
+	uint8_t TBBytesCount;
+	uint8_t TCBytesCount;
 	
 	uint8_t TABytes[READER_ATR_MAX_SPECIFIC_BYTES];
 	uint8_t TBBytes[READER_ATR_MAX_SPECIFIC_BYTES];
