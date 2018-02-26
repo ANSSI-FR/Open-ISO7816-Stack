@@ -198,7 +198,8 @@ READER_Status READER_ATR_ProcessTA(READER_ATR_Atr *atr, uint8_t TA, uint32_t i, 
 		atr->fMax = READER_ATR_GetFMax(TA);
 	}
 	else if(T == 15){    /* Global Interface Byte */
-		
+		atr->clockStopIndicator = READER_ATR_GetClockStopIndic(TA);
+		atr->classIndicator = READER_ATR_GetClassIndic(TA);
 	}
 	else if(T == 0){
 		atr->T0Protocol.specificBytes.TA = TA;
