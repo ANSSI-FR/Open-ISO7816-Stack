@@ -3,7 +3,7 @@
 #include "reader_periph.h"
 #include "reader_utils.h"
 
-#include "stm32f4xx_hal.h"
+#include <stdint.h>
 
 
 SMARTCARD_HandleTypeDef smartcardHandleStruct;
@@ -240,3 +240,8 @@ void READER_HAL_ErrHandler(void){
 		HAL_Delay(100);
 	}
 }
+
+void READER_HAL_DelayMili(uint32_t tMili){
+	HAL_Delay(tMili);
+}
+
