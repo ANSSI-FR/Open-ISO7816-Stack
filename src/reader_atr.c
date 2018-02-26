@@ -32,12 +32,15 @@ READER_Status READER_ATR_Receive(READER_ATR_Atr *atr){
 	while(READER_ATR_IsInterfacesBytesToRead(Y)){
 		if(READER_ATR_IsTAToRead(Y)){
 			if(READER_HAL_RcvChar(&TA) != READER_OK) return READER_ERR;
+			if(READER_ATR_ProcessTA(atr, TA, i, T) != READER_OK) return READER_ERR;
 		}
 		if(READER_ATR_IsTBToRead(Y)){
 			if(READER_HAL_RcvChar(&TB) != READER_OK) return READER_ERR;
+			if(READER_ATR_ProcessTA(atr, TA, i, T) != READER_OK) return READER_ERR;
 		}
 		if(READER_ATR_IsTCToRead(Y)){
 			if(READER_HAL_RcvChar(&TC) != READER_OK) return READER_ERR;
+			if(READER_ATR_ProcessTA(atr, TA, i, T) != READER_OK) return READER_ERR;
 		}
 		if(READER_ATR_IsTDToRead(Y)){
 			if(READER_HAL_RcvChar(&TD) != READER_OK) return READER_ERR;
