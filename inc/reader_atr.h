@@ -42,18 +42,17 @@ enum READER_ATR_EncodingConv{
 };
 
 
-typedef struct READER_ATR_SpecificBytes READER_ATR_SpecificBytes;
-struct READER_ATR_SpecificBytes{
-	uint8_t TA;
-	uint8_t TB;
-	uint8_t TC;
-};
 
 
 typedef struct READER_ATR_ProtocolSpecificBytes READER_ATR_ProtocolSpecificBytes;
 struct READER_ATR_ProtocolSpecificBytes{
-	uint32_t specificBytesCount = 0;
-	READER_ATR_SpecificBytes specificBytes[READER_ATR_MAX_SPECIFIC_BYTES];
+	uint8_t TABytesCount = 0;
+	uint8_t TBBytesCount = 0;
+	uint8_t TCBytesCount = 0;
+	
+	uint8_t TABytes[READER_ATR_MAX_SPECIFIC_BYTES];
+	uint8_t TBBytes[READER_ATR_MAX_SPECIFIC_BYTES];
+	uint8_t TCBytes[READER_ATR_MAX_SPECIFIC_BYTES];
 };
 
 

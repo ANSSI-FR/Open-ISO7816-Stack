@@ -203,7 +203,7 @@ READER_ATR_EncodingConv READER_ATR_GetEncoding(uint8_t TS){
 }
 
 
-READER_Status READER_ATR_ProcessTA(READER_ATR_Atr *atr, uint8_t TA, uint32_t i, uint8_t T){
+READER_Status READER_ATR_ProcessTA(READER_ATR_Atr *atr, uint8_t TA, uint32_t i, uint8_t T){	
 	if(i == 1){          /* Global interface Byte */
 		atr->Fi = READER_ATR_GetFi(TA);
 		atr->Di = READER_ATR_GetDi(TA);
@@ -214,12 +214,10 @@ READER_Status READER_ATR_ProcessTA(READER_ATR_Atr *atr, uint8_t TA, uint32_t i, 
 		atr->classIndicator = READER_ATR_GetClassIndic(TA);
 	}
 	else if(T == 0){
-		atr->T0Protocol.specificBytes.TA = TA;
-		atr->T0Protocol.specificBytesCount++;
+		
 	}
 	else if(T == 1){
-		atr->T1Protocol.specificBytes.TA = TA;
-		atr->T1Protocol.specificBytesCount++;
+		
 	}
 	else{
 		return READER_ERR;
@@ -230,12 +228,27 @@ READER_Status READER_ATR_ProcessTA(READER_ATR_Atr *atr, uint8_t TA, uint32_t i, 
 
 
 READER_Status READER_ATR_ProcessTB(READER_ATR_Atr *atr, uint8_t TB, uint32_t i, uint8_t T){
+	uint8_t k;
+	
 	if((i == 1) || (i == 2)){
 		return READER_OK;        /* TB1 et TB2 sont deprecated voir section 8.3  ISO7816_3. Ils doivent etre ignores */
 	}
 	else if(TB == 15){
+		atr->useOfSPU = READER_ATR_GetUseSPU();
+	}
+	else if(T == 0){
+		k = atr->T0Protocol.specificBytesCount;
+		atr->T0Protocol->specificBytes[k].TB = TB;
+		atr->T0Protocol.specificBytesCount++
+	}
+	else if(T == 1){
 		
 	}
+	else{
+		return READER_ERR;
+	}
+	
+	return READER_OK;
 }
 
 
