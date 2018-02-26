@@ -150,12 +150,12 @@ uint32_t READER_ATR_GetDi(uint8_t TA1){
 	return (uint32_t)(globalDiConvTable[k]);
 }
 
-uint32_t READER_ATR_GetClockStopIndic(uint8_t TA15){
+READER_ATR_ClockStopIndicator READER_ATR_GetClockStopIndic(uint8_t TA15){
 	return (TA15 >> 6) & 0x03;
 }
 
 
-uint32_t READER_ATR_GetClassIndic(uint8_t TA15){
+READER_ATR_ClassIndicator READER_ATR_GetClassIndic(uint8_t TA15){
 	return  TA15 & 0x40;
 }
 
