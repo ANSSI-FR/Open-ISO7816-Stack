@@ -100,6 +100,7 @@ READER_ATR_UseOfSPU READER_ATR_GetUseSPU(uint8_t TB15);
 READER_ATR_EncodingConv READER_ATR_GetEncoding(uint8_t TS);
 
 READER_Status READER_ATR_Receive(READER_ATR_Atr *atr);
+READER_Status READER_ATR_InitStruct(READER_ATR_Atr *atr);
 
 void READER_ATR_ErrHandler(void);
 

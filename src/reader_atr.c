@@ -18,18 +18,10 @@ READER_Status READER_ATR_Receive(READER_ATR_Atr *atr){
 	uint8_t TA, TB, TC, TD;
 	uint8_t Y, T = 0;
 	
+	
 	/* Initialisation des certains elements de la structure ATR */
-	atr->T0Protocol.TABytesCount = 0;
-	atr->T0Protocol.TBBytesCount = 0;
-	atr->T0Protocol.TCBytesCount = 0;
-	atr->T1Protocol.TABytesCount = 0;
-	atr->T1Protocol.TBBytesCount = 0;
-	atr->T1Protocol.TCBytesCount = 0;
-	
-	atr->clockStopIndicator = READER_ATR_CLOCKSTOP_NOTINDICATED;
-	atr->classIndicator = READER_ATR_CLASS_NOTINDICATED;
-	atr->useOfSPU = READER_ATR_SPU_NOTINDICATED;
-	
+	READER_ATR_InitStruct(atr);
+		
 	
 	/* Recuperation de TS et T0 */
 	if(READER_HAL_RcvChar(&TS) != READER_OK) return READER_ERR;
@@ -72,6 +64,48 @@ READER_Status READER_ATR_Receive(READER_ATR_Atr *atr){
 	
 	/* Recuperation du Check Byte */
 	
+	
+	return READER_OK;
+}
+
+
+
+READER_Status READER_ATR_InitStruct(READER_ATR_Atr *atr){
+	uint32_t j;
+	
+	
+	atr->T0Protocol.TABytesCount = 0;
+	atr->T0Protocol.TBBytesCount = 0;
+	atr->T0Protocol.TCBytesCount = 0;
+	atr->T1Protocol.TABytesCount = 0;
+	atr->T1Protocol.TBBytesCount = 0;
+	atr->T1Protocol.TCBytesCount = 0;
+	
+	atr->clockStopIndicator      = READER_ATR_CLOCKSTOP_NOTINDICATED;
+	atr->classIndicator          = READER_ATR_CLASS_NOTINDICATED;
+	atr->useOfSPU                = READER_ATR_SPU_NOTINDICATED;
+	
+	
+	for(j=0; j<READER_ATR_MAX_SPECIFIC_BYTES; j++){
+		atr->T0Protocol.TABytes[j] = 0x00;
+	}
+	for(j=0; j<READER_ATR_MAX_SPECIFIC_BYTES; j++){
+		atr->T0Protocol.TBBytes[j] = 0x00;
+	}
+	for(j=0; j<READER_ATR_MAX_SPECIFIC_BYTES; j++){
+		atr->T0Protocol.TCBytes[j] = 0x00;
+	}
+	
+	
+	for(j=0; j<READER_ATR_MAX_SPECIFIC_BYTES; j++){
+		atr->T1Protocol.TABytes[j] = 0x00;
+	}
+	for(j=0; j<READER_ATR_MAX_SPECIFIC_BYTES; j++){
+		atr->T1Protocol.TBBytes[j] = 0x00;
+	}
+	for(j=0; j<READER_ATR_MAX_SPECIFIC_BYTES; j++){
+		atr->T1Protocol.TCBytes[j] = 0x00;
+	}
 	
 	return READER_OK;
 }

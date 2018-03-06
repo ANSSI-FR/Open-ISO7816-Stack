@@ -28,13 +28,8 @@ int main(void){
 	HAL_Delay(1);
 	READER_HAL_SetRstLine(READER_HAL_STATE_ON);
 	
-	//READER_HAL_RcvCharFrame(pSmartcardRxBuff, 17);
+
 	READER_ATR_Receive(&atr);
-	//HAL_UART_Transmit_IT(&uartHandleStruct, (uint8_t*)(&(atr.K)), 4);
-	HAL_Delay(5);
-	HAL_UART_Transmit_IT(&uartHandleStruct, (uint8_t*)(&(atr.T1Protocol.TABytesCount)), 1);
-	HAL_UART_Transmit_IT(&uartHandleStruct, (uint8_t*)(&(atr.T1Protocol.TBBytesCount)), 1);
-	HAL_UART_Transmit_IT(&uartHandleStruct, (uint8_t*)(&(atr.T1Protocol.TCBytesCount)), 1);
 	
 	/* Fabrication du header TPDU */
 	pSmartcardTxBuff[0] = 0x00;        // CLA
