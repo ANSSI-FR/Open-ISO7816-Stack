@@ -11,7 +11,8 @@ enum READER_ATR_ClockStopIndicator{
 	READER_ATR_CLOCKSTOP_NOTSUPPORTED    =   (uint32_t)(0x00000000),
 	READER_ATR_CLOCKSTOP_STATE_L         =   (uint32_t)(0x00000001),
 	READER_ATR_CLOCKSTOP_STATE_H         =   (uint32_t)(0x00000002),
-	READER_ATR_CLOCKSTOP_NOPREF          =   (uint32_t)(0x00000003)
+	READER_ATR_CLOCKSTOP_NOPREF          =   (uint32_t)(0x00000003),
+	READER_ATR_CLOCKSTOP_NOTINDICATED    =   (uint32_t)(0x00000004)
 };
 
 
@@ -23,7 +24,8 @@ enum READER_ATR_ClassIndicator{
 	READER_ATR_CLASS_C_ONLY              =   (uint32_t)(0x00000004),
 	READER_ATR_CLASS_AB_ONLY             =   (uint32_t)(0x00000003),
 	READER_ATR_CLASS_BC_ONLY             =   (uint32_t)(0x00000006),
-	READER_ATR_CLASS_ABC                 =   (uint32_t)(0x00000007)
+	READER_ATR_CLASS_ABC                 =   (uint32_t)(0x00000007),
+	READER_ATR_CLASS_NOTINDICATED        =   (uint32_t)(0x00000000)
 };
 
 
@@ -31,7 +33,8 @@ typedef enum READER_ATR_UseOfSPU READER_ATR_UseOfSPU;
 enum READER_ATR_UseOfSPU{
 	READER_ATR_SPU_STANDARD              =   (uint32_t)(0x00000002),
 	READER_ATR_SPU_PROPRIETARY           =   (uint32_t)(0x00000001),
-	READER_ATR_SPU_NOTUSED               =   (uint32_t)(0x00000000)
+	READER_ATR_SPU_NOTUSED               =   (uint32_t)(0x00000000),
+	READER_ATR_SPU_NOTINDICATED          =   (uint32_t)(0x00000003)
 };
 
 
@@ -94,11 +97,10 @@ uint32_t READER_ATR_GetDi(uint8_t TA1);
 READER_ATR_ClockStopIndicator READER_ATR_GetClockStopIndic(uint8_t TA15);
 READER_ATR_ClassIndicator READER_ATR_GetClassIndic(uint8_t TA15);
 READER_ATR_UseOfSPU READER_ATR_GetUseSPU(uint8_t TB15);
+READER_ATR_EncodingConv READER_ATR_GetEncoding(uint8_t TS);
 
 READER_Status READER_ATR_Receive(READER_ATR_Atr *atr);
 
 void READER_ATR_ErrHandler(void);
 
 READER_Status READER_ATR_CheckTS(uint8_t TS);
-
-READER_ATR_EncodingConv READER_ATR_GetEncoding(uint8_t TS);

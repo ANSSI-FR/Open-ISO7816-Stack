@@ -26,6 +26,11 @@ READER_Status READER_ATR_Receive(READER_ATR_Atr *atr){
 	atr->T1Protocol.TBBytesCount = 0;
 	atr->T1Protocol.TCBytesCount = 0;
 	
+	atr->clockStopIndicator = READER_ATR_CLOCKSTOP_NOTINDICATED;
+	atr->classIndicator = READER_ATR_CLASS_NOTINDICATED;
+	atr->useOfSPU = READER_ATR_SPU_NOTINDICATED;
+	
+	
 	/* Recuperation de TS et T0 */
 	if(READER_HAL_RcvChar(&TS) != READER_OK) return READER_ERR;
 	if(READER_ATR_CheckTS(TS) != READER_OK) return READER_ERR;
@@ -44,11 +49,11 @@ READER_Status READER_ATR_Receive(READER_ATR_Atr *atr){
 		}
 		if(READER_ATR_IsTBToRead(Y)){
 			if(READER_HAL_RcvChar(&TB) != READER_OK) return READER_ERR;
-			if(READER_ATR_ProcessTA(atr, TA, i, T) != READER_OK) return READER_ERR;
+			if(READER_ATR_ProcessTB(atr, TB, i, T) != READER_OK) return READER_ERR;
 		}
 		if(READER_ATR_IsTCToRead(Y)){
 			if(READER_HAL_RcvChar(&TC) != READER_OK) return READER_ERR;
-			if(READER_ATR_ProcessTA(atr, TA, i, T) != READER_OK) return READER_ERR;
+			if(READER_ATR_ProcessTC(atr, TC, i, T) != READER_OK) return READER_ERR;
 		}
 		if(READER_ATR_IsTDToRead(Y)){
 			if(READER_HAL_RcvChar(&TD) != READER_OK) return READER_ERR;
@@ -125,7 +130,7 @@ READER_Status READER_ATR_IsTDToRead(uint8_t Y){
 
 
 uint8_t READER_ATR_GetY(uint8_t TD){
-	return (TD >> 4) & 0xF0;
+	return (TD >> 4) & 0x0F;
 }
 
 
@@ -157,7 +162,7 @@ uint32_t READER_ATR_GetFMax(uint8_t TA1){
 uint32_t READER_ATR_GetDi(uint8_t TA1){
 	uint8_t k;
 	
-	k = TA1 & 0xF0;
+	k = TA1 & 0x0F;
 	return (uint32_t)(globalDiConvTable[k]);
 }
 

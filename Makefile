@@ -58,6 +58,7 @@ CFLAGS+= -Os
 #CFLAGS+= -pedantic-errors
 CFLAGS+= $(DEFS)
 CFLAGS+= $(INCS)
+CFLAGS+= -g     #informations de debug
 
 
 LDFLAGS= -Wl,--gc-sections

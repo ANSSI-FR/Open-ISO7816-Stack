@@ -54,6 +54,7 @@
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
 extern SMARTCARD_HandleTypeDef smartcardHandleStruct;
+extern UART_HandleTypeDef uartHandleStruct;
 /* Private function prototypes -----------------------------------------------*/
 /* Private functions ---------------------------------------------------------*/
 
@@ -178,7 +179,7 @@ void EXTI0_IRQHandler(void)
 
 
 void USART1_IRQHandler(void){
-
+	HAL_UART_IRQHandler(&uartHandleStruct);
 }
 
 
