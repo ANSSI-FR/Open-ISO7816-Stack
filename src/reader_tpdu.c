@@ -27,12 +27,16 @@ READER_Status READER_TPDU_SendHeader(READER_TPDU_Header *tpduHeader, uint32_t ti
 }
 
 
-READER_Status READER_TPDU_SendDataOneshot(READER_TPDU_DataField *tpduDataField){
+READER_Status READER_TPDU_SendDataOneshot(READER_TPDU_DataField *tpduDataField, uint32_t timeout){
+	READER_Status retVal;
 	
+	retVal = READER_HAL_SendCharFrame(tpduDataField->data, tpduDataField->size, timeout);
+	
+	return retVal;
 }
 
 
-READER_Status READER_TPDU_SendDataSliced(READER_TPDU_DataField *tpduDataField){
+READER_Status READER_TPDU_SendDataSliced(READER_TPDU_DataField *tpduDataField, uint32_t timeout){
 	
 }
 
