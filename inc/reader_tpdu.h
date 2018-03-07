@@ -39,6 +39,7 @@ struct READER_TPDU_Command{
 READER_Status READER_TPDU_Send(READER_TPDU_Command *tpdu);
 READER_Status READER_TPDU_SendHeader(READER_TPDU_Header *tpduHeader);
 READER_Status READER_TPDU_SendDataOneshot(READER_TPDU_DataField *tpduDataField);
+READER_Status READER_TPDU_SendDataSliced(READER_TPDU_DataField *tpduDataField);
 
 
 
