@@ -55,7 +55,6 @@ READER_Status READER_ATR_Receive(READER_ATR_Atr *atr){
 		else{
 			Y = 0x00;
 		}
-		
 		i++;
 	}
 	
@@ -84,6 +83,7 @@ READER_Status READER_ATR_InitStruct(READER_ATR_Atr *atr){
 	atr->clockStopIndicator      = READER_ATR_CLOCKSTOP_NOTINDICATED;
 	atr->classIndicator          = READER_ATR_CLASS_NOTINDICATED;
 	atr->useOfSPU                = READER_ATR_SPU_NOTINDICATED;
+	atr->K                       = 0;
 	
 	
 	for(j=0; j<READER_ATR_MAX_SPECIFIC_BYTES; j++){
@@ -105,6 +105,10 @@ READER_Status READER_ATR_InitStruct(READER_ATR_Atr *atr){
 	}
 	for(j=0; j<READER_ATR_MAX_SPECIFIC_BYTES; j++){
 		atr->T1Protocol.TCBytes[j] = 0x00;
+	}
+	
+	for(j=0; j<READER_ATR_MAX_HIST_BYTES; j++){
+		atr->histBytes[j] = 0x00;
 	}
 	
 	return READER_OK;
