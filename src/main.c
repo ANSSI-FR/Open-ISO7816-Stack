@@ -38,12 +38,12 @@ int main(void){
 	pSmartcardTxBuff[3] = 0x00;        // P2
 	pSmartcardTxBuff[4] = 0x0D;        // Lc = P3
 	
-	READER_HAL_SendCharFrame(pSmartcardTxBuff, 5);
+	READER_HAL_SendCharFrame(pSmartcardTxBuff, 5, READER_HAL_USE_ISO_WT);
 	
 	
 	/* Attente du ACK */
 	do{
-		READER_HAL_RcvCharFrame(pSmartcardRxBuff, 1);
+		READER_HAL_RcvCharFrame(pSmartcardRxBuff, 1, READER_HAL_USE_ISO_WT);
 	}while(pSmartcardRxBuff[0] != 0xA4);
 	
 	HAL_Delay(10);
@@ -64,12 +64,12 @@ int main(void){
 	pSmartcardTxBuff[12] = 0x70;
 	
 	
-	READER_HAL_SendCharFrame(pSmartcardTxBuff, 0x0D);
+	READER_HAL_SendCharFrame(pSmartcardTxBuff, 0x0D, READER_HAL_USE_ISO_WT);
 	
 	
 	
 	/* Reception de SW1SW2 */
-	READER_HAL_RcvCharFrame(pSmartcardRxBuff, 3);
+	READER_HAL_RcvCharFrame(pSmartcardRxBuff, 3, READER_HAL_USE_ISO_WT);
 	//HAL_UART_Transmit_IT(&uartHandleStruct, pSmartcardRxBuff, 3);
 
 	HAL_Delay(10);
@@ -81,17 +81,17 @@ int main(void){
 	pSmartcardTxBuff[3] = 0x00;
 	pSmartcardTxBuff[4] = 0x12;
 	
-	READER_HAL_SendCharFrame(pSmartcardTxBuff, 5);
+	READER_HAL_SendCharFrame(pSmartcardTxBuff, 5, READER_HAL_USE_ISO_WT);
 	
 	
 	/* Attente du ACK */
 	do{
-		READER_HAL_RcvCharFrame(pSmartcardRxBuff, 1);
+		READER_HAL_RcvCharFrame(pSmartcardRxBuff, 1, READER_HAL_USE_ISO_WT);
 	}while(pSmartcardRxBuff[0] != 0xC0);
 	
 	
 	/* Reception reponse carte + SW1SW2 */
-	READER_HAL_RcvCharFrame(pSmartcardRxBuff, 0x14);
+	READER_HAL_RcvCharFrame(pSmartcardRxBuff, 0x14, READER_HAL_USE_ISO_WT);
 
 	
 	HAL_Delay(500);

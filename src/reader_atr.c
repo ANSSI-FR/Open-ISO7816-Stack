@@ -24,11 +24,11 @@ READER_Status READER_ATR_Receive(READER_ATR_Atr *atr){
 		
 	
 	/* Recuperation de TS et T0 */
-	if(READER_HAL_RcvChar(&TS) != READER_OK) return READER_ERR;
+	if(READER_HAL_RcvChar(&TS, READER_HAL_USE_ISO_WT) != READER_OK) return READER_ERR;
 	if(READER_ATR_CheckTS(TS) != READER_OK) return READER_ERR;
 	atr->encodingConv = READER_ATR_GetEncoding(TS);
 	
-	if(READER_HAL_RcvChar(&T0) != READER_OK) return READER_ERR;
+	if(READER_HAL_RcvChar(&T0, READER_HAL_USE_ISO_WT) != READER_OK) return READER_ERR;
 	atr->K = READER_ATR_GetK(T0);
 	
 	Y = READER_ATR_GetY(T0);
@@ -36,19 +36,19 @@ READER_Status READER_ATR_Receive(READER_ATR_Atr *atr){
 	/* Recupertion de tous les Interfaces Bytes */
 	while(READER_ATR_IsInterfacesBytesToRead(Y)){
 		if(READER_ATR_IsTAToRead(Y)){
-			if(READER_HAL_RcvChar(&TA) != READER_OK) return READER_ERR;
+			if(READER_HAL_RcvChar(&TA, READER_HAL_USE_ISO_WT) != READER_OK) return READER_ERR;
 			if(READER_ATR_ProcessTA(atr, TA, i, T) != READER_OK) return READER_ERR;
 		}
 		if(READER_ATR_IsTBToRead(Y)){
-			if(READER_HAL_RcvChar(&TB) != READER_OK) return READER_ERR;
+			if(READER_HAL_RcvChar(&TB, READER_HAL_USE_ISO_WT) != READER_OK) return READER_ERR;
 			if(READER_ATR_ProcessTB(atr, TB, i, T) != READER_OK) return READER_ERR;
 		}
 		if(READER_ATR_IsTCToRead(Y)){
-			if(READER_HAL_RcvChar(&TC) != READER_OK) return READER_ERR;
+			if(READER_HAL_RcvChar(&TC, READER_HAL_USE_ISO_WT) != READER_OK) return READER_ERR;
 			if(READER_ATR_ProcessTC(atr, TC, i, T) != READER_OK) return READER_ERR;
 		}
 		if(READER_ATR_IsTDToRead(Y)){
-			if(READER_HAL_RcvChar(&TD) != READER_OK) return READER_ERR;
+			if(READER_HAL_RcvChar(&TD, READER_HAL_USE_ISO_WT) != READER_OK) return READER_ERR;
 			Y = READER_ATR_GetY(TD);
 			T = READER_ATR_GetT(TD);
 		}
@@ -59,7 +59,7 @@ READER_Status READER_ATR_Receive(READER_ATR_Atr *atr){
 	}
 	
 	/* Recuperation de tous les Historical Bytes */
-	READER_HAL_RcvCharFrame(atr->histBytes, atr->K);
+	READER_HAL_RcvCharFrame(atr->histBytes, atr->K, READER_HAL_USE_ISO_WT);
 	
 	/* Recuperation du Check Byte */
 	
