@@ -52,8 +52,8 @@ CFLAGS= -mcpu=$(CPU_CIBLE)
 CFLAGS+= -mlittle-endian
 CFLAGS+= -mthumb
 CFLAGS+= -Wall
-CFLAGS+= -ffunction-sections -fdata-sections
-CFLAGS+= -Os
+#CFLAGS+= -ffunction-sections -fdata-sections
+#CFLAGS+= -Os
 #CFLAGS+= -std=c89
 #CFLAGS+= -pedantic-errors
 CFLAGS+= $(DEFS)
