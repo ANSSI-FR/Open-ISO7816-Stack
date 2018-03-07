@@ -8,7 +8,7 @@
 
 
 
-#define READER_TPU_MAX_DATA     0xFF;
+#define READER_TPDU_MAX_DATA     0xFF;
 
 
 
@@ -25,13 +25,13 @@ struct READER_TPDU_Header{
 typedef struct READER_TPDU_DataField READER_TPDU_DataField;
 struct READER_TPDU_DataField{
 	uint8_t size;
-	uint8_t data[READER_TPU_MAX_DATA];
+	uint8_t data[READER_TPDU_MAX_DATA];
 };
 
 
 typedef struct READER_TPDU_Tpdu READER_TPDU_Command;
 struct READER_TPDU_Command{
-	READER_TPDU_Header header;
+	READER_TPDU_Header headerField;
 	READER_TPDU_DataField dataField;
 };
 
@@ -47,6 +47,7 @@ READER_Status READER_TPDU_IsACK(uint8_t byte, uint8_t INS);
 READER_Status READER_TPDU_IsXoredACK(uint8_t byte, uint8_t INS);
 READER_Status READER_TPDU_IsNull(uint8_t byte);
 READER_Status READER_TPDU_IsSW1(uint8_t byte);
+READER_Status READER_TPDU_IsProcedureByte(uint8_t byte, uint8_t INS);
 
 
 
