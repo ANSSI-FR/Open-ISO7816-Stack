@@ -36,8 +36,42 @@ READER_Status READER_TPDU_SendDataOneshot(READER_TPDU_DataField *tpduDataField, 
 }
 
 
-READER_Status READER_TPDU_SendDataSliced(READER_TPDU_DataField *tpduDataField, uint32_t timeout){
+READER_Status READER_TPDU_SendDataSliced(READER_TPDU_Command *tpdu, uint32_t timeout){
+	uint32_t i;
+	uint32_t timeoutMili;
+	READER_Status retVal;
+	READER_TPDU_DataField *tpduDataField;
 	
+	tpduDataField = &(tpdu->dataField);
+	
+	
+	if(tpduDataField->size > READER_TPDU_MAX_DATA) return READER_ERR;
+	if(tpduDataField->size == 0x00) return READER_ERR;
+	
+	
+	if(timeout == READER_HAL_USE_ISO_WT){
+		timeoutMili = READER_HAL_USE_ISO_WT;
+	}
+	else{
+		timeoutMili = (timeout / tpduDataField->size) + 1;
+	}
+	
+	/* Penser a remplacer le for par un while (degeu) */
+	for(i=0; i<tpduDataField->size; i++){
+		retVal = READER_HAL_SendChar(tpduDataField->data[i], timeoutMili);
+		if(retVal != READER_OK) return retVal;
+		
+		retVal = READER_TPDU_WaitProcedureByte(&procedureByte, timeoutMili);
+		if(retVal != READER_OK) return retVal;
+		
+		if((!READER_TPDU_IsXoredACK(procedureByte, tpdu->headerField.INS)) && (!READER_TPDU_IsNull(procedureByte))) return READER_ERR;
+		
+		if(READER_TPDU_IsNull(procedureByte)){
+			/* Attendre le temps necessaire */
+		}
+	}
+	
+	return READER_OK;
 }
 
 
