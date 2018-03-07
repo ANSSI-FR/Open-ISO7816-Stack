@@ -12,8 +12,8 @@
 
 
 
-typedef struct READER_TPDU_Tpdu READER_TPDU_Tpdu;
-struct READER_TPDU_Tpdu{
+typedef struct READER_TPDU_Tpdu READER_TPDU_TpduCommand;
+struct READER_TPDU_TpduCommand{
 	uint8_t CLA;
 	uint8_t INS;
 	uint8_t P1;
