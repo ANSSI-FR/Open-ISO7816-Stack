@@ -43,9 +43,8 @@ READER_Status READER_TPDU_SendDataOneshot(READER_TPDU_DataField *tpduDataField);
 READER_Status READER_TPDU_SendDataSliced(READER_TPDU_DataField *tpduDataField);
 
 READER_Status READER_TPDU_WaitProcedureByte(uint8_t *procedureByte, uint32_t timeout);
-
-READER_Status READER_TPDU_IsACK(uint8_t INS);
-READER_Status READER_TPDU_IsXoredACK(uint8_t INS);
+READER_Status READER_TPDU_IsACK(uint8_t byte, uint8_t INS);
+READER_Status READER_TPDU_IsXoredACK(uint8_t byte, uint8_t INS);
 READER_Status READER_TPDU_IsNull(uint8_t byte);
 READER_Status READER_TPDU_IsSW1(uint8_t byte);
 
