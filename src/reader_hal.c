@@ -309,7 +309,7 @@ void READER_HAL_ErrHandler(void){
 	}
 }
 
-void READER_HAL_DelayMili(uint32_t tMili){
+void READER_HAL_Delay(uint32_t tMili){
 	HAL_Delay(tMili);
 }
 
