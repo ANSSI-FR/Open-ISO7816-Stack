@@ -251,3 +251,21 @@ READER_Status READER_TPDU_WaitACK(uint8_t INS, uint8_t *ACKType, uint32_t timeou
 	
 	return READER_OK;
 }
+
+READER_Status READER_TPDU_Forge(READER_TPDU_Command *tpdu, uint8_t CLA, uint8_t INS, uint8_t P1, uint8_t P2, uint8_t P3, uint8_t *dataBuff, uint8_t dataSize){
+	uint8_t i;
+	
+	tpdu->headerField.CLA = CLA;
+	tpdu->headerField.INS = INS;
+	tpdu->headerField.P1  = P1;
+	tpdu->headerField.P2  = P2;
+	tpdu->headerField.P3  = P3;
+	
+	tpdu->dataField.size = dataSize;
+	
+	for(i=0; i<dataSize; i++){
+		tpdu->dataField.data[i] = dataBuff[i];
+	}
+	
+	return READER_OK;
+}
