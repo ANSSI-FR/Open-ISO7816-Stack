@@ -198,14 +198,22 @@ READER_Status READER_TPDU_WaitProcedureByte(uint8_t *procedureByte, uint8_t INS,
 }
 
 
-READER_Status READER_TPDU_WaitACK(uint8_t INS, uint32_t timeout){
+READER_Status READER_TPDU_WaitACK(uint8_t INS, uint8_t *ACKType, uint32_t timeout){
 	READER_Status retVal;
 	uint8_t byte;
 	
 	do{
 		retVal = READER_HAL_RcvChar(&byte, timeout);
-	} while( (retVal==READER_OK) && (READER_TPDU_IsNullByte(byte)) && !(READER_TPDU_IsACK(byte, INS)) );
+	} while( (retVal==READER_OK) && (READER_TPDU_IsNullByte(byte)) && !(READER_TPDU_IsACK(byte, INS)) && !(READER_TPDU_IsXoredACK(byte, INS)));
 	
 	if(retVal != READER_OK) return retVal;
+	
+	if(READER_TPDU_IsXoredACK(byte, INS)){
+		*ACKType = READER_TPDU_ACK_XORED;
+	}
+	else{
+		*ACKType = READER_TPDU_ACK_NORMAL;
+	}
+	
 	return READER_OK;
 }
