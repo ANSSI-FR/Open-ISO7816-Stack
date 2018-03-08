@@ -9,17 +9,31 @@ extern uint32_t globalWaitTimeMili;
 
 
 READER_Status READER_TPDU_Send(READER_TPDU_Command *tpdu, uint32_t timeout){
-	//READER_Status retVal;
-	//uint8_t byte;
-	//
-	///* Envoi du header TPDU */
-	//retVal = READER_TPDU_SendHeader(tpdu, timeout);
-	//if(retVal != READER_OK) return retVal;
-	//
-	///* Attente d'une reponse */
+	READER_Status retVal;
+	uint8_t ACKType;
 	
+	/* Envoi du header TPDU */
+	retVal = READER_TPDU_SendHeader(tpdu, timeout);
+	if(retVal != READER_OK) return retVal;
 	
+	/* Attente d'une reponse */
+	retVal = READER_TPDU_WaitACK(tpdu->headerField.INS, &ACKType, timeout);
+	if(retVal != READER_OK) return retVal;
 	
+	/* Envoi du champs de donnees selon le type de ACK recu */
+	if(ACKType == READER_TPDU_ACK_NORMAL){
+		retVal = READER_TPDU_SendDataOneshot(tpdu, timeout);
+		if(retVal != READER_OK) return retVal;
+	}
+	else if(ACKType == READER_TPDU_ACK_XORED){
+		retVal = READER_TPDU_SendDataSliced(tpdu, timeout);
+		if(retVal != READER_OK) return retVal;
+	}
+	else{
+		return READER_ERR;
+	}
+	
+	return READER_OK;
 }
 
 
