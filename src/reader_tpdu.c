@@ -78,6 +78,22 @@ READER_Status READER_TPDU_SendDataSliced(READER_TPDU_Command *tpdu, uint32_t tim
 
 
 
+READER_Status READER_TPDU_RcvSW(uint16_t *SW, uint32_t timeout){
+	uint8_t rcvBuff[2];
+	READER_Status retVal;
+	
+	retVal = READER_HAL_RcvCharFrame(rcvBuff, 2, timeout);
+	if(retVal != READER_OK) return retVal;
+	
+	if(!READER_TPDU_IsSW1(rcvBuff[0])) return READER_ERR;
+	
+	*SW = rcvBuff[1] + (rcvBuff[0] * 256);
+	
+	return READER_OK;
+}
+
+
+
 READER_Status READER_TPDU_IsACK(uint8_t byte, uint8_t INS){
 	if(byte == INS){
 		return READER_OK;

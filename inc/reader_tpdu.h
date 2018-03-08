@@ -13,6 +13,8 @@
 
 
 
+
+
 typedef struct READER_TPDU_Header READER_TPDU_Header;
 struct READER_TPDU_Header{
 	uint8_t CLA;
@@ -42,6 +44,8 @@ READER_Status READER_TPDU_Send(READER_TPDU_Command *tpdu, uint32_t timeout);
 READER_Status READER_TPDU_SendHeader(READER_TPDU_Header *tpduHeader, uint32_t timeout);
 READER_Status READER_TPDU_SendDataOneshot(READER_TPDU_DataField *tpduDataField, uint32_t timeout);
 READER_Status READER_TPDU_SendDataSliced(READER_TPDU_Command *tpdu, uint32_t timeout);
+
+READER_Status READER_TPDU_RcvSW(uint16_t *SW, uint32_t timeout);
 
 READER_Status READER_TPDU_WaitProcedureByte(uint8_t *procedureByte, uint32_t timeout);
 READER_Status READER_TPDU_IsACK(uint8_t byte, uint8_t INS);
