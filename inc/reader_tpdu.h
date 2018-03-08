@@ -30,7 +30,7 @@ struct READER_TPDU_DataField{
 };
 
 
-typedef struct READER_TPDU_Tpdu READER_TPDU_Command;
+typedef struct READER_TPDU_Command READER_TPDU_Command;
 struct READER_TPDU_Command{
 	READER_TPDU_Header headerField;
 	READER_TPDU_DataField dataField;
@@ -41,12 +41,12 @@ struct READER_TPDU_Command{
 READER_Status READER_TPDU_Send(READER_TPDU_Command *tpdu, uint32_t timeout);
 READER_Status READER_TPDU_SendHeader(READER_TPDU_Header *tpduHeader, uint32_t timeout);
 READER_Status READER_TPDU_SendDataOneshot(READER_TPDU_DataField *tpduDataField, uint32_t timeout);
-READER_Status READER_TPDU_SendDataSliced(READER_TPDU_DataField *tpduDataField, uint32_t timeout);
+READER_Status READER_TPDU_SendDataSliced(READER_TPDU_Command *tpdu, uint32_t timeout);
 
 READER_Status READER_TPDU_WaitProcedureByte(uint8_t *procedureByte, uint32_t timeout);
 READER_Status READER_TPDU_IsACK(uint8_t byte, uint8_t INS);
 READER_Status READER_TPDU_IsXoredACK(uint8_t byte, uint8_t INS);
-READER_Status READER_TPDU_IsNull(uint8_t byte);
+READER_Status READER_TPDU_IsNullByte(uint8_t byte);
 READER_Status READER_TPDU_IsSW1(uint8_t byte);
 READER_Status READER_TPDU_IsProcedureByte(uint8_t byte, uint8_t INS);
 
