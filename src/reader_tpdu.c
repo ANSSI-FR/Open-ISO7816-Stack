@@ -9,6 +9,16 @@ extern uint32_t globalWaitTimeMili;
 
 
 READER_Status READER_TPDU_Send(READER_TPDU_Command *tpdu, uint32_t timeout){
+	//READER_Status retVal;
+	//uint8_t byte;
+	//
+	///* Envoi du header TPDU */
+	//retVal = READER_TPDU_SendHeader(tpdu, timeout);
+	//if(retVal != READER_OK) return retVal;
+	//
+	///* Attente d'une reponse */
+	
+	
 	
 }
 
@@ -185,4 +195,17 @@ READER_Status READER_TPDU_WaitProcedureByte(uint8_t *procedureByte, uint8_t INS,
 	else{
 		return READER_ERR;
 	}
+}
+
+
+READER_Status READER_TPDU_WaitACK(uint8_t INS, uint32_t timeout){
+	READER_Status retVal;
+	uint8_t byte;
+	
+	do{
+		retVal = READER_HAL_RcvChar(&byte, timeout);
+	} while( (retVal==READER_OK) && (READER_TPDU_IsNullByte(byte)) && !(READER_TPDU_IsACK(byte, INS)) );
+	
+	if(retVal != READER_OK) return retVal;
+	return READER_OK;
 }
