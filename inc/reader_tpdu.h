@@ -8,8 +8,9 @@
 
 
 
-#define READER_TPDU_MAX_DATA            0xFF;
+#define READER_TPDU_MAX_DATA            0xFF
 #define READER_TPDU_HEADER_SIZE         5
+#define READER_TPDU_DUMMY_FALSE_INS     0x61
 
 
 
@@ -47,7 +48,7 @@ READER_Status READER_TPDU_SendDataSliced(READER_TPDU_Command *tpdu, uint32_t tim
 
 READER_Status READER_TPDU_RcvSW(uint16_t *SW, uint32_t timeout);
 
-READER_Status READER_TPDU_WaitProcedureByte(uint8_t *procedureByte, uint32_t timeout);
+READER_Status READER_TPDU_WaitProcedureByte(uint8_t *procedureByte, uint8_t INS, uint32_t timeout);
 READER_Status READER_TPDU_IsACK(uint8_t byte, uint8_t INS);
 READER_Status READER_TPDU_IsXoredACK(uint8_t byte, uint8_t INS);
 READER_Status READER_TPDU_IsNullByte(uint8_t byte);

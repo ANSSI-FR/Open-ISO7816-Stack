@@ -5,8 +5,10 @@
 
 
 
+extern uint32_t globalWaitTimeMili;
 
-READER_Status READER_TPDU_Send(READER_TPDU_Command *tpdu){
+
+READER_Status READER_TPDU_Send(READER_TPDU_Command *tpdu, uint32_t timeout){
 	
 }
 
@@ -39,6 +41,7 @@ READER_Status READER_TPDU_SendDataOneshot(READER_TPDU_Command *tpdu, uint32_t ti
 READER_Status READER_TPDU_SendDataSliced(READER_TPDU_Command *tpdu, uint32_t timeout){
 	uint32_t i;
 	uint32_t timeoutMili;
+	uint8_t procedureByte;
 	READER_Status retVal;
 	READER_TPDU_DataField *tpduDataField;
 	
@@ -61,7 +64,7 @@ READER_Status READER_TPDU_SendDataSliced(READER_TPDU_Command *tpdu, uint32_t tim
 		retVal = READER_HAL_SendChar(tpduDataField->data[i], timeoutMili);
 		if(retVal != READER_OK) return retVal;
 		
-		retVal = READER_TPDU_WaitProcedureByte(&procedureByte, timeoutMili);
+		retVal = READER_TPDU_WaitProcedureByte(&procedureByte, tpdu->headerField.INS, timeoutMili);
 		if(retVal != READER_OK) return retVal;
 		
 		if((!READER_TPDU_IsXoredACK(procedureByte, tpdu->headerField.INS)) && !READER_TPDU_IsNullByte(procedureByte)) return READER_ERR;
@@ -140,7 +143,7 @@ READER_Status READER_TPDU_IsSW1(uint8_t byte){
 
 
 READER_Status READER_TPDU_IsProcedureByte(uint8_t byte, uint8_t INS){
-	if(READER_TPDU_IsACK(byte, INS){
+	if(READER_TPDU_IsACK(byte, INS)){
 		return READER_OK;
 	}
 	else if(READER_TPDU_IsXoredACK(byte, INS)){
@@ -158,7 +161,7 @@ READER_Status READER_TPDU_IsProcedureByte(uint8_t byte, uint8_t INS){
 }
 
 
-READER_Status READER_TPDU_WaitProcedureByte(uint8_t *procedureByte, uint32_t timeout){
+READER_Status READER_TPDU_WaitProcedureByte(uint8_t *procedureByte, uint8_t INS, uint32_t timeout){
 	uint32_t timeoutMili;
 	uint8_t byte;
 	READER_Status retVal;
@@ -175,7 +178,7 @@ READER_Status READER_TPDU_WaitProcedureByte(uint8_t *procedureByte, uint32_t tim
 		return retVal;
 	}
 	
-	if(READER_TPDU_IsProcedureByte(byte)){
+	if(READER_TPDU_IsProcedureByte(byte, INS)){
 		*procedureByte = byte;
 		return READER_OK;
 	}
