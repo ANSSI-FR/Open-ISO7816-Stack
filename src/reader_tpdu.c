@@ -56,9 +56,13 @@ READER_Status READER_TPDU_SendHeader(READER_TPDU_Command *tpdu, uint32_t timeout
 READER_Status READER_TPDU_SendDataOneshot(READER_TPDU_Command *tpdu, uint32_t timeout){
 	READER_Status retVal;
 	
-	retVal = READER_HAL_SendCharFrame(tpdu->dataField.data, tpdu->dataField.size, timeout);
+	/* On envoie les donnees si il y en a ... */
+	if(tpdu->dataField.size != 0){
+		retVal = READER_HAL_SendCharFrame(tpdu->dataField.data, tpdu->dataField.size, timeout);
+		return retVal;
+	}
 	
-	return retVal;
+	return READER_OK;
 }
 
 
