@@ -41,8 +41,8 @@ struct READER_TPDU_Command{
 
 
 READER_Status READER_TPDU_Send(READER_TPDU_Command *tpdu, uint32_t timeout);
-READER_Status READER_TPDU_SendHeader(READER_TPDU_Header *tpduHeader, uint32_t timeout);
-READER_Status READER_TPDU_SendDataOneshot(READER_TPDU_DataField *tpduDataField, uint32_t timeout);
+READER_Status READER_TPDU_SendHeader(READER_TPDU_Command *tpdu, uint32_t timeout);
+READER_Status READER_TPDU_SendDataOneshot(READER_TPDU_Command *tpdu, uint32_t timeout);
 READER_Status READER_TPDU_SendDataSliced(READER_TPDU_Command *tpdu, uint32_t timeout);
 
 READER_Status READER_TPDU_RcvSW(uint16_t *SW, uint32_t timeout);

@@ -11,15 +11,15 @@ READER_Status READER_TPDU_Send(READER_TPDU_Command *tpdu){
 }
 
 
-READER_Status READER_TPDU_SendHeader(READER_TPDU_Header *tpduHeader, uint32_t timeout){
+READER_Status READER_TPDU_SendHeader(READER_TPDU_Command *tpdu, uint32_t timeout){
 	uint8_t headerBuff[READER_TPDU_HEADER_SIZE];
 	READER_Status retVal;
 	
-	headerBuff[0] = tpduHeader->CLA;
-	headerBuff[1] = tpduHeader->INS;
-	headerBuff[2] = tpduHeader->P1;
-	headerBuff[3] = tpduHeader->P2;
-	headerBuff[4] = tpduHeader->P3;
+	headerBuff[0] = tpdu->headerField.CLA;
+	headerBuff[1] = tpdu->headerField.INS;
+	headerBuff[2] = tpdu->headerField.P1;
+	headerBuff[3] = tpdu->headerField.P2;
+	headerBuff[4] = tpdu->headerField.P3;
 	
 	retVal = READER_HAL_SendCharFrame(headerBuff, READER_TPDU_HEADER_SIZE, timeout);
 	
@@ -27,10 +27,10 @@ READER_Status READER_TPDU_SendHeader(READER_TPDU_Header *tpduHeader, uint32_t ti
 }
 
 
-READER_Status READER_TPDU_SendDataOneshot(READER_TPDU_DataField *tpduDataField, uint32_t timeout){
+READER_Status READER_TPDU_SendDataOneshot(READER_TPDU_Command *tpdu, uint32_t timeout){
 	READER_Status retVal;
 	
-	retVal = READER_HAL_SendCharFrame(tpduDataField->data, tpduDataField->size, timeout);
+	retVal = READER_HAL_SendCharFrame(tpdu->dataField.data, tpdu->dataField.size, timeout);
 	
 	return retVal;
 }
