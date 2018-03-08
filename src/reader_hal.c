@@ -65,7 +65,7 @@ READER_Status READER_HAL_Init(void){
 
 READER_Status READER_HAL_SendCharFrame(uint8_t *frame, uint32_t frameSize, uint32_t timeout){
 	uint32_t timeoutMili;
-	HAL_Status retVal;
+	READER_Status retVal;
 	
 	if(timeout == READER_HAL_USE_ISO_WT){
 		timeoutMili = globalWaitTimeMili * frameSize; //On prevoit un WT pour chaque byte envoye  //READER_UTILS_ComputeTimeoutMiliSec(smartcardHandleStruct.Init.BaudRate, globalWaitTimeMili);
@@ -91,7 +91,7 @@ READER_Status READER_HAL_SendCharFrame(uint8_t *frame, uint32_t frameSize, uint3
 
 READER_Status READER_HAL_RcvCharFrame(uint8_t *frame, uint32_t frameSize, uint32_t timeout){
 	uint32_t timeoutMili;
-	HAL_Status retVal;
+	READER_Status retVal;
 	
 	if(timeout == READER_HAL_USE_ISO_WT){
 		timeoutMili = globalWaitTimeMili * frameSize; //On prevoit un WT pour chaque byte envoye  //READER_UTILS_ComputeTimeoutMiliSec(smartcardHandleStruct.Init.BaudRate, globalWaitTimeMili);
@@ -118,7 +118,7 @@ READER_Status READER_HAL_RcvCharFrame(uint8_t *frame, uint32_t frameSize, uint32
 
 READER_Status READER_HAL_RcvChar(uint8_t *character, uint32_t timeout){
 	uint32_t timeoutMili;
-	HAL_Status retVal;
+	READER_Status retVal;
 	
 	if(timeout == READER_HAL_USE_ISO_WT){
 		timeoutMili = globalWaitTimeMili; //READER_UTILS_ComputeTimeoutMiliSec(smartcardHandleStruct.Init.BaudRate, globalWaitTimeMili);
@@ -145,7 +145,7 @@ READER_Status READER_HAL_RcvChar(uint8_t *character, uint32_t timeout){
 
 READER_Status READER_HAL_SendChar(uint8_t character, uint32_t timeout){
 	uint32_t timeoutMili;
-	HAL_Status retVal;
+	READER_Status retVal;
 	
 	if(timeout == READER_HAL_USE_ISO_WT){
 		timeoutMili = globalWaitTimeMili; //READER_UTILS_ComputeTimeoutMiliSec(smartcardHandleStruct.Init.BaudRate, globalWaitTimeMili);
