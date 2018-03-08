@@ -75,6 +75,9 @@ READER_Status READER_TPDU_SendDataSliced(READER_TPDU_Command *tpdu, uint32_t tim
 	
 	tpduDataField = &(tpdu->dataField);
 	
+	/* Si il n'y a pas de donnees a envoyer alosr il n'y a rien a faire ... */
+	if(tpduDataField->size == 0) return READER_OK;
+	
 	/* Verification des parametres */
 	if(tpduDataField->size > READER_TPDU_MAX_DATA) return READER_ERR;
 	if(tpduDataField->size == 0x00) return READER_ERR;
