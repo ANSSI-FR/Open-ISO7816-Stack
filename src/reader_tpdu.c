@@ -117,16 +117,24 @@ READER_Status READER_TPDU_SendDataSliced(READER_TPDU_Command *tpdu, uint32_t tim
 
 
 
-READER_Status READER_TPDU_RcvSW(uint16_t *SW, uint32_t timeout){
-	uint8_t rcvBuff[2];
+READER_Status READER_TPDU_RcvSW(uint16_t *SW, uint32_t timeout){	
 	READER_Status retVal;
+	uint8_t byte1, byte2;
 	
-	retVal = READER_HAL_RcvCharFrame(rcvBuff, 2, timeout);
+	/* On attend SW1 en prenant en compte les null bytes ... */
+	do{
+		retVal = READER_HAL_RcvChar(&byte1, timeout);
+	} while( (retVal==READER_OK) && (READER_TPDU_IsNullByte(byte1)) && !(READER_TPDU_IsSW1(byte1)) );
+	
 	if(retVal != READER_OK) return retVal;
 	
-	if(!READER_TPDU_IsSW1(rcvBuff[0])) return READER_ERR;
+	/* On recupere SW2 */
+	retVal = READER_HAL_RcvChar(&byte2, timeout);
+	if(retVal != READER_OK) return retVal;
 	
-	*SW = rcvBuff[1] + (rcvBuff[0] * 256);
+	/* On reconstitue SW */
+	//*SW = byte2 + (byte1 * 256);
+	*SW = ((uint16_t)(byte1 << 8)) | ((uint16_t)(byte2) & 0x00FF);
 	
 	return READER_OK;
 }
