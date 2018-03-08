@@ -69,6 +69,7 @@ READER_Status READER_TPDU_SendDataSliced(READER_TPDU_Command *tpdu, uint32_t tim
 		if(READER_TPDU_IsNullByte(procedureByte)){
 			/* Attendre le temps necessaire */
 			READER_HAL_Delay(globalWaitTimeMili);
+			
 		}
 	}
 	
