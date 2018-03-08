@@ -4,7 +4,8 @@
 #include <stdint.h>
 
 
-
+extern UART_HandleTypeDef uartHandleStruct;   // juste pour debug
+extern SMARTCARD_HandleTypeDef smartcardHandleStruct; // debug
 extern uint32_t globalWaitTimeMili;
 
 
@@ -21,7 +22,7 @@ READER_Status READER_TPDU_Send(READER_TPDU_Command *tpdu, uint32_t timeout){
 		return READER_OK;
 	}
 	
-	/* Si la requette TPDU contient des donees ... Attente d'une reponse */
+	/* Si la requette TPDU contient des donnees ... Attente d'une reponse */
 	retVal = READER_TPDU_WaitACK(tpdu->headerField.INS, &ACKType, timeout);
 	if(retVal != READER_OK) return retVal;
 	
@@ -234,19 +235,26 @@ READER_Status READER_TPDU_WaitProcedureByte(uint8_t *procedureByte, uint8_t INS,
 
 READER_Status READER_TPDU_WaitACK(uint8_t INS, uint8_t *ACKType, uint32_t timeout){
 	READER_Status retVal;
-	uint8_t byte;
+	uint8_t byte = 2;
 	
 	do{
-		retVal = READER_HAL_RcvChar(&byte, timeout);
+		//retVal = READER_HAL_RcvChar(&byte, timeout);
+		retVal = READER_OK;
+		HAL_SMARTCARD_Receive(&smartcardHandleStruct, &byte, 1, 5000);
+		HAL_UART_Transmit_IT(&uartHandleStruct, &byte, 1);
 	} while( (retVal==READER_OK) && (READER_TPDU_IsNullByte(byte)) && !(READER_TPDU_IsACK(byte, INS)) && !(READER_TPDU_IsXoredACK(byte, INS)));
 	
 	if(retVal != READER_OK) return retVal;
 	
+	
 	if(READER_TPDU_IsXoredACK(byte, INS)){
 		*ACKType = READER_TPDU_ACK_XORED;
 	}
-	else{
+	else if(READER_TPDU_IsACK(byte, INS)){
 		*ACKType = READER_TPDU_ACK_NORMAL;
+	}
+	else{
+		return READER_ERR;
 	}
 	
 	return READER_OK;

@@ -2,6 +2,7 @@
 #include "reader_hal.h"
 #include "stm32f4xx_hal.h"
 #include "reader_atr.h"
+#include "reader_tpdu.h"
 
 
 UART_HandleTypeDef uartHandleStruct;
@@ -13,6 +14,9 @@ uint8_t pSmartcardRxBuff[100];
 
 int main(void){
 	READER_ATR_Atr atr;
+	READER_TPDU_Command tpdu;
+	uint16_t SW;
+	
 	
 	if(READER_HAL_Init() != READER_OK){
 		READER_HAL_ErrHandler();
@@ -30,22 +34,6 @@ int main(void){
 	
 
 	READER_ATR_Receive(&atr);
-	
-	/* Fabrication du header TPDU */
-	pSmartcardTxBuff[0] = 0x00;        // CLA
-	pSmartcardTxBuff[1] = 0xA4;        // INS
-	pSmartcardTxBuff[2] = 0x04;        // P1
-	pSmartcardTxBuff[3] = 0x00;        // P2
-	pSmartcardTxBuff[4] = 0x0D;        // Lc = P3
-	
-	READER_HAL_SendCharFrame(pSmartcardTxBuff, 5, READER_HAL_USE_ISO_WT);
-	
-	
-	/* Attente du ACK */
-	do{
-		READER_HAL_RcvCharFrame(pSmartcardRxBuff, 1, READER_HAL_USE_ISO_WT);
-	}while(pSmartcardRxBuff[0] != 0xA4);
-	
 	HAL_Delay(10);
 	
 	
@@ -64,14 +52,14 @@ int main(void){
 	pSmartcardTxBuff[12] = 0x70;
 	
 	
-	READER_HAL_SendCharFrame(pSmartcardTxBuff, 0x0D, READER_HAL_USE_ISO_WT);
+	READER_TPDU_Forge(&tpdu, 0x01, 0xA4, 0x04, 0x00, 0x0D, pSmartcardTxBuff, 0x0D);
+	READER_TPDU_Send(&tpdu, READER_HAL_USE_ISO_WT);
+	READER_TPDU_RcvSW(&SW, READER_HAL_USE_ISO_WT);
+	
+	//HAL_UART_Transmit_IT(&uartHandleStruct, (uint8_t*)(&SW), 2);
 	
 	
 	
-	/* Reception de SW1SW2 */
-	READER_HAL_RcvCharFrame(pSmartcardRxBuff, 3, READER_HAL_USE_ISO_WT);
-	//HAL_UART_Transmit_IT(&uartHandleStruct, pSmartcardRxBuff, 3);
-
 	HAL_Delay(10);
 	
 	/* Fabrication du header TPDU du GET RESPONSE */
