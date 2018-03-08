@@ -16,7 +16,12 @@ READER_Status READER_TPDU_Send(READER_TPDU_Command *tpdu, uint32_t timeout){
 	retVal = READER_TPDU_SendHeader(tpdu, timeout);
 	if(retVal != READER_OK) return retVal;
 	
-	/* Attente d'une reponse */
+	/* Si la requette TPDU ne contient pas de donnees alors on s'arrete la ... */
+	if(tpdu->dataField.size == 0){
+		return READER_OK;
+	}
+	
+	/* Si la requette TPDU contient des donees ... Attente d'une reponse */
 	retVal = READER_TPDU_WaitACK(tpdu->headerField.INS, &ACKType, timeout);
 	if(retVal != READER_OK) return retVal;
 	
