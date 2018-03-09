@@ -12,10 +12,32 @@ extern uint32_t globalWaitTimeMili;
 READER_Status READER_TPDU_Send(READER_TPDU_Command *tpdu, uint32_t timeout){
 	READER_Status retVal;
 	uint8_t ACKType;
+	uint8_t pSmartcardTxBuff[5];
+	uint32_t i;
 	
 	/* Envoi du header TPDU */
-	retVal = READER_TPDU_SendHeader(tpdu, timeout);
-	if(retVal != READER_OK) return retVal;
+	//retVal = READER_TPDU_SendHeader(tpdu, timeout);
+	//if(retVal != READER_OK) return retVal;
+	/* Fabrication du header TPDU */
+	
+	pSmartcardTxBuff[0] = 0x00;        // CLA
+	pSmartcardTxBuff[1] = 0xA4;        // INS
+	pSmartcardTxBuff[2] = 0x04;        // P1
+	pSmartcardTxBuff[3] = 0x00;        // P2
+	pSmartcardTxBuff[4] = 0x0D;        // Lc = P3
+	
+	USART2->CR1 |= USART_CR1_UE;
+	USART2->CR1 |= USART_CR1_TE;
+	for(i=0; i<5; i++){
+		while(!(USART2->SR & USART_SR_TXE)){
+			
+		}
+		USART2->DR = pSmartcardTxBuff[i];
+	}
+	while(!(USART2->SR & USART_SR_TC)){
+		
+	}
+	//HAL_SMARTCARD_Transmit(&smartcardHandleStruct, pSmartcardTxBuff, 5, 5000);
 	
 	/* Si la requette TPDU ne contient pas de donnees alors on s'arrete la ... */
 	if(tpdu->dataField.size == 0){
@@ -235,12 +257,22 @@ READER_Status READER_TPDU_WaitProcedureByte(uint8_t *procedureByte, uint8_t INS,
 
 READER_Status READER_TPDU_WaitACK(uint8_t INS, uint8_t *ACKType, uint32_t timeout){
 	READER_Status retVal;
-	uint8_t byte = 2;
+	uint8_t byte = 5;
 	
+	HAL_SMARTCARD_Init(&smartcardHandleStruct);
 	do{
 		//retVal = READER_HAL_RcvChar(&byte, timeout);
 		retVal = READER_OK;
-		HAL_SMARTCARD_Receive(&smartcardHandleStruct, &byte, 1, 5000);
+		USART2->SR &= ~USART_SR_RXNE;
+		//HAL_SMARTCARD_Receive(&smartcardHandleStruct, &byte, 1, 5000);
+		USART2->CR1 |= USART_CR1_RE;
+		
+		//while((__HAL_SMARTCARD_GET_FLAG(&smartcardHandleStruct, SMARTCARD_FLAG_RXNE) ? SET : RESET) == RESET){
+		while(!(USART2->SR & USART_SR_RXNE)){
+			byte=2;
+		}
+		byte = USART2->DR;
+		//USART2->CR1 &= ~USART_CR1_RE;
 		HAL_UART_Transmit_IT(&uartHandleStruct, &byte, 1);
 	} while( (retVal==READER_OK) && (READER_TPDU_IsNullByte(byte)) && !(READER_TPDU_IsACK(byte, INS)) && !(READER_TPDU_IsXoredACK(byte, INS)));
 	

@@ -149,17 +149,7 @@ void HAL_UART_MspInit(UART_HandleTypeDef *huart){
 
 void HAL_SMARTCARD_MspInit(SMARTCARD_HandleTypeDef *hsc){	
 	/* Debloquer horloge du peripherique USART2 */
-	__HAL_RCC_USART2_CLK_ENABLE();
-
-	/* Configuraion pin TX */
-	//CARD_InitIOLine();
 	
-	/* Configurer pin CK */
-	//CARD_InitClkLine();
-	
-	/* Configuration des interruptions */
-	HAL_NVIC_SetPriority(USART2_IRQn, 0, 1);
-	HAL_NVIC_EnableIRQ(USART2_IRQn);
 }
 
 /**

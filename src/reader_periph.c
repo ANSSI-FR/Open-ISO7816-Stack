@@ -96,7 +96,13 @@ READER_Status READER_PERIPH_Init(void){
 	smartcardHandleStruct.Init.Prescaler = READER_UTILS_ComputePrescFromFreq(READER_DEFAULT_FREQ);
 	
 	
+	__HAL_RCC_USART2_CLK_ENABLE();
 	if(HAL_SMARTCARD_Init(&smartcardHandleStruct) != HAL_OK) return READER_ERR;
+	
+	
+	/* Configuration des interruptions */
+	//HAL_NVIC_SetPriority(USART2_IRQn, 0, 1);
+	//HAL_NVIC_EnableIRQ(USART2_IRQn);
 	
 	return READER_OK;
 }

@@ -184,7 +184,7 @@ void USART1_IRQHandler(void){
 
 
 void USART2_IRQHandler(void){
-	HAL_SMARTCARD_IRQHandler(&smartcardHandleStruct);
+	//HAL_SMARTCARD_IRQHandler(&smartcardHandleStruct);
 }
 
 /**
