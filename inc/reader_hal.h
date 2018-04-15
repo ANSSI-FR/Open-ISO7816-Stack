@@ -1,3 +1,14 @@
+/**
+ * \file reader_hal.h
+ * \brief Prototypes de la couche d'abstraction.
+ * \author B. Simunovic
+ * \date 28 mars 2018
+ * 
+ * Dans ce fichier son définis les prototypes de fonctions de la couche d'abstraction du matériel du lecteur.
+ */
+
+
+
 #ifndef __READER_HAL_H__
 #define __READER_HAL_H__
 
@@ -7,13 +18,27 @@
 #include "reader_utils.h"
 
 
+/**
+ * \def READER_HAL_USE_ISO_WT
+ * \brief Valeur permettant d'indiquer à uen fonction d'envoi/reception que le timeout à appliqué est le WT défini dans la norme ISO.
+ * 
+ * Cette constante passée en parametre à certaines fonctions d'envoi et de réception permet d'indiquer le type de timeout à utiliser.
+ * Si la valeur de timeout passée en argument à une fonction d'envoi/réception est différente de READER_HAL_USE_ISO_WT alors le timout appliqué sera cette valeur en milisecondes.
+ * Si la valeur de timeout passée en argument à une fonction d'envoi/réception est READER_HAL_USE_ISO_WT alors le timeout appliqué sera le "wait time" (WT) tel que défini dans la norme ISO.
+ */
 #define READER_HAL_USE_ISO_WT    (uint32_t)(0x00000000)
 
 
+
+/**
+ * \enum READER_HAL_State
+ * \brief Type de données permettant d'indiquer un état. Cet état peut être ON ou OFF. Cet état est souvent passé en paramettre des fonctions servant à piloter des E/S du lecteur.
+ * 
+ */
 typedef enum READER_HAL_State READER_HAL_State;
 enum READER_HAL_State{
-	READER_HAL_STATE_ON = 1,
-	READER_HAL_STATE_OFF = 0
+	READER_HAL_STATE_ON = 1,       /* !< Indique un état "ON"  */
+	READER_HAL_STATE_OFF = 0       /* !< Indique un état "OFF" */
 };
 
 
