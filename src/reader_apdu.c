@@ -5,6 +5,9 @@
 
 /**
  * \fn READER_APDU_ProtocolCase READER_APDU_GetProtocolCase(READER_APDU_Command *pApdu)
+ * \brief Cette fonction analyse une structure de type READER_APDU_Command et en déduit dans quel "sous cas" du protocole cet APDU appartient. Par exemple 2E, 2S, 3E, 3S, 4E, 4S etc ...
+ * \return Retourne une valeur de type READER_APDU_ProtocolCase.
+ * \param *pApdu Un pointeur sur un structure de type READER_APDU_Command.
  */
 READER_APDU_ProtocolCase READER_APDU_GetProtocolCase(READER_APDU_Command *pApdu){
 	uint32_t Nc, Ne;
