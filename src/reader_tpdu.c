@@ -12,21 +12,11 @@ extern uint32_t globalWaitTimeMili;
 READER_Status READER_TPDU_Send(READER_TPDU_Command *tpdu, uint32_t timeout){
 	READER_Status retVal;
 	uint8_t ACKType;
-	uint8_t pSmartcardTxBuff[5];
 	uint32_t i;
 	
 	/* Envoi du header TPDU */
 	retVal = READER_TPDU_SendHeader(tpdu, timeout);
 	if(retVal != READER_OK) return retVal;
-	
-	/* Fabrication du header TPDU */
-	//pSmartcardTxBuff[0] = 0x00;        // CLA
-	//pSmartcardTxBuff[1] = 0xA4;        // INS
-	//pSmartcardTxBuff[2] = 0x04;        // P1
-	//pSmartcardTxBuff[3] = 0x00;        // P2
-	//pSmartcardTxBuff[4] = 0x0D;        // Lc = P3
-	//HAL_SMARTCARD_Transmit(&smartcardHandleStruct, pSmartcardTxBuff, 5, 5000);
-	
 	
 	
 	/* Si la requette TPDU ne contient pas de donnees alors on s'arrete la ... */
