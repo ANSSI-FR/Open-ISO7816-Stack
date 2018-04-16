@@ -3,4 +3,46 @@
 
 
 
-
+READER_APDU_ProtocolCase READER_APDU_GetProtocolCase(READER_APDU_Command *pApdu){
+	uint32_t Nc, Ne;
+	
+	Nc = pApdu->body.Nc;
+	Ne = pApdu->body.Ne;
+	
+	if((Nc==0) && (Ne==0)){
+		retVal = READER_APDU_SendCase1(pApdu);
+	}
+	else if((Nc==0) && (Ne!=0)){
+		if((Ne>0) && (Ne<=256)){
+			return READER_APDU_SendCase2S(pApdu);
+		}
+		else if(Ne <= 65536){
+			return READER_APDU_SendCase2E(pApdu);
+		}
+		else{
+			return READER_ERR;
+		}
+	}
+	else if((Nc!=0) && (Ne==0)){
+		if((Nc>0) && (Nc<=255)){
+			return READER_APDU_SendCase3S(pApdu);
+		}
+		else if(Nc <= 65535){
+			return READER_APDU_SendCase3E(pApdu);
+		}
+		else{
+			return READER_ERR;
+		}
+	}
+	else((Nc!=0) && (Ne!=0)){
+		if((Nc <= 255) && (Ne <= 256)){
+			return READER_APDU_SendCase4S(pApdu);
+		}
+		else if((Nc <= 65535) && (Ne <= 65536)){
+			return READER_APDU_SendCase4E
+		}
+		else{
+			return READER_ERR;
+		}
+	}
+}
