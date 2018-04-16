@@ -146,7 +146,13 @@ READER_Status READER_TPDU_SendDataSliced(READER_TPDU_Command *tpdu, uint32_t tim
 }
 
 
-
+/**
+ * \fn READER_Status READER_TPDU_RcvSW(uint16_t *SW, uint32_t timeout)
+ * \brief Cette fonction permet d'attendre la réception d'un status word (SW).
+ * \return Valeur de type READER_Status. READER_OK si l'exécution s'est correctement déroulée. READER_ERR dans le cas contraire.
+ * \param timeout Valeur du timeout en milisecondes pour recevoir un octet parmi les deux du SW. A la réception d'un null byte le compteur repart à zéro. Lorsque SW1 est reçu, le compteur repart également à zéro pour la réception de SW2.
+ * \param *SW Pointeur sur une variable de type uint16_t dans laquelle la fonction va écrire le SW reçu. Dans cette valeur SW de retour, SW1 occupe les 8 bits de poids fort et SW2 les 8 bits de poids faible. 
+ */
 READER_Status READER_TPDU_RcvSW(uint16_t *SW, uint32_t timeout){	
 	READER_Status retVal;
 	uint8_t byte1, byte2;
