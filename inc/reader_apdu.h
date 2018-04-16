@@ -56,6 +56,7 @@ READER_Status READER_APDU_SendCase4S(READER_APDU_Command *apdu);
 READER_Status READER_APDU_SendCase4E(READER_APDU_Command *apdu);
 
 READER_Status READER_APDU_RcvSW(uint16_t *SW, uint32_t timeout);
+READER_Status READER_APDU_RcvResponse(uint8_t *buffer, uint32_t Ne, uint16_t *SW, uint32_t timeout);
 
 
 uint16_t READER_APDU_NcToLc(uint16_t Nc);
