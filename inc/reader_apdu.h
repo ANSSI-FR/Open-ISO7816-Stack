@@ -46,7 +46,7 @@ struct READER_APDU_Command{
 
 
 READER_APDU_ProtocolCase READER_APDU_GetProtocolCase(READER_APDU_Command *apdu);
-READER_Status READER_APDU_Send(READER_APDU_Command *apdu);
+READER_Status READER_APDU_Send(READER_APDU_Command *pApdu);
 
 READER_Status READER_APDU_SendCase1(READER_APDU_Command *apdu);
 READER_Status READER_APDU_SendCase2S(READER_APDU_Command *apdu);

@@ -49,3 +49,48 @@ READER_APDU_ProtocolCase READER_APDU_GetProtocolCase(READER_APDU_Command *pApdu)
 		}
 	}
 }
+
+
+
+READER_Status READER_APDU_Send(READER_APDU_Command *pApdu){
+	READER_APDU_ProtocolCase protocolCase;
+	
+	protocolCase = READER_APDU_GetProtocolCase(pApdu);
+	
+	switch(protocolCase){
+		case READER_APDU_CASE_1:
+			return READER_APDU_SendCase1(pApdu);
+			break;
+			
+		case READER_APDU_CASE_2E:
+			return READER_APDU_SendCase2E(pApdu);
+			break;
+			
+		case READER_APDU_CASE_2S:
+			return READER_APDU_SendCase2S(pApdu);
+			break;
+			
+		case READER_APDU_CASE_3E:
+			return READER_APDU_SendCase3E(pApdu);
+			break;
+			
+		case READER_APDU_CASE_3S:
+			return READER_APDU_SendCase3S(pApdu);
+			break;
+			
+		case READER_APDU_CASE_4E:
+			return READER_APDU_SendCase4E(pApdu);
+			break;
+			
+		case READER_APDU_CASE_4S:
+			return READER_APDU_SendCase4S(pApdu);
+			break;
+			
+		case READER_APDU_CASE_ERR:
+			return READER_ERR;
+			break;
+			
+		default:
+			return READER_ERR;
+	}
+}
