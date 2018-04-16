@@ -259,7 +259,6 @@ READER_Status READER_TPDU_WaitACK(uint8_t INS, uint8_t *ACKType, uint32_t timeou
 	READER_Status retVal;
 	uint8_t byte;
 	
-	HAL_SMARTCARD_Init(&smartcardHandleStruct);
 	do{
 		retVal = READER_HAL_RcvChar(&byte, timeout);
 	} while( (retVal==READER_OK) && (READER_TPDU_IsNullByte(byte)) && !(READER_TPDU_IsACK(byte, INS)) && !(READER_TPDU_IsXoredACK(byte, INS)));
