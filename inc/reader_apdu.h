@@ -45,7 +45,10 @@ struct READER_APDU_Command{
 
 
 READER_APDU_ProtocolCase READER_APDU_GetProtocolCase(READER_APDU_Command *apdu);
-
+uint16_t READER_APDU_NcToLc(uint16_t Nc);
+uint16_t READER_APDU_NeToLe(uint16_t Ne);
+uint16_t READER_APDU_LcToNc(uint16_t Lc);
+uint16_t READER_APDU_LeToNe(uint16_t Le);
 
 
 
