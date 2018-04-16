@@ -145,6 +145,8 @@ READER_Status READER_HAL_RcvCharFrame(uint8_t *frame, uint32_t frameSize, uint32
 }
 
 
+
+#ifndef SMARCARD_RX_FROM_SCRATCH
 /**
  * \fn READER_Status READER_HAL_RcvChar(uint8_t *character, uint32_t timeout)
  * \brief Cette fonction permet de lire un seul octet du la ligne IO.
@@ -176,6 +178,48 @@ READER_Status READER_HAL_RcvChar(uint8_t *character, uint32_t timeout){
 		default:
 			return READER_ERR;
 	}
+}
+
+#else
+
+/* Fonction "from scratch" pour recevoir un caractere */
+READER_Status READER_HAL_RcvChar(uint8_t *character, uint32_t timeout){
+	uint32_t timeoutMili, tickStart;
+	READER_Status retVal;
+	
+	
+	/* Calcul du timeout effectif en milisecondes */
+	if(timeout == READER_HAL_USE_ISO_WT){
+		timeoutMili = globalWaitTimeMili; //READER_UTILS_ComputeTimeoutMiliSec(smartcardHandleStruct.Init.BaudRate, globalWaitTimeMili);
+	}
+	else{
+		timeoutMili = timeout;
+	}
+	
+	
+	/* Reception d'un caractere */
+	/* On suppose ici que le bloc USART2 a deja ete configure en mode smartcard et qu'il est active et correctement initailise avec les bon parametres de communication */
+	tickStart = HAL_GetTick();
+	USART2->SR &= ~USART_SR_RXNE;
+	USART2->CR1 |= USART_CR1_RE;
+	while(!(USART2->SR & USART_SR_RXNE) && !(HAL_GetTick()-tickStart > timeoutMili)){
+			
+		}
+	
+	/* Quand on sort de la boucle d'attente, on verifie si on est sorti a cause d'un timeout */
+	if(HAL_GetTick()-tickStart > timeoutMili){
+		return READER_TIMEOUT;
+	}
+	
+	/* On verifie Parity Error, Frame Error, Overrun Error */
+	if((USART2->SR & USART_SR_FE) || (USART2->SR & USART_SR_ORE) || (USART2->SR & USART_SR_PE)){
+		return READER_ERR;
+	}
+	
+	/* On recupere la donnee recue dans le Data Register */
+	*character = USART2->DR;
+	
+	return READER_OK;
 }
 
 /**
