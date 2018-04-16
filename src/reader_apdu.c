@@ -54,7 +54,12 @@ READER_APDU_ProtocolCase READER_APDU_GetProtocolCase(READER_APDU_Command *pApdu)
 }
 
 
-
+/**
+ * \fn READER_Status READER_APDU_Send(READER_APDU_Command *pApdu)
+ * \brief Cette fonction permet d'envoyer un commande APDU. Elle analyse l'APDU en paramètre pour en déduire le "sous cas" du protocole (3E, 3S, 4E, etc ...). Elle appelle alors une autre fonction READER_APDU_SendCase[..]() selon le cas.
+ * \return Valeur de type READER_Status. READER_OK si l'exécution s'est correctement déroulée. READER_ERR dans le cas contraire.
+ * \param \param *pApdu Un pointeur sur un structure de type READER_APDU_Command.
+ */
 READER_Status READER_APDU_Send(READER_APDU_Command *pApdu){
 	READER_APDU_ProtocolCase protocolCase;
 	
