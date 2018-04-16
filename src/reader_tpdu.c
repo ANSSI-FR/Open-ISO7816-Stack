@@ -168,9 +168,34 @@ READER_Status READER_TPDU_RcvSW(uint16_t *SW, uint32_t timeout){
 READER_Status READER_TPDU_RcvDataField(uint8_t *buffer, uint32_t Ne, uint32_t timeout){
 	READER_Status retVal;
 	
-	retVal = READER_HAL_RcvCharFrame(buffer, Ne, timeout);
+	if(Ne != 0){
+		retVal = READER_HAL_RcvCharFrame(buffer, Ne, timeout);
+	}
+	else{
+		retVal = READER_OK;
+	}
 	
 	return retVal;
+}
+
+
+
+/**
+ * \fn READER_Status READER_TPDU_RcvResponse(uint8_t *dataField, uint32_t Ne, uint16_t SW, uint32_t timeout)
+ * \brief Cette fonction permet de recevoir la réponse à une commande TPDU. Elle permet de récupérer le champs de données et le Status Word (SW).
+ * \return Valeur de type READER_Status. READER_OK si l'exécution s'est correctement déroulée. READER_ERR dans le cas contraire.
+ * \param *buffer Pointeur sur un buffer dans lequel stocker les caractères du champ de données.
+ * \param Ne (N expected) Nombre d'octets attendus dans la réponse.
+ * \param *SW Pointeur sur une variable de type uint16_t dans laquelle la fonction va écrire le SW reçu. Dans cette valeur SW de retour, SW1 occupe les 8 bits de poids fort et SW2 les 8 bits de poids faible. 
+ * \param timeout Pour l'instant non décidé si c'est le timeout pour chaque carac ou pour toute le frame. !!!!!!!!
+ */
+READER_Status READER_TPDU_RcvResponse(uint8_t *dataField, uint32_t Ne, uint16_t *SW, uint32_t timeout){
+	READER_Status retVal;
+	
+	retVal = READER_TPDU_RcvDataField(dataField, Ne, timeout);
+	if(retVal != READER_OK) return retVal;
+	
+	retVal = READER_TPDU_RcvSW(SW, timeout);
 }
 
 
