@@ -65,6 +65,13 @@ READER_Status READER_TPDU_Send(READER_TPDU_Command *tpdu, uint32_t timeout){
 }
 
 
+/**
+ * \fn READER_Status READER_TPDU_SendHeader(READER_TPDU_Command *tpdu, uint32_t timeout)
+ * \brief Cette fonction permet d'envoyer sur la ligne IO le header de la commande TPDU
+ * \return Valeur de type READER_Status. READER_OK si l'exécution s'est correctement déroulée. READER_ERR dans le cas contraire.
+ * \param *tpdu Pointeur vers une structure de type READER_TPDU_Command.
+ * \param timeout !!!!
+ */
 READER_Status READER_TPDU_SendHeader(READER_TPDU_Command *tpdu, uint32_t timeout){
 	uint8_t headerBuff[READER_TPDU_HEADER_SIZE];
 	READER_Status retVal;
@@ -254,7 +261,14 @@ READER_Status READER_TPDU_WaitProcedureByte(uint8_t *procedureByte, uint8_t INS,
 	}
 }
 
-
+/**
+ * \fn READER_Status READER_TPDU_WaitACK(uint8_t INS, uint8_t *ACKType, uint32_t timeout)
+ * \brief Cette fonction permet d'attendre la réception d'un ACK en provenance de la carte.
+ * \return Valeur de type READER_Status. READER_OK si l'exécution s'est correctement déroulée. READER_ERR dans le cas contraire.
+ * \param INS Code de l'instruction précédement envoyée à la carte. C'est l'instruction pour laquelle l'ACK est attendu.
+ * \param *ACKType Pointeur sur une variable de type uint8_t. Si un ACK est reçu dans les temps alors la fonction écrira dans cette variable le type d'ACK reçu. Il peut être de deux types : READER_TPDU_ACK_NORMAL ou READER_TPDU_ACK_XORED. Voir ISO7816-E section 10.3.3.
+ * \param timeout Valeur de timeout en milisecondes pour recevoir l'ACK.
+ */
 READER_Status READER_TPDU_WaitACK(uint8_t INS, uint8_t *ACKType, uint32_t timeout){
 	READER_Status retVal;
 	uint8_t byte = 5;
