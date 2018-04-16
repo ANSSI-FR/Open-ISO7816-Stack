@@ -6,6 +6,17 @@
 
 
 
+typedef enum READER_APDU_ProtocolCase READER_APDU_ProtocolCase;
+enum READER_APDU_ProtocolCase{
+	READER_APDU_CASE_1  = (uint32_t)(0x00000001),
+	READER_APDU_CASE_2S = (uint32_t)(0x00000002),
+	READER_APDU_CASE_2E = (uint32_t)(0x00000003),
+	READER_APDU_CASE_3S = (uint32_t)(0x00000004),
+	READER_APDU_CASE_3E = (uint32_t)(0x00000005),
+	READER_APDU_CASE_4S = (uint32_t)(0x00000006),
+	READER_APDU_CASE_4E = (uint32_t)(0x00000007)
+}
+
 
 
 typedef struct READER_APDU_Body READER_APDU_Body;
@@ -33,6 +44,7 @@ struct READER_APDU_Command{
 
 
 
+READER_APDU_ProtocolCase READER_APDU_GetProtocolCase(READER_APDU_Command *apdu);
 
 
 
