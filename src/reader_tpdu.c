@@ -196,6 +196,9 @@ READER_Status READER_TPDU_RcvResponse(uint8_t *dataField, uint32_t Ne, uint16_t 
 	if(retVal != READER_OK) return retVal;
 	
 	retVal = READER_TPDU_RcvSW(SW, timeout);
+	if(retVal != READER_OK) return retVal;
+	
+	return READER_OK;
 }
 
 
