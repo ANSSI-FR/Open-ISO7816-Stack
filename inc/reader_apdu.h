@@ -8,13 +8,14 @@
 
 typedef enum READER_APDU_ProtocolCase READER_APDU_ProtocolCase;
 enum READER_APDU_ProtocolCase{
-	READER_APDU_CASE_1  = (uint32_t)(0x00000001),
-	READER_APDU_CASE_2S = (uint32_t)(0x00000002),
-	READER_APDU_CASE_2E = (uint32_t)(0x00000003),
-	READER_APDU_CASE_3S = (uint32_t)(0x00000004),
-	READER_APDU_CASE_3E = (uint32_t)(0x00000005),
-	READER_APDU_CASE_4S = (uint32_t)(0x00000006),
-	READER_APDU_CASE_4E = (uint32_t)(0x00000007)
+	READER_APDU_CASE_ERR       =   (uint32_t)(0x00000000),
+	READER_APDU_CASE_1         =   (uint32_t)(0x00000001),
+	READER_APDU_CASE_2S        =   (uint32_t)(0x00000002),
+	READER_APDU_CASE_2E        =   (uint32_t)(0x00000003),
+	READER_APDU_CASE_3S        =   (uint32_t)(0x00000004),
+	READER_APDU_CASE_3E        =   (uint32_t)(0x00000005),
+	READER_APDU_CASE_4S        =   (uint32_t)(0x00000006),
+	READER_APDU_CASE_4E        =   (uint32_t)(0x00000007)
 }
 
 
