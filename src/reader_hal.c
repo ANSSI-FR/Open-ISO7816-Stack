@@ -222,6 +222,8 @@ READER_Status READER_HAL_RcvChar(uint8_t *character, uint32_t timeout){
 	return READER_OK;
 }
 
+
+#ifndef SMARTCARD_TX_FROM_SCRATCH
 /**
  * \fn READER_Status READER_HAL_RcvChar(uint8_t *character, uint32_t timeout)
  * \brief Cette fonction permet d'envoyer un seul octet du la ligne IO.
@@ -254,6 +256,38 @@ READER_Status READER_HAL_SendChar(uint8_t character, uint32_t timeout){
 			return READER_ERR;
 	}
 }
+
+#else
+
+READER_Status READER_HAL_SendChar(uint8_t character, uint32_t timeout){
+	uint32_t timeoutMili;
+	READER_Status retVal;
+	
+	/* On calcule le timeout effectif (Celui fourni en parametre ou celui defini dans la norme ISO) */
+	if(timeout == READER_HAL_USE_ISO_WT){
+		timeoutMili = globalWaitTimeMili; //READER_UTILS_ComputeTimeoutMiliSec(smartcardHandleStruct.Init.BaudRate, globalWaitTimeMili);
+	}
+	else{
+		timeoutMili = timeout;
+	}
+	
+	/* On suppose ici que le bloc USART2 a deja ete configure en mode smartcard et qu'il est active et correctement initailise avec les bon parametres de communication */
+	USART2->CR1 |= USART_CR1_UE;
+	USART2->CR1 |= USART_CR1_TE;
+	/* On attend que le buffer d'envoi soit empty */
+	while(!(USART2->SR & USART_SR_TXE)){
+		
+	}
+	/* On place le caractere dans le Data Register */
+	USART2->DR = character;
+	
+	/* On attend le flag Transmit Complete */
+	while(!(USART2->SR & USART_SR_TC)){
+		
+	}
+}
+
+#endif
 
 
 /**
