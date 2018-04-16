@@ -257,39 +257,26 @@ READER_Status READER_TPDU_WaitProcedureByte(uint8_t *procedureByte, uint8_t INS,
  */
 READER_Status READER_TPDU_WaitACK(uint8_t INS, uint8_t *ACKType, uint32_t timeout){
 	READER_Status retVal;
-	uint8_t byte = 5;
+	uint8_t byte;
 	
 	HAL_SMARTCARD_Init(&smartcardHandleStruct);
 	do{
-		//retVal = READER_HAL_RcvChar(&byte, timeout);
-		retVal = READER_OK;
-		USART2->SR &= ~USART_SR_RXNE;
-		//HAL_SMARTCARD_Receive(&smartcardHandleStruct, &byte, 1, 5000);
-		USART2->CR1 |= USART_CR1_RE;
-		
-		//while((__HAL_SMARTCARD_GET_FLAG(&smartcardHandleStruct, SMARTCARD_FLAG_RXNE) ? SET : RESET) == RESET){
-		while(!(USART2->SR & USART_SR_RXNE)){
-			byte=2;
-		}
-		byte = USART2->DR;
-		//USART2->CR1 &= ~USART_CR1_RE;
-		HAL_UART_Transmit_IT(&uartHandleStruct, &byte, 1);
+		retVal = READER_HAL_RcvChar(&byte, timeout);
 	} while( (retVal==READER_OK) && (READER_TPDU_IsNullByte(byte)) && !(READER_TPDU_IsACK(byte, INS)) && !(READER_TPDU_IsXoredACK(byte, INS)));
 	
 	if(retVal != READER_OK) return retVal;
 	
-	
 	if(READER_TPDU_IsXoredACK(byte, INS)){
 		*ACKType = READER_TPDU_ACK_XORED;
+		return READER_OK;
 	}
 	else if(READER_TPDU_IsACK(byte, INS)){
 		*ACKType = READER_TPDU_ACK_NORMAL;
+		return READER_OK;
 	}
 	else{
 		return READER_ERR;
 	}
-	
-	return READER_OK;
 }
 
 READER_Status READER_TPDU_Forge(READER_TPDU_Command *tpdu, uint8_t CLA, uint8_t INS, uint8_t P1, uint8_t P2, uint8_t P3, uint8_t *dataBuff, uint8_t dataSize){
