@@ -157,6 +157,24 @@ READER_Status READER_TPDU_RcvSW(uint16_t *SW, uint32_t timeout){
 
 
 
+/**
+ * \fn READER_Status READER_TPDU_RcvDataField(uint8_t *buffer, uint32_t Ne)
+ * \brief Cette fonction permet de recevoir la partie data d'une TPDU Response.
+ * \return Valeur de type READER_Status. READER_OK si l'exécution s'est correctement déroulée. READER_ERR dans le cas contraire.
+ * \param *buffer Pointeur sur un buffer dans lequel stocker les données reçues.
+ * \param Ne (N expected) Nombre d'octets attendus dans la réponse.
+ * \param timeout Pour l'instant non décidé si c'est le timeout pour chaque carac ou pour toute le frame. !!!!!!!!
+ */
+READER_Status READER_TPDU_RcvDataField(uint8_t *buffer, uint32_t Ne, uint32_t timeout){
+	READER_Status retVal;
+	
+	retVal = READER_HAL_RcvCharFrame(buffer, Ne, timeout);
+	
+	return retVal;
+}
+
+
+
 READER_Status READER_TPDU_IsACK(uint8_t byte, uint8_t INS){
 	if(byte == INS){
 		return READER_OK;
