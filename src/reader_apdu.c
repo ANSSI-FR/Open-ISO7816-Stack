@@ -102,3 +102,37 @@ READER_Status READER_APDU_Execute(READER_APDU_Command *pApdu, READER_APDU_Respon
 			return READER_ERR;
 	}
 }
+
+
+
+READER_Status READER_APDU_ExecuteCase1(READER_APDU_Command *pApdu, READER_APDU_Response *pResp){
+	READER_TPDU_Command tpduCmd;
+	READER_TPDU_Response tpduResp;
+	READER_Status retVal;
+	uint32_t i;
+	
+	retVal = READER_TPDU_Forge(&tpduCmd,
+		pApdu->header.CLA,
+		pApdu->header.INS,
+		pApdu->header.P1,
+		pApdu->header.P2,
+		0,
+		NULL,
+		0
+	);
+	if(retVal != READER_OK) return retVal;
+	
+	retVal = READER_TPDU_Execute(&tpduCmd, &tpduResp, timeout);
+	if(retVal != READER_OK) return retVal;
+	
+	
+	/* On map la reponse TPDU sur la reponse APDU */
+	pResp->SW1 = tpduResp.SW1;
+	pResp->SW2 = tpduResp.SW2;
+	pREsp->dataSize = tpduResp.dataSize;
+	for(i=0; i<tpduResp.dataSize; i++){
+		pResp->dataBytes[i] = tpduResp.dataBytes[i];
+	}
+	
+	return READER_OK;
+}
