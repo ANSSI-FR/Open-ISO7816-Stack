@@ -42,6 +42,13 @@ struct READER_TPDU_Command{
 };
 
 
+typedef struct READER_TPDU_Response READER_TPDU_Response;
+struct READER_TPDU_Response{
+	uint8_t SW1;
+	uint8_t SW2;
+	uint8_t dataBytes[256];  /* 256 est la taille max d'une reponse TPDU */
+	uint32_t dataSize;
+};
 
 READER_Status READER_TPDU_Send(READER_TPDU_Command *tpdu, uint32_t timeout);
 READER_Status READER_TPDU_SendHeader(READER_TPDU_Command *tpdu, uint32_t timeout);
