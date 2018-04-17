@@ -44,6 +44,14 @@ struct READER_APDU_Command{
 };
 
 
+typedef struct READER_APDU_Response READER_APDU_Response;
+struct READER_APDU_Response{
+	uint8_t dataField[65536];   /* Taille max du data field d'une APDU Response. */
+	uint32_t dataSize;
+	uint8_t SW1;
+	uint8_t SW2;
+};
+
 
 READER_APDU_ProtocolCase READER_APDU_GetProtocolCase(READER_APDU_Command *pApdu);
 READER_Status READER_APDU_Send(READER_APDU_Command *pApdu);
