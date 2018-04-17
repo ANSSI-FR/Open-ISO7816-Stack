@@ -54,15 +54,15 @@ struct READER_APDU_Response{
 
 
 READER_APDU_ProtocolCase READER_APDU_GetProtocolCase(READER_APDU_Command *pApdu);
-READER_Status READER_APDU_Send(READER_APDU_Command *pApdu);
+READER_Status READER_APDU_Execute(READER_APDU_Command *pApdu, READER_APDU_Response *pResp);
 
-READER_Status READER_APDU_SendCase1(READER_APDU_Command *pApdu);
-READER_Status READER_APDU_SendCase2S(READER_APDU_Command *pApdu);
-READER_Status READER_APDU_SendCase2E(READER_APDU_Command *pApdu);
-READER_Status READER_APDU_SendCase3S(READER_APDU_Command *pApdu);
-READER_Status READER_APDU_SendCase3E(READER_APDU_Command *pApdu);
-READER_Status READER_APDU_SendCase4S(READER_APDU_Command *pApdu);
-READER_Status READER_APDU_SendCase4E(READER_APDU_Command *pApdu);
+READER_Status READER_APDU_ExecuteCase1(READER_APDU_Command *pApdu, READER_APDU_Response *pResp);
+READER_Status READER_APDU_ExecuteCase2S(READER_APDU_Command *pApdu, READER_APDU_Response *pResp);
+READER_Status READER_APDU_ExecuteCase2E(READER_APDU_Command *pApdu, READER_APDU_Response *pResp);
+READER_Status READER_APDU_ExecuteCase3S(READER_APDU_Command *pApdu, READER_APDU_Response *pResp);
+READER_Status READER_APDU_ExecuteCase3E(READER_APDU_Command *pApdu, READER_APDU_Response *pResp);
+READER_Status READER_APDU_ExecuteCase4S(READER_APDU_Command *pApdu, READER_APDU_Response *pResp);
+READER_Status READER_APDU_ExecuteCase4E(READER_APDU_Command *pApdu, READER_APDU_Response *pResp);
 
 READER_Status READER_APDU_RcvSW(uint16_t *SW, uint32_t timeout);
 READER_Status READER_APDU_RcvResponse(uint8_t *buffer, uint32_t Ne, uint16_t *SW, uint32_t timeout);

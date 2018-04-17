@@ -60,7 +60,7 @@ READER_APDU_ProtocolCase READER_APDU_GetProtocolCase(READER_APDU_Command *pApdu)
  * \return Valeur de type READER_Status. READER_OK si l'exécution s'est correctement déroulée. READER_ERR dans le cas contraire.
  * \param \param *pApdu Un pointeur sur un structure de type READER_APDU_Command.
  */
-READER_Status READER_APDU_Send(READER_APDU_Command *pApdu){
+READER_Status READER_APDU_Execute(READER_APDU_Command *pApdu, READER_APDU_Response *pResp){
 	READER_APDU_ProtocolCase protocolCase;
 	
 	protocolCase = READER_APDU_GetProtocolCase(pApdu);
