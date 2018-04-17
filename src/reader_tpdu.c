@@ -215,8 +215,8 @@ READER_Status READER_TPDU_RcvResponse(READER_TPDU_Response *pResp, uint32_t time
 	timeoutMili = timeout; //revenir dessus lors de la gestion des timeout
 	// Ici le timeout devrait etre le GT ou WT ???
 	
-	
-	while( ((retVal = READER_HAL_RcvChar(&rcvByte, timeoutMili))  == READER_OK) && (rcvCount < 258)){
+	/* ATTENTION VALEUR DE TIMEOUT HARDCODEE !!!! A venir corriger tres vite !!!! */
+	while( ((retVal = READER_HAL_RcvChar(&rcvByte, 100))  == READER_OK) && (rcvCount < 258)){
 		tmpRcvBuff[rcvCount] = rcvByte;
 		rcvCount++;
 	}
