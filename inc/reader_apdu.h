@@ -24,7 +24,7 @@ typedef struct READER_APDU_Body READER_APDU_Body;
 struct READER_APDU_Body{
 	uint32_t Nc;
 	uint32_t Ne;
-	uint8_t *pDataField;
+	uint8_t pDataField[65535];  /* Taille max du data field d'une commande APDU */
 };
 
 
