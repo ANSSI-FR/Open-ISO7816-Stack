@@ -55,6 +55,7 @@ struct READER_TPDU_Response{
 };
 
 
+READER_Status READER_TPDU_Execute(READER_TPDU_Command *pTpdu, READER_TPDU_Response *pResp, uint32_t timeout);
 
 READER_Status READER_TPDU_Send(READER_TPDU_Command *tpdu, uint32_t timeout);
 READER_Status READER_TPDU_SendHeader(READER_TPDU_Command *tpdu, uint32_t timeout);

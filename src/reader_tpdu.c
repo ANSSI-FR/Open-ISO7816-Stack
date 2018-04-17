@@ -9,6 +9,21 @@ extern SMARTCARD_HandleTypeDef smartcardHandleStruct; // debug
 extern uint32_t globalWaitTimeMili;
 
 
+
+
+READER_Status READER_TPDU_Execute(READER_TPDU_Command *pTpdu, READER_TPDU_Response *pResp, uint32_t timeout){
+	READER_Status retVal;
+	
+	retVal = READER_TPDU_Send(pTpdu, timeout);
+	if(retVal != READER_OK) return retVal;
+	
+	
+	
+	return READER_OK;
+}
+
+
+
 READER_Status READER_TPDU_Send(READER_TPDU_Command *tpdu, uint32_t timeout){
 	READER_Status retVal;
 	uint8_t ACKType;
