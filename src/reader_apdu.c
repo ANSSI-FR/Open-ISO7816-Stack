@@ -133,6 +133,12 @@ READER_Status READER_APDU_ExecuteCase1(READER_APDU_Command *pApduCmd, READER_APD
 }
 
 
+READER_Status READER_APDU_ExecuteCase2S(READER_APDU_Command *pApduCmd, READER_APDU_Response *pApduResp){
+	
+	
+	return READER_OK;
+}
+
 
 READER_Status READER_APDU_MapTpduRespToApdu(READER_TPDU_Response *pTpduResp, READER_APDU_Response *pApduResp){
 	uint32_t i;
@@ -148,4 +154,27 @@ READER_Status READER_APDU_MapTpduRespToApdu(READER_TPDU_Response *pTpduResp, REA
 	}
 	
 	return READER_OK;
+}
+
+
+
+uint16_t READER_APDU_NcToLc(uint16_t Nc){
+	
+}
+
+uint16_t READER_APDU_NeToLe(uint16_t Ne){
+	if(Ne == 256){
+		return 0;
+	}
+	else{
+		return Ne;
+	}
+}
+
+uint16_t READER_APDU_LcToNc(uint16_t Lc){
+	
+}
+
+uint16_t READER_APDU_LeToNe(uint16_t Le){
+	
 }
