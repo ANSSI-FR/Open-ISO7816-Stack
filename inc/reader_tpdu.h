@@ -42,12 +42,16 @@ struct READER_TPDU_Command{
 };
 
 
+/**
+ * \struct struct READER_TPDU_Response
+ * \brief Cette structure permet de stocker les informations relatives à un "TPDU Response"
+ */
 typedef struct READER_TPDU_Response READER_TPDU_Response;
 struct READER_TPDU_Response{
-	uint8_t SW1;
-	uint8_t SW2;
-	uint8_t dataBytes[256];  /* 256 est la taille max d'une reponse TPDU */
-	uint32_t dataSize;
+	uint8_t SW1;                                                                  /* !< Stocke la valeur de la première partie du Status Word (SW1) */   
+	uint8_t SW2;                                                                  /* !< Stocke la valeur de la deuxième partie du Status Word (SW2) */ 
+	uint8_t dataBytes[256];  /* 256 est la taille max d'une reponse TPDU */       /* !< Tabelau d'octets permettant de stocker les caractères reçus. Un "TPDU Response" fait au plus 256 caractères. */    
+	uint32_t dataSize;                                                            /* !< Stocke la quantité de données reçues. */
 };
 
 READER_Status READER_TPDU_Send(READER_TPDU_Command *tpdu, uint32_t timeout);
