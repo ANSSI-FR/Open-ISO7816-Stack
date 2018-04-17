@@ -106,11 +106,13 @@ READER_Status READER_APDU_Execute(READER_APDU_Command *pApduCmd, READER_APDU_Res
 
 
 READER_Status READER_APDU_ExecuteCase1(READER_APDU_Command *pApduCmd, READER_APDU_Response *pApduResp){
+	/* Voir ISO7816-3 section 12.2.2 */
 	READER_TPDU_Command tpduCmd;
 	READER_TPDU_Response tpduResp;
 	READER_Status retVal;
 	
-	retVal = READER_TPDU_Forge(&tpduCmd,
+	retVal = READER_TPDU_Forge(
+		&tpduCmd,
 		pApduCmd->header.CLA,
 		pApduCmd->header.INS,
 		pApduCmd->header.P1,
@@ -134,7 +136,60 @@ READER_Status READER_APDU_ExecuteCase1(READER_APDU_Command *pApduCmd, READER_APD
 
 
 READER_Status READER_APDU_ExecuteCase2S(READER_APDU_Command *pApduCmd, READER_APDU_Response *pApduResp){
+	/* Voir ISO7816-3 section 12.2.3 */
+	READER_TPDU_Command tpduCmd;
+	READER_TPDU_Response tpduResp;
+	READER_Status retVal;
+	uint32_t Na;
 	
+	retVal = READER_TPDU_Forge(
+		&tpduCmd,
+		pApduCmd->header.CLA,
+		pApduCmd->header.INS,
+		pApduCmd->header.P1,
+		pApduCmd->header.P2,
+		READER_APDU_NeToLe(pApduCmd->body.Ne),
+		NULL,
+		0
+	);
+	if(retVal != READER_OK) return retVal;
+	
+	retVal = READER_TPDU_Execute(&tpduCmd, &tpduResp, timeout);
+	if(retVal != READER_OK) return retVal;
+	
+	/* Case 2S.2 Process Aborted, Ne definitely not accepted        */
+	if((tpduResp.SW1 == 0x67) && (tpduResp.SW2 == 0x00)){
+		retVal = READER_APDU_MapTpduRespToApdu(&tpduResp, pApduResp);
+		if(retVal != READER_OK) return READER_ERR;
+	}	
+	/* Case 2S.3 Process Aborted, Ne not accepted, Na indicated     */
+	else if(tpduResp.SW1 == 0x6C){
+		/* On forge un nouveau TPDU avec P3 = SW2 */
+		Na = tpduResp.SW2;
+		retVal = READER_TPDU_Forge(
+			&tpduCmd,
+			pApduCmd->header.CLA,
+			pApduCmd->header.INS,
+			pApduCmd->header.P1,
+			pApduCmd->header.P2,
+			Na,
+			NULL,
+			0
+		);
+		if(retVal != READER_OK) return retVal;
+	
+		retVal = READER_TPDU_Execute(&tpduCmd, &tpduResp, timeout);
+		if(retVal != READER_OK) return retVal;
+		
+		retVal = READER_APDU_MapTpduRespToApdu(&tpduResp, pApduResp);
+		if(retVal != READER_OK) return READER_ERR;
+	}
+	/* Case 2S.1 Process Completed, Ne accepted                     */
+	/* Case 2S.4 SW1SW2 = 8XYZ et SW1SW2 != 9000                    */
+	else{
+		retVal = READER_APDU_MapTpduRespToApdu(&tpduResp, pApduResp);
+		if(retVal != READER_OK) return READER_ERR;
+	}
 	
 	return READER_OK;
 }
