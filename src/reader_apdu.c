@@ -195,6 +195,41 @@ READER_Status READER_APDU_ExecuteCase2S(READER_APDU_Command *pApduCmd, READER_AP
 }
 
 
+READER_Status READER_APDU_ExecuteCase3S(READER_APDU_Command *pApduCmd, READER_APDU_Response *pApduResp){
+	/* Voir ISO7816-3 section 12.2.4 */
+	READER_TPDU_Command tpduCmd;
+	READER_TPDU_Response tpduResp;
+	READER_Status retVal;
+	uint32_t i;
+	
+	/* verifications preliminaires */
+	if((pApduCmd->body.Nc > 255) || (pApduCmd->body.Ne != 0)){
+		return READER_ERR;
+	}
+	
+	retVal = READER_TPDU_Forge(
+		&tpduCmd,
+		pApduCmd->header.CLA,
+		pApduCmd->header.INS,
+		pApduCmd->header.P1,
+		pApduCmd->header.P2,
+		READER_APDU_NcToLc(pApdu->body.Nc),
+		pApduCmd->body.pDataField,
+		pApduCmd->body.Nc
+	);
+	if(retVal != READER_OK) return retVal;
+	
+	retVal = READER_TPDU_Execute(&tpduCmd, &tpduResp, timeout);
+	if(retVal != READER_OK) return retVal;
+	
+	retVal = READER_APDU_MapTpduRespToApdu(&tpduResp, pApduResp);
+	if(retVal != READER_OK) return READER_ERR;
+	
+	return READER_OK;
+}
+
+
+
 READER_Status READER_APDU_MapTpduRespToApdu(READER_TPDU_Response *pTpduResp, READER_APDU_Response *pApduResp){
 	uint32_t i;
 	
@@ -214,7 +249,7 @@ READER_Status READER_APDU_MapTpduRespToApdu(READER_TPDU_Response *pTpduResp, REA
 
 
 uint16_t READER_APDU_NcToLc(uint16_t Nc){
-	
+	return Nc;
 }
 
 uint16_t READER_APDU_NeToLe(uint16_t Ne){
@@ -227,7 +262,7 @@ uint16_t READER_APDU_NeToLe(uint16_t Ne){
 }
 
 uint16_t READER_APDU_LcToNc(uint16_t Lc){
-	
+
 }
 
 uint16_t READER_APDU_LeToNe(uint16_t Le){
