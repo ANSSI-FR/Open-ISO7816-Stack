@@ -131,9 +131,10 @@ READER_Status READER_TPDU_SendDataSliced(READER_TPDU_Command *tpdu, uint32_t tim
  * \brief Cette fonction permet d'attendre la réception d'un status word (SW).
  * \return Valeur de type READER_Status. READER_OK si l'exécution s'est correctement déroulée. READER_ERR dans le cas contraire.
  * \param timeout Valeur du timeout en milisecondes pour recevoir un octet parmi les deux du SW. A la réception d'un null byte le compteur repart à zéro. Lorsque SW1 est reçu, le compteur repart également à zéro pour la réception de SW2.
- * \param *SW Pointeur sur une variable de type uint16_t dans laquelle la fonction va écrire le SW reçu. Dans cette valeur SW de retour, SW1 occupe les 8 bits de poids fort et SW2 les 8 bits de poids faible. 
+ * \param *SW1 Pointeur une uen variable dans laquelle stocker la première partie du Status Word (SW1).
+ * \param *SW2 Pointeur une uen variable dans laquelle stocker la deuxième partie du Status Word (SW2).
  */
-READER_Status READER_TPDU_RcvSW(uint16_t *SW, uint32_t timeout){	
+READER_Status READER_TPDU_RcvSW(uint8_t *SW1, uint8_t *SW2, uint32_t timeout){	
 	READER_Status retVal;
 	uint8_t byte1, byte2;
 	
@@ -186,16 +187,17 @@ READER_Status READER_TPDU_RcvDataField(uint8_t *buffer, uint32_t Ne, uint32_t ti
  * \return Valeur de type READER_Status. READER_OK si l'exécution s'est correctement déroulée. READER_ERR dans le cas contraire.
  * \param *buffer Pointeur sur un buffer dans lequel stocker les caractères du champ de données.
  * \param Ne (N expected) Nombre d'octets attendus dans la réponse.
- * \param *SW Pointeur sur une variable de type uint16_t dans laquelle la fonction va écrire le SW reçu. Dans cette valeur SW de retour, SW1 occupe les 8 bits de poids fort et SW2 les 8 bits de poids faible. 
+ * \param *SW1 Pointeur une uen variable dans laquelle stocker la première partie du Status Word (SW1).
+ * \param *SW2 Pointeur une uen variable dans laquelle stocker la deuxième partie du Status Word (SW2).
  * \param timeout Pour l'instant non décidé si c'est le timeout pour chaque carac ou pour toute le frame. !!!!!!!!
  */
-READER_Status READER_TPDU_RcvResponse(uint8_t *dataField, uint32_t Ne, uint16_t *SW, uint32_t timeout){
+READER_Status READER_TPDU_RcvResponse(uint8_t *dataField, uint32_t Ne, uint8_t *SW1, uint8_t *SW2, uint32_t timeout){
 	READER_Status retVal;
 	
 	retVal = READER_TPDU_RcvDataField(dataField, Ne, timeout);
 	if(retVal != READER_OK) return retVal;
 	
-	retVal = READER_TPDU_RcvSW(SW, timeout);
+	retVal = READER_TPDU_RcvSW(SW1, SW2, timeout);
 	if(retVal != READER_OK) return retVal;
 	
 	return READER_OK;

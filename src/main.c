@@ -15,7 +15,7 @@ uint8_t pSmartcardRxBuff[100];
 int main(void){
 	READER_ATR_Atr atr;
 	READER_TPDU_Command tpdu;
-	uint16_t SW;
+	uint8_t SW1, SW2;
 	
 	
 	if(READER_HAL_Init() != READER_OK){
@@ -32,7 +32,7 @@ int main(void){
 	HAL_Delay(1);
 	READER_HAL_SetRstLine(READER_HAL_STATE_ON);
 	
-
+	/* Reception de l'ATR */
 	READER_ATR_Receive(&atr);
 	HAL_Delay(10);
 	
@@ -54,7 +54,7 @@ int main(void){
 	
 	READER_TPDU_Forge(&tpdu, 0x01, 0xA4, 0x04, 0x00, 0x0D, pSmartcardTxBuff, 0x0D);
 	READER_TPDU_Send(&tpdu, READER_HAL_USE_ISO_WT);
-	READER_TPDU_RcvSW(&SW, READER_HAL_USE_ISO_WT);
+	READER_TPDU_RcvSW(&SW1, &SW2, READER_HAL_USE_ISO_WT);
 	
 	//HAL_UART_Transmit_IT(&uartHandleStruct, (uint8_t*)(&SW), 2);
 	

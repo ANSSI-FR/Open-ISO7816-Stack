@@ -54,12 +54,14 @@ struct READER_TPDU_Response{
 	uint32_t dataSize;                                                            /* !< Stocke la quantité de données reçues. */
 };
 
+
+
 READER_Status READER_TPDU_Send(READER_TPDU_Command *tpdu, uint32_t timeout);
 READER_Status READER_TPDU_SendHeader(READER_TPDU_Command *tpdu, uint32_t timeout);
 READER_Status READER_TPDU_SendDataOneshot(READER_TPDU_Command *tpdu, uint32_t timeout);
 READER_Status READER_TPDU_SendDataSliced(READER_TPDU_Command *tpdu, uint32_t timeout);
 
-READER_Status READER_TPDU_RcvSW(uint16_t *SW, uint32_t timeout);
+READER_Status READER_TPDU_RcvSW(uint8_t *SW1, uint8_t *SW2, uint32_t timeout);
 READER_Status READER_TPDU_RcvDataField(uint8_t *buffer, uint32_t Ne, uint32_t timeout);
 READER_Status READER_TPDU_RcvResponse(uint8_t *dataField, uint32_t Ne, uint16_t *SW, uint32_t timeout);
 
