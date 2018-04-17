@@ -200,20 +200,57 @@ READER_Status READER_TPDU_RcvDataField(uint8_t *buffer, uint32_t Ne, uint32_t ti
  * \fn READER_Status READER_TPDU_RcvResponse(uint8_t *dataField, uint32_t Ne, uint16_t SW, uint32_t timeout)
  * \brief Cette fonction permet de recevoir la réponse à une commande TPDU. Elle permet de récupérer le champs de données et le Status Word (SW).
  * \return Valeur de type READER_Status. READER_OK si l'exécution s'est correctement déroulée. READER_ERR dans le cas contraire.
- * \param *buffer Pointeur sur un buffer dans lequel stocker les caractères du champ de données.
- * \param Ne (N expected) Nombre d'octets attendus dans la réponse.
- * \param *SW1 Pointeur une uen variable dans laquelle stocker la première partie du Status Word (SW1).
- * \param *SW2 Pointeur une uen variable dans laquelle stocker la deuxième partie du Status Word (SW2).
- * \param timeout Pour l'instant non décidé si c'est le timeout pour chaque carac ou pour toute le frame. !!!!!!!!
+ * \param *pResp Un pointeur sur une structure de type READER_TPDU_Response. Toutes les données de la réponse (SW1SW2, data field) seront stockées dans cette structure.
  */
-READER_Status READER_TPDU_RcvResponse(uint8_t *dataField, uint32_t Ne, uint8_t *SW1, uint8_t *SW2, uint32_t timeout){
+READER_Status READER_TPDU_RcvResponse(READER_TPDU_Response *pResp, uint32_t timeout){
 	READER_Status retVal;
+	uint32_t timeoutMili;
+	uint8_t rcvByte;
+	uint32_t rcvCount = 0;
+	uint8_t tmpRcvBuff[258];  /* (taille max data TPDU reponse = 256) + SW1 + SW2 */
+	uint32_t i;
 	
-	retVal = READER_TPDU_RcvDataField(dataField, Ne, timeout);
-	if(retVal != READER_OK) return retVal;
 	
-	retVal = READER_TPDU_RcvSW(SW1, SW2, timeout);
-	if(retVal != READER_OK) return retVal;
+	timeoutMili = timeout; //revenir dessus lors de la gestion des timeout
+	// Ici le timeout devrait etre le GT ou WT ???
+	
+	
+	while( ((retVal = READER_HAL_RcvChar(&rcvByte, timeoutMili))  == READER_OK) && (rcvCount < 258)){
+		tmpRcvBuff[rcvCount] = rcvByte;
+		rcvCount++;
+	}
+	
+	/* Si on est sorti pour une raison autre qu'un timeout */
+	if(retVal != READER_TIMEOUT){
+		return READER_ERR;
+	}
+	
+	/* Si on a recu plus de donnees que la normale */
+	if(rcvCount > 258){
+		return READER_ERR;
+	}
+	
+	/* Si on a meme pas recu un status word (SW) complet */
+	if(rcvCount < 2){
+		return READER_ERR;
+	}
+	
+	/* Si on est ici c'est que on s'est arrete de recevoir des caractères a cause d'un TIMEOUT. cad plus rien a recevoir */
+	/* Donc c'est la fin de la reponse TPDU */
+	/* Les deux derniers octets du buffer de response dervaient etre SW1 et SW2 */
+	
+	/* Si le caractere cense etre un SW1 n'en est pas un ... */
+	if(!READER_TPDU_IsSW1(tmpRcvBuff[rcvCount-2])){
+		return READER_ERR;
+	}
+	
+	/* On complete la structure de reponse TPDU */
+	pResp->SW1 = tmpRcvBuff[rcvCount-2];
+	pResp->SW2 = tmpRcvBuff[rcvCount-1];
+	pResp->dataSize = rcvCount-2;
+	for(i=0; i<rcvCount-2; i++){
+		pResp->dataBytes[i] = tmpRcvBuff[i];
+	}
 	
 	return READER_OK;
 }

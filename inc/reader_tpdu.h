@@ -64,7 +64,7 @@ READER_Status READER_TPDU_SendDataSliced(READER_TPDU_Command *tpdu, uint32_t tim
 
 READER_Status READER_TPDU_RcvSW(uint8_t *SW1, uint8_t *SW2, uint32_t timeout);
 READER_Status READER_TPDU_RcvDataField(uint8_t *buffer, uint32_t Ne, uint32_t timeout);
-READER_Status READER_TPDU_RcvResponse(uint8_t *dataField, uint32_t Ne, uint16_t *SW, uint32_t timeout);
+READER_Status READER_TPDU_RcvResponse(READER_TPDU_Response *pResp, uint32_t timeout);
 
 READER_Status READER_TPDU_WaitProcedureByte(uint8_t *procedureByte, uint8_t INS, uint32_t timeout);
 READER_Status READER_TPDU_WaitACK(uint8_t INS, uint8_t *ACKType, uint32_t timeout);
