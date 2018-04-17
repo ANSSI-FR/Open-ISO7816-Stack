@@ -17,7 +17,8 @@ READER_Status READER_TPDU_Execute(READER_TPDU_Command *pTpdu, READER_TPDU_Respon
 	retVal = READER_TPDU_Send(pTpdu, timeout);
 	if(retVal != READER_OK) return retVal;
 	
-	
+	retVal = READER_TPDU_RcvResponse(pResp, timeout);
+	if(retVal != READER_OK) return retVal;
 	
 	return READER_OK;
 }
