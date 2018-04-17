@@ -67,31 +67,31 @@ READER_Status READER_APDU_Execute(READER_APDU_Command *pApdu, READER_APDU_Respon
 	
 	switch(protocolCase){
 		case READER_APDU_CASE_1:
-			return READER_APDU_SendCase1(pApdu, pResp);
+			return READER_APDU_ExecuteCase1(pApdu, pResp);
 			break;
 			
 		case READER_APDU_CASE_2E:
-			return READER_APDU_SendCase2E(pApdu, pResp);
+			return READER_APDU_ExecuteCase2E(pApdu, pResp);
 			break;
 			
 		case READER_APDU_CASE_2S:
-			return READER_APDU_SendCase2S(pApdu, pResp);
+			return READER_APDU_ExecuteCase2S(pApdu, pResp);
 			break;
 			
 		case READER_APDU_CASE_3E:
-			return READER_APDU_SendCase3E(pApdu, pResp);
+			return READER_APDU_ExecuteCase3E(pApdu, pResp);
 			break;
 			
 		case READER_APDU_CASE_3S:
-			return READER_APDU_SendCase3S(pApdu, pResp);
+			return READER_APDU_ExecuteCase3S(pApdu, pResp);
 			break;
 			
 		case READER_APDU_CASE_4E:
-			return READER_APDU_SendCase4E(pApdu, pResp);
+			return READER_APDU_ExecuteCase4E(pApdu, pResp);
 			break;
 			
 		case READER_APDU_CASE_4S:
-			return READER_APDU_SendCase4S(pApdu, pResp);
+			return READER_APDU_ExecuteCase4S(pApdu, pResp);
 			break;
 			
 		case READER_APDU_CASE_ERR:
