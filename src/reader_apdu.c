@@ -335,6 +335,77 @@ READER_Status READER_APDU_ExecuteCase3E(READER_APDU_Command *pApduCmd, READER_AP
 
 
 
+READER_Status READER_APDU_ExecuteCase2E(READER_APDU_Command *pApduCmd, READER_APDU_Response *pApduResp){
+	/* Voir ISO7816-3 section 12.2.6 */
+	READER_TPDU_Command tpduCmd;
+	READER_TPDU_Response tpduResp;
+	READER_Status retVal;
+	
+	uint32_t Ne, Nm, Nx;            /* Meme notation que ISO7816  */
+	uint32_t i;
+	
+	Ne = pApduCmd->body.Ne;         /* Ne = N expected            */
+	Nm = Ne;                        /* Nm = N remaining           */
+	
+	/* On envoie le premier TPDU avec le header de l'APDU et P3=0 */
+	retVal = READER_TPDU_Forge(&tpduCmd, pApduCmd->header.CLA, pApduCmd->header.INS, pApduCmd->header.P1, pApduCmd->header.P2, 0, NULL, 0);
+	if(retVal != READER_OK) return retVal;
+	
+	retVal = READER_TPDU_Execute(&tpduCmd, &tpduResp, timeout);
+	if(retVal != READER_OK) return retVal;
+	
+	/* On verifie la reponse de la carte */
+	if((tpduResp.SW1 == 0x67) && (tpduResp.SW2 == 0x00)){                   /* La carte a abort total a cause de wrong length */
+		retVal = READER_APDU_MapTpduRespToApdu(&tpduResp, pApduResp);
+		if(retVal != READER_OK) return READER_ERR;
+		return READER_OK;
+	}
+	else if(tpduResp.SW1 == 0x6C){                                          /* La carte a abort a cause de wrong lenth, mais indique Na */
+		retVal = READER_APDU_MapTpduRespToApdu(&tpduResp, pApduResp);
+		if(retVal != READER_OK) return READER_ERR;
+		return READER_OK;
+	}
+	else if((tpduResp.SW1 == 0x90) && (tpduResp.SW2 == 0x00)){
+		
+	}
+	else if(tpduResp.SW1 == 0x61){
+		while((Nm > 0) && (tpduResp.SW1 != 0x90)){
+			Nx = tpduResp.SW2;
+			
+			retVal = READER_TPDU_Forge(&tpduCmd, pApdu->header.CLA, READER_APDU_INS_GETRESPONSE, 0x00, 0x00, (Nx < Nm)? Nx:Nm, NULL, 0);
+			if(retVal != READER_ERR) return retVal;
+			
+			retVal = READER_TPDU_Execute(&tpduCmd, &tpduResp, timeout);
+			if(retVal != READER_OK) return retVal;
+			
+			if(tpduResp.SW1 == 0x61){
+				for(i=0; i<tpduResp.dataSize; i++){
+					pApduResp->dataBytes[(pApduResp->dataSize) + i] = tpduResp.dataBytes[i];
+				}
+				pApduResp->dataSize += tpduResp.dataSize;
+				Nm = Nm - tpduResp.dataSize;
+			}
+			else if((tpduResp.SW1 == 0x90) && (tpduResp.SW2 == 0x00)){
+				for(i=0; i<tpduResp.dataSize; i++){
+					pApduResp->dataBytes[(pApduResp->dataSize) + i] = tpduResp.dataBytes[i];
+				}
+				pApduResp->dataSize += tpduResp.dataSize;
+				Nm = Nm - tpduResp.dataSize;
+			}
+			else{
+				return READER_ERR;
+			}
+		}
+	}
+	else{
+		return READER_ERR;
+	}
+	
+	return READER_OK;
+}
+
+
+
 READER_Status READER_APDU_MapTpduRespToApdu(READER_TPDU_Response *pTpduResp, READER_APDU_Response *pApduResp){
 	uint32_t i;
 	
