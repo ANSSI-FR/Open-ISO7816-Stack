@@ -6,7 +6,8 @@
 
 
 
-#define READER_APDU_INS_ENVELOPE = 0xC2;
+#define READER_APDU_INS_ENVELOPE      = (uint8_t)(0xC2);
+#define READER_APDU_INS_GETRESPONSE   = (uint8_t)(0xC0);
 
 
 typedef enum READER_APDU_ProtocolCase READER_APDU_ProtocolCase;
