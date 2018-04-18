@@ -445,9 +445,14 @@ uint16_t READER_APDU_NeToLe(uint16_t Ne){
 }
 
 uint16_t READER_APDU_LcToNc(uint16_t Lc){
-
+	return Lc;
 }
 
 uint16_t READER_APDU_LeToNe(uint16_t Le){
-	
+	if(Le == 0){
+		return 256;
+	}
+	else{
+		return Le;
+	}
 }
