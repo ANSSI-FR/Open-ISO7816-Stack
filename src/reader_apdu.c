@@ -413,6 +413,78 @@ READER_Status READER_APDU_ExecuteCase2E(READER_APDU_Command *pApduCmd, READER_AP
 
 
 
+READER_Status READER_APDU_ExecuteCase4S(READER_APDU_Command *pApduCmd, READER_APDU_Response *pApduResp){
+	READER_TPDU_Command tpduCmd;
+	READER_TPDU_Response tpduResp;
+	READER_Status retVal;
+	
+	/* On envoie le premier TPDU avec le header de l'APDU et P3=Lc */
+	retVal = READER_TPDU_Forge(&tpduCmd, pApduCmd->header.CLA, pApduCmd->header.INS, pApduCmd->header.P1, pApduCmd->header.P2, READER_APDU_NcToLc(pApduCmd->body.Nc), NULL, 0);
+	if(retVal != READER_OK) return retVal;
+	
+	retVal = READER_TPDU_Execute(&tpduCmd, &tpduResp, timeout);
+	if(retVal != READER_OK) return retVal;
+	
+	
+	/* Selon le SW du premier TPDU response */
+	if((tpduResp.SW1 == 0x60) || (tpduResp.SW1 == 0x64) || (tpduResp.SW1 == 0x65) || (tpduResp.SW1 == 0x66) || (tpduResp.SW1 == 0x67) || (tpduResp.SW1 == 0x68) || (tpduResp.SW1 == 0x69)){
+		retVal = READER_APDU_MapTpduRespToApdu(&tpduResp, pApduResp);
+		if(retVal != READER_OK) return READER_ERR;
+		return READER_OK;
+	}
+	else if((tpduResp.SW1 == 0x90) && (tpduResp.SW2 == 0x00)){
+		/* On envoie en TPDU de type GET RESPONSE */
+		retVal = READER_TPDU_Forge(&tpduCmd, pApduCmd->header.CLA, READER_APDU_INS_GETRESPONSE, 0x00, 0x00, READER_APDU_NeToLe(pApduCmd->body.Ne), NULL, 0);
+		if(retVal != READER_OK) return retVal;
+	
+		retVal = READER_TPDU_Execute(&tpduCmd, &tpduResp, timeout);
+		if(retVal != READER_OK) return retVal;
+		
+		
+		/* On contnue selon le cas 2S */
+		/* Case 2S.2 Process Aborted, Ne definitely not accepted        */
+		if((tpduResp.SW1 == 0x67) && (tpduResp.SW2 == 0x00)){
+			retVal = READER_APDU_MapTpduRespToApdu(&tpduResp, pApduResp);
+			if(retVal != READER_OK) return READER_ERR;
+			return READER_OK;
+		}	
+		/* Case 2S.3 Process Aborted, Ne not accepted, Na indicated     */
+		else if(tpduResp.SW1 == 0x6C){
+			/* On forge un nouveau TPDU avec P3 = SW2 */
+			Na = tpduResp.SW2;
+			retVal = READER_TPDU_Forge(&tpduCmd, pApduCmd->header.CLA, READER_APDU_INS_GETRESPONSE, 0x00, 0x00, Na, NULL, 0);
+			if(retVal != READER_OK) return retVal;
+		
+			retVal = READER_TPDU_Execute(&tpduCmd, &tpduResp, timeout);
+			if(retVal != READER_OK) return retVal;
+			
+			retVal = READER_APDU_MapTpduRespToApdu(&tpduResp, pApduResp);
+			if(retVal != READER_OK) return READER_ERR;
+		}
+		/* Case 2S.1 Process Completed, Ne accepted                     */
+		/* Case 2S.4 SW1SW2 = 8XYZ et SW1SW2 != 9000                    */
+		else{
+			retVal = READER_APDU_MapTpduRespToApdu(&tpduResp, pApduResp);
+			if(retVal != READER_OK) return READER_ERR;
+		}
+	}
+	else if(tpduResp.SW1 == 0x61){
+		/* Cas 4S.3 a faire !!!!*/
+	}
+	else if((tpduResp.SW1 == 0x61) || (tpduResp.SW1 == 0x62) || (tpduResp.SW1 == 0x63) || (((tpduResp.SW1 & 0xF0) == 0x90) && (tpduResp.SW2 != 0x00)) ){
+		retVal = READER_APDU_MapTpduRespToApdu(&tpduResp, pApduResp);
+		if(retVal != READER_OK) return READER_ERR;
+		return READER_OK;
+	}
+	else{
+		return READER_ERR;
+	}
+	
+	return READER_OK;
+}
+
+
+
 READER_Status READER_APDU_MapTpduRespToApdu(READER_TPDU_Response *pTpduResp, READER_APDU_Response *pApduResp){
 	uint32_t i;
 	
