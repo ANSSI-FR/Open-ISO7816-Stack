@@ -207,6 +207,7 @@ READER_Status READER_APDU_ExecuteCase3S(READER_APDU_Command *pApduCmd, READER_AP
 		return READER_ERR;
 	}
 	
+	/* On forge une TPDU avec P3 = Nc et TPDU data = APDU data */
 	retVal = READER_TPDU_Forge(
 		&tpduCmd,
 		pApduCmd->header.CLA,
@@ -219,11 +220,113 @@ READER_Status READER_APDU_ExecuteCase3S(READER_APDU_Command *pApduCmd, READER_AP
 	);
 	if(retVal != READER_OK) return retVal;
 	
+	/* On envoie la requette TPDU */
 	retVal = READER_TPDU_Execute(&tpduCmd, &tpduResp, timeout);
 	if(retVal != READER_OK) return retVal;
 	
+	/* On mape la reponse APDU sur la reponse TPDU */
 	retVal = READER_APDU_MapTpduRespToApdu(&tpduResp, pApduResp);
 	if(retVal != READER_OK) return READER_ERR;
+	
+	return READER_OK;
+}
+
+
+
+READER_Status READER_APDU_ExecuteCase3E(READER_APDU_Command *pApduCmd, READER_APDU_Response *pApduResp){
+	/* Voir ISO7816-3 section 12.2.7 */
+	READER_TPDU_Command tpduCmd;
+	READER_TPDU_Response tpduResp;
+	READER_Status retVal;
+	
+	uint8_t tmpTpduBuff[255];
+	uint32_t i,j;
+	uint32_t Nc;
+	uint32_t nbSegments, nbResidualBytes;
+	
+	Nc = pApduCmd->body.Nc;
+	
+	
+	/* On segmente le long APDU en un ensemble de trames de taille <= 255                                                             */
+	/* Chacune des trames ainsi formes sera sera placee dans le data field d'un TPDU.                                                 */
+	/* Chacun des TPDU ainsi formes sera de type INS={ENVELOPE}                                                                       */
+																									                                  
+	/* Dans la premiere trame de cet ensemble on y mets egalement le header de l'APDU original                                        */
+																														             
+	tmpTpduBuff[0] = pApduCmd->header.CLA;                                                                                           
+	tmpTpduBuff[1] = pApduCmd->header.INS;                                                                                           
+	tmpTpduBuff[2] = pApduCmd->header.P1;                                                                                            
+	tmpTpduBuff[3] = pApduCmd->header.P2;                                                                                            
+																														             
+	/* On recupere 251 caracteres dans le data field de la commande APDU et on les place dans la 1ere trame (251+4=255)               */
+	for(i=0; i<251; i++){
+		tmpTpduBuff[i+4] = pApduCmd->body.pDataField[i];
+	}
+	
+	/* La premiere trame est prete. On forge un TPDU avec, on l'envoie puis on regarde comment reagit la carte a la commande ENVELOPE */
+	retVal = READER_TPDU_Forge(&tpduCmd, pApduCmd->header.CLA, READER_APDU_INS_ENVELOPE, 0x00, 0x00, 255, tmpTpduBuff, 255);
+	if(retVal != READER_OK) return retVal;
+	
+	retVal = READER_TPDU_Execute(&tpduCmd, &tpduResp, timeout);
+	if(retVal != READER_OK) return retVal;
+	
+	/* On regarde le SW de la reponse et on en déduit si la carte supporte ou non l'instruction ENVELOPE                 */
+	/* Si la carte ne supporte pas ENVELOPE                                                                              */
+	if((tpduResp.SW1 == 0x6D) && (tpduResp.SW2 == 0x00)){
+		retVal = READER_APDU_MapTpduRespToApdu(&tpduResp, pApduResp);    /* On mape la reponse APDU sur la reponse TPDU  */
+		if(retVal != READER_OK) return READER_ERR;
+		
+		return READER_OK;                                                /* On termine la et on ne renvoie pas d'erreur. L'exec s'est correctement deroulee, simplement la carte ne supporte pas */
+	}
+	/* Si la carte supporte correctement ENVELOPE                                                                        */
+	else if((tpduResp.SW1 == 0x90) && (tpduResp.SW2 == 0x00)){                                                          
+		/* On va decouper les data restantes de l'APDU ... */
+		nbSegments = (Nc - 251) / 255;
+		nbResidualBytes = (Nc - 251) % 255;
+		
+		for(i=0; i<nbSegments; i++){
+			for(j=0; j<255; j++){
+				tmpTpduBuff[j] = pApdu->body.pDataField[251 + (i*255) + j];
+			}
+			retVal = READER_TPDU_Forge(&tpduCmd, pApduCmd->header.CLA, READER_APDU_INS_ENVELOPE, 0x00, 0x00, 255, tmpTpduBuff, 255);
+			if(retVal != READER_OK) return retVal;
+			
+			retVal = READER_TPDU_Execute(&tpduCmd, &tpduResp, timeout);
+			if(retVal != READER_OK) return retVal;
+			
+			if((tpduResp.SW1 != 0x90) || (tpduResp.SW2 != 0x00)){  /* A propri la commande ENVELOPE est mal passée */
+				return READER_ERR;  /* A determiner si vraiment on renvoi un erreur a cet endroit */
+			}
+		}
+		
+		/* On envoie le reste des residual bytes */
+		for(i=0; i<nbResidualBytes; i++){
+			tmpTpduBuff[i] = pApduCmd->body.pDataField[251 + (nbSegments*255) + i]; 
+		}
+		retVal = READER_TPDU_Forge(&tpduCmd, pApduCmd->header.CLA, READER_APDU_INS_ENVELOPE, 0x00, 0x00, nbResidualBytes, tmpTpduBuff, nbResidualBytes);
+		if(retVal != READER_OK) return retVal;
+		
+		retVal = READER_TPDU_Execute(&tpduCmd, &tpduResp, timeout);
+		if(retVal != READER_OK) return retVal;
+		
+		if((tpduResp.SW1 != 0x90) || (tpduResp.SW2 != 0x00)){  /* A propri la commande ENVELOPE est mal passée */
+			return READER_ERR;  /* A determiner si vraiment on renvoi un erreur a cet endroit */
+		}
+		
+		/* On envoie une commande ENVELOPE vide. Cela permet d'indiquer a la carte que toutes les donnees on ete envoyees */
+		retVal = READER_TPDU_Forge(&tpduCmd, pApduCmd->header.CLA, READER_APDU_INS_ENVELOPE, 0x00, 0x00, 0, NULL, 0);
+		if(retVal != READER_OK) return retVal;
+		
+		/* Le SW de la commande ENVELOPE vide est la SW de la commande globale */
+		/* Donc on mape le dernier TPDU response sur le APDU response          */
+		retVal = READER_APDU_MapTpduRespToApdu(&tpduResp, pApduResp);
+		if(retVal != READER_OK) return READER_ERR;
+	}                                                                                                                   
+	/* Si on a recu un SW qui correspond pas a la sequence prevue par le protocole                                       */
+	else{
+		return READER_ERR;
+	}
+		
 	
 	return READER_OK;
 }

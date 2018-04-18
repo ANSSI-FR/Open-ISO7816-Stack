@@ -6,6 +6,9 @@
 
 
 
+#define READER_APDU_INS_ENVELOPE = 0xC2;
+
+
 typedef enum READER_APDU_ProtocolCase READER_APDU_ProtocolCase;
 enum READER_APDU_ProtocolCase{
 	READER_APDU_CASE_ERR       =   (uint32_t)(0x00000000),
