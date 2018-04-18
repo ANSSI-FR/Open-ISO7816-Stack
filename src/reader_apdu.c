@@ -369,25 +369,28 @@ READER_Status READER_APDU_ExecuteCase2E(READER_APDU_Command *pApduCmd, READER_AP
 		
 	}
 	else if(tpduResp.SW1 == 0x61){
+		/* Tantque il reste des donees a recevoir on envoie des TPDU de type GET RESPONSE */
 		while((Nm > 0) && (tpduResp.SW1 != 0x90)){
 			Nx = tpduResp.SW2;
 			
+			/* Preparation de la commande GET RESPONSE */
 			retVal = READER_TPDU_Forge(&tpduCmd, pApdu->header.CLA, READER_APDU_INS_GETRESPONSE, 0x00, 0x00, (Nx < Nm)? Nx:Nm, NULL, 0);
 			if(retVal != READER_ERR) return retVal;
 			
 			retVal = READER_TPDU_Execute(&tpduCmd, &tpduResp, timeout);
 			if(retVal != READER_OK) return retVal;
 			
+			/* Selon le status word du GET RESPONSE ... */
 			if(tpduResp.SW1 == 0x61){
 				for(i=0; i<tpduResp.dataSize; i++){
-					pApduResp->dataBytes[(pApduResp->dataSize) + i] = tpduResp.dataBytes[i];
+					pApduResp->dataBytes[(pApduResp->dataSize) + i] = tpduResp.dataBytes[i];   /* On copie les data du GET RESPONSE dans le APDU response au bon endroit */
 				}
 				pApduResp->dataSize += tpduResp.dataSize;
 				Nm = Nm - tpduResp.dataSize;
 			}
 			else if((tpduResp.SW1 == 0x90) && (tpduResp.SW2 == 0x00)){
 				for(i=0; i<tpduResp.dataSize; i++){
-					pApduResp->dataBytes[(pApduResp->dataSize) + i] = tpduResp.dataBytes[i];
+					pApduResp->dataBytes[(pApduResp->dataSize) + i] = tpduResp.dataBytes[i];   /* On copie les data du GET RESPONSE dans le APDU response au bon endroit */
 				}
 				pApduResp->dataSize += tpduResp.dataSize;
 				Nm = Nm - tpduResp.dataSize;
@@ -396,6 +399,10 @@ READER_Status READER_APDU_ExecuteCase2E(READER_APDU_Command *pApduCmd, READER_AP
 				return READER_ERR;
 			}
 		}
+		
+		/* On complete le SW du response APDU. C'est le SW du dernier TPDU response recu  */
+		pApduResp->SW1 = tpduResp.SW1;
+		pApduResp->SW2 = tpduResp.SW2;
 	}
 	else{
 		return READER_ERR;
