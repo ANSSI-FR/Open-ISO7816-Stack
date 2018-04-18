@@ -316,8 +316,10 @@ READER_Status READER_APDU_ExecuteCase3E(READER_APDU_Command *pApduCmd, READER_AP
 		/* On envoie une commande ENVELOPE vide. Cela permet d'indiquer a la carte que toutes les donnees on ete envoyees */
 		retVal = READER_TPDU_Forge(&tpduCmd, pApduCmd->header.CLA, READER_APDU_INS_ENVELOPE, 0x00, 0x00, 0, NULL, 0);
 		if(retVal != READER_OK) return retVal;
+		retVal = READER_TPDU_Execute(&tpduCmd, &tpduResp, timeout);
+		if(retVal != READER_OK) return retVal;
 		
-		/* Le SW de la commande ENVELOPE vide est la SW de la commande globale */
+		/* Le SW de la derniere commande ENVELOPE vide est la SW de la commande globale */
 		/* Donc on mape le dernier TPDU response sur le APDU response          */
 		retVal = READER_APDU_MapTpduRespToApdu(&tpduResp, pApduResp);
 		if(retVal != READER_OK) return READER_ERR;
