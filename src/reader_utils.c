@@ -38,3 +38,20 @@ uint32_t READER_UTILS_ComputePrescFromFreq(uint32_t freq){
 uint32_t READER_UTILS_ComputeTimeoutMiliSec(uint32_t baudRate, uint32_t WT){
 	return ((1000 * WT) / baudRate) + 1;
 }
+
+
+
+uint32_t READER_UTILS_ComputeWT1(uint32_t f, uint32_t Fi){
+	/* WT = WI * 960 * (Fi/f)    ISO7816-3 section 10.2                    */
+	/* baudRate = 1/1etu    =>   BR = 1/((F/D)*(1/F))   =>  BR = f*(D/F)   */
+	/* f = BR * (F/D)                                                      */
+	/* WT = (WI * 960 * D) / BR                                            */
+	/* WTmili  = WT * 1000                                                 */
+	
+	return 1000 * READER_DEFAULT_WI * 960 * (Fi / f);
+}
+
+uint32_t READER_UTILS_ComputeWT2(uint32_t baudRate, uint32_t Di){
+	/* Voir explications de la fonction READER_UTILS_ComputeWT1() */
+	return 1000 * (READER_DEFAULT_WI * 960 * D) / baudRate;
+}
