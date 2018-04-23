@@ -488,14 +488,14 @@ READER_Status READER_HAL_SetGT(uint32_t newGT){
 
 /**
  * \fn READER_Status READER_HAL_SetWT(uint32_t newWT)
- * \brief Cette fonction permet de configurer le "Wait Time" (WT) à utiliser lors des communications sur la ligne IO. Le GT est défini dans la norme ISO7816-3 à la section 7.2.
+ * \brief Cette fonction permet de configurer le "Wait Time" (WT) à utiliser lors des communications sur la ligne IO. Le GT est défini dans la norme ISO7816-3 à la section 7.2. Attention cette fonction dépend de la variable globale : globalCurrentSettings. Cette variable est locale au fichier "reader_hal.c". Cette structure contient en permanance les parametres de communication utilisés.
  * \return Valeur de type READER_Status. READER_OK si l'exécution s'est correctement déroulée. READER_ERR dans le cas contraire.
  * \param uint32_t newGT uint32_t indiquant la nouvelle valeur de WT qu'il faut désormais utiliser. Cette valeur est un nombre entier d'ETU.
- * \param *currentSettings Pointeur vers une variable de type READER_HAL_CommSettings. Cette structure contient en permanance les parametres de communication utilisés.
+ 
  */
-READER_Status READER_HAL_SetWT(READER_HAL_CommSettings *currentSettings, uint32_t newWT){
+READER_Status READER_HAL_SetWT(uint32_t newWT){
 	//globalWaitTimeMili = newWT;
-	currentSettings->WT = newWT;
+	globalCurrentSettings.WT = newWT;
 	return READER_OK;
 }
 

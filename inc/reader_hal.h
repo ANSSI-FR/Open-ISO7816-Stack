@@ -62,7 +62,7 @@ READER_Status READER_HAL_SendChar(uint8_t character, uint32_t timeout);
 READER_Status READER_HAL_SetFreq(uint32_t newFreq);
 READER_Status READER_HAL_SetEtu(uint32_t Fi, uint32_t Di);
 READER_Status READER_HAL_SetGT(uint32_t newGT);
-READER_Status READER_HAL_SetWT(READER_HAL_CommSettings *currentSettings, uint32_t newWT);
+READER_Status READER_HAL_SetWT(uint32_t newWT);
 uint32_t READER_HAL_GetWT(void);
 
 READER_Status READER_HAL_SetPwrLine(READER_HAL_State state);
