@@ -295,23 +295,32 @@ READER_Status READER_HAL_SendChar(uint8_t character, uint32_t timeout){
  * \brief Cette fonction permet de changer la fréquence de l'horloge fournie à la carte à puce.
  * \return Valeur de type READER_Status. READER_OK si l'exécution s'est correctement déroulée. READER_ERR dans le cas contraire.
  * \param newFreq uint32_t indiquant la nouvelle fréquence à adopter (en Hz). Attention, selon l'implémentation matérielle toutes les fréquences ne sont pas permises. Pour plus d'informations sur les fréquences supportées voir l'implémentation de la fonction READER_UTILS_ComputePrescFromFreq() dans le fichier "reader_utils.h". Attention l'implémentation de cette fonction varie selon la cible matérielle.
+ * \param *currentSettings Pointeur vers une variable de type READER_HAL_CommSettings. Cette structure contient en permanance les parametres de communication utilisés.
  */
-READER_Status READER_HAL_SetFreq(uint32_t newFreq){
+READER_Status READER_HAL_SetFreq(READER_HAL_CommSettings *currentSettings, uint32_t newFreq){
+	READER_Status retVal;
 	uint32_t oldFreq, oldBaudRate;
 	uint32_t newBaudRate;
 	uint32_t newWaitTime;
 	
+	/* On recupere la frequence et la baudrate actuel. Peut aussi etre recupere a partir des infos de *currentSettings */
 	oldFreq = READER_UTILS_GetCardFreq(168000000, 1, 4, smartcardHandleStruct.Init.Prescaler);
 	oldBaudRate = smartcardHandleStruct.Init.BaudRate;
 	newBaudRate = READER_UTILS_ComputeNewBaudRate(oldBaudRate, oldFreq, newFreq);
 	
+	/* On applique les changements au bloc materiel USART */
 	smartcardHandleStruct.Init.BaudRate = newBaudRate;
 	smartcardHandleStruct.Init.Prescaler = READER_UTILS_ComputePrescFromFreq(newFreq);
 	
 	if(HAL_SMARTCARD_Init(&smartcardHandleStruct) != HAL_OK) return READER_ERR;
 	
-	/* On modifie la valeur du Wait Time (WT) */
-	newWaitTime = READER_UTILS_ComputeWT2(newBaudRate, 
+	/* On modifie en consequence la valeur du Wait Time (WT) (car WT est dependant de f) */
+	newWaitTime = READER_UTILS_ComputeWT1(newFreq, currentSettings->Fi);
+	retVal = READER_HAL_SetWT(newWaitTime); 
+	if(retVal != READER_OK) return retVal;
+	
+	/* Mise a jour des informations dans la structure qui contient les parametres de communication */
+	currentSettings->f = newFreq;
 	
 	return READER_OK;
 }

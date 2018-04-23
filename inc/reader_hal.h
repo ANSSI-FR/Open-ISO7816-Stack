@@ -59,7 +59,7 @@ READER_Status READER_HAL_SendCharFrame(uint8_t *frame, uint32_t frameSize, uint3
 READER_Status READER_HAL_RcvCharFrame(uint8_t *frame, uint32_t frameSize, uint32_t timeout);
 READER_Status READER_HAL_RcvChar(uint8_t *character, uint32_t timeout);
 READER_Status READER_HAL_SendChar(uint8_t character, uint32_t timeout);
-READER_Status READER_HAL_SetFreq(uint32_t newFreq);
+READER_Status READER_HAL_SetFreq(READER_HAL_CommSettings *currentSettings, uint32_t newFreq);
 READER_Status READER_HAL_SetEtu(uint32_t Fi, uint32_t Di);
 READER_Status READER_HAL_SetGT(uint32_t newGT);
 READER_Status READER_HAL_SetWT(uint32_t newWT);
