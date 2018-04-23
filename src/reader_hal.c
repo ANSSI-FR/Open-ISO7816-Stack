@@ -28,6 +28,8 @@ READER_HAL_CommSettings globalCurrentSettings;
  * \return Valeur de type READER_Status. READER_OK si l'exécution s'est correctement déroulée. READER_ERR dans le cas contraire.
  */ 
 READER_Status READER_HAL_Init(void){
+	READER_Status retVal;
+	
 	RCC_ClkInitTypeDef RCC_ClkInitStruct;
 	RCC_OscInitTypeDef RCC_OscInitStruct;
 	
@@ -64,13 +66,16 @@ READER_Status READER_HAL_Init(void){
 	
 	
 	/* Configuration de tous les etats initiaux des E/S */
-	if(READER_HAL_SetIOLine(READER_HAL_STATE_OFF) != READER_OK)  return READER_ERR;
-	if(READER_HAL_SetPwrLine(READER_HAL_STATE_OFF) != READER_OK) return READER_ERR;
-	if(READER_HAL_SetRstLine(READER_HAL_STATE_OFF) != READER_OK) return READER_ERR;
-	if(READER_HAL_SetClkLine(READER_HAL_STATE_OFF) != READER_OK) return READER_ERR;
+	if(READER_HAL_SetIOLine(READER_HAL_STATE_OFF) != READER_OK)       return READER_ERR;
+	if(READER_HAL_SetPwrLine(READER_HAL_STATE_OFF) != READER_OK)      return READER_ERR;
+	if(READER_HAL_SetRstLine(READER_HAL_STATE_OFF) != READER_OK)      return READER_ERR;
+	if(READER_HAL_SetClkLine(READER_HAL_STATE_OFF) != READER_OK)      return READER_ERR;
 	
-	/* Initialisation du WT (Wait Time) */
-	READER_HAL_SetWT(READER_DEFAULT_WT_MILI);
+	/* Initialisation du WT, du GT, du Etu (Fi, Di) et de f */
+	retVal = READER_HAL_SetWT(READER_DEFAULT_WT_MILI);                if(retVal != READER_OK) return retVal;
+	retVal = READER_HAL_SetGT(READER_DEFAULT_GT);                     if(retVal != READER_OK) return retVal;
+	retVal = READER_HAL_SetEtu(READER_DEFAULT_FI, READER_DEFAULT_DI); if(retVal != READER_OK) return retVal;
+	retVal = READER_HAL_SetFreq(READER_DEFAULT_FREQ);                 if(retVal != READER_OK) return retVal;
 	
 	return READER_OK;
 }
