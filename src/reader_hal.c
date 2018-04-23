@@ -461,11 +461,14 @@ READER_Status READER_HAL_SetClkLine(READER_HAL_State state){
  * \brief Cette fonction permet de configurer le "Gard Time" (GT) à utiliser lors des communications sur la ligne IO. Le GT est défini dans la norme ISO7816-3 à la section 7.2.
  * \return Valeur de type READER_Status. READER_OK si l'exécution s'est correctement déroulée. READER_ERR dans le cas contraire.
  * \param uint32_t newGT uint32_t indiquant la nouvelle valeur de GT qu'il faut désormais utiliser. Cette valeur est un nombre entier d'ETU.
+ * \param *currentSettings Pointeur vers une variable de type READER_HAL_CommSettings. Cette structure contient en permanance les parametres de communication utilisés.
  */
-READER_Status READER_HAL_SetGT(uint32_t newGT){
+READER_Status READER_HAL_SetGT(READER_HAL_CommSettings *currentSettings, uint32_t newGT){
 	smartcardHandleStruct.Init.GuardTime = newGT;
 	
 	if(HAL_SMARTCARD_Init(&smartcardHandleStruct) != HAL_OK) return READER_ERR;
+	
+	currentSettings->GT = newGT;
 	
 	return READER_OK;	
 }
