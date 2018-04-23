@@ -28,7 +28,6 @@ READER_Status READER_TPDU_Execute(READER_TPDU_Command *pTpdu, READER_TPDU_Respon
 READER_Status READER_TPDU_Send(READER_TPDU_Command *tpdu, uint32_t timeout){
 	READER_Status retVal;
 	uint8_t ACKType;
-	uint32_t i;
 	
 	/* Envoi du header TPDU */
 	retVal = READER_TPDU_SendHeader(tpdu, timeout);
