@@ -63,6 +63,7 @@ READER_Status READER_HAL_SetFreq(READER_HAL_CommSettings *currentSettings, uint3
 READER_Status READER_HAL_SetEtu(READER_HAL_CommSettings *currentSettings, uint32_t Fi, uint32_t Di);
 READER_Status READER_HAL_SetGT(READER_HAL_CommSettings *currentSettings, uint32_t newGT);
 READER_Status READER_HAL_SetWT(READER_HAL_CommSettings *currentSettings, uint32_t newWT);
+uint32_t READER_HAL_GetWT(void);
 
 READER_Status READER_HAL_SetPwrLine(READER_HAL_State state);
 READER_Status READER_HAL_SetRstLine(READER_HAL_State state);

@@ -503,6 +503,15 @@ READER_Status READER_HAL_SetWT(READER_HAL_CommSettings *currentSettings, uint32_
 }
 
 
+/**
+ * \fn uint32_t READER_HAL_GetWT(void)
+ * \brief Cette fonction permet d'obtenir le Wait Time (WT) selon les parametres de communication actuels. Attention cette fonction dépend de la variable globale : globalCurrentSettings. Cette variable est locale au fichier "reader_hal.c".
+ * \return Retourne la valeur du WT (tel que defini dans la norme ISO) en milisecondes.
+ */
+uint32_t READER_HAL_GetWT(void){
+	return globalCurrentSettings.WT;
+}
+
 
 void READER_HAL_ErrHandler(void){
 	while(1){
