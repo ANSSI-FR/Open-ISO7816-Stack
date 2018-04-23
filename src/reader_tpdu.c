@@ -205,18 +205,13 @@ READER_Status READER_TPDU_RcvDataField(uint8_t *buffer, uint32_t Ne, uint32_t ti
  */
 READER_Status READER_TPDU_RcvResponse(READER_TPDU_Response *pResp, uint32_t timeout){
 	READER_Status retVal;
-	uint32_t timeoutMili;
 	uint8_t rcvByte;
 	uint32_t rcvCount = 0;
 	uint8_t tmpRcvBuff[258];  /* (taille max data TPDU reponse = 256) + SW1 + SW2 */
 	uint32_t i;
 	
-	
-	timeoutMili = timeout; //revenir dessus lors de la gestion des timeout
-	// Ici le timeout devrait etre le GT ou WT ???
-	
-	/* ATTENTION VALEUR DE TIMEOUT HARDCODEE !!!! A venir corriger tres vite !!!! */
-	while( ((retVal = READER_HAL_RcvChar(&rcvByte, 100))  == READER_OK) && (rcvCount < 258)){
+
+	while( ((retVal = READER_HAL_RcvChar(&rcvByte, timeout))  == READER_OK) && (rcvCount < 258)){
 		tmpRcvBuff[rcvCount] = rcvByte;
 		rcvCount++;
 	}
