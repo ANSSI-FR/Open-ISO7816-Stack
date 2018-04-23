@@ -66,5 +66,5 @@ uint32_t READER_UTILS_ComputeWT1(uint32_t f, uint32_t Fi){
  */
 uint32_t READER_UTILS_ComputeWT2(uint32_t baudRate, uint32_t Di){
 	/* Voir explications de la fonction READER_UTILS_ComputeWT1()          */
-	return 1000 * (READER_DEFAULT_WI * 960 * D) / baudRate;
+	return 1000 * (READER_DEFAULT_WI * 960 * Di) / baudRate;
 }
