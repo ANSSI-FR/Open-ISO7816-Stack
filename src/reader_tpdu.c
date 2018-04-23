@@ -165,9 +165,9 @@ READER_Status READER_TPDU_RcvSW(uint8_t *SW1, uint8_t *SW2, uint32_t timeout){
 	retVal = READER_HAL_RcvChar(&byte2, timeout);
 	if(retVal != READER_OK) return retVal;
 	
-	/* On reconstitue SW */
-	//*SW = byte2 + (byte1 * 256);
-	*SW = ((uint16_t)(byte1 << 8)) | ((uint16_t)(byte2) & 0x00FF);
+	/* On retourne le resultat */
+	*SW1 = *byte1;
+	*SW2 = *byte2;
 	
 	return READER_OK;
 }
