@@ -17,7 +17,8 @@
 
 SMARTCARD_HandleTypeDef smartcardHandleStruct;
 
-uint32_t globalWaitTimeMili;
+//uint32_t globalWaitTimeMili;
+READER_HAL_CommSettings globalCurrentSettings;
 
 
 
