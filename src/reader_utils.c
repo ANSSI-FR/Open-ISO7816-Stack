@@ -40,7 +40,13 @@ uint32_t READER_UTILS_ComputeTimeoutMiliSec(uint32_t baudRate, uint32_t WT){
 }
 
 
-
+/**
+ * \fn uint32_t READER_UTILS_ComputeWT1(uint32_t f, uint32_t Fi)
+ * \brief Cette fonction permet de calculer le Wait Time (WT) en millisecondes. Il s'agit du WT défini dans la norme ISO7816-3 aux sections 7.2 et 10.2. La fonction READER_UTILS_ComputeWT1() calcule cette valeur à partir de la fréquence f et du "Clock rate conversion integer" Fi.
+ * \return Timeout en millisecondes qu'il faut utiliser pour respecter la norme.
+ * \param f Fréquence actuellement fournie à la carte.
+ * \param Di "Clock rate adjustement integer" actuellement utilisé pour communiquer. Voir ISO7816-3 section 7.1.
+ */
 uint32_t READER_UTILS_ComputeWT1(uint32_t f, uint32_t Fi){
 	/* WT = WI * 960 * (Fi/f)    ISO7816-3 section 10.2                    */
 	/* baudRate = 1/1etu    =>   BR = 1/((F/D)*(1/F))   =>  BR = f*(D/F)   */
@@ -51,7 +57,14 @@ uint32_t READER_UTILS_ComputeWT1(uint32_t f, uint32_t Fi){
 	return 1000 * READER_DEFAULT_WI * 960 * (Fi / f);
 }
 
+/**
+ * \fn uint32_t READER_UTILS_ComputeWT2(uint32_t baudRate, uint32_t Di)
+ * \brief Cette fonction permet de calculer le Wait Time (WT) en millisecondes. Il s'agit du WT défini dans la norme ISO7816-3 aux sections 7.2 et 10.2. La fonction READER_UTILS_ComputeWT2() calcule cette valeur à partir du baudrate et du "Clock rate adjustement integer" Fi.
+ * \return Timeout en millisecondes qu'il faut utiliser pour respecter la norme.
+ * \param f Fréquence actuellement fournie à la carte.
+ * \param Fi "Clock rate conversion integer" actuellement utilisé pour communiquer. Voir ISO7816-3 section 7.1.
+ */
 uint32_t READER_UTILS_ComputeWT2(uint32_t baudRate, uint32_t Di){
-	/* Voir explications de la fonction READER_UTILS_ComputeWT1() */
+	/* Voir explications de la fonction READER_UTILS_ComputeWT1()          */
 	return 1000 * (READER_DEFAULT_WI * 960 * D) / baudRate;
 }
