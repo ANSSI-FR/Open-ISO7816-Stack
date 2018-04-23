@@ -43,8 +43,8 @@ enum READER_HAL_State{
 
 
 
-typedef struct READER_HAL_CommunicationSettings READER_HAL_CommunicationSettings;
-struct READER_HAL_CommunicationSettings{
+typedef struct READER_HAL_CommunSettings READER_HAL_CommSettings;
+struct READER_HAL_CommSettings{
 	uint32_t f;
 	uint32_t Fi;
 	uint32_t Di;
