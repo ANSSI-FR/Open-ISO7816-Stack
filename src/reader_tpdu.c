@@ -166,8 +166,8 @@ READER_Status READER_TPDU_RcvSW(uint8_t *SW1, uint8_t *SW2, uint32_t timeout){
 	if(retVal != READER_OK) return retVal;
 	
 	/* On retourne le resultat */
-	*SW1 = *byte1;
-	*SW2 = *byte2;
+	*SW1 = byte1;
+	*SW2 = byte2;
 	
 	return READER_OK;
 }
