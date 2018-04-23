@@ -60,7 +60,7 @@ READER_APDU_ProtocolCase READER_APDU_GetProtocolCase(READER_APDU_Command *pApduC
  * \return Valeur de type READER_Status. READER_OK si l'exécution s'est correctement déroulée. READER_ERR dans le cas contraire.
  * \param *pApduCmd Un pointeur sur un structure de type READER_APDU_Command.
  */
-READER_Status READER_APDU_Execute(READER_APDU_Command *pApduCmd, READER_APDU_Response *pApduResp){
+READER_Status READER_APDU_Execute(READER_APDU_Command *pApduCmd, READER_APDU_Response *pApduResp, uint32_t timeout){
 	READER_APDU_ProtocolCase protocolCase;
 	
 	protocolCase = READER_APDU_GetProtocolCase(pApduCmd);
@@ -105,7 +105,7 @@ READER_Status READER_APDU_Execute(READER_APDU_Command *pApduCmd, READER_APDU_Res
 
 
 
-READER_Status READER_APDU_ExecuteCase1(READER_APDU_Command *pApduCmd, READER_APDU_Response *pApduResp){
+READER_Status READER_APDU_ExecuteCase1(READER_APDU_Command *pApduCmd, READER_APDU_Response *pApduResp, uint32_t timeout){
 	/* Voir ISO7816-3 section 12.2.2 */
 	READER_TPDU_Command tpduCmd;
 	READER_TPDU_Response tpduResp;
@@ -135,7 +135,7 @@ READER_Status READER_APDU_ExecuteCase1(READER_APDU_Command *pApduCmd, READER_APD
 }
 
 
-READER_Status READER_APDU_ExecuteCase2S(READER_APDU_Command *pApduCmd, READER_APDU_Response *pApduResp){
+READER_Status READER_APDU_ExecuteCase2S(READER_APDU_Command *pApduCmd, READER_APDU_Response *pApduResp, uint32_t timeout){
 	/* Voir ISO7816-3 section 12.2.3 */
 	READER_TPDU_Command tpduCmd;
 	READER_TPDU_Response tpduResp;
@@ -195,7 +195,7 @@ READER_Status READER_APDU_ExecuteCase2S(READER_APDU_Command *pApduCmd, READER_AP
 }
 
 
-READER_Status READER_APDU_ExecuteCase3S(READER_APDU_Command *pApduCmd, READER_APDU_Response *pApduResp){
+READER_Status READER_APDU_ExecuteCase3S(READER_APDU_Command *pApduCmd, READER_APDU_Response *pApduResp, uint32_t timeout){
 	/* Voir ISO7816-3 section 12.2.4 */
 	READER_TPDU_Command tpduCmd;
 	READER_TPDU_Response tpduResp;
@@ -233,7 +233,7 @@ READER_Status READER_APDU_ExecuteCase3S(READER_APDU_Command *pApduCmd, READER_AP
 
 
 
-READER_Status READER_APDU_ExecuteCase3E(READER_APDU_Command *pApduCmd, READER_APDU_Response *pApduResp){
+READER_Status READER_APDU_ExecuteCase3E(READER_APDU_Command *pApduCmd, READER_APDU_Response *pApduResp, uint32_t timeout){
 	/* Voir ISO7816-3 section 12.2.7 */
 	READER_TPDU_Command tpduCmd;
 	READER_TPDU_Response tpduResp;
@@ -335,7 +335,7 @@ READER_Status READER_APDU_ExecuteCase3E(READER_APDU_Command *pApduCmd, READER_AP
 
 
 
-READER_Status READER_APDU_ExecuteCase2E(READER_APDU_Command *pApduCmd, READER_APDU_Response *pApduResp){
+READER_Status READER_APDU_ExecuteCase2E(READER_APDU_Command *pApduCmd, READER_APDU_Response *pApduResp, uint32_t timeout){
 	/* Voir ISO7816-3 section 12.2.6 */
 	READER_TPDU_Command tpduCmd;
 	READER_TPDU_Response tpduResp;
@@ -413,7 +413,7 @@ READER_Status READER_APDU_ExecuteCase2E(READER_APDU_Command *pApduCmd, READER_AP
 
 
 
-READER_Status READER_APDU_ExecuteCase4S(READER_APDU_Command *pApduCmd, READER_APDU_Response *pApduResp){
+READER_Status READER_APDU_ExecuteCase4S(READER_APDU_Command *pApduCmd, READER_APDU_Response *pApduResp, uint32_t timeout){
 	READER_TPDU_Command tpduCmd;
 	READER_TPDU_Response tpduResp;
 	READER_Status retVal;
@@ -485,7 +485,7 @@ READER_Status READER_APDU_ExecuteCase4S(READER_APDU_Command *pApduCmd, READER_AP
 
 
 
-READER_Status READER_APDU_MapTpduRespToApdu(READER_TPDU_Response *pTpduResp, READER_APDU_Response *pApduResp){
+READER_Status READER_APDU_MapTpduRespToApdu(READER_TPDU_Response *pTpduResp, READER_APDU_Response *pApduResp, uint32_t timeout){
 	uint32_t i;
 	
 	if(pTpduResp->dataSize > 256) return READER_ERR;
