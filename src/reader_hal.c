@@ -330,18 +330,33 @@ READER_Status READER_HAL_SetFreq(READER_HAL_CommSettings *currentSettings, uint3
  * \fn READER_Status READER_HAL_SetEtu(uint32_t Fi, uint32_t Di)
  * \brief Cette fonction permet de configurer la valeur du "Elementary Time Unit" (ETU) utilisé dans les communications sur la ligne IO.
  * \return Valeur de type READER_Status. READER_OK si l'exécution s'est correctement déroulée. READER_ERR dans le cas contraire.
+ * \param *currentSettings Pointeur vers une variable de type READER_HAL_CommSettings. Cette structure contient en permanance les parametres de communication utilisés.
  * \param Fi "Clock Rate Conversion Integer"
  * \param Di "Baudrate Adjustement Integer"
  */
-READER_Status READER_HAL_SetEtu(uint32_t Fi, uint32_t Di){
+READER_Status READER_HAL_SetEtu(READER_HAL_CommSettings *currentSettings, uint32_t Fi, uint32_t Di){
+	READER_Status retVal;
 	uint32_t freq, newBaudRate;
+	uint32_t newWT;
 	
+	/* On recupere les parametres de communication actuels. On aurait aussi pu le faire a partir de la structure *currentSettings */
 	freq = READER_UTILS_GetCardFreq(168000000, 1, 4, smartcardHandleStruct.Init.Prescaler);
+	
+	/* On calcule le nouveau baudrate qui correspond a la nouvelle config (nouveau etu) */
 	newBaudRate = freq / (Fi / Di);
 	
+	/* On applique les changements au bloc materiel USART */
 	smartcardHandleStruct.Init.BaudRate = newBaudRate;
-	
 	if(HAL_SMARTCARD_Init(&smartcardHandleStruct) != HAL_OK) return READER_ERR;
+	
+	/* Le changement de l'etu a pour consequence la modification du Wait Time (WT) */
+	newWT = READER_UTILS_ComputeWT1(freq, Fi);
+	retVal = READER_HAL_SetWT(currentSettings, newWT);
+	if(retVal != READER_OK) return retVal;
+	
+	/* On met a jour la structure *currentSettings */
+	currentSettings->Fi = Fi;
+	currentSettings->Di = Di;
 	
 	return READER_OK;	
 }
