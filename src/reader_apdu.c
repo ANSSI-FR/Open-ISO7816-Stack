@@ -1,5 +1,6 @@
 #include "reader_tpdu.h"
 #include "reader_hal.h"
+#include "reader_apdu.h"
 
 
 
@@ -40,7 +41,7 @@ READER_APDU_ProtocolCase READER_APDU_GetProtocolCase(READER_APDU_Command *pApduC
 			return READER_APDU_CASE_ERR;
 		}
 	}
-	else((Nc!=0) && (Ne!=0)){
+	else if((Nc!=0) && (Ne!=0)){
 		if((Nc <= 255) && (Ne <= 256)){
 			return READER_APDU_CASE_4S;
 		}
@@ -50,6 +51,9 @@ READER_APDU_ProtocolCase READER_APDU_GetProtocolCase(READER_APDU_Command *pApduC
 		else{
 			return READER_APDU_CASE_ERR;
 		}
+	}
+	else{
+		return READER_APDU_CASE_ERR;
 	}
 }
 
@@ -67,31 +71,31 @@ READER_Status READER_APDU_Execute(READER_APDU_Command *pApduCmd, READER_APDU_Res
 	
 	switch(protocolCase){
 		case READER_APDU_CASE_1:
-			return READER_APDU_ExecuteCase1(pApduCmd, pApduResp);
+			return READER_APDU_ExecuteCase1(pApduCmd, pApduResp, timeout);
 			break;
 			
 		case READER_APDU_CASE_2E:
-			return READER_APDU_ExecuteCase2E(pApduCmd, pApduResp);
+			return READER_APDU_ExecuteCase2E(pApduCmd, pApduResp, timeout);
 			break;
 			
 		case READER_APDU_CASE_2S:
-			return READER_APDU_ExecuteCase2S(pApduCmd, pApduResp);
+			return READER_APDU_ExecuteCase2S(pApduCmd, pApduResp, timeout);
 			break;
 			
 		case READER_APDU_CASE_3E:
-			return READER_APDU_ExecuteCase3E(pApduCmd, pApduResp);
+			return READER_APDU_ExecuteCase3E(pApduCmd, pApduResp, timeout);
 			break;
 			
 		case READER_APDU_CASE_3S:
-			return READER_APDU_ExecuteCase3S(pApduCmd, pApduResp);
+			return READER_APDU_ExecuteCase3S(pApduCmd, pApduResp, timeout);
 			break;
 			
 		case READER_APDU_CASE_4E:
-			return READER_APDU_ExecuteCase4E(pApduCmd, pApduResp);
+			return READER_APDU_ExecuteCase4E(pApduCmd, pApduResp, timeout);
 			break;
 			
 		case READER_APDU_CASE_4S:
-			return READER_APDU_ExecuteCase4S(pApduCmd, pApduResp);
+			return READER_APDU_ExecuteCase4S(pApduCmd, pApduResp, timeout);
 			break;
 			
 		case READER_APDU_CASE_ERR:
@@ -200,7 +204,6 @@ READER_Status READER_APDU_ExecuteCase3S(READER_APDU_Command *pApduCmd, READER_AP
 	READER_TPDU_Command tpduCmd;
 	READER_TPDU_Response tpduResp;
 	READER_Status retVal;
-	uint32_t i;
 	
 	/* verifications preliminaires */
 	if((pApduCmd->body.Nc > 255) || (pApduCmd->body.Ne != 0)){
@@ -214,7 +217,7 @@ READER_Status READER_APDU_ExecuteCase3S(READER_APDU_Command *pApduCmd, READER_AP
 		pApduCmd->header.INS,
 		pApduCmd->header.P1,
 		pApduCmd->header.P2,
-		READER_APDU_NcToLc(pApdu->body.Nc),
+		READER_APDU_NcToLc(pApduCmd->body.Nc),
 		pApduCmd->body.pDataField,
 		pApduCmd->body.Nc
 	);
@@ -286,7 +289,7 @@ READER_Status READER_APDU_ExecuteCase3E(READER_APDU_Command *pApduCmd, READER_AP
 		
 		for(i=0; i<nbSegments; i++){
 			for(j=0; j<255; j++){
-				tmpTpduBuff[j] = pApdu->body.pDataField[251 + (i*255) + j];
+				tmpTpduBuff[j] = pApduCmd->body.pDataField[251 + (i*255) + j];
 			}
 			retVal = READER_TPDU_Forge(&tpduCmd, pApduCmd->header.CLA, READER_APDU_INS_ENVELOPE, 0x00, 0x00, 255, tmpTpduBuff, 255);
 			if(retVal != READER_OK) return retVal;
@@ -374,7 +377,7 @@ READER_Status READER_APDU_ExecuteCase2E(READER_APDU_Command *pApduCmd, READER_AP
 			Nx = tpduResp.SW2;
 			
 			/* Preparation de la commande GET RESPONSE */
-			retVal = READER_TPDU_Forge(&tpduCmd, pApdu->header.CLA, READER_APDU_INS_GETRESPONSE, 0x00, 0x00, (Nx < Nm)? Nx:Nm, NULL, 0);
+			retVal = READER_TPDU_Forge(&tpduCmd, pApduCmd->header.CLA, READER_APDU_INS_GETRESPONSE, 0x00, 0x00, (Nx < Nm)? Nx:Nm, NULL, 0);
 			if(retVal != READER_ERR) return retVal;
 			
 			retVal = READER_TPDU_Execute(&tpduCmd, &tpduResp, timeout);
@@ -417,6 +420,7 @@ READER_Status READER_APDU_ExecuteCase4S(READER_APDU_Command *pApduCmd, READER_AP
 	READER_TPDU_Command tpduCmd;
 	READER_TPDU_Response tpduResp;
 	READER_Status retVal;
+	uint32_t Na;
 	
 	/* On envoie le premier TPDU avec le header de l'APDU et P3=Lc */
 	retVal = READER_TPDU_Forge(&tpduCmd, pApduCmd->header.CLA, pApduCmd->header.INS, pApduCmd->header.P1, pApduCmd->header.P2, READER_APDU_NcToLc(pApduCmd->body.Nc), NULL, 0);
@@ -485,17 +489,17 @@ READER_Status READER_APDU_ExecuteCase4S(READER_APDU_Command *pApduCmd, READER_AP
 
 
 
-READER_Status READER_APDU_MapTpduRespToApdu(READER_TPDU_Response *pTpduResp, READER_APDU_Response *pApduResp, uint32_t timeout){
+READER_Status READER_APDU_MapTpduRespToApdu(READER_TPDU_Response *pTpduResp, READER_APDU_Response *pApduResp){
 	uint32_t i;
 	
 	if(pTpduResp->dataSize > 256) return READER_ERR;
 	
 	/* On map la reponse TPDU sur la reponse APDU */
-	pApduResp->SW1 = tpduResp.SW1;
-	pApduResp->SW2 = tpduResp.SW2;
-	pApduResp->dataSize = tpduResp.dataSize;
-	for(i=0; i<tpduResp.dataSize; i++){
-		pApduResp->dataBytes[i] = tpduResp.dataBytes[i];
+	pApduResp->SW1 = pTpduResp->SW1;
+	pApduResp->SW2 = pTpduResp->SW2;
+	pApduResp->dataSize = pTpduResp->dataSize;
+	for(i=0; i<pTpduResp->dataSize; i++){
+		pApduResp->dataBytes[i] = pTpduResp->dataBytes[i];
 	}
 	
 	return READER_OK;
