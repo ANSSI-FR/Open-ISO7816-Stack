@@ -165,7 +165,7 @@ READER_Status READER_HAL_RcvChar(uint8_t *character, uint32_t timeout){
 	READER_Status retVal;
 	
 	if(timeout == READER_HAL_USE_ISO_WT){
-		timeoutMili = globalWaitTimeMili; //READER_UTILS_ComputeTimeoutMiliSec(smartcardHandleStruct.Init.BaudRate, globalWaitTimeMili);
+		timeoutMili = READER_HAL_GetWT();
 	}
 	else{
 		timeoutMili = timeout;
@@ -196,7 +196,7 @@ READER_Status READER_HAL_RcvChar(uint8_t *character, uint32_t timeout){
 	
 	/* Calcul du timeout effectif en milisecondes */
 	if(timeout == READER_HAL_USE_ISO_WT){
-		timeoutMili = globalWaitTimeMili; //READER_UTILS_ComputeTimeoutMiliSec(smartcardHandleStruct.Init.BaudRate, globalWaitTimeMili);
+		timeoutMili = READER_HAL_GetWT();
 	}
 	else{
 		timeoutMili = timeout;
@@ -242,7 +242,7 @@ READER_Status READER_HAL_SendChar(uint8_t character, uint32_t timeout){
 	READER_Status retVal;
 	
 	if(timeout == READER_HAL_USE_ISO_WT){
-		timeoutMili = globalWaitTimeMili; //READER_UTILS_ComputeTimeoutMiliSec(smartcardHandleStruct.Init.BaudRate, globalWaitTimeMili);
+		timeoutMili = READER_HAL_GetWT();
 	}
 	else{
 		timeoutMili = timeout;
@@ -271,7 +271,7 @@ READER_Status READER_HAL_SendChar(uint8_t character, uint32_t timeout){
 	
 	/* On calcule le timeout effectif (Celui fourni en parametre ou celui defini dans la norme ISO) */
 	if(timeout == READER_HAL_USE_ISO_WT){
-		timeoutMili = globalWaitTimeMili; //READER_UTILS_ComputeTimeoutMiliSec(smartcardHandleStruct.Init.BaudRate, globalWaitTimeMili);
+		timeoutMili = READER_HAL_GetWT();
 	}
 	else{
 		timeoutMili = timeout;
