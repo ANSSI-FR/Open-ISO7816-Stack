@@ -43,6 +43,16 @@ enum READER_HAL_State{
 
 
 
+typedef struct READER_HAL_CommunicationSettings READER_HAL_CommunicationSettings;
+struct READER_HAL_CommunicationSettings{
+	uint32_t f;
+	uint32_t Fi;
+	uint32_t Di;
+	uint32_t WT;
+	uint32_t GT;
+};
+
+
 
 READER_Status READER_HAL_Init(void);
 READER_Status READER_HAL_SendCharFrame(uint8_t *frame, uint32_t frameSize, uint32_t timeout);
