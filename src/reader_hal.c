@@ -228,6 +228,7 @@ READER_Status READER_HAL_RcvChar(uint8_t *character, uint32_t timeout){
 	return READER_OK;
 }
 
+#endif
 
 #ifndef SMARTCARD_TX_FROM_SCRATCH
 /**
