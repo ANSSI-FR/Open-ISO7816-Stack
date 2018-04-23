@@ -89,7 +89,7 @@ READER_Status READER_HAL_SendCharFrame(uint8_t *frame, uint32_t frameSize, uint3
 	READER_Status retVal;
 	
 	if(timeout == READER_HAL_USE_ISO_WT){
-		timeoutMili = globalWaitTimeMili * frameSize; //On prevoit un WT pour chaque byte envoye  //READER_UTILS_ComputeTimeoutMiliSec(smartcardHandleStruct.Init.BaudRate, globalWaitTimeMili);
+		timeoutMili = globalWaitTimeMili; //On prevoit un WT pour chaque byte envoye  //READER_UTILS_ComputeTimeoutMiliSec(smartcardHandleStruct.Init.BaudRate, globalWaitTimeMili);
 	}
 	else{
 		timeoutMili = timeout;
@@ -298,14 +298,20 @@ READER_Status READER_HAL_SendChar(uint8_t character, uint32_t timeout){
  */
 READER_Status READER_HAL_SetFreq(uint32_t newFreq){
 	uint32_t oldFreq, oldBaudRate;
+	uint32_t newBaudRate;
+	uint32_t newWaitTime;
 	
 	oldFreq = READER_UTILS_GetCardFreq(168000000, 1, 4, smartcardHandleStruct.Init.Prescaler);
 	oldBaudRate = smartcardHandleStruct.Init.BaudRate;
+	newBaudRate = READER_UTILS_ComputeNewBaudRate(oldBaudRate, oldFreq, newFreq);
 	
-	smartcardHandleStruct.Init.BaudRate = READER_UTILS_ComputeNewBaudRate(oldBaudRate, oldFreq, newFreq);
+	smartcardHandleStruct.Init.BaudRate = newBaudRate;
 	smartcardHandleStruct.Init.Prescaler = READER_UTILS_ComputePrescFromFreq(newFreq);
 	
 	if(HAL_SMARTCARD_Init(&smartcardHandleStruct) != HAL_OK) return READER_ERR;
+	
+	/* On modifie la valeur du Wait Time (WT) */
+	newWaitTime = READER_UTILS_ComputeWT2(newBaudRate, 
 	
 	return READER_OK;
 }
