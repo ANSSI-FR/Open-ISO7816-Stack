@@ -318,18 +318,11 @@ READER_Status READER_TPDU_IsProcedureByte(uint8_t byte, uint8_t INS){
 
 
 READER_Status READER_TPDU_WaitProcedureByte(uint8_t *procedureByte, uint8_t INS, uint32_t timeout){
-	uint32_t timeoutMili;
 	uint8_t byte;
 	READER_Status retVal;
 	
-	if(timeout == READER_HAL_USE_ISO_WT){
-		timeoutMili = globalWaitTimeMili;
-	}
-	else{
-		timeoutMili = timeout;
-	}
 	
-	retVal = READER_HAL_RcvChar(&byte, timeoutMili);
+	retVal = READER_HAL_RcvChar(&byte, timeout);
 	if(retVal != READER_OK){
 		return retVal;
 	}
