@@ -67,6 +67,7 @@ READER_Status READER_HAL_SetFi(uint32_t Fi);
 READER_Status READER_HAL_SetDi(uint32_t Di);
 uint32_t READER_HAL_GetWT(void);
 uint32_t READER_HAL_GetGT(void);
+uint32_t READER_HAL_GetGTMili(void);
 uint32_t READER_HAL_GetFreq(void);
 uint32_t READER_HAL_GetFi(void);
 uint32_t READER_HAL_GetDi(void);

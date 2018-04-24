@@ -543,6 +543,10 @@ uint32_t READER_HAL_GetGT(void){
 	return globalCurrentSettings.GT;
 }
 
+uint32_t READER_HAL_GetGTMili(void){
+	return READER_HAL_GetGT() * 1000;
+}
+
 uint32_t READER_HAL_GetFreq(void){
 	return globalCurrentSettings.f;
 }
