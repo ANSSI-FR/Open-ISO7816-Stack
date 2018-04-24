@@ -77,7 +77,7 @@ READER_Status READER_ATR_Receive(READER_ATR_Atr *atr){
 READER_Status READER_ATR_ApplySettings(READER_ATR_Atr *atr){
 	READER_Status retVal;
 	uint32_t Fi, Di, R, f;
-	uint32_t newGT, newFreq;
+	uint32_t newGT;
 	
 	/* Application des parametres Fi et Di (qui definissent le ETU) */
 	if((atr->Fi != READER_ATR_VALUE_NOT_INDICATED) && (atr->Di != READER_ATR_VALUE_NOT_INDICATED)){
@@ -105,9 +105,9 @@ READER_Status READER_ATR_ApplySettings(READER_ATR_Atr *atr){
 	Di = READER_HAL_GetDi();
 	R = Fi / Di;
 	f = READER_HAL_GetFreq();
-	newGT = R*(N/f);
+	newGT = R*(atr->N / f);
 
-	retVal = READER_HAL_SetGT();                   
+	retVal = READER_HAL_SetGT(newGT);                   
 	if(retVal != READER_OK) return retVal; 
  
 	
