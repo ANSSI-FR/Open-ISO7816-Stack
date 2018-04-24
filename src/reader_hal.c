@@ -515,6 +515,22 @@ uint32_t READER_HAL_GetWT(void){
 	return globalCurrentSettings.WT;
 }
 
+uint32_t READER_HAL_GetGT(void){
+	return globalCurrentSettings.GT;
+}
+
+uint32_t READER_HAL_GetFreq(void){
+	return globalCurrentSettings.f;
+}
+
+uint32_t READER_HAL_GetFi(void){
+	return globalCurrentSettings.Fi;
+}
+
+uint32_t READER_HAL_GetDi(void){
+	return globalCurrentSettings.Di;
+}
+
 
 void READER_HAL_ErrHandler(void){
 	while(1){
