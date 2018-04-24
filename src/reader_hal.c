@@ -93,28 +93,24 @@ READER_Status READER_HAL_Init(void){
  * \param timeout Valeur du timeout en milisecondes à utiliser. Si cette valeur est READER_HAL_USE_ISO_WT alors le timeout utilisé sera celui spécifié dans la norme ISO.
  */
 READER_Status READER_HAL_SendCharFrame(uint8_t *frame, uint32_t frameSize, uint32_t timeout){
-	uint32_t timeoutMili;
 	READER_Status retVal;
+	uint32_t tickstart;
+	uint32_t i;
 	
-	if(timeout == READER_HAL_USE_ISO_WT){
-		timeoutMili = READER_HAL_GetWT(); //On prevoit un WT pour chaque byte envoye  //READER_UTILS_ComputeTimeoutMiliSec(smartcardHandleStruct.Init.BaudRate, globalWaitTimeMili);
-	}
-	else{
-		timeoutMili = timeout;
+	
+	for(i=0; i<frameSize; i++){
+		tickstart = READER_HAL_GetTick();
+		
+		retVal = READER_HAL_SendChar(frame[i], timeout);
+		if(retVal != READER_OK) return retVal;
+		
+		/* On fait attention a respecter le Guard Time (GT) entre les caracteres */
+		while((READER_HAL_GetTick()-tickstart) <= READER_HAL_GetGTMili()){
+			
+		}
 	}
 	
-	retVal = HAL_SMARTCARD_Transmit(&smartcardHandleStruct, frame, frameSize, timeoutMili);
-	
-	switch(retVal){
-		case HAL_TIMEOUT:
-			return READER_TIMEOUT;
-			break;
-		case HAL_OK:
-			return READER_OK;
-			break;
-		default:
-			return READER_ERR;
-	}
+	return READER_OK;
 }
 
 
@@ -569,5 +565,9 @@ void READER_HAL_ErrHandler(void){
 
 void READER_HAL_Delay(uint32_t tMili){
 	HAL_Delay(tMili);
+}
+
+uint32_t READER_HAL_GetTick(void){
+	return HAL_GetTick();
 }
 
