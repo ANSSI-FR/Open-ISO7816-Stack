@@ -74,6 +74,8 @@ READER_Status READER_HAL_Init(void){
 	/* Initialisation du WT, du GT, du Etu (Fi, Di) et de f */
 	retVal = READER_HAL_SetWT(READER_DEFAULT_WT_MILI);                if(retVal != READER_OK) return retVal;
 	retVal = READER_HAL_SetGT(READER_DEFAULT_GT);                     if(retVal != READER_OK) return retVal;
+	retVal = READER_HAL_SetFi(READER_DEFAULT_FI);                     if(retVal != READER_OK) return retVal;
+	retVal = READER_HAL_SetDi(READER_DEFAULT_DI);                     if(retVal != READER_OK) return retVal;
 	retVal = READER_HAL_SetEtu(READER_DEFAULT_FI, READER_DEFAULT_DI); if(retVal != READER_OK) return retVal;
 	retVal = READER_HAL_SetFreq(READER_DEFAULT_FREQ);                 if(retVal != READER_OK) return retVal;
 	
