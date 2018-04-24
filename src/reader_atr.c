@@ -105,7 +105,7 @@ READER_Status READER_ATR_ApplySettings(READER_ATR_Atr *atr){
 	Di = READER_HAL_GetDi();
 	R = Fi / Di;
 	f = READER_HAL_GetFreq();
-	newGT = R*(atr->N / f);
+	newGT = READER_DEFAULT_GT + R*(atr->N / f);    /* Voir ISO7816-3 section 8.3, TC1 */
 
 	retVal = READER_HAL_SetGT(newGT);                   
 	if(retVal != READER_OK) return retVal; 
