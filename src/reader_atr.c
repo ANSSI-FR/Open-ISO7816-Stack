@@ -76,11 +76,40 @@ READER_Status READER_ATR_Receive(READER_ATR_Atr *atr){
  */
 READER_Status READER_ATR_ApplySettings(READER_ATR_Atr *atr){
 	READER_Status retVal;
+	uint32_t Fi, Di, R, f;
+	uint32_t newGT, newFreq;
 	
-	retVal = READER_HAL_SetEtu(atr->Fi, atr->Di);  if(retVal != READER_OK) return retVal; 
-	retVal = READER_HAL_SetGT();                   if(retVal != READER_OK) return retVal; 
-	retVal = READER_HAL_SetWT();                   if(retVal != READER_OK) return retVal; 
-	retVal = READER_HAL_SetFreq();                 if(retVal != READER_OK) return retVal;  
+	/* Application des parametres Fi et Di (qui definissent le ETU) */
+	if((atr->Fi != READER_ATR_VALUE_NOT_INDICATED) && (atr->Di != READER_ATR_VALUE_NOT_INDICATED)){
+		Fi = atr->Fi;
+		Di = atr->Di;
+	}
+	else if((atr->Fi != READER_ATR_VALUE_NOT_INDICATED) && (atr->Di == READER_ATR_VALUE_NOT_INDICATED)){
+		Fi = atr->Fi;
+		Di = READER_HAL_GetDi();
+	}
+	else if((atr->Fi == READER_ATR_VALUE_NOT_INDICATED) && (atr->Di != READER_ATR_VALUE_NOT_INDICATED)){
+		Fi = READER_HAL_GetFi();
+		Di = atr->Di;
+	}
+	else{
+		Fi = READER_HAL_GetFi();
+		Di = READER_HAL_GetDi();
+	}
+	
+	retVal = READER_HAL_SetEtu(Fi, Di);
+	if(retVal != READER_OK) return retVal;
+	
+	/* Application du parametre GT (guard time) */
+	Fi = READER_HAL_GetFi();
+	Di = READER_HAL_GetDi();
+	R = Fi / Di;
+	f = READER_HAL_GetFreq();
+	newGT = R*(N/f);
+
+	retVal = READER_HAL_SetGT();                   
+	if(retVal != READER_OK) return retVal; 
+ 
 	
 	return READER_OK;   
 }
