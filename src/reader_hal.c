@@ -123,29 +123,20 @@ READER_Status READER_HAL_SendCharFrame(uint8_t *frame, uint32_t frameSize, uint3
  * \param timeout Valeur du timeout en milisecondes à utiliser. Si cette valeur est READER_HAL_USE_ISO_WT alors le timeout utilisé sera celui spécifié dans la norme ISO.
  */
 READER_Status READER_HAL_RcvCharFrame(uint8_t *frame, uint32_t frameSize, uint32_t timeout){
-	uint32_t timeoutMili;
 	READER_Status retVal;
+	uint32_t i = 0;
+	uint8_t rcvByte;
 	
-	if(timeout == READER_HAL_USE_ISO_WT){
-		timeoutMili = READER_HAL_GetWT(); 
+	while(i<frameSize){
+		retVal = READER_HAL_RcvChar(&rcvByte, timeout);
+		if(retVal != READER_OK) return retVal;
+
+		frame[i] = rcvByte;
+		
+		i++;
 	}
-	else{
-		timeoutMili = timeout;
-	}
 	
-	
-	retVal = HAL_SMARTCARD_Receive(&smartcardHandleStruct, frame, frameSize, timeoutMili);
-	
-	switch(retVal){
-		case HAL_TIMEOUT:
-			return READER_TIMEOUT;
-			break;
-		case HAL_OK:
-			return READER_OK;
-			break;
-		default:
-			return READER_ERR;
-	}
+	return READER_OK;
 }
 
 
