@@ -12,5 +12,6 @@ uint32_t READER_UTILS_ComputePrescFromFreq(uint32_t freq);
 uint32_t READER_UTILS_ComputeTimeoutMiliSec(uint32_t baudRate, uint32_t WT);
 uint32_t READER_UTILS_ComputeWT1(uint32_t f, uint32_t Fi);
 uint32_t READER_UTILS_ComputeWT2(uint32_t baudRate, uint32_t Di);
+uint32_t READER_UTILS_ComputeBestFreq(uint32_t maxFreq);
 
 #endif

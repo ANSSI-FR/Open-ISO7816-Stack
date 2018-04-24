@@ -34,6 +34,23 @@ uint32_t READER_UTILS_ComputePrescFromFreq(uint32_t freq){
 	}
 }
 
+uint32_t READER_UTILS_ComputeBestFreq(uint32_t maxFreq){
+	if(5250000 <= maxFreq){
+		return 5250000;
+	}
+	else if(4200000 <= maxFreq){
+		return 4200000;
+	}
+	else if(3500000 <= maxFreq){
+		return 3500000;
+	}
+	else if(3000000 <= maxFreq){
+		return 3000000;
+	}
+	else{
+		return 3000000;
+	}
+}
 
 //uint32_t READER_UTILS_ComputeTimeoutMiliSec(uint32_t baudRate, uint32_t WT){
 //	return ((1000 * WT) / baudRate) + 1;
