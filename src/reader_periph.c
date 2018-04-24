@@ -84,7 +84,7 @@ READER_Status READER_PERIPH_Init(void){
 	smartcardHandleStruct.Instance = USART2;
 	smartcardHandleStruct.Init.BaudRate = READER_UTILS_ComputeBaudRate(READER_DEFAULT_FREQ, READER_DEFAULT_FI, READER_DEFAULT_DI); 
 	smartcardHandleStruct.Init.WordLength = SMARTCARD_WORDLENGTH_9B;
-	smartcardHandleStruct.Init.StopBits = SMARTCARD_STOPBITS_1_5;
+	smartcardHandleStruct.Init.StopBits = SMARTCARD_STOPBITS_2;
 	smartcardHandleStruct.Init.Parity = SMARTCARD_PARITY_EVEN;
 	smartcardHandleStruct.Init.Mode = SMARTCARD_MODE_TX_RX;
 	smartcardHandleStruct.Init.CLKPolarity = SMARTCARD_POLARITY_LOW;
