@@ -4,6 +4,7 @@
 
 #define READER_ATR_MAX_HIST_BYTES        15
 #define READER_ATR_MAX_SPECIFIC_BYTES    8
+#define READER_ATR_VALUE_NOT_INDICATED   0
 
 
 typedef enum READER_ATR_ClockStopIndicator READER_ATR_ClockStopIndicator;
@@ -88,12 +89,12 @@ READER_Status READER_ATR_ProcessTA(READER_ATR_Atr *atr, uint8_t TA, uint32_t i, 
 READER_Status READER_ATR_ProcessTB(READER_ATR_Atr *atr, uint8_t TB, uint32_t i, uint8_t T);
 READER_Status READER_ATR_ProcessTC(READER_ATR_Atr *atr, uint8_t TC, uint32_t i, uint8_t T);
 
-uint8_t READER_ATR_GetY(uint8_t TD);
-uint8_t READER_ATR_GetT(uint8_t TD);
-uint8_t READER_ATR_GetK(uint8_t T0);
-uint32_t READER_ATR_GetFi(uint8_t TA1);
-uint32_t READER_ATR_GetFMax(uint8_t TA1);
-uint32_t READER_ATR_GetDi(uint8_t TA1);
+uint8_t READER_ATR_ComputeY(uint8_t TD);
+uint8_t READER_ATR_ComputeT(uint8_t TD);
+uint8_t READER_ATR_ComputeK(uint8_t T0);
+uint32_t READER_ATR_ComputeFi(uint8_t TA1);
+uint32_t READER_ATR_ComputeFMax(uint8_t TA1);
+uint32_t READER_ATR_ComputeDi(uint8_t TA1);
 READER_ATR_ClockStopIndicator READER_ATR_GetClockStopIndic(uint8_t TA15);
 READER_ATR_ClassIndicator READER_ATR_GetClassIndic(uint8_t TA15);
 READER_ATR_UseOfSPU READER_ATR_GetUseSPU(uint8_t TB15);
@@ -101,6 +102,7 @@ READER_ATR_EncodingConv READER_ATR_GetEncoding(uint8_t TS);
 
 READER_Status READER_ATR_Receive(READER_ATR_Atr *atr);
 READER_Status READER_ATR_InitStruct(READER_ATR_Atr *atr);
+READER_Status READER_ATR_ApplySettings(READER_ATR_Atr *atr);
 
 void READER_ATR_ErrHandler(void);
 

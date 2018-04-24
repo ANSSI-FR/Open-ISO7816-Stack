@@ -29,9 +29,9 @@ READER_Status READER_ATR_Receive(READER_ATR_Atr *atr){
 	atr->encodingConv = READER_ATR_GetEncoding(TS);
 	
 	if(READER_HAL_RcvChar(&T0, READER_HAL_USE_ISO_WT) != READER_OK) return READER_ERR;
-	atr->K = READER_ATR_GetK(T0);
+	atr->K = READER_ATR_ComputeK(T0);
 	
-	Y = READER_ATR_GetY(T0);
+	Y = READER_ATR_ComputeY(T0);
 	
 	/* Recupertion de tous les Interfaces Bytes */
 	while(READER_ATR_IsInterfacesBytesToRead(Y)){
@@ -49,8 +49,8 @@ READER_Status READER_ATR_Receive(READER_ATR_Atr *atr){
 		}
 		if(READER_ATR_IsTDToRead(Y)){
 			if(READER_HAL_RcvChar(&TD, READER_HAL_USE_ISO_WT) != READER_OK) return READER_ERR;
-			Y = READER_ATR_GetY(TD);
-			T = READER_ATR_GetT(TD);
+			Y = READER_ATR_ComputeY(TD);
+			T = READER_ATR_ComputeT(TD);
 		}
 		else{
 			Y = 0x00;
@@ -68,10 +68,32 @@ READER_Status READER_ATR_Receive(READER_ATR_Atr *atr){
 }
 
 
+/**
+ * \fn READER_Status READER_ATR_ApplySettings(READER_ATR_Atr *atr)
+ * \brief Cette fonction permet d'appliquer les parametres de communication indiqués dans l'ATR.
+ * \return Retourne uen code d'erreur de stype READER_Status. Retourne READER_OK si l'exécution s'est correctement déroulée. Pour toute autre valeur il s'agit d'une erreur.
+ * \param *atr Pointeur sur une structure de type READER_ATR_Atr;
+ */
+READER_Status READER_ATR_ApplySettings(READER_ATR_Atr *atr){
+	READER_Status retVal;
+	
+	retVal = READER_HAL_SetEtu(atr->Fi, atr->Di);  if(retVal != READER_OK) return retVal; 
+	retVal = READER_HAL_SetGT();                   if(retVal != READER_OK) return retVal; 
+	retVal = READER_HAL_SetWT();                   if(retVal != READER_OK) return retVal; 
+	retVal = READER_HAL_SetFreq();                 if(retVal != READER_OK) return retVal;  
+	
+	return READER_OK;   
+}
+
+
 
 READER_Status READER_ATR_InitStruct(READER_ATR_Atr *atr){
 	uint32_t j;
 	
+	atr->Fi = READER_ATR_VALUE_NOT_INDICATED;
+	atr->Di = READER_ATR_VALUE_NOT_INDICATED;
+	atr->fMax = READER_ATR_VALUE_NOT_INDICATED;
+	atr->N = 0;
 	
 	atr->T0Protocol.TABytesCount = 0;
 	atr->T0Protocol.TBBytesCount = 0;
@@ -167,21 +189,21 @@ READER_Status READER_ATR_IsTDToRead(uint8_t Y){
 }
 
 
-uint8_t READER_ATR_GetY(uint8_t TD){
+uint8_t READER_ATR_ComputeY(uint8_t TD){
 	return (TD >> 4) & 0x0F;
 }
 
 
-uint8_t READER_ATR_GetT(uint8_t TD){
+uint8_t READER_ATR_ComputeT(uint8_t TD){
 	return TD & 0x0F;
 }
 
-uint8_t READER_ATR_GetK(uint8_t T0){
+uint8_t READER_ATR_ComputeK(uint8_t T0){
 	return T0 & 0x0F;
 }
 
 
-uint32_t READER_ATR_GetFi(uint8_t TA1){
+uint32_t READER_ATR_ComputeFi(uint8_t TA1){
 	uint8_t k;
 	
 	k = (TA1 >> 4) & 0x0F;
@@ -189,7 +211,7 @@ uint32_t READER_ATR_GetFi(uint8_t TA1){
 }
 
 
-uint32_t READER_ATR_GetFMax(uint8_t TA1){
+uint32_t READER_ATR_ComputeFMax(uint8_t TA1){
 	uint8_t k;
 	
 	k = (TA1 >> 4) & 0x0F;
@@ -197,7 +219,7 @@ uint32_t READER_ATR_GetFMax(uint8_t TA1){
 }
 
 
-uint32_t READER_ATR_GetDi(uint8_t TA1){
+uint32_t READER_ATR_ComputeDi(uint8_t TA1){
 	uint8_t k;
 	
 	k = TA1 & 0x0F;
@@ -259,9 +281,9 @@ READER_ATR_EncodingConv READER_ATR_GetEncoding(uint8_t TS){
 
 READER_Status READER_ATR_ProcessTA(READER_ATR_Atr *atr, uint8_t TA, uint32_t i, uint8_t T){	
 	if(i == 1){          /* Global interface Byte */
-		atr->Fi = READER_ATR_GetFi(TA);
-		atr->Di = READER_ATR_GetDi(TA);
-		atr->fMax = READER_ATR_GetFMax(TA);
+		atr->Fi = READER_ATR_ComputeFi(TA);
+		atr->Di = READER_ATR_ComputeDi(TA);
+		atr->fMax = READER_ATR_ComputeFMax(TA);
 	}
 	else if(T == 15){    /* Global Interface Byte */
 		atr->clockStopIndicator = READER_ATR_GetClockStopIndic(TA);
