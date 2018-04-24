@@ -367,6 +367,32 @@ READER_Status READER_HAL_SetEtu(uint32_t Fi, uint32_t Di){
 }
 
 
+READER_Status READER_HAL_SetFi(uint32_t Fi){
+	READER_Status retVal;
+	uint32_t Di;
+	
+	Di = READER_HAL_GetDi();
+	retVal = READER_HAL_SetEtu(Fi, Di);
+	if(retVal != READER_OK) return retVal;
+	
+	globalCurrentSettings.Fi = Fi;
+	
+	return READER_OK;
+}
+
+READER_Status READER_HAL_SetDi(uint32_t Di){
+	READER_Status retVal;
+	uint32_t Fi;
+	
+	Fi = READER_HAL_GetFi();
+	retVal = READER_HAL_SetEtu(Fi, Di);
+	if(retVal != READER_OK) return retVal;
+	
+	globalCurrentSettings.Di = Di;
+	
+	return READER_OK;
+}
+
 
 /**
  * \fn READER_Status READER_HAL_SetPwrLine(READER_HAL_State state)
