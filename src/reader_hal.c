@@ -518,6 +518,8 @@ READER_Status READER_HAL_SetClkLine(READER_HAL_State state){
  * \param uint32_t newGT uint32_t indiquant la nouvelle valeur de GT qu'il faut désormais utiliser. Cette valeur est un nombre entier d'ETU.
  */
 READER_Status READER_HAL_SetGT(uint32_t newGT){
+	if(newGT < 12) return READER_ERR;
+	
 	smartcardHandleStruct.Init.GuardTime = newGT;
 	
 	if(HAL_SMARTCARD_Init(&smartcardHandleStruct) != HAL_OK) return READER_ERR;
