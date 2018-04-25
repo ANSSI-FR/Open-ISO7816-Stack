@@ -1,4 +1,0 @@
-<map id="READER_TPDU_Command" name="READER_TPDU_Command">
-<area shape="rect" id="node2" href="$struct_r_e_a_d_e_r___t_p_d_u___data_field.html" title="READER_TPDU_DataField" alt="" coords="5,5,192,32"/>
-<area shape="rect" id="node3" href="$struct_r_e_a_d_e_r___t_p_d_u___header.html" title="READER_TPDU_Header" alt="" coords="217,5,389,32"/>
-</map>
