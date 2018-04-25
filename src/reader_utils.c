@@ -70,8 +70,9 @@ uint32_t READER_UTILS_ComputeWT1(uint32_t f, uint32_t Fi){
 	/* f = BR * (F/D)                                                      */
 	/* WT = (WI * 960 * D) / BR                                            */
 	/* WTmili  = WT * 1000                                                 */
+	/* On ajoute +1 pour eviter troncature a 0                             */
 	
-	return 1000 * READER_DEFAULT_WI * 960 * (Fi / f);
+	return (uint32_t)(1000 * READER_DEFAULT_WI * 960 * ((float)Fi / (float)f)) + 1;
 }
 
 /**
@@ -83,5 +84,5 @@ uint32_t READER_UTILS_ComputeWT1(uint32_t f, uint32_t Fi){
  */
 uint32_t READER_UTILS_ComputeWT2(uint32_t baudRate, uint32_t Di){
 	/* Voir explications de la fonction READER_UTILS_ComputeWT1()          */
-	return 1000 * (READER_DEFAULT_WI * 960 * Di) / baudRate;
+	return (uint32_t)(1000 * (float)(READER_DEFAULT_WI * 960 * Di) / (float)baudRate) + 1;
 }

@@ -15,6 +15,8 @@
 #include <stdint.h>
 
 
+#define SMARTCARD_TX_FROM_SCRATCH
+
 SMARTCARD_HandleTypeDef smartcardHandleStruct;
 
 //uint32_t globalWaitTimeMili;
@@ -72,7 +74,7 @@ READER_Status READER_HAL_Init(void){
 	if(READER_HAL_SetClkLine(READER_HAL_STATE_OFF) != READER_OK)      return READER_ERR;
 	
 	/* Initialisation du WT, du GT, du Etu (Fi, Di) et de f */
-	retVal = READER_HAL_SetWT(READER_DEFAULT_WT_MILI);                if(retVal != READER_OK) return retVal;
+	//retVal = READER_HAL_SetWT(READER_DEFAULT_WT_MILI);                if(retVal != READER_OK) return retVal;
 	retVal = READER_HAL_SetGT(READER_DEFAULT_GT);                     if(retVal != READER_OK) return retVal;
 	retVal = READER_HAL_SetFi(READER_DEFAULT_FI);                     if(retVal != READER_OK) return retVal;
 	retVal = READER_HAL_SetDi(READER_DEFAULT_DI);                     if(retVal != READER_OK) return retVal;
@@ -105,9 +107,14 @@ READER_Status READER_HAL_SendCharFrame(uint8_t *frame, uint32_t frameSize, uint3
 		if(retVal != READER_OK) return retVal;
 		
 		/* On fait attention a respecter le Guard Time (GT) entre les caracteres */
-		while((READER_HAL_GetTick()-tickstart) <= READER_HAL_GetGTMili()){
+		while((READER_HAL_GetTick()-tickstart) < READER_HAL_GetGTMili()){
 			
 		}
+	}
+	
+	/* On attend le flag Transmit Complete */
+	while(!(USART2->SR & USART_SR_TC)){
+		
 	}
 	
 	return READER_OK;
@@ -265,7 +272,7 @@ READER_Status READER_HAL_SendChar(uint8_t character, uint32_t timeout){
 
 READER_Status READER_HAL_SendChar(uint8_t character, uint32_t timeout){
 	uint32_t timeoutMili;
-	READER_Status retVal;
+	uint32_t tickstart;
 	
 	/* On calcule le timeout effectif (Celui fourni en parametre ou celui defini dans la norme ISO) */
 	if(timeout == READER_HAL_USE_ISO_WT){
@@ -278,17 +285,22 @@ READER_Status READER_HAL_SendChar(uint8_t character, uint32_t timeout){
 	/* On suppose ici que le bloc USART2 a deja ete configure en mode smartcard et qu'il est active et correctement initailise avec les bon parametres de communication */
 	USART2->CR1 |= USART_CR1_UE;
 	USART2->CR1 |= USART_CR1_TE;
-	/* On attend que le buffer d'envoi soit empty */
-	while(!(USART2->SR & USART_SR_TXE)){
-		
-	}
-	/* On place le caractere dans le Data Register */
-	USART2->DR = character;
 	
-	/* On attend le flag Transmit Complete */
-	while(!(USART2->SR & USART_SR_TC)){
+	tickstart = READER_HAL_GetTick();
+	
+	/* On attend que le buffer d'envoi soit empty. On verifie aussi qu'on depasse pas timeout. */
+	while(!(USART2->SR & USART_SR_TXE) && ((READER_HAL_GetTick()-tickstart < timeoutMili))){
 		
 	}
+	
+	if((READER_HAL_GetTick()-tickstart) >= timeoutMili){
+		return READER_TIMEOUT;
+	}
+	else{
+		/* On place le caractere dans le Data Register */
+		USART2->DR = character;
+		return READER_OK;
+	}	
 }
 
 #endif
@@ -538,12 +550,32 @@ uint32_t READER_HAL_GetWT(void){
 	return globalCurrentSettings.WT;
 }
 
+/**
+ * \fn uint32_t READER_HAL_GetGT(void)
+ * \brief Cette fonction renvoie le Guard Time (GT) utilisé actuellement. 
+ * \return Guard Time exprimé en ETU.
+ */
 uint32_t READER_HAL_GetGT(void){
 	return globalCurrentSettings.GT;
 }
 
+/**
+ * \fn uint32_t READER_HAL_GetGTMili(void)
+ * \brief Cette fonction renvoie le Guard Time (GT) utilié actuellment.
+ * \return Guard Time exprimé en milisecondes.
+ */
 uint32_t READER_HAL_GetGTMili(void){
-	return READER_HAL_GetGT() * 1000;
+	float f, Fi, Di, GTEtu;
+	
+	Fi     =  (float)READER_HAL_GetFi();
+	Di     =  (float)READER_HAL_GetDi();
+	f      =  (float)READER_HAL_GetFreq();
+	GTEtu  =  (float)READER_HAL_GetGT();
+	
+	/* GT mili = GT * 1etu * 1000                       */
+	/* GT mili = GT * ((Fi/Di)  * (1/f)) * 1000         */
+	/* On ajoute +1 pour eviter un troncature a 0       */
+	return (uint32_t)((GTEtu * Fi * 1000) / (f * Di)) + 1;
 }
 
 uint32_t READER_HAL_GetFreq(void){
