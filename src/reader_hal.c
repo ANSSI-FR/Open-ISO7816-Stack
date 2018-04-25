@@ -145,8 +145,11 @@ READER_Status READER_HAL_RcvCharFrame(uint8_t *frame, uint32_t frameSize, uint32
 		frame[i] = rcvByte;
 		
 		/* On prend en compte le Guard Time (GT). On attend l'ecoulement du GT avant de commencer une nouvelle reception de caractere. */
-		while((READER_HAL_GetTick()-tickstart) < READER_HAL_GetGTMili()){
-			
+		while((READER_HAL_GetTick()-tickstart) < READER_HAL_GetGTMili()-1   ){   /* La definition de la fonction READER_HAL_GetGTMili() garantit que la valeur >= 1 */
+			/* On s'efforce de respecter le GT mais c'est peu evident a cause du manque de precision des delais (granularite de 1ms) */
+			/* La fonction READER_HAL_GetGTMili() renvoie la valeur arrondie a l'entier superieur */
+			/* Ici on ne peut pas se le permettre car si on attend 1ms trop longtemps il se peut que l'on rate la reception du caratere suivant. */
+			/* Donc on retranche 1 & la valeur de retour de READER_HAL_GetGTMili() */
 		}
 		
 		i++;
@@ -564,7 +567,7 @@ uint32_t READER_HAL_GetGT(void){
 /**
  * \fn uint32_t READER_HAL_GetGTMili(void)
  * \brief Cette fonction renvoie le Guard Time (GT) utilié actuellment.
- * \return Guard Time exprimé en milisecondes.
+ * \return Guard Time exprimé en milisecondes. Attention cette valeur est arrondie à l'entier supérieur. Dans certains cas cela peut être problématique, il faut rester vigilant.
  */
 uint32_t READER_HAL_GetGTMili(void){
 	float f, Fi, Di, GTEtu;
@@ -574,9 +577,10 @@ uint32_t READER_HAL_GetGTMili(void){
 	f      =  (float)READER_HAL_GetFreq();
 	GTEtu  =  (float)READER_HAL_GetGT();
 	
-	/* GT mili = GT * 1etu * 1000                       */
-	/* GT mili = GT * ((Fi/Di)  * (1/f)) * 1000         */
-	/* On ajoute +1 pour eviter un troncature a 0       */
+	/* GT mili = GT * 1etu * 1000                                                          */
+	/* GT mili = GT * ((Fi/Di)  * (1/f)) * 1000                                            */
+	/* On ajoute +1 pour eviter un troncature a 0                                          */
+	/* Attention il y a des endroits dans le code ou on compte sur le fait que RETOUR >= 1 */
 	return (uint32_t)((GTEtu * Fi * 1000) / (f * Di)) + 1;
 }
 
