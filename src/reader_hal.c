@@ -159,7 +159,7 @@ READER_Status READER_HAL_RcvCharFrame(uint8_t *frame, uint32_t frameSize, uint32
  */
 READER_Status READER_HAL_RcvChar(uint8_t *character, uint32_t timeout){
 	uint32_t timeoutMili;
-	READER_Status retVal;
+	HAL_StatusTypeDef retVal;
 	
 	if(timeout == READER_HAL_USE_ISO_WT){
 		timeoutMili = READER_HAL_GetWT();
@@ -170,9 +170,17 @@ READER_Status READER_HAL_RcvChar(uint8_t *character, uint32_t timeout){
 	
 	
 	retVal = HAL_SMARTCARD_Receive(&smartcardHandleStruct, character, 1, timeoutMili);
-	if(retVal != READER_OK) return retVal;
 	
-	return READER_OK;
+	switch(retVal){
+		case HAL_TIMEOUT:
+			return READER_TIMEOUT;
+			break;
+		case HAL_OK:
+			return READER_OK;
+			break;
+		default:
+			return READER_ERR;
+	}
 }
 
 #else
@@ -229,7 +237,7 @@ READER_Status READER_HAL_RcvChar(uint8_t *character, uint32_t timeout){
  */
 READER_Status READER_HAL_SendChar(uint8_t character, uint32_t timeout){
 	uint32_t timeoutMili;
-	READER_Status retVal;
+	HAL_StatusTypeDef retVal;
 	
 	if(timeout == READER_HAL_USE_ISO_WT){
 		timeoutMili = READER_HAL_GetWT();
@@ -240,9 +248,17 @@ READER_Status READER_HAL_SendChar(uint8_t character, uint32_t timeout){
 	
 	
 	retVal = HAL_SMARTCARD_Transmit(&smartcardHandleStruct, &character, 1, timeoutMili);
-	if(retVal != READER_OK) return retVal;
 	
-	return READER_OK;
+	switch(retVal){
+		case HAL_TIMEOUT:
+			return READER_TIMEOUT;
+			break;
+		case HAL_OK:
+			return READER_OK;
+			break;
+		default:
+			return READER_ERR;
+	}
 }
 
 #else
