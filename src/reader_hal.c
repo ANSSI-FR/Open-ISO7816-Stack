@@ -170,17 +170,9 @@ READER_Status READER_HAL_RcvChar(uint8_t *character, uint32_t timeout){
 	
 	
 	retVal = HAL_SMARTCARD_Receive(&smartcardHandleStruct, character, 1, timeoutMili);
+	if(retVal != READER_OK) return retVal;
 	
-	switch(retVal){
-		case HAL_TIMEOUT:
-			return READER_TIMEOUT;
-			break;
-		case HAL_OK:
-			return READER_OK;
-			break;
-		default:
-			return READER_ERR;
-	}
+	return READER_OK;
 }
 
 #else
@@ -248,17 +240,9 @@ READER_Status READER_HAL_SendChar(uint8_t character, uint32_t timeout){
 	
 	
 	retVal = HAL_SMARTCARD_Transmit(&smartcardHandleStruct, &character, 1, timeoutMili);
+	if(retVal != READER_OK) return retVal;
 	
-	switch(retVal){
-		case HAL_TIMEOUT:
-			return READER_TIMEOUT;
-			break;
-		case HAL_OK:
-			return READER_OK;
-			break;
-		default:
-			return READER_ERR;
-	}
+	return READER_OK;
 }
 
 #else
