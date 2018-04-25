@@ -145,7 +145,7 @@ READER_Status READER_HAL_RcvCharFrame(uint8_t *frame, uint32_t frameSize, uint32
 		frame[i] = rcvByte;
 		
 		/* On prend en compte le Guard Time (GT). On attend l'ecoulement du GT avant de commencer une nouvelle reception de caractere. */
-		while((READER_HAL_GetTick()-tickstart) <= READER_HAL_GetGTMili()){
+		while((READER_HAL_GetTick()-tickstart) < READER_HAL_GetGTMili()){
 			
 		}
 		
