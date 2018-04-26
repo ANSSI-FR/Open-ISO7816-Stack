@@ -17,7 +17,9 @@ int main(void){
 	READER_ATR_Atr atr;
 	READER_TPDU_Command tpdu;
 	uint8_t SW1, SW2;
-	uint8_t rcvByte1, rcvByte2;
+	uint8_t rcvByte1 = 0x11;
+	uint8_t rcvByte2 = 0x12;
+	uint8_t rcvByte3 = 0x13;
 	
 	
 	if(READER_HAL_Init() != READER_OK){
@@ -47,24 +49,29 @@ int main(void){
 	
 	READER_HAL_SendCharFrame(pSmartcardTxBuff, 5, READER_HAL_USE_ISO_WT);
 	
-	retVal = READER_HAL_RcvChar(&rcvByte1, READER_HAL_USE_ISO_WT);
-	retVal = READER_HAL_RcvChar(&rcvByte2, READER_HAL_USE_ISO_WT);
 	
-	//if(retVal == READER_TIMEOUT){
+	
+	READER_HAL_RcvChar(&rcvByte1, READER_HAL_USE_ISO_WT);
+	READER_HAL_RcvChar(&rcvByte2, READER_HAL_USE_ISO_WT);
+	READER_HAL_RcvChar(&rcvByte3, READER_HAL_USE_ISO_WT);
+	
+	
+	//HAL_Delay(1000);
+	
+	
+	//if(retVal == READER_ERR){
 	//	READER_HAL_SendChar(0x99, READER_HAL_USE_ISO_WT);
 	//}
 	
-	HAL_Delay(700);
-	
-	
-	if((rcvByte1 == 0x60) && (rcvByte2 == 0xA4)){
-		READER_HAL_SendChar(0x00, READER_HAL_USE_ISO_WT);
-	}
-	else{
-		READER_HAL_SendChar(0x01, READER_HAL_USE_ISO_WT);
-	}
-	READER_HAL_SendChar(rcvByte1, READER_HAL_USE_ISO_WT);
-	READER_HAL_SendChar(rcvByte2, READER_HAL_USE_ISO_WT);
+	//if((rcvByte1 == 0x60) && (rcvByte2 == 0xA4)){
+	//	READER_HAL_SendChar(0x00, READER_HAL_USE_ISO_WT);
+	//}
+	//else{
+	//	READER_HAL_SendChar(0x01, READER_HAL_USE_ISO_WT);
+	//}
+	READER_HAL_SendChar(rcvByte1, 100);
+	READER_HAL_SendChar(rcvByte2, 100);
+	READER_HAL_SendChar(rcvByte3, 100);
 	
 	//pSmartcardTxBuff[0] = 0x48;
 	//pSmartcardTxBuff[1] = 0x65;

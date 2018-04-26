@@ -15,8 +15,8 @@
 #include <stdint.h>
 
 
-//#define SMARTCARD_TX_FROM_SCRATCH
-//#define SMARTCARD_RX_FROM_SCRATCH
+#define SMARTCARD_TX_FROM_SCRATCH
+#define SMARTCARD_RX_FROM_SCRATCH
 
 SMARTCARD_HandleTypeDef smartcardHandleStruct;
 
@@ -59,7 +59,7 @@ READER_Status READER_HAL_Init(void){
 	RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
 	RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
 	RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV4;  
-	RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV2; 
+	RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV4; 
 	
 	HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_5);   // Attention pas de valeur de retour
 	
@@ -114,7 +114,7 @@ READER_Status READER_HAL_SendCharFrame(uint8_t *frame, uint32_t frameSize, uint3
 	}
 	
 	/* On attend le flag Transmit Complete */
-	while(!(USART2->SR & USART_SR_TC)){
+	while(!(USART6->SR & USART_SR_TC)){
 		
 	}
 	
@@ -210,27 +210,35 @@ READER_Status READER_HAL_RcvChar(uint8_t *character, uint32_t timeout){
 	}
 	
 	
-	/* Reception d'un caractere */
-	/* On suppose ici que le bloc USART2 a deja ete configure en mode smartcard et qu'il est active et correctement initailise avec les bon parametres de communication */
-	tickstart = HAL_GetTick();
-	USART2->SR &= ~USART_SR_RXNE;
-	USART2->CR1 |= USART_CR1_RE;
-	while(!(USART2->SR & USART_SR_RXNE) && !(HAL_GetTick()-tickstart >= timeoutMili)){
-			
-		}
 	
-	/* Quand on sort de la boucle d'attente, on verifie si on est sorti a cause d'un timeout */
-	if(HAL_GetTick()-tickstart >= timeoutMili){
-		return READER_TIMEOUT;
+	/* Reception d'un caractere */
+	/* On suppose ici que le bloc USART6 a deja ete configure en mode smartcard et qu'il est active et correctement initailise avec les bon parametres de communication */
+	tickstart = READER_HAL_GetTick();
+	
+	USART6->CR1 |= USART_CR1_UE;
+	USART6->CR1 |= USART_CR1_RE;
+	//USART6->SR &= ~USART_SR_RXNE;
+	while(!(USART6->SR & USART_SR_RXNE) ){  //&& !(READER_HAL_GetTick()-tickstart >= timeoutMili)
+			
 	}
 	
+	
+	/* Quand on sort de la boucle d'attente, on verifie si on est sorti a cause d'un timeout */
+	//if(READER_HAL_GetTick()-tickstart >= timeoutMili){
+	//	return READER_TIMEOUT;
+	//}
+	
+	
 	/* On verifie Parity Error, Frame Error, Overrun Error */
-	if((USART2->SR & USART_SR_FE) || (USART2->SR & USART_SR_ORE) || (USART2->SR & USART_SR_PE)){
+	if((USART6->SR & USART_SR_FE) || (USART6->SR & USART_SR_ORE) || (USART6->SR & USART_SR_PE)){
+		*character = USART6->DR;
 		return READER_ERR;
 	}
 	
 	/* On recupere la donnee recue dans le Data Register */
-	*character = USART2->DR;
+	*character = USART6->DR;
+	
+	
 	
 	return READER_OK;
 }
@@ -285,25 +293,35 @@ READER_Status READER_HAL_SendChar(uint8_t character, uint32_t timeout){
 		timeoutMili = timeout;
 	}
 	
-	/* On suppose ici que le bloc USART2 a deja ete configure en mode smartcard et qu'il est active et correctement initailise avec les bon parametres de communication */
-	USART2->CR1 |= USART_CR1_UE;
-	USART2->CR1 |= USART_CR1_TE;
+	
+	/* On desactivela reception le temps de l'envoi */
+	USART6->CR1 &= ~USART_CR1_RE;
+	
+	
+	/* On suppose ici que le bloc USART6 a deja ete configure en mode smartcard et qu'il est active et correctement initailise avec les bon parametres de communication */
+	USART6->CR1 |= USART_CR1_UE;
+	USART6->CR1 |= USART_CR1_TE;
 	
 	tickstart = READER_HAL_GetTick();
 	
 	/* On attend que le buffer d'envoi soit empty. On verifie aussi qu'on depasse pas timeout. */
-	while(!(USART2->SR & USART_SR_TXE) && ((READER_HAL_GetTick()-tickstart < timeoutMili))){
+	while(!(USART6->SR & USART_SR_TXE) && ((READER_HAL_GetTick()-tickstart < timeoutMili))){
 		
 	}
 	
 	if((READER_HAL_GetTick()-tickstart) >= timeoutMili){
 		return READER_TIMEOUT;
 	}
-	else{
-		/* On place le caractere dans le Data Register */
-		USART2->DR = character;
-		return READER_OK;
-	}	
+	
+		
+	/* On place le caractere dans le Data Register */
+	USART6->DR = character;
+		
+		
+	/* On reactive la reception une fois l'envoi termine */
+	USART6->CR1 |= USART_CR1_RE;
+	
+	return READER_OK;
 }
 
 #endif
@@ -490,9 +508,9 @@ READER_Status READER_HAL_SetClkLine(READER_HAL_State state){
 		gpioInitStruct.Mode = GPIO_MODE_AF_PP; 
 		gpioInitStruct.Pull = GPIO_PULLUP;
 		//gpioInitStruct.Speed = GPIO_SPEED_FREQ_MEDIUM;
-		gpioInitStruct.Alternate = GPIO_AF7_USART2;
+		gpioInitStruct.Alternate = GPIO_AF8_USART6;
 		
-		__HAL_RCC_GPIOA_CLK_ENABLE();
+		__HAL_RCC_GPIOC_CLK_ENABLE();
 		HAL_GPIO_Init(READER_PERIPH_CLK_PORT, &gpioInitStruct);
 	}
 	else if(state == READER_HAL_STATE_OFF){
@@ -501,9 +519,9 @@ READER_Status READER_HAL_SetClkLine(READER_HAL_State state){
 		gpioInitStruct.Mode = GPIO_MODE_OUTPUT_PP; 
 		gpioInitStruct.Pull = GPIO_NOPULL;
 		//gpioInitStruct.Speed = GPIO_SPEED_FREQ_MEDIUM;
-		//gpioInitStruct.Alternate = GPIO_AF7_USART2;
+		//gpioInitStruct.Alternate = GPIO_AF7_USART6;
 		
-		__HAL_RCC_GPIOA_CLK_ENABLE();
+		__HAL_RCC_GPIOC_CLK_ENABLE();
 		HAL_GPIO_Init(READER_PERIPH_CLK_PORT, &gpioInitStruct);
 	}
 	else{

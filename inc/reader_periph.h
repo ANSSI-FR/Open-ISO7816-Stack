@@ -8,13 +8,13 @@
 #include "reader.h"
 
 
-#define READER_PERIPH_CLK_PIN          GPIO_PIN_4
-#define READER_PERIPH_IO_PIN           GPIO_PIN_2
+#define READER_PERIPH_CLK_PIN          GPIO_PIN_8
+#define READER_PERIPH_IO_PIN           GPIO_PIN_6
 #define READER_PERIPH_RST_PIN          GPIO_PIN_5
 #define READER_PERIPH_PWR_PIN          GPIO_PIN_6
 
-#define READER_PERIPH_CLK_PORT         GPIOA
-#define READER_PERIPH_IO_PORT          GPIOA
+#define READER_PERIPH_CLK_PORT         GPIOC
+#define READER_PERIPH_IO_PORT          GPIOC
 #define READER_PERIPH_RST_PORT         GPIOA
 #define READER_PERIPH_PWR_PORT         GPIOA
 
