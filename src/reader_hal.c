@@ -15,8 +15,8 @@
 #include <stdint.h>
 
 
-#define SMARTCARD_TX_FROM_SCRATCH
-#define SMARTCARD_RX_FROM_SCRATCH
+//#define SMARTCARD_TX_FROM_SCRATCH
+//#define SMARTCARD_RX_FROM_SCRATCH
 
 SMARTCARD_HandleTypeDef smartcardHandleStruct;
 

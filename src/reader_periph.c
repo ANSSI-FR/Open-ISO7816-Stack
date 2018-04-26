@@ -76,7 +76,7 @@ READER_Status READER_PERIPH_InitPwrLine(void){
 
 
 READER_Status READER_PERIPH_Init(void){
-	if(READER_PERIPH_InitIOLine() != READER_OK) return READER_ERR;
+	if(READER_PERIPH_InitIOLine() != READER_OK)  return READER_ERR;
 	if(READER_PERIPH_InitClkLine() != READER_OK) return READER_ERR;
 	if(READER_PERIPH_InitRstLine() != READER_OK) return READER_ERR;
 	if(READER_PERIPH_InitPwrLine() != READER_OK) return READER_ERR;
