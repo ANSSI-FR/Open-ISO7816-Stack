@@ -17,7 +17,7 @@ READER_Status READER_TPDU_Execute(READER_TPDU_Command *pTpdu, READER_TPDU_Respon
 	retVal = READER_TPDU_Send(pTpdu, timeout);
 	if(retVal != READER_OK) return retVal;
 	
-	retVal = READER_TPDU_RcvResponse(pResp, timeout);
+	retVal = READER_TPDU_RcvResponse(pResp, 256, timeout);
 	if(retVal != READER_OK) return retVal;
 	
 	return READER_OK;
@@ -202,50 +202,26 @@ READER_Status READER_TPDU_RcvDataField(uint8_t *buffer, uint32_t Ne, uint32_t ti
  * \return Valeur de type READER_Status. READER_OK si l'exécution s'est correctement déroulée. READER_ERR dans le cas contraire.
  * \param *pResp Un pointeur sur une structure de type READER_TPDU_Response. Toutes les données de la réponse (SW1SW2, data field) seront stockées dans cette structure.
  */
-READER_Status READER_TPDU_RcvResponse(READER_TPDU_Response *pResp, uint32_t timeout){
+READER_Status READER_TPDU_RcvResponse(READER_TPDU_Response *pResp, uint32_t expectedDataSize, uint32_t timeout){
 	READER_Status retVal;
-	uint8_t rcvByte;
-	uint32_t rcvCount = 0;
-	uint8_t tmpRcvBuff[258];  /* (taille max data TPDU reponse = 256) + SW1 + SW2 */
-	uint32_t i;
 	
+	
+	/* Une TPDU Response ne peut pas contenir plus de 256 caracteres. */
+	if(expectedDataSize > 256) return READER_ERR;
 
-	while( ((retVal = READER_HAL_RcvChar(&rcvByte, timeout))  == READER_OK) && (rcvCount < 258)){
-		tmpRcvBuff[rcvCount] = rcvByte;
-		rcvCount++;
-	}
+	/* On recupere les donnees */
+	retVal = READER_HAL_RcvCharFrame(pResp->dataBytes, expectedDataSize, timeout);
+	if(retVal != READER_OK) return retVal;
 	
-	/* Si on est sorti pour une raison autre qu'un timeout */
-	if((retVal != READER_TIMEOUT) && (retVal != READER_OK)){
-		return retVal;
-	}
+	/* On recupere le Status Word (SW) */
+	retVal = READER_TPDU_RcvSW(&(pResp->SW1), &(pResp->SW2), timeout);
+	if(retVal != READER_OK) return retVal;
 	
-	/* Si on a recu plus de donnees que la normale */
-	if(rcvCount > 258){
-		return READER_ERR;
-	}
-	
-	/* Si on a meme pas recu un status word (SW) complet */
-	if(rcvCount < 2){
-		return READER_ERR;
-	}
-	
-	/* Si on est ici c'est que on s'est arrete de recevoir des caractères a cause d'un TIMEOUT. cad plus rien a recevoir */
-	/* Donc c'est la fin de la reponse TPDU */
-	/* Les deux derniers octets du buffer de response dervaient etre SW1 et SW2 */
 	
 	/* Si le caractere cense etre un SW1 n'en est pas un ... */
-	if(!READER_TPDU_IsSW1(tmpRcvBuff[rcvCount-2])){
-		return READER_ERR;
-	}
+	if(!READER_TPDU_IsSW1(pResp->SW1)) return READER_ERR;
 	
-	/* On complete la structure de reponse TPDU */
-	pResp->SW1 = tmpRcvBuff[rcvCount-2];
-	pResp->SW2 = tmpRcvBuff[rcvCount-1];
-	pResp->dataSize = rcvCount-2;
-	for(i=0; i<rcvCount-2; i++){
-		pResp->dataBytes[i] = tmpRcvBuff[i];
-	}
+	
 	
 	return READER_OK;
 }
