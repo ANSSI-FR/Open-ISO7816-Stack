@@ -114,10 +114,10 @@ READER_Status READER_TPDU_SendDataSliced(READER_TPDU_Command *tpdu, uint32_t tim
 	
 	/* Calcul du timeout */
 	if(timeout == READER_HAL_USE_ISO_WT){
-		timeoutMili = READER_HAL_USE_ISO_WT;
+		timeoutMili = READER_HAL_GetWT();
 	}
 	else{
-		timeoutMili = (timeout / tpduDataField->size) + 1;
+		timeoutMili = timeout;
 	}
 	
 	/* Penser a remplacer le for par un while (degeu) */
@@ -132,7 +132,7 @@ READER_Status READER_TPDU_SendDataSliced(READER_TPDU_Command *tpdu, uint32_t tim
 		
 		if(READER_TPDU_IsNullByte(procedureByte)){
 			/* Attendre le temps necessaire */
-			READER_HAL_Delay(globalWaitTimeMili);
+			READER_HAL_Delay(timeoutMili);
 			
 		}
 	}
@@ -216,8 +216,8 @@ READER_Status READER_TPDU_RcvResponse(READER_TPDU_Response *pResp, uint32_t time
 	}
 	
 	/* Si on est sorti pour une raison autre qu'un timeout */
-	if(retVal != READER_TIMEOUT){
-		return READER_ERR;
+	if((retVal != READER_TIMEOUT) && (retVal != READER_OK)){
+		return retVal;
 	}
 	
 	/* Si on a recu plus de donnees que la normale */

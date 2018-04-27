@@ -210,23 +210,29 @@ READER_Status READER_HAL_RcvChar(uint8_t *character, uint32_t timeout){
 	}
 	
 	
-	
 	/* Reception d'un caractere */
 	/* On suppose ici que le bloc USART6 a deja ete configure en mode smartcard et qu'il est active et correctement initailise avec les bon parametres de communication */
 	tickstart = READER_HAL_GetTick();
 	
+	/* On active le bloc USART */
 	USART6->CR1 |= USART_CR1_UE;
+	
+	/* On bloque l'envoi pendant la duree de la reception.  (Communication half duplex, RX et TX internally connected). Explication en.DM00031020 section 30.3.10 */
+	USART6->CR1 &= ~USART_CR1_TE;
+	
+	/* On active la partie reception de l'USART */
 	USART6->CR1 |= USART_CR1_RE;
 	//USART6->SR &= ~USART_SR_RXNE;
-	while(!(USART6->SR & USART_SR_RXNE) ){  //&& !(READER_HAL_GetTick()-tickstart >= timeoutMili)
+	
+	while(!(USART6->SR & USART_SR_RXNE) && !(READER_HAL_GetTick()-tickstart >= timeoutMili)){
 			
 	}
 	
 	
 	/* Quand on sort de la boucle d'attente, on verifie si on est sorti a cause d'un timeout */
-	//if(READER_HAL_GetTick()-tickstart >= timeoutMili){
-	//	return READER_TIMEOUT;
-	//}
+	if(READER_HAL_GetTick()-tickstart >= timeoutMili){
+		return READER_TIMEOUT;
+	}
 	
 	
 	/* On verifie Parity Error, Frame Error, Overrun Error */
@@ -238,7 +244,8 @@ READER_Status READER_HAL_RcvChar(uint8_t *character, uint32_t timeout){
 	/* On recupere la donnee recue dans le Data Register */
 	*character = USART6->DR;
 	
-	
+	/* Une fois la reception termine, on reactive l'envoi. */
+	//USART6->CR1 |= USART_CR1_TE;
 	
 	return READER_OK;
 }
@@ -293,13 +300,13 @@ READER_Status READER_HAL_SendChar(uint8_t character, uint32_t timeout){
 		timeoutMili = timeout;
 	}
 	
+	/* On active le bloc USART */
+	USART6->CR1 |= USART_CR1_UE;
 	
-	/* On desactivela reception le temps de l'envoi */
+	/* On desactive la reception le temps de l'envoi. (Communication half duplex, RX et TX internally connected). Explication en.DM00031020 section 30.3.10 */
 	USART6->CR1 &= ~USART_CR1_RE;
 	
-	
 	/* On suppose ici que le bloc USART6 a deja ete configure en mode smartcard et qu'il est active et correctement initailise avec les bon parametres de communication */
-	USART6->CR1 |= USART_CR1_UE;
 	USART6->CR1 |= USART_CR1_TE;
 	
 	tickstart = READER_HAL_GetTick();
@@ -316,10 +323,10 @@ READER_Status READER_HAL_SendChar(uint8_t character, uint32_t timeout){
 		
 	/* On place le caractere dans le Data Register */
 	USART6->DR = character;
-		
-		
+	
 	/* On reactive la reception une fois l'envoi termine */
-	USART6->CR1 |= USART_CR1_RE;
+	/* ... En fait on ne peut pas le reactiver ici : Il faudrait en realite le faire uniquement lorsque TC (transmit complete). Or, ici on a fait le choix de quitter la fonction avant TC. */
+	//USART6->CR1 |= USART_CR1_RE;
 	
 	return READER_OK;
 }

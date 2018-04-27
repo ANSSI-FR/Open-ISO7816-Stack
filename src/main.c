@@ -16,6 +16,7 @@ int main(void){
 	READER_Status retVal;
 	READER_ATR_Atr atr;
 	READER_TPDU_Command tpdu;
+	READER_TPDU_Response tpduResp;
 	uint8_t SW1, SW2;
 	uint8_t rcvByte1 = 0x11;
 	uint8_t rcvByte2 = 0x12;
@@ -40,57 +41,43 @@ int main(void){
 	READER_ATR_Receive(&atr);
 	HAL_Delay(10);
 	
+
 	
-	pSmartcardTxBuff[0] = 0x00;
-	pSmartcardTxBuff[1] = 0xA4;
-	pSmartcardTxBuff[2] = 0x04;
-	pSmartcardTxBuff[3] = 0x00;
-	pSmartcardTxBuff[4] = 0x0D;
-	
-	READER_HAL_SendCharFrame(pSmartcardTxBuff, 5, READER_HAL_USE_ISO_WT);
-	
-	
-	
-	READER_HAL_RcvChar(&rcvByte1, READER_HAL_USE_ISO_WT);
-	READER_HAL_RcvChar(&rcvByte2, READER_HAL_USE_ISO_WT);
-	READER_HAL_RcvChar(&rcvByte3, READER_HAL_USE_ISO_WT);
-	
-	
-	//HAL_Delay(1000);
+	pSmartcardTxBuff[0] = 0x48;
+	pSmartcardTxBuff[1] = 0x65;
+	pSmartcardTxBuff[2] = 0x6C;
+	pSmartcardTxBuff[3] = 0x6C;
+	pSmartcardTxBuff[4] = 0x6F;
+	pSmartcardTxBuff[5] = 0x57;
+	pSmartcardTxBuff[6] = 0x6F;
+	pSmartcardTxBuff[7] = 0x72;
+	pSmartcardTxBuff[8] = 0x6C;
+	pSmartcardTxBuff[9] = 0x64;
+	pSmartcardTxBuff[10] = 0x41;
+	pSmartcardTxBuff[11] = 0x70;
+	pSmartcardTxBuff[12] = 0x70;
 	
 	
-	//if(retVal == READER_ERR){
-	//	READER_HAL_SendChar(0x99, READER_HAL_USE_ISO_WT);
-	//}
+	READER_TPDU_Forge(&tpdu, 0x00, 0xA4, 0x04, 0x00, 0x0D, pSmartcardTxBuff, 0x0D);
+	READER_TPDU_Send(&tpdu, READER_HAL_USE_ISO_WT);
+	READER_TPDU_RcvSW(&SW1, &SW2, READER_HAL_USE_ISO_WT);
 	
-	//if((rcvByte1 == 0x60) && (rcvByte2 == 0xA4)){
-	//	READER_HAL_SendChar(0x00, READER_HAL_USE_ISO_WT);
-	//}
-	//else{
-	//	READER_HAL_SendChar(0x01, READER_HAL_USE_ISO_WT);
-	//}
-	READER_HAL_SendChar(rcvByte1, 100);
-	READER_HAL_SendChar(rcvByte2, 100);
-	READER_HAL_SendChar(rcvByte3, 100);
-	
-	//pSmartcardTxBuff[0] = 0x48;
-	//pSmartcardTxBuff[1] = 0x65;
-	//pSmartcardTxBuff[2] = 0x6C;
-	//pSmartcardTxBuff[3] = 0x6C;
-	//pSmartcardTxBuff[4] = 0x6F;
-	//pSmartcardTxBuff[5] = 0x57;
-	//pSmartcardTxBuff[6] = 0x6F;
-	//pSmartcardTxBuff[7] = 0x72;
-	//pSmartcardTxBuff[8] = 0x6C;
-	//pSmartcardTxBuff[9] = 0x64;
-	//pSmartcardTxBuff[10] = 0x41;
-	//pSmartcardTxBuff[11] = 0x70;
-	//pSmartcardTxBuff[12] = 0x70;
+	READER_HAL_Delay(10);
 	
 	
-	//READER_TPDU_Forge(&tpdu, 0x01, 0xA4, 0x04, 0x00, 0x0D, pSmartcardTxBuff, 0x0D);
-	//READER_TPDU_Send(&tpdu, READER_HAL_USE_ISO_WT);
-	//READER_TPDU_RcvSW(&SW1, &SW2, READER_HAL_USE_ISO_WT);
+	READER_TPDU_Forge(&tpdu, 0x00, 0xC0, 0x00, 0x00, 0x12, NULL, 0);
+	READER_TPDU_Execute(&tpdu, &tpduResp, 5);
+	
+	
+	READER_HAL_Delay(100);
+	
+	READER_HAL_SendChar(tpduResp.SW1, READER_HAL_USE_ISO_WT);
+	READER_HAL_SendChar(tpduResp.SW2, READER_HAL_USE_ISO_WT);
+	READER_HAL_SendCharFrame(tpduResp.dataBytes, tpduResp.dataSize, READER_HAL_USE_ISO_WT);
+	
+	
+	
+	
 	
 	//HAL_UART_Transmit_IT(&uartHandleStruct, (uint8_t*)(&SW), 2);
 	
