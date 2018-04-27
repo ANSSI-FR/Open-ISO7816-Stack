@@ -66,14 +66,19 @@ int main(void){
 	
 	
 	READER_TPDU_Forge(&tpdu, 0x00, 0xC0, 0x00, 0x00, 0x12, NULL, 0);
-	READER_TPDU_Execute(&tpdu, &tpduResp, 5);
-	
+	READER_TPDU_Send(&tpdu, READER_HAL_USE_ISO_WT);
+	//READER_TPDU_RcvResponse(&tpduResp, 0x12, READER_HAL_USE_ISO_WT);
+	retVal = READER_HAL_RcvCharFrame(pSmartcardRxBuff, 0x12, READER_HAL_USE_ISO_WT);
+	READER_TPDU_RcvSW(&SW1, &SW2, READER_HAL_USE_ISO_WT);
 	
 	READER_HAL_Delay(100);
 	
-	READER_HAL_SendChar(tpduResp.SW1, READER_HAL_USE_ISO_WT);
-	READER_HAL_SendChar(tpduResp.SW2, READER_HAL_USE_ISO_WT);
-	READER_HAL_SendCharFrame(tpduResp.dataBytes, tpduResp.dataSize, READER_HAL_USE_ISO_WT);
+	if(retVal == READER_ERR){
+		READER_HAL_SendChar(SW1, READER_HAL_USE_ISO_WT);
+		READER_HAL_SendChar(SW2, READER_HAL_USE_ISO_WT);
+	}
+	//READER_HAL_SendCharFrame(tpduResp.dataBytes, tpduResp.dataSize, READER_HAL_USE_ISO_WT);
+	//READER_HAL_SendCharFrame(pSmartcardRxBuff, 0x12, READER_HAL_USE_ISO_WT);
 	
 	
 	
