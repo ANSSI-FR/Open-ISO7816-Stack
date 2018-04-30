@@ -136,11 +136,12 @@ READER_Status READER_HAL_RcvCharFrame(uint8_t *frame, uint32_t frameSize, uint32
 	uint8_t rcvByte;
 	uint32_t tickstart;
 	
+	
 	while(i<frameSize){
 		tickstart = READER_HAL_GetTick();
 		
 		retVal = READER_HAL_RcvChar(&rcvByte, timeout);
-		//if(retVal != READER_OK) return retVal;
+		if(retVal != READER_OK) return retVal;
 
 		frame[i] = rcvByte;
 		
@@ -248,6 +249,9 @@ READER_Status READER_HAL_RcvChar(uint8_t *character, uint32_t timeout){
 	
 	/* Une fois la reception termine, on reactive l'envoi. */
 	//USART2->CR1 |= USART_CR1_TE;
+	
+	/* On desactive la partie reception de l'USART. Cela evite d'avoir des Overrun si on recoit des caracteres inattendus */
+	USART2->CR1 &= ~USART_CR1_RE;
 	
 	return READER_OK;
 }
