@@ -73,10 +73,16 @@ int main(void){
 	
 	READER_HAL_Delay(100);
 	
-	if(retVal == READER_ERR){
-		READER_HAL_SendChar(SW1, READER_HAL_USE_ISO_WT);
-		READER_HAL_SendChar(SW2, READER_HAL_USE_ISO_WT);
-	}
+	HAL_UART_Transmit(&uartHandleStruct, pSmartcardRxBuff, 0x12, 1000);
+	
+	//if(retVal == READER_ERR){
+	//	READER_HAL_SendChar(SW1, READER_HAL_USE_ISO_WT);
+	//	READER_HAL_SendChar(SW2, READER_HAL_USE_ISO_WT);
+	//}
+	
+	//READER_HAL_SendChar(SW1, READER_HAL_USE_ISO_WT);
+	//READER_HAL_SendChar(SW2, READER_HAL_USE_ISO_WT);
+	
 	//READER_HAL_SendCharFrame(tpduResp.dataBytes, tpduResp.dataSize, READER_HAL_USE_ISO_WT);
 	//READER_HAL_SendCharFrame(pSmartcardRxBuff, 0x12, READER_HAL_USE_ISO_WT);
 	
@@ -144,7 +150,7 @@ void initUart(void){
 	gpioInitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
 	gpioInitStruct.Alternate = GPIO_AF7_USART1;
 	
-	__HAL_RCC_GPIOA_CLK_ENABLE();
+	__HAL_RCC_GPIOB_CLK_ENABLE();
 	HAL_GPIO_Init(GPIOB, &gpioInitStruct);
 	
 	
@@ -155,7 +161,7 @@ void initUart(void){
 	gpioInitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
 	gpioInitStruct.Alternate = GPIO_AF7_USART1;
 	
-	__HAL_RCC_GPIOA_CLK_ENABLE();
+	__HAL_RCC_GPIOB_CLK_ENABLE();
 	HAL_GPIO_Init(GPIOB, &gpioInitStruct);
 	
 	/* Activation clock bloc UART */

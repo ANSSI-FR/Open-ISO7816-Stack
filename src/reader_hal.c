@@ -140,7 +140,7 @@ READER_Status READER_HAL_RcvCharFrame(uint8_t *frame, uint32_t frameSize, uint32
 		tickstart = READER_HAL_GetTick();
 		
 		retVal = READER_HAL_RcvChar(&rcvByte, timeout);
-		if(retVal != READER_OK) return retVal;
+		//if(retVal != READER_OK) return retVal;
 
 		frame[i] = rcvByte;
 		
@@ -151,6 +151,8 @@ READER_Status READER_HAL_RcvCharFrame(uint8_t *frame, uint32_t frameSize, uint32
 			/* Ici on ne peut pas se le permettre car si on attend 1ms trop longtemps il se peut que l'on rate la reception du caratere suivant. */
 			/* Donc on retranche 1 & la valeur de retour de READER_HAL_GetGTMili() */
 		}
+		
+		/* Ou sinon on pourrait ajouter le GT au timeout ? */
 		
 		i++;
 	}
@@ -236,7 +238,7 @@ READER_Status READER_HAL_RcvChar(uint8_t *character, uint32_t timeout){
 	
 	
 	/* On verifie Parity Error, Frame Error, Overrun Error */
-	if((USART6->SR & USART_SR_FE) || (USART6->SR & USART_SR_ORE) || (USART6->SR & USART_SR_PE)){
+	if( (USART6->SR & USART_SR_FE) || (USART6->SR & USART_SR_ORE) || (USART6->SR & USART_SR_PE) ){ 
 		*character = USART6->DR;
 		return READER_ERR;
 	}
