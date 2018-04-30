@@ -59,7 +59,7 @@ READER_Status READER_HAL_Init(void){
 	RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
 	RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
 	RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV4;  
-	RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV4; 
+	RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV2; 
 	
 	HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_5);   // Attention pas de valeur de retour
 	
@@ -114,7 +114,7 @@ READER_Status READER_HAL_SendCharFrame(uint8_t *frame, uint32_t frameSize, uint3
 	}
 	
 	/* On attend le flag Transmit Complete */
-	while(!(USART6->SR & USART_SR_TC)){
+	while(!(USART2->SR & USART_SR_TC)){
 		
 	}
 	
@@ -213,20 +213,20 @@ READER_Status READER_HAL_RcvChar(uint8_t *character, uint32_t timeout){
 	
 	
 	/* Reception d'un caractere */
-	/* On suppose ici que le bloc USART6 a deja ete configure en mode smartcard et qu'il est active et correctement initailise avec les bon parametres de communication */
+	/* On suppose ici que le bloc USART2 a deja ete configure en mode smartcard et qu'il est active et correctement initailise avec les bon parametres de communication */
 	tickstart = READER_HAL_GetTick();
 	
 	/* On active le bloc USART */
-	USART6->CR1 |= USART_CR1_UE;
+	USART2->CR1 |= USART_CR1_UE;
 	
 	/* On bloque l'envoi pendant la duree de la reception.  (Communication half duplex, RX et TX internally connected). Explication en.DM00031020 section 30.3.10 */
-	USART6->CR1 &= ~USART_CR1_TE;
+	USART2->CR1 &= ~USART_CR1_TE;
 	
 	/* On active la partie reception de l'USART */
-	USART6->CR1 |= USART_CR1_RE;
-	//USART6->SR &= ~USART_SR_RXNE;
+	USART2->CR1 |= USART_CR1_RE;
+	//USART2->SR &= ~USART_SR_RXNE;
 	
-	while(!(USART6->SR & USART_SR_RXNE) && !(READER_HAL_GetTick()-tickstart >= timeoutMili)){
+	while(!(USART2->SR & USART_SR_RXNE) && !(READER_HAL_GetTick()-tickstart >= timeoutMili)){
 			
 	}
 	
@@ -238,16 +238,16 @@ READER_Status READER_HAL_RcvChar(uint8_t *character, uint32_t timeout){
 	
 	
 	/* On verifie Parity Error, Frame Error, Overrun Error */
-	if( (USART6->SR & USART_SR_FE) || (USART6->SR & USART_SR_ORE) || (USART6->SR & USART_SR_PE) ){ 
-		*character = USART6->DR;
+	if( (USART2->SR & USART_SR_FE) || (USART2->SR & USART_SR_ORE) || (USART2->SR & USART_SR_PE) ){ 
+		*character = USART2->DR;
 		return READER_ERR;
 	}
 	
 	/* On recupere la donnee recue dans le Data Register */
-	*character = USART6->DR;
+	*character = USART2->DR;
 	
 	/* Une fois la reception termine, on reactive l'envoi. */
-	//USART6->CR1 |= USART_CR1_TE;
+	//USART2->CR1 |= USART_CR1_TE;
 	
 	return READER_OK;
 }
@@ -303,18 +303,18 @@ READER_Status READER_HAL_SendChar(uint8_t character, uint32_t timeout){
 	}
 	
 	/* On active le bloc USART */
-	USART6->CR1 |= USART_CR1_UE;
+	USART2->CR1 |= USART_CR1_UE;
 	
 	/* On desactive la reception le temps de l'envoi. (Communication half duplex, RX et TX internally connected). Explication en.DM00031020 section 30.3.10 */
-	USART6->CR1 &= ~USART_CR1_RE;
+	USART2->CR1 &= ~USART_CR1_RE;
 	
-	/* On suppose ici que le bloc USART6 a deja ete configure en mode smartcard et qu'il est active et correctement initailise avec les bon parametres de communication */
-	USART6->CR1 |= USART_CR1_TE;
+	/* On suppose ici que le bloc USART2 a deja ete configure en mode smartcard et qu'il est active et correctement initailise avec les bon parametres de communication */
+	USART2->CR1 |= USART_CR1_TE;
 	
 	tickstart = READER_HAL_GetTick();
 	
 	/* On attend que le buffer d'envoi soit empty. On verifie aussi qu'on depasse pas timeout. */
-	while(!(USART6->SR & USART_SR_TXE) && ((READER_HAL_GetTick()-tickstart < timeoutMili))){
+	while(!(USART2->SR & USART_SR_TXE) && ((READER_HAL_GetTick()-tickstart < timeoutMili))){
 		
 	}
 	
@@ -324,11 +324,11 @@ READER_Status READER_HAL_SendChar(uint8_t character, uint32_t timeout){
 	
 		
 	/* On place le caractere dans le Data Register */
-	USART6->DR = character;
+	USART2->DR = character;
 	
 	/* On reactive la reception une fois l'envoi termine */
 	/* ... En fait on ne peut pas le reactiver ici : Il faudrait en realite le faire uniquement lorsque TC (transmit complete). Or, ici on a fait le choix de quitter la fonction avant TC. */
-	//USART6->CR1 |= USART_CR1_RE;
+	//USART2->CR1 |= USART_CR1_RE;
 	
 	return READER_OK;
 }
@@ -517,9 +517,9 @@ READER_Status READER_HAL_SetClkLine(READER_HAL_State state){
 		gpioInitStruct.Mode = GPIO_MODE_AF_PP; 
 		gpioInitStruct.Pull = GPIO_PULLUP;
 		//gpioInitStruct.Speed = GPIO_SPEED_FREQ_MEDIUM;
-		gpioInitStruct.Alternate = GPIO_AF8_USART6;
+		gpioInitStruct.Alternate = GPIO_AF7_USART2;
 		
-		__HAL_RCC_GPIOC_CLK_ENABLE();
+		__HAL_RCC_GPIOA_CLK_ENABLE();
 		HAL_GPIO_Init(READER_PERIPH_CLK_PORT, &gpioInitStruct);
 	}
 	else if(state == READER_HAL_STATE_OFF){
@@ -528,9 +528,9 @@ READER_Status READER_HAL_SetClkLine(READER_HAL_State state){
 		gpioInitStruct.Mode = GPIO_MODE_OUTPUT_PP; 
 		gpioInitStruct.Pull = GPIO_NOPULL;
 		//gpioInitStruct.Speed = GPIO_SPEED_FREQ_MEDIUM;
-		//gpioInitStruct.Alternate = GPIO_AF7_USART6;
+		//gpioInitStruct.Alternate = GPIO_AF7_USART2;
 		
-		__HAL_RCC_GPIOC_CLK_ENABLE();
+		__HAL_RCC_GPIOA_CLK_ENABLE();
 		HAL_GPIO_Init(READER_PERIPH_CLK_PORT, &gpioInitStruct);
 	}
 	else{
