@@ -327,6 +327,7 @@ READER_Status READER_TPDU_WaitACK(uint8_t INS, uint8_t *ACKType, uint32_t timeou
 	
 	do{
 		retVal = READER_HAL_RcvChar(&byte, timeout);
+		//HAL_UART_Transmit_IT(&uartHandleStruct, &byte, 0x01);  // DEBUG !!!
 	} while( (retVal==READER_OK) && (READER_TPDU_IsNullByte(byte)) && !(READER_TPDU_IsACK(byte, INS)) && !(READER_TPDU_IsXoredACK(byte, INS)));
 	
 	if(retVal != READER_OK) return retVal;
