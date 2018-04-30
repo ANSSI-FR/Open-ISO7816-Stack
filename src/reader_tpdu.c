@@ -34,16 +34,16 @@ READER_Status READER_TPDU_Send(READER_TPDU_Command *tpdu, uint32_t timeout){
 	if(retVal != READER_OK) return retVal;
 	
 	
+	/* Attente d'une reponse ACK ... */
+	retVal = READER_TPDU_WaitACK(tpdu->headerField.INS, &ACKType, timeout);
+	if(retVal != READER_OK) return retVal;
+	
 	/* Si la requette TPDU ne contient pas de donnees alors on s'arrete la ... */
 	if(tpdu->dataField.size == 0){
 		return READER_OK;
 	}
 	
-	/* Si la requette TPDU contient des donnees ... Attente d'une reponse */
-	retVal = READER_TPDU_WaitACK(tpdu->headerField.INS, &ACKType, timeout);
-	if(retVal != READER_OK) return retVal;
-	
-	/* Envoi du champs de donnees selon le type de ACK recu */
+	/* Le la requette TPDU contient des donnees alors envoi du champs de donnees selon le type de ACK recu */
 	if(ACKType == READER_TPDU_ACK_NORMAL){
 		retVal = READER_TPDU_SendDataOneshot(tpdu, timeout);
 		if(retVal != READER_OK) return retVal;
