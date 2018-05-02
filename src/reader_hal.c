@@ -19,6 +19,7 @@
 #define SMARTCARD_RX_FROM_SCRATCH
 
 SMARTCARD_HandleTypeDef smartcardHandleStruct;
+extern UART_HandleTypeDef uartHandleStruct;   // juste pour debug
 
 //uint32_t globalWaitTimeMili;
 READER_HAL_CommSettings globalCurrentSettings;
@@ -107,16 +108,28 @@ READER_Status READER_HAL_SendCharFrame(uint8_t *frame, uint32_t frameSize, uint3
 		retVal = READER_HAL_SendChar(frame[i], timeout);
 		if(retVal != READER_OK) return retVal;
 		
-		/* On fait attention a respecter le Guard Time (GT) entre les caracteres */
-		while((READER_HAL_GetTick()-tickstart) < READER_HAL_GetGTMili()){
-			
-		}
+		///* On fait attention a respecter le Guard Time (GT) entre les caracteres */
+		//while((READER_HAL_GetTick()-tickstart) < READER_HAL_GetGTMili()){
+		//	
+		//}
 	}
 	
+	//while(!(USART2->SR & USART_SR_TXE)){
+	//	
+	//}
+	//HAL_GPIO_WritePin(READER_PERIPH_RST_PORT, READER_PERIPH_RST_PIN, GPIO_PIN_RESET);
+	//HAL_GPIO_WritePin(READER_PERIPH_RST_PORT, READER_PERIPH_RST_PIN, GPIO_PIN_SET);
+	
 	/* On attend le flag Transmit Complete */
+	/* Permet de bloquer la fonction pour empecher une eventuelle reception (avant d'avoir transmit complete) */
 	while(!(USART2->SR & USART_SR_TC)){
 		
 	}
+	//HAL_GPIO_WritePin(READER_PERIPH_RST_PORT, READER_PERIPH_RST_PIN, GPIO_PIN_RESET);
+	//HAL_GPIO_WritePin(READER_PERIPH_RST_PORT, READER_PERIPH_RST_PIN, GPIO_PIN_SET);
+	
+	USART2->CR1 &= ~USART_CR1_TE;
+	
 	
 	return READER_OK;
 }
@@ -234,15 +247,19 @@ READER_Status READER_HAL_RcvChar(uint8_t *character, uint32_t timeout){
 	
 	/* Quand on sort de la boucle d'attente, on verifie si on est sorti a cause d'un timeout */
 	if(READER_HAL_GetTick()-tickstart >= timeoutMili){
+		USART2->CR1 &= ~USART_CR1_RE;
 		return READER_TIMEOUT;
 	}
 	
 	
 	/* On verifie Parity Error, Frame Error, Overrun Error */
 	if( (USART2->SR & USART_SR_FE) || (USART2->SR & USART_SR_ORE) || (USART2->SR & USART_SR_PE) ){ 
+		//HAL_UART_Transmit_IT(&uartHandleStruct, "FE", 2);
 		*character = USART2->DR;
+		USART2->CR1 &= ~USART_CR1_RE;
 		return READER_ERR;
 	}
+	
 	
 	/* On recupere la donnee recue dans le Data Register */
 	*character = USART2->DR;
@@ -314,6 +331,9 @@ READER_Status READER_HAL_SendChar(uint8_t character, uint32_t timeout){
 	
 	/* On suppose ici que le bloc USART2 a deja ete configure en mode smartcard et qu'il est active et correctement initailise avec les bon parametres de communication */
 	USART2->CR1 |= USART_CR1_TE;
+	
+	/* On set le GT register */
+	MODIFY_REG(USART2->GTPR, USART_GTPR_GT, ((0x00)<<8U));
 	
 	tickstart = READER_HAL_GetTick();
 	

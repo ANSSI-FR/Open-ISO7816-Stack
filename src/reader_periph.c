@@ -90,7 +90,7 @@ READER_Status READER_PERIPH_Init(void){
 	smartcardHandleStruct.Init.CLKPolarity = SMARTCARD_POLARITY_LOW;
 	smartcardHandleStruct.Init.CLKPhase = SMARTCARD_PHASE_1EDGE;
 	smartcardHandleStruct.Init.CLKLastBit = SMARTCARD_LASTBIT_ENABLE;
-	smartcardHandleStruct.Init.GuardTime = READER_DEFAULT_GT;
+	smartcardHandleStruct.Init.GuardTime = 0; //READER_DEFAULT_GT;
 	smartcardHandleStruct.Init.NACKState = SMARTCARD_NACK_ENABLE;
 	
 	smartcardHandleStruct.Init.Prescaler = READER_UTILS_ComputePrescFromFreq(READER_DEFAULT_FREQ);
