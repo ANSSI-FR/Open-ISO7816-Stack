@@ -115,6 +115,7 @@ READER_Status READER_APDU_ExecuteCase1(READER_APDU_Command *pApduCmd, READER_APD
 	READER_TPDU_Response tpduResp;
 	READER_Status retVal;
 	
+	/* On forge une structure de type commande TPDU */
 	retVal = READER_TPDU_Forge(
 		&tpduCmd,
 		pApduCmd->header.CLA,
@@ -127,9 +128,13 @@ READER_Status READER_APDU_ExecuteCase1(READER_APDU_Command *pApduCmd, READER_APD
 	);
 	if(retVal != READER_OK) return retVal;
 	
-	retVal = READER_TPDU_Execute(&tpduCmd, &tpduResp, timeout);
+	/* On envoie cet TPDU */
+	retVal = READER_TPDU_Send(&tpduCmd, timeout);
 	if(retVal != READER_OK) return retVal;
 	
+	/* On recupere le reponse */
+	retVal = READER_TPDU_RcvResponse(&tpduResp, 0, timeout);
+	if(retVal != READER_OK) return retVal;	
 	
 	/* On map la reponse TPDU sur la reponse APDU */
 	retVal = READER_APDU_MapTpduRespToApdu(&tpduResp, pApduResp);
@@ -489,6 +494,10 @@ READER_Status READER_APDU_ExecuteCase4S(READER_APDU_Command *pApduCmd, READER_AP
 
 
 
+/**
+ * \fn READER_Status READER_APDU_MapTpduRespToApdu(READER_TPDU_Response *pTpduResp, READER_APDU_Response *pApduResp)
+ * \brief Cette fonction pemret de mapper un object de type "TPDU Response" sur un objet de type "APDU Response". Attention cette fonction n'est pas prévue pour le cas où la taille des données du "APDU Response" est strictement supérieure à 256 octets (cas 2E et 4E).
+ */
 READER_Status READER_APDU_MapTpduRespToApdu(READER_TPDU_Response *pTpduResp, READER_APDU_Response *pApduResp){
 	uint32_t i;
 	
