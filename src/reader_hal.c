@@ -663,3 +663,18 @@ uint32_t READER_HAL_GetTick(void){
 	return HAL_GetTick();
 }
 
+
+READER_Status READER_HAL_DoColdReset(void){
+	READER_Status retVal;
+	
+	/* Activation et Cold Reset */
+	READER_HAL_Delay(50);
+	retVal = READER_HAL_SetPwrLine(READER_HAL_STATE_ON);      if(retVal != READER_OK) return retVal;
+	READER_HAL_Delay(1);                                      
+	retVal = READER_HAL_SetClkLine(READER_HAL_STATE_ON);      if(retVal != READER_OK) return retVal;
+	READER_HAL_Delay(1);                                      
+	retVal = READER_HAL_SetRstLine(READER_HAL_STATE_ON);      if(retVal != READER_OK) return retVal;
+	
+	return READER_OK;
+}
+
