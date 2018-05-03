@@ -141,23 +141,33 @@ READER_Status READER_HAL_RcvCharFrame(uint8_t *frame, uint32_t frameSize, uint32
 	uint32_t i = 0;
 	uint8_t rcvByte;
 	uint32_t tickstart;
+	uint32_t timeoutMili;
+	
+	
+	/* Prise en compte du Guard Time (GT). On ajoute simplement le delai de GT au timeout. */
+	if(timeout == READER_HAL_USE_ISO_WT){
+		timeoutMili = READER_HAL_GetWT() + READER_HAL_GetGTMili();
+	}
+	else{
+		timeoutMili = timeout + READER_HAL_GetGTMili();
+	}
 	
 	
 	while(i<frameSize){
 		tickstart = READER_HAL_GetTick();
 		
-		retVal = READER_HAL_RcvChar(&rcvByte, timeout);
+		retVal = READER_HAL_RcvChar(&rcvByte, timeoutMili);
 		if(retVal != READER_OK) return retVal;
 
 		frame[i] = rcvByte;
 		
-		/* On prend en compte le Guard Time (GT). On attend l'ecoulement du GT avant de commencer une nouvelle reception de caractere. */
-		while((READER_HAL_GetTick()-tickstart) < READER_HAL_GetGTMili()-1   ){   /* La definition de la fonction READER_HAL_GetGTMili() garantit que la valeur >= 1 */
-			/* On s'efforce de respecter le GT mais c'est peu evident a cause du manque de precision des delais (granularite de 1ms) */
-			/* La fonction READER_HAL_GetGTMili() renvoie la valeur arrondie a l'entier superieur */
-			/* Ici on ne peut pas se le permettre car si on attend 1ms trop longtemps il se peut que l'on rate la reception du caratere suivant. */
-			/* Donc on retranche 1 & la valeur de retour de READER_HAL_GetGTMili() */
-		}
+		///* On prend en compte le Guard Time (GT). On attend l'ecoulement du GT avant de commencer une nouvelle reception de caractere. */
+		//while((READER_HAL_GetTick()-tickstart) < READER_HAL_GetGTMili()-1   ){   /* La definition de la fonction READER_HAL_GetGTMili() garantit que la valeur >= 1 */
+		//	/* On s'efforce de respecter le GT mais c'est peu evident a cause du manque de precision des delais (granularite de 1ms) */
+		//	/* La fonction READER_HAL_GetGTMili() renvoie la valeur arrondie a l'entier superieur */
+		//	/* Ici on ne peut pas se le permettre car si on attend 1ms trop longtemps il se peut que l'on rate la reception du caratere suivant. */
+		//	/* Donc on retranche 1 & la valeur de retour de READER_HAL_GetGTMili() */
+		//}
 		
 		/* Ou sinon on pourrait ajouter le GT au timeout ? */
 		
