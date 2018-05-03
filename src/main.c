@@ -24,21 +24,20 @@ int main(void){
 	uint8_t rcvByte3 = 0x13;
 	
 	
+	initUart();
+	
+	
+	
 	if(READER_HAL_Init() != READER_OK){
 		READER_HAL_ErrHandler();
 	}
-	initUart();
+	
 	
 	
 	
 	
 	/* Activation et Cold Reset */
-	HAL_Delay(50);
-	READER_HAL_SetPwrLine(READER_HAL_STATE_ON);
-	HAL_Delay(1);
-	READER_HAL_SetClkLine(READER_HAL_STATE_ON);
-	HAL_Delay(1);
-	READER_HAL_SetRstLine(READER_HAL_STATE_ON);
+	READER_HAL_DoColdReset();
 	
 	/* Reception de l'ATR */
 	READER_ATR_Receive(&atr);
@@ -74,9 +73,6 @@ int main(void){
 	READER_TPDU_Forge(&tpdu, 0x00, 0xC0, 0x00, 0x00, 0x12, NULL, 0);
 	READER_TPDU_Send(&tpdu, READER_HAL_USE_ISO_WT);
 	READER_TPDU_RcvResponse(&tpduResp, 0x12, READER_HAL_USE_ISO_WT);
-	//READER_HAL_RcvCharFrame(pSmartcardRxBuff, 0x12, READER_HAL_USE_ISO_WT);
-	//READER_TPDU_RcvSW(&SW1, &SW2, READER_HAL_USE_ISO_WT);
-	//retVal = READER_HAL_RcvChar(&rcvByte1, READER_HAL_USE_ISO_WT);
 	
 	
 	
@@ -85,42 +81,6 @@ int main(void){
 	HAL_UART_Transmit(&uartHandleStruct, &(tpduResp.SW2), 0x01, 1000);
 
 
-	
-	
-	
-	
-	//HAL_UART_Transmit_IT(&uartHandleStruct, (uint8_t*)(&SW), 2);
-	
-	
-	
-	//HAL_Delay(10);
-	//
-	///* Fabrication du header TPDU du GET RESPONSE */
-	//pSmartcardTxBuff[0] = 0x00;
-	//pSmartcardTxBuff[1] = 0xC0;
-	//pSmartcardTxBuff[2] = 0x00;
-	//pSmartcardTxBuff[3] = 0x00;
-	//pSmartcardTxBuff[4] = 0x12;
-	//
-	//READER_HAL_SendCharFrame(pSmartcardTxBuff, 5, READER_HAL_USE_ISO_WT);
-	//
-	//
-	///* Attente du ACK */
-	//do{
-	//	READER_HAL_RcvCharFrame(pSmartcardRxBuff, 1, READER_HAL_USE_ISO_WT);
-	//}while(pSmartcardRxBuff[0] != 0xC0);
-	//
-	//
-	///* Reception reponse carte + SW1SW2 */
-	//READER_HAL_RcvCharFrame(pSmartcardRxBuff, 0x14, READER_HAL_USE_ISO_WT);
-	//
-	//
-	//HAL_Delay(500);
-	//READER_HAL_SetFreq(3500000);
-	//
-	//while(1){
-	//	
-	//}
 	
 	return 0;
 }

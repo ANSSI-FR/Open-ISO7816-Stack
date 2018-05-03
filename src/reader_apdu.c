@@ -151,6 +151,7 @@ READER_Status READER_APDU_ExecuteCase2S(READER_APDU_Command *pApduCmd, READER_AP
 	READER_Status retVal;
 	uint32_t Na;
 	
+	/* On fabrique la requette TPDU qui correspond */
 	retVal = READER_TPDU_Forge(
 		&tpduCmd,
 		pApduCmd->header.CLA,
@@ -163,7 +164,12 @@ READER_Status READER_APDU_ExecuteCase2S(READER_APDU_Command *pApduCmd, READER_AP
 	);
 	if(retVal != READER_OK) return retVal;
 	
-	retVal = READER_TPDU_Execute(&tpduCmd, &tpduResp, timeout);
+	/* On envoie la requette TPDU */
+	retVal = READER_TPDU_Send(&tpduCmd, timeout);
+	if(retVal != READER_OK) return retVal;
+	
+	/* On recupere le TPDU response */
+	retVal = READER_TPDU_RcvResponse(&tpduResp, pApduCmd->body.Ne, timeout);
 	if(retVal != READER_OK) return retVal;
 	
 	/* Case 2S.2 Process Aborted, Ne definitely not accepted        */
@@ -187,7 +193,10 @@ READER_Status READER_APDU_ExecuteCase2S(READER_APDU_Command *pApduCmd, READER_AP
 		);
 		if(retVal != READER_OK) return retVal;
 	
-		retVal = READER_TPDU_Execute(&tpduCmd, &tpduResp, timeout);
+		retVal = READER_TPDU_Send(&tpduCmd, timeout);
+		if(retVal != READER_OK) return retVal;
+		
+		retVal = READER_TPDU_RcvResponse(&tpduResp, Na, timeout);
 		if(retVal != READER_OK) return retVal;
 		
 		retVal = READER_APDU_MapTpduRespToApdu(&tpduResp, pApduResp);
@@ -229,7 +238,11 @@ READER_Status READER_APDU_ExecuteCase3S(READER_APDU_Command *pApduCmd, READER_AP
 	if(retVal != READER_OK) return retVal;
 	
 	/* On envoie la requette TPDU */
-	retVal = READER_TPDU_Execute(&tpduCmd, &tpduResp, timeout);
+	retVal = READER_TPDU_Send(&tpduCmd, timeout);
+	if(retVal != READER_OK) return retVal;
+	
+	/* On recupere la reponse. On attend pas de donnees en retour, juste SW */
+	retVal = READER_TPDU_RcvResponse(&tpduResp, 0, timeout);
 	if(retVal != READER_OK) return retVal;
 	
 	/* On mape la reponse APDU sur la reponse TPDU */
@@ -427,30 +440,40 @@ READER_Status READER_APDU_ExecuteCase4S(READER_APDU_Command *pApduCmd, READER_AP
 	READER_Status retVal;
 	uint32_t Na;
 	
-	/* On envoie le premier TPDU avec le header de l'APDU et P3=Lc */
+	/* On forge le premier TPDU avec le header de l'APDU et P3=Lc */
 	retVal = READER_TPDU_Forge(&tpduCmd, pApduCmd->header.CLA, pApduCmd->header.INS, pApduCmd->header.P1, pApduCmd->header.P2, READER_APDU_NcToLc(pApduCmd->body.Nc), NULL, 0);
 	if(retVal != READER_OK) return retVal;
 	
-	retVal = READER_TPDU_Execute(&tpduCmd, &tpduResp, timeout);
+	/* On evoie le TPDU */
+	retVal = READER_TPDU_Send(&tpduCmd, timeout);
+	if(retVal != READER_OK) return retVal;
+	
+	/* On attend en reponse juste un SW (avant d'envoyer le GET RESPONSE) */
+	retVal = READER_TPDU_RcvResponse(&tpduResp, 0, timeout);
 	if(retVal != READER_OK) return retVal;
 	
 	
 	/* Selon le SW du premier TPDU response */
-	if((tpduResp.SW1 == 0x60) || (tpduResp.SW1 == 0x64) || (tpduResp.SW1 == 0x65) || (tpduResp.SW1 == 0x66) || (tpduResp.SW1 == 0x67) || (tpduResp.SW1 == 0x68) || (tpduResp.SW1 == 0x69)){
+	/* Cas 4S.1 */
+	if((tpduResp.SW1 == 0x60) || (tpduResp.SW1 == 0x64) || (tpduResp.SW1 == 0x65) || (tpduResp.SW1 == 0x66) || (tpduResp.SW1 == 0x67) || (tpduResp.SW1 == 0x68) || (tpduResp.SW1 == 0x69) || (tpduResp.SW1 == 0x6A) || (tpduResp.SW1 == 0x6B) || (tpduResp.SW1 == 0x6C) || (tpduResp.SW1 == 0x6D)  || (tpduResp.SW1 == 0x6E) || (tpduResp.SW1 == 0x6F)){
 		retVal = READER_APDU_MapTpduRespToApdu(&tpduResp, pApduResp);
 		if(retVal != READER_OK) return READER_ERR;
 		return READER_OK;
 	}
+	/* Cas 4S.2 */
 	else if((tpduResp.SW1 == 0x90) && (tpduResp.SW2 == 0x00)){
 		/* On envoie en TPDU de type GET RESPONSE */
 		retVal = READER_TPDU_Forge(&tpduCmd, pApduCmd->header.CLA, READER_APDU_INS_GETRESPONSE, 0x00, 0x00, READER_APDU_NeToLe(pApduCmd->body.Ne), NULL, 0);
 		if(retVal != READER_OK) return retVal;
 	
-		retVal = READER_TPDU_Execute(&tpduCmd, &tpduResp, timeout);
+		retVal = READER_TPDU_Send(&tpduCmd, timeout);
+		if(retVal != READER_OK) return retVal;
+		
+		retVal = READER_TPDU_RcvResponse(&tpduResp, pApduCmd->body.Ne, timeout);
 		if(retVal != READER_OK) return retVal;
 		
 		
-		/* On contnue selon le cas 2S */
+		/* On continue selon le cas 2S */
 		/* Case 2S.2 Process Aborted, Ne definitely not accepted        */
 		if((tpduResp.SW1 == 0x67) && (tpduResp.SW2 == 0x00)){
 			retVal = READER_APDU_MapTpduRespToApdu(&tpduResp, pApduResp);
@@ -477,9 +500,11 @@ READER_Status READER_APDU_ExecuteCase4S(READER_APDU_Command *pApduCmd, READER_AP
 			if(retVal != READER_OK) return READER_ERR;
 		}
 	}
+	/* Cas 4S.3 */
 	else if(tpduResp.SW1 == 0x61){
 		/* Cas 4S.3 a faire !!!!*/
 	}
+	/* Cas 4S.4 */
 	else if((tpduResp.SW1 == 0x61) || (tpduResp.SW1 == 0x62) || (tpduResp.SW1 == 0x63) || (((tpduResp.SW1 & 0xF0) == 0x90) && (tpduResp.SW2 != 0x00)) ){
 		retVal = READER_APDU_MapTpduRespToApdu(&tpduResp, pApduResp);
 		if(retVal != READER_OK) return READER_ERR;
