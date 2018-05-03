@@ -4,8 +4,7 @@
 #include <stdint.h>
 
 
-extern UART_HandleTypeDef uartHandleStruct;   // juste pour debug
-extern SMARTCARD_HandleTypeDef smartcardHandleStruct; // debug
+
 extern uint32_t globalWaitTimeMili;
 
 
@@ -38,10 +37,12 @@ READER_Status READER_TPDU_Send(READER_TPDU_Command *tpdu, uint32_t timeout){
 	retVal = READER_TPDU_WaitACK(tpdu->headerField.INS, &ACKType, timeout);
 	if(retVal != READER_OK) return retVal;
 	
+	
 	/* Si la requette TPDU ne contient pas de donnees alors on s'arrete la ... */
 	if(tpdu->dataField.size == 0){
 		return READER_OK;
 	}
+	
 	
 	/* Le la requette TPDU contient des donnees alors envoi du champs de donnees selon le type de ACK recu */
 	if(ACKType == READER_TPDU_ACK_NORMAL){

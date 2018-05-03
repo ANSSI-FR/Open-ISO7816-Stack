@@ -3,6 +3,7 @@
 #include "stm32f4xx_hal.h"
 #include "reader_atr.h"
 #include "reader_tpdu.h"
+#include "reader_apdu.h"
 
 
 UART_HandleTypeDef uartHandleStruct;
@@ -16,34 +17,18 @@ uint8_t pSmartcardRxBuff[100];
 int main(void){
 	READER_Status retVal;
 	READER_ATR_Atr atr;
-	READER_TPDU_Command tpdu;
-	READER_TPDU_Response tpduResp;
-	uint8_t SW1, SW2;
-	uint8_t rcvByte1 = 0x11;
-	uint8_t rcvByte2 = 0x12;
-	uint8_t rcvByte3 = 0x13;
+	READER_APDU_Command apduCmd;
+	READER_APDU_Response apduResp;
 	
+	
+	
+	READER_HAL_Init();
 	
 	initUart();
 	
-	
-	
-	if(READER_HAL_Init() != READER_OK){
-		READER_HAL_ErrHandler();
-	}
-	
-	
-	
-	
-	
-	/* Activation et Cold Reset */
 	READER_HAL_DoColdReset();
-	
-	/* Reception de l'ATR */
 	READER_ATR_Receive(&atr);
-	HAL_Delay(10);
 	
-
 	
 	pSmartcardTxBuff[0] = 0x48;
 	pSmartcardTxBuff[1] = 0x65;
@@ -60,25 +45,29 @@ int main(void){
 	pSmartcardTxBuff[12] = 0x70;
 	
 	
-	READER_TPDU_Forge(&tpdu, 0x00, 0xA4, 0x04, 0x00, 0x0D, pSmartcardTxBuff, 0x0D);
-	READER_TPDU_Send(&tpdu, READER_HAL_USE_ISO_WT);
-	READER_TPDU_RcvSW(&SW1, &SW2, READER_HAL_USE_ISO_WT);
+	READER_APDU_Forge(&apduCmd, 0x00, 0xA4, 0x04, 0x00, 0x0D, pSmartcardTxBuff, 0x12);
+	READER_APDU_Execute(&apduCmd, &apduResp, READER_HAL_USE_ISO_WT);
+	
+	
+	HAL_UART_Transmit(&uartHandleStruct, apduResp.dataBytes, apduResp.dataSize, 1000);
+
+	while(1);
+
+	//READER_TPDU_Forge(&tpdu, 0x00, 0xA4, 0x04, 0x00, 0x0D, pSmartcardTxBuff, 0x0D);
+	//READER_TPDU_Send(&tpdu, READER_HAL_USE_ISO_WT);
+	//READER_TPDU_RcvSW(&SW1, &SW2, READER_HAL_USE_ISO_WT);
+	
+	//READER_HAL_Delay(10);
+	//
+	//READER_TPDU_Forge(&tpdu, 0x00, 0xC0, 0x00, 0x00, 0x12, NULL, 0);
+	//READER_TPDU_Send(&tpdu, READER_HAL_USE_ISO_WT);
+	//READER_TPDU_RcvResponse(&tpduResp, 0x12, READER_HAL_USE_ISO_WT);
 	
 	
 	
-	
-	READER_HAL_Delay(10);
-	
-	
-	READER_TPDU_Forge(&tpdu, 0x00, 0xC0, 0x00, 0x00, 0x12, NULL, 0);
-	READER_TPDU_Send(&tpdu, READER_HAL_USE_ISO_WT);
-	READER_TPDU_RcvResponse(&tpduResp, 0x12, READER_HAL_USE_ISO_WT);
-	
-	
-	
-	HAL_UART_Transmit(&uartHandleStruct, tpduResp.dataBytes, 0x12, 1000);
-	HAL_UART_Transmit(&uartHandleStruct, &(tpduResp.SW1), 0x01, 1000);
-	HAL_UART_Transmit(&uartHandleStruct, &(tpduResp.SW2), 0x01, 1000);
+	//HAL_UART_Transmit(&uartHandleStruct, tpduResp.dataBytes, 0x12, 1000);
+	//HAL_UART_Transmit(&uartHandleStruct, &(tpduResp.SW1), 0x01, 1000);
+	//HAL_UART_Transmit(&uartHandleStruct, &(tpduResp.SW2), 0x01, 1000);
 
 
 	
@@ -133,4 +122,5 @@ void initUart(void){
 	
 	
 	HAL_UART_Init(&uartHandleStruct);
+	
 }
