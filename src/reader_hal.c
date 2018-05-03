@@ -29,7 +29,7 @@ READER_HAL_CommSettings globalCurrentSettings;
 /**
  * \fn READER_Status READER_HAL_Init(void)
  * \brief Fonction pour initialiser la couche d'abstraction.
- * \return Valeur de type READER_Status. READER_OK si l'exécution s'est correctement déroulée. READER_ERR dans le cas contraire.
+ * \return Valeur de type READER_Status. READER_OK si l'exécution s'est correctement déroulée. Toute autre valeur suggère une erreur.
  */ 
 READER_Status READER_HAL_Init(void){
 	READER_Status retVal;
@@ -91,7 +91,7 @@ READER_Status READER_HAL_Init(void){
 /**
  * \fn READER_Status READER_HAL_SendCharFrame(uint8_t *frame, uint32_t frameSize, uint32_t timeout)
  * \brief Cette fonction permet de placer uen chaine d'octets sur la ligne IO. Cette fonction a un comportement bloquant.
- * \return Valeur de type READER_Status. READER_OK si l'exécution s'est correctement déroulée. READER_ERR dans le cas contraire.
+ * \return Valeur de type READER_Status. READER_OK si l'exécution s'est correctement déroulée. Toute autre valeur indique uen erreur.
  * \param *frame Pointeur sur la chaine d'octets à envoyer.
  * \param frameSize Taille de la chaine d'octets à envoyer.
  * \param timeout Valeur du timeout en milisecondes à utiliser. Si cette valeur est READER_HAL_USE_ISO_WT alors le timeout utilisé sera celui spécifié dans la norme ISO.
@@ -108,25 +108,18 @@ READER_Status READER_HAL_SendCharFrame(uint8_t *frame, uint32_t frameSize, uint3
 		retVal = READER_HAL_SendChar(frame[i], timeout);
 		if(retVal != READER_OK) return retVal;
 		
-		///* On fait attention a respecter le Guard Time (GT) entre les caracteres */
-		//while((READER_HAL_GetTick()-tickstart) < READER_HAL_GetGTMili()){
-		//	
-		//}
+		/* On fait attention a respecter le Guard Time (GT) entre les caracteres */
+		while((READER_HAL_GetTick()-tickstart) < READER_HAL_GetGTMili()){
+			
+		}
 	}
 	
-	//while(!(USART2->SR & USART_SR_TXE)){
-	//	
-	//}
-	//HAL_GPIO_WritePin(READER_PERIPH_RST_PORT, READER_PERIPH_RST_PIN, GPIO_PIN_RESET);
-	//HAL_GPIO_WritePin(READER_PERIPH_RST_PORT, READER_PERIPH_RST_PIN, GPIO_PIN_SET);
 	
 	/* On attend le flag Transmit Complete */
 	/* Permet de bloquer la fonction pour empecher une eventuelle reception (avant d'avoir transmit complete) */
 	while(!(USART2->SR & USART_SR_TC)){
 		
 	}
-	//HAL_GPIO_WritePin(READER_PERIPH_RST_PORT, READER_PERIPH_RST_PIN, GPIO_PIN_RESET);
-	//HAL_GPIO_WritePin(READER_PERIPH_RST_PORT, READER_PERIPH_RST_PIN, GPIO_PIN_SET);
 	
 	USART2->CR1 &= ~USART_CR1_TE;
 	
@@ -138,7 +131,7 @@ READER_Status READER_HAL_SendCharFrame(uint8_t *frame, uint32_t frameSize, uint3
 /**
  * \fn READER_HAL_RcvCharFrame(uint8_t *frame, uint32_t frameSize, uint32_t timeout)
  * \brief Cette fonction permet se se mettre à l'écoute d'une chaine d'octets sur la ligne IO. Cette fonction a un comportement bloquant.
- * \return Valeur de type READER_Status. READER_OK si l'exécution s'est correctement déroulée. READER_ERR dans le cas contraire.
+ * \return Valeur de type READER_Status. READER_OK si l'exécution s'est correctement déroulée. Toute autre valeur suggère une erreur.
  * \param *frame Pointeur sur le buffer à utiliser pour stocker les octets reçus.
  * \param frameSize Nombre d'octets à recevoir.
  * \param timeout Valeur du timeout en milisecondes à utiliser. Si cette valeur est READER_HAL_USE_ISO_WT alors le timeout utilisé sera celui spécifié dans la norme ISO.
@@ -180,7 +173,7 @@ READER_Status READER_HAL_RcvCharFrame(uint8_t *frame, uint32_t frameSize, uint32
 /**
  * \fn READER_Status READER_HAL_RcvChar(uint8_t *character, uint32_t timeout)
  * \brief Cette fonction permet de lire un seul octet du la ligne IO.
- * \return Valeur de type READER_Status. READER_OK si l'exécution s'est correctement déroulée. READER_ERR dans le cas contraire.
+ * \return Valeur de type READER_Status. READER_OK si l'exécution s'est correctement déroulée. Toute autre valeur suggère une erreur.
  * \param *character Pointeur vers un octet dans lequel sera stocké le caractère reçu.
  * \param timeout Valeur du timeout en milisecondes à utiliser. Si cette valeur est READER_HAL_USE_ISO_WT alors le timeout utilisé sera celui spécifié dans la norme ISO.
  */
@@ -279,7 +272,7 @@ READER_Status READER_HAL_RcvChar(uint8_t *character, uint32_t timeout){
 /**
  * \fn READER_Status READER_HAL_RcvChar(uint8_t *character, uint32_t timeout)
  * \brief Cette fonction permet d'envoyer un seul octet du la ligne IO.
- * \return Valeur de type READER_Status. READER_OK si l'exécution s'est correctement déroulée. READER_ERR dans le cas contraire.
+ * \return Valeur de type READER_Status. READER_OK si l'exécution s'est correctement déroulée. Toute autre valeur suggère une erreur.
  * \param character uint8_t qui indique le caractère à envoyer.
  * \param timeout Valeur du timeout en milisecondes à utiliser. Si cette valeur est READER_HAL_USE_ISO_WT alors le timeout utilisé sera celui spécifié dans la norme ISO.
  */
@@ -363,7 +356,7 @@ READER_Status READER_HAL_SendChar(uint8_t character, uint32_t timeout){
 /**
  * \fn READER_Status READER_HAL_SetFreq(uint32_t newFreq)
  * \brief Cette fonction permet de changer la fréquence de l'horloge fournie à la carte à puce. Attention cette fonction dépend de la variable globale : globalCurrentSettings. Cette variable est locale au fichier "reader_hal.c". Cette structure contient en permanance les parametres de communication utilisés.
- * \return Valeur de type READER_Status. READER_OK si l'exécution s'est correctement déroulée. READER_ERR dans le cas contraire.
+ * \return Valeur de type READER_Status. READER_OK si l'exécution s'est correctement déroulée. Toute autre valeur suggère une erreur.
  * \param newFreq uint32_t indiquant la nouvelle fréquence à adopter (en Hz). Attention, selon l'implémentation matérielle toutes les fréquences ne sont pas permises. Pour plus d'informations sur les fréquences supportées voir l'implémentation de la fonction READER_UTILS_ComputePrescFromFreq() dans le fichier "reader_utils.h". Attention l'implémentation de cette fonction varie selon la cible matérielle.
  */
 READER_Status READER_HAL_SetFreq(uint32_t newFreq){
@@ -398,7 +391,7 @@ READER_Status READER_HAL_SetFreq(uint32_t newFreq){
 /**
  * \fn READER_Status READER_HAL_SetEtu(uint32_t Fi, uint32_t Di)
  * \brief Cette fonction permet de configurer la valeur du "Elementary Time Unit" (ETU) utilisé dans les communications sur la ligne IO. Attention cette fonction dépend de la variable globale : globalCurrentSettings. Cette variable est locale au fichier "reader_hal.c". Cette structure contient en permanance les parametres de communication utilisés.
- * \return Valeur de type READER_Status. READER_OK si l'exécution s'est correctement déroulée. READER_ERR dans le cas contraire.
+ * \return Valeur de type READER_Status. READER_OK si l'exécution s'est correctement déroulée. Toute autre valeur suggère une erreur.
  * \param Fi "Clock Rate Conversion Integer"
  * \param Di "Baudrate Adjustement Integer"
  */
@@ -460,7 +453,7 @@ READER_Status READER_HAL_SetDi(uint32_t Di){
 /**
  * \fn READER_Status READER_HAL_SetPwrLine(READER_HAL_State state)
  * \brief Cette fonction permet de changer l'état de la broche PWR.
- * \return Valeur de type READER_Status. READER_OK si l'exécution s'est correctement déroulée. READER_ERR dans le cas contraire.
+ * \return Valeur de type READER_Status. READER_OK si l'exécution s'est correctement déroulée. Toute autre valeur suggère une erreur.
  * \param state paramètre de type READER_HAL_State. Peut prendre les valeurs READER_HAL_STATE_ON et READER_HAL_STATE_OFF. Indique l'état à imposer à la broche.
  */
 READER_Status READER_HAL_SetPwrLine(READER_HAL_State state){
@@ -482,7 +475,7 @@ READER_Status READER_HAL_SetPwrLine(READER_HAL_State state){
 /**
  * \fn READER_Status READER_HAL_SetRstLine(READER_HAL_State state)
  * \brief Cette fonction permet de changer l'état de la broche RST.
- * \return Valeur de type READER_Status. READER_OK si l'exécution s'est correctement déroulée. READER_ERR dans le cas contraire.
+ * \return Valeur de type READER_Status. READER_OK si l'exécution s'est correctement déroulée. Toute autre valeur suggère une erreur.
  * \param state paramètre de type READER_HAL_State. Peut prendre les valeurs READER_HAL_STATE_ON et READER_HAL_STATE_OFF. Indique l'état à imposer à la broche.
  */
 READER_Status READER_HAL_SetRstLine(READER_HAL_State state){
@@ -504,7 +497,7 @@ READER_Status READER_HAL_SetRstLine(READER_HAL_State state){
 /**
  * \fn READER_Status READER_HAL_SetIOLine(READER_HAL_State state)
  * \brief Cette fonction permet de changer l'état de la broche IO.
- * \return Valeur de type READER_Status. READER_OK si l'exécution s'est correctement déroulée. READER_ERR dans le cas contraire.
+ * \return Valeur de type READER_Status. READER_OK si l'exécution s'est correctement déroulée. Toute autre valeur suggère une erreur.
  * \param state paramètre de type READER_HAL_State. Peut prendre les valeurs READER_HAL_STATE_ON et READER_HAL_STATE_OFF. Indique l'état à imposer à la broche.
  */
 READER_Status READER_HAL_SetIOLine(READER_HAL_State state){
@@ -529,7 +522,7 @@ READER_Status READER_HAL_SetIOLine(READER_HAL_State state){
 /**
  * \fn READER_Status READER_HAL_SetClkLine(READER_HAL_State state)
  * \brief Cette fonction permet de changer l'état de la broche CLK. En l'occurence elle permet d'activer ou non la génération de l'horloge.
- * \return Valeur de type READER_Status. READER_OK si l'exécution s'est correctement déroulée. READER_ERR dans le cas contraire.
+ * \return Valeur de type READER_Status. READER_OK si l'exécution s'est correctement déroulée. Toute autre valeur suggère une erreur.
  * \param state paramètre de type READER_HAL_State. Peut prendre les valeurs READER_HAL_STATE_ON et READER_HAL_STATE_OFF. Indique l'état à imposer à la broche.
  */
 READER_Status READER_HAL_SetClkLine(READER_HAL_State state){
@@ -568,7 +561,7 @@ READER_Status READER_HAL_SetClkLine(READER_HAL_State state){
 /**
  * \fn READER_Status READER_HAL_SetGT(uint32_t newGT)
  * \brief Cette fonction permet de configurer le "Gard Time" (GT) à utiliser lors des communications sur la ligne IO. Le GT est défini dans la norme ISO7816-3 à la section 7.2. Attention cette fonction dépend de la variable globale : globalCurrentSettings. Cette variable est locale au fichier "reader_hal.c". Cette structure contient en permanance les parametres de communication utilisés.
- * \return Valeur de type READER_Status. READER_OK si l'exécution s'est correctement déroulée. READER_ERR dans le cas contraire.
+ * \return Valeur de type READER_Status. READER_OK si l'exécution s'est correctement déroulée. Toute autre valeur suggère une erreur.
  * \param uint32_t newGT uint32_t indiquant la nouvelle valeur de GT qu'il faut désormais utiliser. Cette valeur est un nombre entier d'ETU.
  */
 READER_Status READER_HAL_SetGT(uint32_t newGT){
@@ -586,7 +579,7 @@ READER_Status READER_HAL_SetGT(uint32_t newGT){
 /**
  * \fn READER_Status READER_HAL_SetWT(uint32_t newWT)
  * \brief Cette fonction permet de configurer le "Wait Time" (WT) à utiliser lors des communications sur la ligne IO. Le GT est défini dans la norme ISO7816-3 à la section 7.2. Attention cette fonction dépend de la variable globale : globalCurrentSettings. Cette variable est locale au fichier "reader_hal.c". Cette structure contient en permanance les parametres de communication utilisés.
- * \return Valeur de type READER_Status. READER_OK si l'exécution s'est correctement déroulée. READER_ERR dans le cas contraire.
+ * \return Valeur de type READER_Status. READER_OK si l'exécution s'est correctement déroulée. Toute autre valeur suggère une erreur.
  * \param uint32_t newGT uint32_t indiquant la nouvelle valeur de WT qu'il faut désormais utiliser. Cette valeur est un nombre entier d'ETU.
  
  */
@@ -608,8 +601,8 @@ uint32_t READER_HAL_GetWT(void){
 
 /**
  * \fn uint32_t READER_HAL_GetGT(void)
- * \brief Cette fonction renvoie le Guard Time (GT) utilisé actuellement. 
- * \return Guard Time exprimé en ETU.
+ * \brief Cette fonction retourne le Guard Time (GT) actuellement utilisé par toutes les fonctions de la bibliothèque. 
+ * \return Guard Time exprimé en nombre d'ETU.
  */
 uint32_t READER_HAL_GetGT(void){
 	return globalCurrentSettings.GT;
@@ -664,6 +657,10 @@ uint32_t READER_HAL_GetTick(void){
 }
 
 
+/**
+ * \fn READER_Status READER_HAL_DoColdReset(void)
+ * \brief Cette fonction réalise la procédure de "Cold Reset" définie dans la norme ISO7816-3 section 6.2.2.
+ */
 READER_Status READER_HAL_DoColdReset(void){
 	READER_Status retVal;
 	

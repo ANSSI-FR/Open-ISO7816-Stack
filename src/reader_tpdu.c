@@ -23,7 +23,13 @@ READER_Status READER_TPDU_Execute(READER_TPDU_Command *pTpdu, READER_TPDU_Respon
 }
 
 
-
+/**
+ * \fn READER_Status READER_TPDU_Send(READER_TPDU_Command *tpdu, uint32_t timeout)
+ * \brief Cette fonction permet d'envoyer une commande TPDU. Cependant elle ne sert pas a attendre la réponse. La fonction envoie le header, attend l'ACK, puis envoie le champs de données (si il y en a un).
+ * \return Valeur de type READER_Status. READER_OK si l'exécution s'est correctement déroulée. Toute autre valeur suggère une erreur.
+ * \param *tpdu Pointeur sur une structure de type READER_TPDU_Command. Cette structure contient le TPDU complet (header et champ de données).
+ * \param timeout Valeur du timeout à appliquer lors de l'envoi de chacun des caractères. Indiquer la valeur READER_HAL_USE_ISO_WT pour utiliser le Wait Time (WT) tel que défini dans la norme ISO en guise de timeout. Indiquer toute autre valeur différente de READER_HAL_USE_ISO_WT pour un timeout personalisé (en milisecondes).
+ */
 READER_Status READER_TPDU_Send(READER_TPDU_Command *tpdu, uint32_t timeout){
 	READER_Status retVal;
 	uint8_t ACKType;
@@ -64,9 +70,9 @@ READER_Status READER_TPDU_Send(READER_TPDU_Command *tpdu, uint32_t timeout){
 /**
  * \fn READER_Status READER_TPDU_SendHeader(READER_TPDU_Command *tpdu, uint32_t timeout)
  * \brief Cette fonction permet d'envoyer sur la ligne IO le header de la commande TPDU
- * \return Valeur de type READER_Status. READER_OK si l'exécution s'est correctement déroulée. READER_ERR dans le cas contraire.
- * \param *tpdu Pointeur vers une structure de type READER_TPDU_Command.
- * \param timeout !!!!
+ * \return Valeur de type READER_Status. READER_OK si l'exécution s'est correctement déroulée. Toute autre valeur suggère une erreur.
+ * \param *tpdu Pointeur vers une structure de type READER_TPDU_Command. Cette structure contient le TPDU complet (header et champ de données). La fonction utilisera ce header pour l'envoyer.
+ * \param timeout Valeur du timeout à appliquer lors de l'envoi de chacun des caractères du champ de données. Indiquer la valeur READER_HAL_USE_ISO_WT pour utiliser le Wait Time (WT) tel que défini dans la norme ISO en guise de timeout. Indiquer toute autre valeur différente de READER_HAL_USE_ISO_WT pour un timeout personalisé (en milisecondes).
  */
 READER_Status READER_TPDU_SendHeader(READER_TPDU_Command *tpdu, uint32_t timeout){
 	uint8_t headerBuff[READER_TPDU_HEADER_SIZE];
@@ -84,6 +90,13 @@ READER_Status READER_TPDU_SendHeader(READER_TPDU_Command *tpdu, uint32_t timeout
 }
 
 
+/**
+ * \fn READER_Status READER_TPDU_SendDataOneshot(READER_TPDU_Command *tpdu, uint32_t timeout)
+ * \brief Cette fonction permet d'envoyer tout le contenu du champs de données d'une commande TPDU. Cette fonction envoie les données d'une seule traite. Elle n'attend pas de confiramtion (ACK ou Xored ACK) de la carte après chaque caractère. Voir ISO7816-3 section 10.3.3.
+ * \return Valeur de type READER_Status. READER_OK si l'exécution s'est correctement déroulée. Toute autre valeur suggère une erreur.
+ * \param *tpdu Pointeur sur une structure de type READER_TPDU_Command. Cette structure contient le TPDU complet (header et champ de données). La fonction utilisera ce champ de données pour l'envoyer.
+ * \param timeout Valeur du timeout à appliquer lors de l'envoi de chacun des caractères du champ de données. Indiquer la valeur READER_HAL_USE_ISO_WT pour utiliser le Wait Time (WT) tel que défini dans la norme ISO en guise de timeout. Indiquer toute autre valeur différente de READER_HAL_USE_ISO_WT pour un timeout personalisé (en milisecondes).
+ */
 READER_Status READER_TPDU_SendDataOneshot(READER_TPDU_Command *tpdu, uint32_t timeout){
 	READER_Status retVal;
 	
@@ -145,7 +158,7 @@ READER_Status READER_TPDU_SendDataSliced(READER_TPDU_Command *tpdu, uint32_t tim
 /**
  * \fn READER_Status READER_TPDU_RcvSW(uint16_t *SW, uint32_t timeout)
  * \brief Cette fonction permet d'attendre la réception d'un status word (SW).
- * \return Valeur de type READER_Status. READER_OK si l'exécution s'est correctement déroulée. READER_ERR dans le cas contraire.
+ * \return Valeur de type READER_Status. READER_OK si l'exécution s'est correctement déroulée. Toute autre valeur suggère une erreur.
  * \param timeout Valeur du timeout en milisecondes pour recevoir un octet parmi les deux du SW. A la réception d'un null byte le compteur repart à zéro. Lorsque SW1 est reçu, le compteur repart également à zéro pour la réception de SW2.
  * \param *SW1 Pointeur une uen variable dans laquelle stocker la première partie du Status Word (SW1).
  * \param *SW2 Pointeur une uen variable dans laquelle stocker la deuxième partie du Status Word (SW2).
@@ -177,7 +190,7 @@ READER_Status READER_TPDU_RcvSW(uint8_t *SW1, uint8_t *SW2, uint32_t timeout){
 /**
  * \fn READER_Status READER_TPDU_RcvDataField(uint8_t *buffer, uint32_t Ne)
  * \brief Cette fonction permet de recevoir la partie data d'une TPDU Response.
- * \return Valeur de type READER_Status. READER_OK si l'exécution s'est correctement déroulée. READER_ERR dans le cas contraire.
+ * \return Valeur de type READER_Status. READER_OK si l'exécution s'est correctement déroulée. Toute autre valeur suggère une erreur.
  * \param *buffer Pointeur sur un buffer dans lequel stocker les données reçues.
  * \param Ne (N expected) Nombre d'octets attendus dans la réponse.
  * \param timeout Pour l'instant non décidé si c'est le timeout pour chaque carac ou pour toute le frame. !!!!!!!!
@@ -200,8 +213,10 @@ READER_Status READER_TPDU_RcvDataField(uint8_t *buffer, uint32_t Ne, uint32_t ti
 /**
  * \fn READER_Status READER_TPDU_RcvResponse(uint8_t *dataField, uint32_t Ne, uint16_t SW, uint32_t timeout)
  * \brief Cette fonction permet de recevoir la réponse à une commande TPDU. Elle permet de récupérer le champs de données et le Status Word (SW).
- * \return Valeur de type READER_Status. READER_OK si l'exécution s'est correctement déroulée. READER_ERR dans le cas contraire.
+ * \return Valeur de type READER_Status. READER_OK si l'exécution s'est correctement déroulée. Toute autre valeur suggère une erreur.
  * \param *pResp Un pointeur sur une structure de type READER_TPDU_Response. Toutes les données de la réponse (SW1SW2, data field) seront stockées dans cette structure.
+ * \param expectedDataSize Nombre de caractères attendus en réponse.
+ * \param timeout Valeur en milisecondes du timeout à appliquer pour la réception de chacun des caractères de la réponse. Indiquer la valeur READER_HAL_USE_ISO_WT pour utiliser le Wait Time (WT) tel que défini dans la norme ISO en guise de timeout. Indiquer toute autre valeur différente de READER_HAL_USE_ISO_WT pour un timeout personalisé (en milisecondes).
  */
 READER_Status READER_TPDU_RcvResponse(READER_TPDU_Response *pResp, uint32_t expectedDataSize, uint32_t timeout){
 	READER_Status retVal;
@@ -276,6 +291,13 @@ READER_Status READER_TPDU_IsSW1(uint8_t byte){
 }
 
 
+/**
+ * \fn READER_Status READER_TPDU_IsProcedureByte(uint8_t byte, uint8_t INS)
+ * \brief Cette fonction permet de déterminer si un caractère est un "Procedure Byte". La notion de "Procedure Byte" est définie dans la norme ISO7816-3 à la section 10.3.3.
+ * \return Retourne READER_OK si il s'agit d'un "Procedure Byte" et READER_NO dans le cas contraire.
+ * \param byte Il s'agit du caractère à tester.
+ * \param INS Il s'agit du code de l'instruction (dans le cas ou on veut tester si il s'agit d'un ACK).
+ */
 READER_Status READER_TPDU_IsProcedureByte(uint8_t byte, uint8_t INS){
 	if(READER_TPDU_IsACK(byte, INS)){
 		return READER_OK;
@@ -317,10 +339,10 @@ READER_Status READER_TPDU_WaitProcedureByte(uint8_t *procedureByte, uint8_t INS,
 /**
  * \fn READER_Status READER_TPDU_WaitACK(uint8_t INS, uint8_t *ACKType, uint32_t timeout)
  * \brief Cette fonction permet d'attendre la réception d'un ACK en provenance de la carte.
- * \return Valeur de type READER_Status. READER_OK si l'exécution s'est correctement déroulée. READER_ERR dans le cas contraire.
- * \param INS Code de l'instruction précédement envoyée à la carte. C'est l'instruction pour laquelle l'ACK est attendu.
- * \param *ACKType Pointeur sur une variable de type uint8_t. Si un ACK est reçu dans les temps alors la fonction écrira dans cette variable le type d'ACK reçu. Il peut être de deux types : READER_TPDU_ACK_NORMAL ou READER_TPDU_ACK_XORED. Voir ISO7816-E section 10.3.3.
- * \param timeout Valeur de timeout en milisecondes pour recevoir l'ACK.
+ * \return Valeur de type READER_Status. READER_OK si l'exécution s'est correctement déroulée. Toute autre valeur suggère une erreur.
+ * \param INS Code de l'instruction précédement envoyée à la carte. C'est l'instruction pour laquelle l'ACK est attendu (La valeur de l'ACK est liée à l'instruction précédente. Voir ISO7816-3 section 10.3.3).
+ * \param *ACKType Pointeur sur une variable de type uint8_t. Si un ACK est reçu sans erreur alors la fonction écrira dans cette variable le type d'ACK reçu. Il peut être de deux types : READER_TPDU_ACK_NORMAL ou READER_TPDU_ACK_XORED. Voir ISO7816-E section 10.3.3.
+ * \param timeout Valeur de timeout en milisecondes pour recevoir l'ACK. Indiquer la valeur READER_HAL_USE_ISO_WT pour utiliser le Wait Time (WT) tel que défini dans la norme ISO en guise de timeout. Indiquer toute autre valeur différente de READER_HAL_USE_ISO_WT pour un timeout personalisé (en milisecondes).
  */
 READER_Status READER_TPDU_WaitACK(uint8_t INS, uint8_t *ACKType, uint32_t timeout){
 	READER_Status retVal;
@@ -346,6 +368,20 @@ READER_Status READER_TPDU_WaitACK(uint8_t INS, uint8_t *ACKType, uint32_t timeou
 	}
 }
 
+
+/**
+ * \fn READER_Status READER_TPDU_Forge(READER_TPDU_Command *tpdu, uint8_t CLA, uint8_t INS, uint8_t P1, uint8_t P2, uint8_t P3, uint8_t *dataBuff, uint8_t dataSize)
+ * \brief Cette fonction permet d'initialiser un structure de type READER_TPDU_Command à partir des informations fournies en paramètres.
+ * \return Valeur de retour de type READER_Status. READER_OK indique le bon déroulement de la fonction. Toute autre valeur indique une erreur.
+ * \param *pApduCmd est un pointeur sur la structure de type READER_TPDU_Command à initialiser.
+ * \param CLA est la classe de l'instruction telle que définie dans la norme ISO7816.
+ * \param INS est le code de l'instruction telle que définie dans la norme ISO7816.
+ * \param P1 est le premier paramètre de l'instruction tel que défini dans la norme ISO7816.
+ * \param P2 est le deuxième paramètre de l'instruction tel que défini dans la norme ISO7816.
+ * \param P3 est le troisième paramètre de l'instruction tel que défini dans la norme ISO7816.
+ * \param *dataBuff est un pointeur vers un tableau de caractères. Celui-ci contient les caractères du champ de données de la commande.
+ * \param dataSize est le nombre de caractères contenus dans le champs de données de la commande.
+ */
 READER_Status READER_TPDU_Forge(READER_TPDU_Command *tpdu, uint8_t CLA, uint8_t INS, uint8_t P1, uint8_t P2, uint8_t P3, uint8_t *dataBuff, uint8_t dataSize){
 	uint8_t i;
 	
