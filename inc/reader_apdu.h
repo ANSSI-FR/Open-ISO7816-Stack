@@ -31,7 +31,7 @@ typedef struct READER_APDU_Body READER_APDU_Body;
 struct READER_APDU_Body{
 	uint32_t Nc;
 	uint32_t Ne;
-	uint8_t pDataField[READER_APDU_CMD_MAX_SIZE];  /* Taille max du data field d'une commande APDU */
+	uint8_t dataBytes[READER_APDU_CMD_MAX_SIZE];  /* Taille max du data field d'une commande APDU */
 };
 
 

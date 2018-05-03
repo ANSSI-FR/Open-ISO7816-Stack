@@ -232,7 +232,7 @@ READER_Status READER_APDU_ExecuteCase3S(READER_APDU_Command *pApduCmd, READER_AP
 		pApduCmd->header.P1,
 		pApduCmd->header.P2,
 		READER_APDU_NcToLc(pApduCmd->body.Nc),
-		pApduCmd->body.pDataField,
+		pApduCmd->body.dataBytes,
 		pApduCmd->body.Nc
 	);
 	if(retVal != READER_OK) return retVal;
@@ -281,7 +281,7 @@ READER_Status READER_APDU_ExecuteCase3E(READER_APDU_Command *pApduCmd, READER_AP
 																														             
 	/* On recupere 251 caracteres dans le data field de la commande APDU et on les place dans la 1ere trame (251+4=255)               */
 	for(i=0; i<251; i++){
-		tmpTpduBuff[i+4] = pApduCmd->body.pDataField[i];
+		tmpTpduBuff[i+4] = pApduCmd->body.dataBytes[i];
 	}
 	
 	/* La premiere trame est prete. On forge un TPDU avec, on l'envoie puis on regarde comment reagit la carte a la commande ENVELOPE */
@@ -307,7 +307,7 @@ READER_Status READER_APDU_ExecuteCase3E(READER_APDU_Command *pApduCmd, READER_AP
 		
 		for(i=0; i<nbSegments; i++){
 			for(j=0; j<255; j++){
-				tmpTpduBuff[j] = pApduCmd->body.pDataField[251 + (i*255) + j];
+				tmpTpduBuff[j] = pApduCmd->body.dataBytes[251 + (i*255) + j];
 			}
 			retVal = READER_TPDU_Forge(&tpduCmd, pApduCmd->header.CLA, READER_APDU_INS_ENVELOPE, 0x00, 0x00, 255, tmpTpduBuff, 255);
 			if(retVal != READER_OK) return retVal;
@@ -322,7 +322,7 @@ READER_Status READER_APDU_ExecuteCase3E(READER_APDU_Command *pApduCmd, READER_AP
 		
 		/* On envoie le reste des residual bytes */
 		for(i=0; i<nbResidualBytes; i++){
-			tmpTpduBuff[i] = pApduCmd->body.pDataField[251 + (nbSegments*255) + i]; 
+			tmpTpduBuff[i] = pApduCmd->body.dataBytes[251 + (nbSegments*255) + i]; 
 		}
 		retVal = READER_TPDU_Forge(&tpduCmd, pApduCmd->header.CLA, READER_APDU_INS_ENVELOPE, 0x00, 0x00, nbResidualBytes, tmpTpduBuff, nbResidualBytes);
 		if(retVal != READER_OK) return retVal;
@@ -559,8 +559,8 @@ READER_Status READER_APDU_CopyResponse(READER_APDU_Response *pSourceApdu, READER
 	pDestApdu->SW2  = pSourceApdu->SW2;
 	pDestApdu->dataSize  = pSourceApdu->dataSize;
 	
-	for(i=0; i<pApduSource->dataSize; i++){
-		pApduDest->dataBytes[i] = pApduSource->dataBytes[i];
+	for(i=0; i<pSourceApdu->dataSize; i++){
+		pDestApdu->dataBytes[i] = pSourceApdu->dataBytes[i];
 	}
 	
 	return READER_OK;
