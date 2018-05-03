@@ -497,6 +497,11 @@ READER_Status READER_APDU_ExecuteCase4S(READER_APDU_Command *pApduCmd, READER_AP
 }
 
 
+READER_Status READER_APDU_ExecuteCase4E(READER_APDU_Command *pApduCmd, READER_APDU_Response *pApduResp, uint32_t timeout){
+	
+	return READER_OK;
+}
+
 
 /**
  * \fn READER_Status READER_APDU_MapTpduRespToApdu(READER_TPDU_Response *pTpduResp, READER_APDU_Response *pApduResp)
@@ -561,6 +566,37 @@ READER_Status READER_APDU_CopyResponse(READER_APDU_Response *pSourceApdu, READER
 	
 	for(i=0; i<pSourceApdu->dataSize; i++){
 		pDestApdu->dataBytes[i] = pSourceApdu->dataBytes[i];
+	}
+	
+	return READER_OK;
+}
+
+
+/**
+ * \fn READER_Status READER_APDU_Forge(READER_APDU_Command *pApduCmd, uint8_t CLA, uint8_t INS, uint8_t P1, uint8_t P2, uint32_t Nc, uint8_t *pData, uint32_t Ne)
+ * \brief Cette fonction permet d'initialiser une structure de type READER_APDU_Command à partir des informations fournies en paramètres.
+ * \return Valeur de retour de type READER_Status. READER_OK indique le bon déroulement de la fonction. Toute autre valeur indique une erreur.
+ * \param *pApduCmd est un pointeur sur la structure de type READER_APDU_Command à initialiser.
+ * \param CLA est la classe de l'instruction telle que définie dans la norme ISO7816.
+ * \param INS est le code de l'instruction telle que définie dans la norme ISO7816.
+ * \param P1 est le premier paramètre de l'instruction tel que défini dans la norme ISO7816.
+ * \param P2 est le deuxième paramètre de l'instruction tel que défini dans la norme ISO7816.
+ * \param Nc est le nombre de caractères contenus dans la commande. Nc est défini dans la norme ISO7816.
+ * \param pData est un pointeur vers un tableau de caractères. Celui-ci contient les données de la commande.
+ * \param Ne est le nombre de caractères attendus en réponse de la commande APDU. Ne est défini dans la norme ISO7816.
+ */
+READER_Status READER_APDU_Forge(READER_APDU_Command *pApduCmd, uint8_t CLA, uint8_t INS, uint8_t P1, uint8_t P2, uint32_t Nc, uint8_t *pData, uint32_t Ne){
+	uint32_t i;
+	
+	pApduCmd->header.CLA  =  CLA;
+	pApduCmd->header.INS  =  INS;
+	pApduCmd->header.P1   =  P1;
+	pApduCmd->header.P2   =  P2;
+	pApduCmd->body.Nc     =  Nc;
+	pApduCmd->body.Ne     =  Ne;
+	
+	for(i=0; i<Nc; i++){
+		pApduCmd->body.dataBytes[i] = pData[i];
 	}
 	
 	return READER_OK;
