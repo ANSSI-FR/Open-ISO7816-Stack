@@ -2,6 +2,8 @@
 #include "reader_hal.h"
 #include "reader_apdu.h"
 
+#include "stm32f4xx_hal.h"   // juste pour debug
+#include "reader_periph.h"   // juste pour debug
 
 
 /**
@@ -442,17 +444,21 @@ READER_Status READER_APDU_ExecuteCase4S(READER_APDU_Command *pApduCmd, READER_AP
 	READER_Status retVal;
 	uint32_t Na;
 	
+	
+	
 	/* On forge le premier TPDU avec le header de l'APDU et P3=Lc */
-	retVal = READER_TPDU_Forge(&tpduCmd, pApduCmd->header.CLA, pApduCmd->header.INS, pApduCmd->header.P1, pApduCmd->header.P2, READER_APDU_NcToLc(pApduCmd->body.Nc), NULL, 0);
+	retVal = READER_TPDU_Forge(&tpduCmd, pApduCmd->header.CLA, pApduCmd->header.INS, pApduCmd->header.P1, pApduCmd->header.P2, READER_APDU_NcToLc(pApduCmd->body.Nc), pApduCmd->body.dataBytes, pApduCmd->body.Nc);
 	if(retVal != READER_OK) return retVal;
 	
-	/* On evoie le TPDU */
+	/* On envoie le TPDU */
 	retVal = READER_TPDU_Send(&tpduCmd, timeout);
 	if(retVal != READER_OK) return retVal;
+	
 	
 	/* On attend en reponse juste un SW (avant d'envoyer le GET RESPONSE) */
 	retVal = READER_TPDU_RcvResponse(&tpduResp, 0, timeout);
 	if(retVal != READER_OK) return retVal;
+	
 	
 	
 	/* Selon le SW du premier TPDU response */
