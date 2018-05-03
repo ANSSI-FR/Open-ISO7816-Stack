@@ -468,15 +468,19 @@ READER_Status READER_APDU_ExecuteCase4S(READER_APDU_Command *pApduCmd, READER_AP
 		retVal = READER_APDU_Forge(&newApduCmd, pApduCmd->header.CLA, READER_APDU_INS_GETRESPONSE, 0x00, 0x00, 0, NULL, pApduCmd->body.Ne);
 		if(retVal != READER_OK) return retVal;
 		
-		retVal = READER_APDU_ExecuteCase2S(&newApduCmd, &newApduResp, timeout);
+		retVal = READER_APDU_ExecuteCase2S(&newApduCmd, pApduResp, timeout);
 		if(retVal != READER_OK) return retVal;
 		
-		retVal = READER_APDU_Copy(&newApdu
+		//retVal = READER_APDU_CopyResponse(&newApduResp, pApduResp);
+		//if(retVal != READER_OK) return retVal;
 	}
 	/* Cas 4S.3 */
 	else if(tpduResp.SW1 == 0x61){
 		Na = tpduResp.SW2;
 		retVal = READER_APDU_Forge(&newApduCmd, pApduCmd->header.CLA, READER_APDU_INS_GETRESPONSE, 0x00, 0x00, 0, NULL, Na);
+		if(retVal != READER_OK) return retVal;
+		
+		retVal = READER_APDU_ExecuteCase2S(&newApduCmd, pApduResp, timeout);
 		if(retVal != READER_OK) return retVal;
 	}
 	/* Cas 4S.4 */
