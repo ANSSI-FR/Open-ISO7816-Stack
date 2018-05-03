@@ -437,6 +437,8 @@ READER_Status READER_APDU_ExecuteCase2E(READER_APDU_Command *pApduCmd, READER_AP
 READER_Status READER_APDU_ExecuteCase4S(READER_APDU_Command *pApduCmd, READER_APDU_Response *pApduResp, uint32_t timeout){
 	READER_TPDU_Command tpduCmd;
 	READER_TPDU_Response tpduResp;
+	READER_APDU_Command newApduCmd;
+	READER_APDU_Response newApduResp;
 	READER_Status retVal;
 	uint32_t Na;
 	
@@ -462,47 +464,20 @@ READER_Status READER_APDU_ExecuteCase4S(READER_APDU_Command *pApduCmd, READER_AP
 	}
 	/* Cas 4S.2 */
 	else if((tpduResp.SW1 == 0x90) && (tpduResp.SW2 == 0x00)){
-		/* On envoie en TPDU de type GET RESPONSE */
-		retVal = READER_TPDU_Forge(&tpduCmd, pApduCmd->header.CLA, READER_APDU_INS_GETRESPONSE, 0x00, 0x00, READER_APDU_NeToLe(pApduCmd->body.Ne), NULL, 0);
-		if(retVal != READER_OK) return retVal;
-	
-		retVal = READER_TPDU_Send(&tpduCmd, timeout);
+		/* On envoie un APDU de type GET RESPONSE, on se rabat sur le cas 2S. */
+		retVal = READER_APDU_Forge(&newApduCmd, pApduCmd->header.CLA, READER_APDU_INS_GETRESPONSE, 0x00, 0x00, 0, NULL, pApduCmd->body.Ne);
 		if(retVal != READER_OK) return retVal;
 		
-		retVal = READER_TPDU_RcvResponse(&tpduResp, pApduCmd->body.Ne, timeout);
+		retVal = READER_APDU_ExecuteCase2S(&newApduCmd, &newApduResp, timeout);
 		if(retVal != READER_OK) return retVal;
 		
-		
-		/* On continue selon le cas 2S */
-		/* Case 2S.2 Process Aborted, Ne definitely not accepted        */
-		if((tpduResp.SW1 == 0x67) && (tpduResp.SW2 == 0x00)){
-			retVal = READER_APDU_MapTpduRespToApdu(&tpduResp, pApduResp);
-			if(retVal != READER_OK) return READER_ERR;
-			return READER_OK;
-		}	
-		/* Case 2S.3 Process Aborted, Ne not accepted, Na indicated     */
-		else if(tpduResp.SW1 == 0x6C){
-			/* On forge un nouveau TPDU avec P3 = SW2 */
-			Na = tpduResp.SW2;
-			retVal = READER_TPDU_Forge(&tpduCmd, pApduCmd->header.CLA, READER_APDU_INS_GETRESPONSE, 0x00, 0x00, Na, NULL, 0);
-			if(retVal != READER_OK) return retVal;
-		
-			retVal = READER_TPDU_Execute(&tpduCmd, &tpduResp, timeout);
-			if(retVal != READER_OK) return retVal;
-			
-			retVal = READER_APDU_MapTpduRespToApdu(&tpduResp, pApduResp);
-			if(retVal != READER_OK) return READER_ERR;
-		}
-		/* Case 2S.1 Process Completed, Ne accepted                     */
-		/* Case 2S.4 SW1SW2 = 8XYZ et SW1SW2 != 9000                    */
-		else{
-			retVal = READER_APDU_MapTpduRespToApdu(&tpduResp, pApduResp);
-			if(retVal != READER_OK) return READER_ERR;
-		}
+		retVal = READER_APDU_Copy(&newApdu
 	}
 	/* Cas 4S.3 */
 	else if(tpduResp.SW1 == 0x61){
-		/* Cas 4S.3 a faire !!!!*/
+		Na = tpduResp.SW2;
+		retVal = READER_APDU_Forge(&newApduCmd, pApduCmd->header.CLA, READER_APDU_INS_GETRESPONSE, 0x00, 0x00, 0, NULL, Na);
+		if(retVal != READER_OK) return retVal;
 	}
 	/* Cas 4S.4 */
 	else if((tpduResp.SW1 == 0x61) || (tpduResp.SW1 == 0x62) || (tpduResp.SW1 == 0x63) || (((tpduResp.SW1 & 0xF0) == 0x90) && (tpduResp.SW2 != 0x00)) ){
@@ -539,6 +514,53 @@ READER_Status READER_APDU_MapTpduRespToApdu(READER_TPDU_Response *pTpduResp, REA
 	return READER_OK;
 }
 
+
+/**
+ * \fn READER_Status READER_APDU_CopyCommand(READER_APDU_Command *pSourceApdu, READER_APDU_Command *pDestApdu)
+ * \brief Cette fonction permet de copier le contenu d'une commande APDU source dans une commande APDU de destination.
+ * \return Valeur de retour de type READER_Status. READER_OK indique le bon déroulement de la fonction. Toute autre valeur indique une erreur.
+ * \param *pSourceApdu est un pointeur sur l'APDU source. Il s'agit d'une structure de type READER_APDU_Command. 
+ * \param *pDestApdu est un pointeur sur l'APDU de destination. Il s'agit d'une structure de type READER_APDU_Command.
+ */
+READER_Status READER_APDU_CopyCommand(READER_APDU_Command *pSourceApdu, READER_APDU_Command *pDestApdu){
+	uint32_t i;
+	
+	pDestApdu->header.CLA = pSourceApdu->header.CLA;
+	pDestApdu->header.INS = pSourceApdu->header.INS;
+	pDestApdu->header.P1  = pSourceApdu->header.P1;
+	pDestApdu->header.P2  = pSourceApdu->header.P2;
+	
+	pDestApdu->body.Nc    = pSourceApdu->body.Nc;
+	pDestApdu->body.Ne    = pSourceApdu->body.Ne;
+	
+	for(i=0; i<pSourceApdu->body.Nc; i++){
+		pDestApdu->body.dataBytes[i] = pSourceApdu->body.dataBytes[i];
+	}
+	
+	return READER_OK;
+}
+
+
+/**
+ * \fn READER_Status READER_APDU_CopyResponse(READER_APDU_Response *pSourceApdu, READER_APDU_Response *pDestApdu)
+ * \brief Cette fonction permet de copier le contenu d'une réponse APDU source dans une réponse APDU de destination.
+ * \return Valeur de retour de type READER_Status. READER_OK indique le bon déroulement de la fonction. Toute autre valeur indique une erreur.
+ * \param *pSourceApdu est un pointeur sur l'APDU source. Il s'agit d'une structure de type READER_APDU_Response. 
+ * \param *pDestApdu est un pointeur sur l'APDU de destination. Il s'agit d'une structure de type READER_APDU_Response.
+ */
+READER_Status READER_APDU_CopyResponse(READER_APDU_Response *pSourceApdu, READER_APDU_Response *pDestApdu){
+	uint32_t i;
+	
+	pDestApdu->SW1  = pSourceApdu->SW1;
+	pDestApdu->SW2  = pSourceApdu->SW2;
+	pDestApdu->dataSize  = pSourceApdu->dataSize;
+	
+	for(i=0; i<pApduSource->dataSize; i++){
+		pApduDest->dataBytes[i] = pApduSource->dataBytes[i];
+	}
+	
+	return READER_OK;
+}
 
 
 uint16_t READER_APDU_NcToLc(uint16_t Nc){
