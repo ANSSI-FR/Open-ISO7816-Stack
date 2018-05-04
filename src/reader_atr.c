@@ -17,6 +17,7 @@ READER_Status READER_ATR_Receive(READER_ATR_Atr *atr){
 	uint8_t TS, T0;
 	uint8_t TA, TB, TC, TD;
 	uint8_t Y, T = 0;
+	uint8_t checkByte;
 	
 	
 	/* Initialisation des certains elements de la structure ATR */
@@ -62,7 +63,7 @@ READER_Status READER_ATR_Receive(READER_ATR_Atr *atr){
 	READER_HAL_RcvCharFrame(atr->histBytes, atr->K, READER_HAL_USE_ISO_WT);
 	
 	/* Recuperation du Check Byte */
-	
+	READER_HAL_RcvChar(&checkByte, READER_HAL_USE_ISO_WT);
 	
 	return READER_OK;
 }
