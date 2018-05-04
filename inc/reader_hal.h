@@ -37,8 +37,9 @@
  */
 typedef enum READER_HAL_State READER_HAL_State;
 enum READER_HAL_State{
-	READER_HAL_STATE_ON = 1,       /* !< Indique un état "ON"  */
-	READER_HAL_STATE_OFF = 0       /* !< Indique un état "OFF" */
+	READER_HAL_STATE_ON = 1,        /* !< Indique un état "ON"  */
+	READER_HAL_STATE_OFF = 0,       /* !< Indique un état "OFF" */
+	READER_HAL_STATE_AUTO = 2
 };
 
 
