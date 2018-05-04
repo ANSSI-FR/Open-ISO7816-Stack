@@ -109,9 +109,9 @@ READER_Status READER_HAL_SendCharFrame(uint8_t *frame, uint32_t frameSize, uint3
 		if(retVal != READER_OK) return retVal;
 		
 		/* On fait attention a respecter le Guard Time (GT) entre les caracteres */
-		while((READER_HAL_GetTick()-tickstart) < READER_HAL_GetGTMili()){
-			
-		}
+		//while((READER_HAL_GetTick()-tickstart) < READER_HAL_GetGTMili()){
+		//	
+		//}
 	}
 	
 	
@@ -317,6 +317,8 @@ READER_Status READER_HAL_SendChar(uint8_t character, uint32_t timeout){
 READER_Status READER_HAL_SendChar(uint8_t character, uint32_t timeout){
 	uint32_t timeoutMili;
 	uint32_t tickstart;
+	uint32_t guardTime;
+	
 	
 	/* On calcule le timeout effectif (Celui fourni en parametre ou celui defini dans la norme ISO) */
 	if(timeout == READER_HAL_USE_ISO_WT){
@@ -335,13 +337,23 @@ READER_Status READER_HAL_SendChar(uint8_t character, uint32_t timeout){
 	/* On suppose ici que le bloc USART2 a deja ete configure en mode smartcard et qu'il est active et correctement initailise avec les bon parametres de communication */
 	USART2->CR1 |= USART_CR1_TE;
 	
-	/* On set le GT register */
-	MODIFY_REG(USART2->GTPR, USART_GTPR_GT, ((0x00)<<8U));
+	/* On set le GT register. Attention pour le STM32 le GT defini dans la datasheet ne correspond pas exactement a celui defini dans la norme ISO7816-S section 7.2 */
+	/* Dans la norme ISO il s'agit du nombre d'etu entre les starts bits de deux caracteres consecutifs                                                              */
+	/* Dans le STM32 il s'agit du delai (en nombre d'etu) a ajouter apres le stop bit du premier caractere avant d'envoyer le start bit du second                    */
+	guardTime = READER_HAL_GetGT();
+	MODIFY_REG(USART2->GTPR, USART_GTPR_GT, ((guardTime-READER_DEFAULT_GT)<<8U));
 	
 	tickstart = READER_HAL_GetTick();
 	
 	/* On attend que le buffer d'envoi soit empty. On verifie aussi qu'on depasse pas timeout. */
 	while(!(USART2->SR & USART_SR_TXE) && ((READER_HAL_GetTick()-tickstart < timeoutMili))){
+		
+	}
+	
+	/* On attend le flag Transmit Complete (TC). Cela permet de respecter le Guard Time (GT) entre les caracteres                    */
+	/* En effet, le bloc materiel USART du STM32 est concu de sorte a set TC lorsque la transmission est termine ET le GT est ecoule */
+	/* Dans une implementation sans bloc materiel USART de ce type il faudrait faire une verification manuelle de delai              */
+	while(!(USART2->SR & USART_SR_TC)){
 		
 	}
 	
@@ -424,7 +436,7 @@ READER_Status READER_HAL_SetEtu(uint32_t Fi, uint32_t Di){
 	/* Le changement de l'etu a pour consequence la modification du Wait Time (WT) */
 	newWT = READER_UTILS_ComputeWT1(freq, Fi);
 	retVal = READER_HAL_SetWT(newWT);
-	if(retVal != READER_OK) return retVal;
+	if(retVal != READER_OK) return retVal;	
 	
 	/* On met a jour la structure globalCurrentSettings */
 	globalCurrentSettings.Fi = Fi;
