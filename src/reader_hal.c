@@ -158,7 +158,7 @@ READER_Status READER_HAL_RcvCharFrame(uint8_t *frame, uint32_t frameSize, uint32
 		
 		retVal = READER_HAL_RcvChar(&rcvByte, timeoutMili);
 		if(retVal != READER_OK) return retVal;
-
+		
 		frame[i] = rcvByte;
 		
 		///* On prend en compte le Guard Time (GT). On attend l'ecoulement du GT avant de commencer une nouvelle reception de caractere. */
@@ -414,7 +414,8 @@ READER_Status READER_HAL_SetEtu(uint32_t Fi, uint32_t Di){
 	freq = READER_UTILS_GetCardFreq(168000000, 1, 4, smartcardHandleStruct.Init.Prescaler);
 	
 	/* On calcule le nouveau baudrate qui correspond a la nouvelle config (nouveau etu) */
-	newBaudRate = freq / (Fi / Di);
+	//newBaudRate = freq / (Fi / Di);
+	newBaudRate = READER_UTILS_ComputeBaudRate(freq, Fi, Di);
 	
 	/* On applique les changements au bloc materiel USART */
 	smartcardHandleStruct.Init.BaudRate = newBaudRate;
