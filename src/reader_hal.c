@@ -88,6 +88,8 @@ READER_Status READER_HAL_Init(void){
 
 
 
+
+
 /**
  * \fn READER_Status READER_HAL_SendCharFrame(uint8_t *frame, uint32_t frameSize, uint32_t timeout)
  * \brief Cette fonction permet de placer uen chaine d'octets sur la ligne IO. Cette fonction a un comportement bloquant.
@@ -128,21 +130,28 @@ READER_Status READER_HAL_SendCharFrame(uint8_t *frame, uint32_t frameSize, uint3
 }
 
 
+
+
 /**
- * \fn READER_HAL_RcvCharFrame(uint8_t *frame, uint32_t frameSize, uint32_t timeout)
- * \brief Cette fonction permet se se mettre à l'écoute d'une chaine d'octets sur la ligne IO. Cette fonction a un comportement bloquant.
+ * \fn READER_Status READER_HAL_RcvCharFrameCount(uint8_t *frame, uint32_t frameSize, uint32_t *rcvCount, uint32_t timeout)
+ * \brief Cette fonction permet se se mettre à l'écoute d'une chaine d'octets sur la ligne IO. Cette fonction a un comportement bloquant. La fonction indique le nombre de caractères qu'elle a pu lire.
  * \return Valeur de type READER_Status. READER_OK si l'exécution s'est correctement déroulée. Toute autre valeur suggère une erreur.
  * \param *frame Pointeur sur le buffer à utiliser pour stocker les octets reçus.
  * \param frameSize Nombre d'octets à recevoir.
  * \param timeout Valeur du timeout en milisecondes à utiliser. Si cette valeur est READER_HAL_USE_ISO_WT alors le timeout utilisé sera celui spécifié dans la norme ISO.
+ * \param *rcvCount Pointeur sur une variable de type unit32_t. Elle sera remplie avec le nombre de caractères qui ont pu être lus.
  */
-READER_Status READER_HAL_RcvCharFrame(uint8_t *frame, uint32_t frameSize, uint32_t timeout){
+READER_Status READER_HAL_RcvCharFrameCount(uint8_t *frame, uint32_t frameSize, uint32_t *rcvCount, uint32_t timeout){
 	READER_Status retVal;
 	uint32_t i = 0;
 	uint8_t rcvByte;
 	uint32_t tickstart;
 	uint32_t timeoutMili;
+	uint32_t rcvCounter = 0;
 	
+	
+	/* Le nombre de caracteres recus est de 0 pour l'instant */
+	*rcvCount = 0;
 	
 	/* Prise en compte du Guard Time (GT). On ajoute simplement le delai de GT au timeout. */
 	if(timeout == READER_HAL_USE_ISO_WT){
@@ -159,6 +168,9 @@ READER_Status READER_HAL_RcvCharFrame(uint8_t *frame, uint32_t frameSize, uint32
 		retVal = READER_HAL_RcvChar(&rcvByte, timeoutMili);
 		if(retVal != READER_OK) return retVal;
 		
+		rcvCounter++;
+		*rcvCount = rcvCounter;
+		
 		frame[i] = rcvByte;
 		
 		///* On prend en compte le Guard Time (GT). On attend l'ecoulement du GT avant de commencer une nouvelle reception de caractere. */
@@ -173,6 +185,35 @@ READER_Status READER_HAL_RcvCharFrame(uint8_t *frame, uint32_t frameSize, uint32
 		
 		i++;
 	}
+	
+	return READER_OK;
+}
+
+
+
+
+
+/**
+ * \fn READER_HAL_RcvCharFrame(uint8_t *frame, uint32_t frameSize, uint32_t timeout)
+ * \brief Cette fonction permet se se mettre à l'écoute d'une chaine d'octets sur la ligne IO. Cette fonction a un comportement bloquant.
+ * \return Valeur de type READER_Status. READER_OK si l'exécution s'est correctement déroulée. Toute autre valeur suggère une erreur.
+ * \param *frame Pointeur sur le buffer à utiliser pour stocker les octets reçus.
+ * \param frameSize Nombre d'octets à recevoir.
+ * \param timeout Valeur du timeout en milisecondes à utiliser. Si cette valeur est READER_HAL_USE_ISO_WT alors le timeout utilisé sera celui spécifié dans la norme ISO.
+ */
+ 
+ /* Cette fonction est plus limitee que la fonction READER_HAL_RcvCharFrameCount()
+  * Cette fonction fourni juste une interface simplifiee pour utiliser la fonction READER_HAL_RcvCharFrameCount()
+  * Elle fait la meme chose a part qu'elle ne compte pas le nombre de caracteres recus.
+  * Cette fonction est conservee pour des resos de compatibilite avec du code plus ancien.
+  * Elle peret egalement de ne pas s'embeter avec des parametres supplementaires lorsque il n'y a pas besoin de compter le nombre de caracteres recus.
+  */
+READER_Status READER_HAL_RcvCharFrame(uint8_t *frame, uint32_t frameSize, uint32_t timeout){
+	READER_Status retVal;
+	uint32_t rcvCount;
+	
+	retVal = READER_HAL_RcvCharFrameCount(frame, frameSize, &rcvCount, timeout);
+	if(retVal != READER_OK) return retVal;
 	
 	return READER_OK;
 }
