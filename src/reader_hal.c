@@ -139,7 +139,7 @@ READER_Status READER_HAL_SendCharFrame(uint8_t *frame, uint32_t frameSize, uint3
  * \param *frame Pointeur sur le buffer à utiliser pour stocker les octets reçus.
  * \param frameSize Nombre d'octets à recevoir.
  * \param timeout Valeur du timeout en milisecondes à utiliser. Si cette valeur est READER_HAL_USE_ISO_WT alors le timeout utilisé sera celui spécifié dans la norme ISO.
- * \param *rcvCount Pointeur sur une variable de type unit32_t. Elle sera remplie avec le nombre de caractères qui ont pu être lus.
+ * \param *rcvCount Pointeur sur une variable de type unit32_t. Elle sera remplie avec le nombre de caractères qui ont pu être lus. Si pas de necessite de recuperer cette valeur alors il est possible d'indoquer NULL.
  */
 READER_Status READER_HAL_RcvCharFrameCount(uint8_t *frame, uint32_t frameSize, uint32_t *rcvCount, uint32_t timeout){
 	READER_Status retVal;
@@ -148,6 +148,13 @@ READER_Status READER_HAL_RcvCharFrameCount(uint8_t *frame, uint32_t frameSize, u
 	uint32_t tickstart;
 	uint32_t timeoutMili;
 	uint32_t rcvCounter = 0;
+	uint32_t dummy;
+	
+	
+	/* Si l'utilisateur ne veut pas compter le nb de caracteres recus et qu'il mets NULL en guise de pointeur */
+	if(rcvCount == NULL){
+		rcvCount = &dummy;
+	}
 	
 	
 	/* Le nombre de caracteres recus est de 0 pour l'instant */
