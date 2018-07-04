@@ -13,6 +13,7 @@ static uint32_t globalFMaxConvTable[0x10] = {4000000, 5000000, 6000000, 8000000,
 
 
 READER_Status READER_ATR_Receive(READER_ATR_Atr *atr){
+	READER_Status retVal;
 	uint32_t i = 1;
 	uint8_t TS, T0;
 	uint8_t TA, TB, TC, TD;
@@ -61,10 +62,15 @@ READER_Status READER_ATR_Receive(READER_ATR_Atr *atr){
 	}
 	
 	/* Recuperation de tous les Historical Bytes */
-	READER_HAL_RcvCharFrame(atr->histBytes, atr->K, READER_HAL_USE_ISO_WT);
+	retVal = READER_HAL_RcvCharFrame(atr->histBytes, atr->K, READER_HAL_USE_ISO_WT);
+	if(retVal != READER_OK) return retVal;
 	
 	/* Recuperation du Check Byte */
-	READER_HAL_RcvChar(&checkByte, READER_HAL_USE_ISO_WT);
+	/* La presence du check byte n'est pas systematique, voir ISO7816-3 section 8.2.5. */
+	if(!(READER_ATR_IsT0(atr) && !READER_ATR_IsT15(atr))){
+		retVal = READER_HAL_RcvChar(&checkByte, READER_HAL_USE_ISO_WT);
+		if(retVal != READER_OK) return retVal;		
+	}
 	
 	return READER_OK;
 }
