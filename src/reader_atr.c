@@ -52,6 +52,7 @@ READER_Status READER_ATR_Receive(READER_ATR_Atr *atr){
 			if(READER_HAL_RcvChar(&TD, READER_HAL_USE_ISO_WT) != READER_OK) return READER_ERR;
 			Y = READER_ATR_ComputeY(TD);
 			T = READER_ATR_ComputeT(TD);
+			READER_ATR_ProcessT(atr, T);
 		}
 		else{
 			Y = 0x00;
@@ -341,7 +342,7 @@ READER_Status READER_ATR_ProcessT(READER_ATR_Atr *atr, uint8_t T){
 	}
 	
 	if(T==1){
-		atr->isT1Indicated = RFEADER_ATR_INDICATED;
+		atr->isT1Indicated = READER_ATR_INDICATED;
 	}
 	
 	return READER_OK;
