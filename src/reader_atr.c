@@ -335,7 +335,13 @@ READER_Status READER_ATR_IsT1(READER_ATR_Atr *atr){
 }
 
 
-
+/**
+ * \fn READER_Status READER_ATR_ProcessT(READER_ATR_Atr *atr, uint8_t T)
+ * \brief Cette fonction sert a mettre à jour la structure ATR en indiquant les protocoles (T=0 ou T=1) qui sont pris en charge par la carte.
+ * \return La fonction retourne READER_OK si la fonction d'est exécutée correctement. Une autre valeur dans le cas contraire.
+ * \param *atr est un pointeur vers une structure ATR. Elle sera mise à jour avec les informations du paramètre T, selon la prise en charge ou non du protocole.
+ * \param T est le champs "T" des historical bytes TD. Voir ISO7816-3 section 8.2.3.
+ */
 READER_Status READER_ATR_ProcessT(READER_ATR_Atr *atr, uint8_t T){
 	if(T==0){
 		atr->isT0Indicated = READER_ATR_INDICATED;
