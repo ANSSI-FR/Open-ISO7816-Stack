@@ -132,6 +132,9 @@ READER_Status READER_ATR_InitStruct(READER_ATR_Atr *atr){
 	atr->T1Protocol.TBBytesCount = 0;
 	atr->T1Protocol.TCBytesCount = 0;
 	
+	atr->isT1Indicated = READER_ATR_NOT_INDICATED;
+	atr->isT0Indicated = READER_ATR_NOT_INDICATED;
+	
 	atr->clockStopIndicator      = READER_ATR_CLOCKSTOP_NOTINDICATED;
 	atr->classIndicator          = READER_ATR_CLASS_NOTINDICATED;
 	atr->useOfSPU                = READER_ATR_SPU_NOTINDICATED;
