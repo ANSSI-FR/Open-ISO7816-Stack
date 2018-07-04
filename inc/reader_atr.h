@@ -100,7 +100,7 @@ READER_Status READER_ATR_IsT0(READER_ATR_Atr *atr);
 READER_Status READER_ATR_IsT1(READER_ATR_Atr *atr);
 READER_Status READER_ATR_IsT15(READER_ATR_Atr *atr);
 
-READER_Status READER_ATR_CheckTCK(READER_ATR_Atr *atr);
+READER_Status READER_ATR_CheckTCK(uint8_t *rcvdBytesList, uint32_t rcvdBytesCount, uint8_t TCK);
 READER_Status READER_ATR_AddRcvdByte(uint8_t byte, uint8_t *byteList, uint32_t *byteCount);
 
 uint8_t READER_ATR_ComputeY(uint8_t TD);

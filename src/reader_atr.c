@@ -90,7 +90,11 @@ READER_Status READER_ATR_Receive(READER_ATR_Atr *atr){
 	/* La presence du check byte n'est pas systematique, voir ISO7816-3 section 8.2.5. */
 	if(!(READER_ATR_IsT0(atr) && !READER_ATR_IsT15(atr))){
 		retVal = READER_HAL_RcvChar(&checkByte, READER_HAL_USE_ISO_WT);
-		if(retVal != READER_OK) return retVal;		
+		if(retVal != READER_OK) return retVal;	
+		
+		/* Verification des caracteres recus avec le TCK */
+		retVal = READER_ATR_CheckTCK(rcvdBytes, rcvdCount, checkByte);	
+		if(retVal != READER_OK) return retVal;
 	}
 	
 	return READER_OK;
@@ -468,8 +472,31 @@ READER_Status READER_ATR_ProcessTC(READER_ATR_Atr *atr, uint8_t TC, uint32_t i, 
 
 
 
-READER_Status READER_ATR_CheckTCK(READER_ATR_Atr *atr){
+/**
+ * \fn READER_Status READER_ATR_CheckTCK(uint8_t *rcvdBytesList, uint32_t rcvdBytesCount, uint8_t TCK)
+ * \brief Cette fonction permet d'effectuer le test d'intégrité des données reçues dans l'ATR. Il s'agit du test décrit dans l'ISO7816-3 section 8.2.5.
+ * \param *rcvdBytesList est un pointeur sur un buffer qui contient tous les caractères qui ont été reçus dans l'ATR (à partir de T0).
+ * \param rcvdBytesCount indique le nombre de caractères qui ont été reçus dans l'ATR.
+ * \param TCK est le check byte reçu en fin d'ATR.
+ * \return Valeur de retour de type READER_Status. READER_OK indique le bon déroulement de la fonction. Toute autre valeur indique une erreur.
+ */
+READER_Status READER_ATR_CheckTCK(uint8_t *rcvdBytesList, uint32_t rcvdBytesCount, uint8_t TCK){
+	uint32_t i;
+	uint8_t totalXor;
 	
+	totalXor = TCK;
+	
+	for(i=0; i<rcvdBytesCount; i++){
+		totalXor = rcvdBytesList[i] ^ totalXor;
+	}
+	
+	/* Voir ISO7816-3 section 8.2.5 pour explication du test */
+	if(totalXor == 0x00){
+		return READER_OK;
+	}
+	else{
+		return READER_ERR;
+	}
 }
 
 
