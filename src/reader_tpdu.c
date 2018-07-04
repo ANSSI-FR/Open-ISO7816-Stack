@@ -111,47 +111,45 @@ READER_Status READER_TPDU_SendDataOneshot(READER_TPDU_Command *tpdu, uint32_t ti
 
 
 READER_Status READER_TPDU_SendDataSliced(READER_TPDU_Command *tpdu, uint32_t timeout){
-	uint32_t i;
-	uint32_t timeoutMili;
-	uint8_t procedureByte;
+	uint32_t i = 0;
+	uint8_t ACKType;
 	READER_Status retVal;
 	READER_TPDU_DataField *tpduDataField;
 	
+	
+	/* Simplification d'ecriture */
 	tpduDataField = &(tpdu->dataField);
 	
-	/* Si il n'y a pas de donnees a envoyer alosr il n'y a rien a faire ... */
+	/* Si il n'y a pas de donnees a envoyer alors il n'y a rien a faire ... */
 	if(tpduDataField->size == 0) return READER_OK;
 	
 	/* Verification des parametres */
 	if(tpduDataField->size > READER_TPDU_MAX_DATA) return READER_ERR;
-	if(tpduDataField->size == 0x00) return READER_ERR;
 	
-	/* Calcul du timeout */
-	if(timeout == READER_HAL_USE_ISO_WT){
-		timeoutMili = READER_HAL_GetWT();
+
+	/* On envoie les caracteres un par un tantque il en reste et tantque la carte ne demande pas de tout envoyer d'un seul coups */
+	do{
+		retVal = READER_HAL_SendChar(tpduDataField->data[i], timeout);
+		if(retVal != READER_OK) return retVal;
+		
+		retVal = READER_TPDU_WaitACK(tpdu->headerField.INS, &ACKType, timeout);
+		if(retVal != READER_OK) return retVal;
+		
+		i++;
+	}while((ACKType == READER_TPDU_ACK_XORED) && (i<tpduDataField->size));
+	
+	
+	/* Si on est sortis de la boucle parceque toutes les donnes on ete envoyes alors on termine */
+	if(i == tpduDataField->size){
+		return READER_OK;
 	}
 	else{
-		timeoutMili = timeout;
-	}
-	
-	/* Penser a remplacer le for par un while (degeu) */
-	for(i=0; i<tpduDataField->size; i++){
-		retVal = READER_HAL_SendChar(tpduDataField->data[i], timeoutMili);
+		/* On envoie le reste en oneshot */
+		retVal = READER_HAL_SendCharFrame(tpduDataField->data+i, tpduDataField->size-i, timeout);
 		if(retVal != READER_OK) return retVal;
 		
-		retVal = READER_TPDU_WaitProcedureByte(&procedureByte, tpdu->headerField.INS, timeoutMili);
-		if(retVal != READER_OK) return retVal;
-		
-		if((!READER_TPDU_IsXoredACK(procedureByte, tpdu->headerField.INS)) && !READER_TPDU_IsNullByte(procedureByte)) return READER_ERR;
-		
-		if(READER_TPDU_IsNullByte(procedureByte)){
-			/* Attendre le temps necessaire */
-			READER_HAL_Delay(timeoutMili);
-			
-		}
+		return READER_OK;
 	}
-	
-	return READER_OK;
 }
 
 
