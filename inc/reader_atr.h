@@ -5,6 +5,7 @@
 #define READER_ATR_MAX_HIST_BYTES        15
 #define READER_ATR_MAX_SPECIFIC_BYTES    8
 #define READER_ATR_VALUE_NOT_INDICATED   0
+#define READER_ATR_MAX_SIZE              32
 #define READER_ATR_INDICATED             1
 #define READER_ATR_NOT_INDICATED         0
 
@@ -98,6 +99,9 @@ READER_Status READER_ATR_ProcessT(READER_ATR_Atr *atr, uint8_t T);
 READER_Status READER_ATR_IsT0(READER_ATR_Atr *atr);
 READER_Status READER_ATR_IsT1(READER_ATR_Atr *atr);
 READER_Status READER_ATR_IsT15(READER_ATR_Atr *atr);
+
+READER_Status READER_ATR_CheckTCK(READER_ATR_Atr *atr);
+READER_Status READER_ATR_AddRcvdByte(uint8_t byte, uint8_t *byteList, uint32_t *byteCount);
 
 uint8_t READER_ATR_ComputeY(uint8_t TD);
 uint8_t READER_ATR_ComputeT(uint8_t TD);
