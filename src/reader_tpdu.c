@@ -160,8 +160,8 @@ READER_Status READER_TPDU_SendDataSliced(READER_TPDU_Command *tpdu, uint32_t tim
  * \brief Cette fonction permet d'attendre la réception d'un status word (SW).
  * \return Valeur de type READER_Status. READER_OK si l'exécution s'est correctement déroulée. Toute autre valeur suggère une erreur.
  * \param timeout Valeur du timeout en milisecondes pour recevoir un octet parmi les deux du SW. A la réception d'un null byte le compteur repart à zéro. Lorsque SW1 est reçu, le compteur repart également à zéro pour la réception de SW2.
- * \param *SW1 Pointeur une uen variable dans laquelle stocker la première partie du Status Word (SW1).
- * \param *SW2 Pointeur une uen variable dans laquelle stocker la deuxième partie du Status Word (SW2).
+ * \param *SW1 Pointeur sur une variable dans laquelle stocker la première partie du Status Word (SW1).
+ * \param *SW2 Pointeur sur une variable dans laquelle stocker la deuxième partie du Status Word (SW2).
  */
 READER_Status READER_TPDU_RcvSW(uint8_t *SW1, uint8_t *SW2, uint32_t timeout){	
 	READER_Status retVal;
@@ -220,13 +220,20 @@ READER_Status READER_TPDU_RcvDataField(uint8_t *buffer, uint32_t Ne, uint32_t ti
  */
 READER_Status READER_TPDU_RcvResponse(READER_TPDU_Response *pResp, uint32_t expectedDataSize, uint32_t timeout){
 	READER_Status retVal;
-	
+	uint32_t rcvdCount;
 	
 	/* Une TPDU Response ne peut pas contenir plus de 256 caracteres. */
 	if(expectedDataSize > 256) return READER_ERR;
 
 	/* On recupere les donnees */
-	retVal = READER_HAL_RcvCharFrame(pResp->dataBytes, expectedDataSize, timeout);
+	retVal = READER_HAL_RcvCharFrameCount(pResp->dataBytes, expectedDataSize, &rcvdCount, timeout);
+	if((retVal == READER_TIMEOUT) && (rcvdCount == 2)){
+		/* On a probablement recu que le SW1SW2 et pas de data */
+		pResp->SW1 = pResp->DataBytes[0];
+		pREsp->SW2 = pResp->DataBytes[1];
+		
+		return READER_TIMEOUT_GOT_ONLY_SW;
+	}
 	if(retVal != READER_OK) return retVal;
 	
 	/* On recupere le Status Word (SW) */

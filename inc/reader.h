@@ -19,7 +19,8 @@ enum READER_Status{
 	READER_NO                   = (0x00000000),
 	READER_ERR                  = (0x00000002),
 	READER_TIMEOUT              = (0x00000003),
-	READER_BUSY                 = (0x00000004)
+	READER_TIMEOUT_GOT_ONLY_SW  = (0X00000004),
+	READER_BUSY                 = (0x00000005)
 };
 
 
