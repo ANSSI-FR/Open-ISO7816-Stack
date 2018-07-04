@@ -5,6 +5,8 @@
 #define READER_ATR_MAX_HIST_BYTES        15
 #define READER_ATR_MAX_SPECIFIC_BYTES    8
 #define READER_ATR_VALUE_NOT_INDICATED   0
+#define READER_ATR_INDICATED             1
+#define READER_ATR_NOT_INDICATED         0
 
 
 typedef enum READER_ATR_ClockStopIndicator READER_ATR_ClockStopIndicator;
@@ -74,6 +76,8 @@ struct READER_ATR_Atr{
 	READER_ATR_ProtocolSpecificBytes T1Protocol;
 	uint32_t K;
 	uint8_t histBytes[READER_ATR_MAX_HIST_BYTES];
+	uint32_t isT0Indicated;
+	uint32_t isT1Indicated;
 };
 
 
