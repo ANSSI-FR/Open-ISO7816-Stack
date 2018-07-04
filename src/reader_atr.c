@@ -312,6 +312,43 @@ READER_ATR_EncodingConv READER_ATR_GetEncoding(uint8_t TS){
 }
 
 
+
+
+READER_Status READER_ATR_IsT0(READER_ATR_Atr *atr){
+	if(atr->isT0Indicated == READER_ATR_INDICATED){
+		return READER_OK;
+	}
+	else{
+		return READER_NO;
+	}
+}
+
+
+READER_Status READER_ATR_IsT1(READER_ATR_Atr *atr){
+	if(atr->isT1Indicated == READER_ATR_INDICATED){
+		return READER_OK;
+	}
+	else{
+		return READER_NO;
+	}
+}
+
+
+
+READER_Status READER_ATR_ProcessT(READER_ATR_Atr *atr, uint8_t T){
+	if(T==0){
+		atr->isT0Indicated = READER_ATR_INDICATED;
+	}
+	
+	if(T==1){
+		atr->isT1Indicated = RFEADER_ATR_INDICATED;
+	}
+	
+	return READER_OK;
+}
+
+
+
 READER_Status READER_ATR_ProcessTA(READER_ATR_Atr *atr, uint8_t TA, uint32_t i, uint8_t T){	
 	if(i == 1){          /* Global interface Byte */
 		atr->Fi = READER_ATR_ComputeFi(TA);

@@ -92,6 +92,10 @@ READER_Status READER_ATR_IsTDToRead(uint8_t Y);
 READER_Status READER_ATR_ProcessTA(READER_ATR_Atr *atr, uint8_t TA, uint32_t i, uint8_t T);
 READER_Status READER_ATR_ProcessTB(READER_ATR_Atr *atr, uint8_t TB, uint32_t i, uint8_t T);
 READER_Status READER_ATR_ProcessTC(READER_ATR_Atr *atr, uint8_t TC, uint32_t i, uint8_t T);
+READER_Status READER_ATR_ProcessT(READER_ATR_Atr *atr, uint8_t T);
+
+READER_Status READER_ATR_IsT0(READER_ATR_Atr *atr);
+READER_Status READER_ATR_IsT1(READER_ATR_Atr *atr);
 
 uint8_t READER_ATR_ComputeY(uint8_t TD);
 uint8_t READER_ATR_ComputeT(uint8_t TD);
