@@ -135,6 +135,7 @@ READER_Status READER_ATR_InitStruct(READER_ATR_Atr *atr){
 	
 	atr->isT1Indicated = READER_ATR_NOT_INDICATED;
 	atr->isT0Indicated = READER_ATR_NOT_INDICATED;
+	atr->isT15Indicated = READER_ATR_NOT_INDICATED;
 	
 	atr->clockStopIndicator      = READER_ATR_CLOCKSTOP_NOTINDICATED;
 	atr->classIndicator          = READER_ATR_CLASS_NOTINDICATED;
@@ -335,6 +336,16 @@ READER_Status READER_ATR_IsT1(READER_ATR_Atr *atr){
 }
 
 
+READER_Status READER_ATR_IsT15(READER_ATR_Atr *atr){
+	if(atr->isT15Indicated == READER_ATR_INDICATED){
+		return READER_OK;
+	}
+	else{
+		return READER_NO;
+	}
+}
+
+
 /**
  * \fn READER_Status READER_ATR_ProcessT(READER_ATR_Atr *atr, uint8_t T)
  * \brief Cette fonction sert a mettre à jour la structure ATR en indiquant les protocoles (T=0 ou T=1) qui sont pris en charge par la carte.
@@ -349,6 +360,10 @@ READER_Status READER_ATR_ProcessT(READER_ATR_Atr *atr, uint8_t T){
 	
 	if(T==1){
 		atr->isT1Indicated = READER_ATR_INDICATED;
+	}
+	
+	if(T==15){
+		atr->isT15Indicated = READER_ATR_INDICATED;
 	}
 	
 	return READER_OK;

@@ -78,6 +78,7 @@ struct READER_ATR_Atr{
 	uint8_t histBytes[READER_ATR_MAX_HIST_BYTES];
 	uint32_t isT0Indicated;
 	uint32_t isT1Indicated;
+	uint32_t isT15Indicated;
 };
 
 
@@ -96,6 +97,7 @@ READER_Status READER_ATR_ProcessT(READER_ATR_Atr *atr, uint8_t T);
 
 READER_Status READER_ATR_IsT0(READER_ATR_Atr *atr);
 READER_Status READER_ATR_IsT1(READER_ATR_Atr *atr);
+READER_Status READER_ATR_IsT15(READER_ATR_Atr *atr);
 
 uint8_t READER_ATR_ComputeY(uint8_t TD);
 uint8_t READER_ATR_ComputeT(uint8_t TD);
