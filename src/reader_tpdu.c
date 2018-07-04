@@ -213,6 +213,7 @@ READER_Status READER_TPDU_RcvDataField(uint8_t *buffer, uint32_t Ne, uint32_t ti
 /**
  * \fn READER_Status READER_TPDU_RcvResponse(uint8_t *dataField, uint32_t Ne, uint16_t SW, uint32_t timeout)
  * \brief Cette fonction permet de recevoir la réponse à une commande TPDU. Elle permet de récupérer le champs de données et le Status Word (SW).
+ *        Si il y a timeout et qu'on a reçu deux octets de données alors on considere que les deux octets reçus sont SW1 et SW2. Ils seront placés dans les champs SW1 et SW2 de la structure TPDU response.
  * \return Valeur de type READER_Status. READER_OK si l'exécution s'est correctement déroulée. Toute autre valeur suggère une erreur.
  * \param *pResp Un pointeur sur une structure de type READER_TPDU_Response. Toutes les données de la réponse (SW1SW2, data field) seront stockées dans cette structure.
  * \param expectedDataSize Nombre de caractères attendus en réponse.
