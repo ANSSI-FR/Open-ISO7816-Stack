@@ -169,7 +169,7 @@ READER_Status READER_APDU_ExecuteCase2S(READER_APDU_Command *pApduCmd, READER_AP
 	
 	/* On recupere le TPDU response */
 	retVal = READER_TPDU_RcvResponse(&tpduResp, pApduCmd->body.Ne, timeout);
-	if(retVal != READER_OK) return retVal;
+	if((retVal != READER_OK) && (retVal != READER_TIMEOUT_GOT_ONLY_SW)) return retVal;
 	
 	/* Case 2S.2 Process Aborted, Ne definitely not accepted        */
 	if((tpduResp.SW1 == 0x67) && (tpduResp.SW2 == 0x00)){
