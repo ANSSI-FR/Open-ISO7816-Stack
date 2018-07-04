@@ -229,8 +229,8 @@ READER_Status READER_TPDU_RcvResponse(READER_TPDU_Response *pResp, uint32_t expe
 	retVal = READER_HAL_RcvCharFrameCount(pResp->dataBytes, expectedDataSize, &rcvdCount, timeout);
 	if((retVal == READER_TIMEOUT) && (rcvdCount == 2)){
 		/* On a probablement recu que le SW1SW2 et pas de data */
-		pResp->SW1 = pResp->DataBytes[0];
-		pREsp->SW2 = pResp->DataBytes[1];
+		pResp->SW1 = pResp->dataBytes[0];
+		pResp->SW2 = pResp->dataBytes[1];
 		
 		return READER_TIMEOUT_GOT_ONLY_SW;
 	}

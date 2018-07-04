@@ -148,7 +148,9 @@ READER_Status READER_APDU_ExecuteCase2S(READER_APDU_Command *pApduCmd, READER_AP
 	READER_TPDU_Command tpduCmd;
 	READER_TPDU_Response tpduResp;
 	READER_Status retVal;
-	uint8_t Na;
+	uint8_t Na, Ne;
+	
+	Ne = pApduCmd->body.Ne;
 	
 	/* On fabrique la requette TPDU qui correspond */
 	retVal = READER_TPDU_Forge(
@@ -157,7 +159,7 @@ READER_Status READER_APDU_ExecuteCase2S(READER_APDU_Command *pApduCmd, READER_AP
 		pApduCmd->header.INS,
 		pApduCmd->header.P1,
 		pApduCmd->header.P2,
-		READER_APDU_NeToLe(pApduCmd->body.Ne),
+		READER_APDU_NeToLe(Ne),
 		NULL,
 		0
 	);
@@ -168,7 +170,7 @@ READER_Status READER_APDU_ExecuteCase2S(READER_APDU_Command *pApduCmd, READER_AP
 	if(retVal != READER_OK) return retVal;
 	
 	/* On recupere le TPDU response */
-	retVal = READER_TPDU_RcvResponse(&tpduResp, pApduCmd->body.Ne, timeout);
+	retVal = READER_TPDU_RcvResponse(&tpduResp, Ne, timeout);
 	if((retVal != READER_OK) && (retVal != READER_TIMEOUT_GOT_ONLY_SW)) return retVal;
 	
 	/* Case 2S.2 Process Aborted, Ne definitely not accepted        */
@@ -195,7 +197,7 @@ READER_Status READER_APDU_ExecuteCase2S(READER_APDU_Command *pApduCmd, READER_AP
 		retVal = READER_TPDU_Send(&tpduCmd, timeout);
 		if(retVal != READER_OK) return retVal;
 		
-		retVal = READER_TPDU_RcvResponse(&tpduResp, Na, timeout);
+		retVal = READER_TPDU_RcvResponse(&tpduResp, (Ne<Na)?Ne:Na, timeout);    /* Voir ISO7816-3 section 12.2.3 case 2S.3 */
 		if(retVal != READER_OK) return retVal;
 		
 		retVal = READER_APDU_MapTpduRespToApdu(&tpduResp, pApduResp);
