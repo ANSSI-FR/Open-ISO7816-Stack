@@ -405,7 +405,7 @@ READER_Status READER_APDU_ExecuteCase2E(READER_APDU_Command *pApduCmd, READER_AP
 		if(retVal != READER_OK) return READER_ERR;
 	}
 	else if((tpduResp.SW1 == 0x90) && (tpduResp.SW2 == 0x00)){
-		if(tpduResp.dataField.size == 256){
+		if(tpduResp.dataSize == 256){
 			retVal = READER_APDU_MapTpduRespToApdu(&tpduResp, pApduResp);
 			if(retVal != READER_OK) return READER_ERR;
 		}
