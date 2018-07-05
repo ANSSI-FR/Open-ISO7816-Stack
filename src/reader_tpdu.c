@@ -235,6 +235,7 @@ READER_Status READER_TPDU_RcvResponse(READER_TPDU_Response *pResp, uint32_t expe
 			
 			return READER_TIMEOUT_GOT_ONLY_SW;
 		}
+		pResp->dataSize = rcvdCount;
 		if(retVal != READER_OK) return retVal;
 	}
 	
@@ -248,8 +249,7 @@ READER_Status READER_TPDU_RcvResponse(READER_TPDU_Response *pResp, uint32_t expe
 	if(!READER_TPDU_IsSW1(pResp->SW1)) return READER_ERR;
 	
 	
-	pResp->dataSize = expectedDataSize;
-	
+	//pResp->dataSize = expectedDataSize;
 	
 	return READER_OK;
 }
