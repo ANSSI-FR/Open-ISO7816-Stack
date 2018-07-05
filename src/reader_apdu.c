@@ -289,7 +289,13 @@ READER_Status READER_APDU_ExecuteCase3E(READER_APDU_Command *pApduCmd, READER_AP
 	retVal = READER_TPDU_Forge(&tpduCmd, pApduCmd->header.CLA, READER_APDU_INS_ENVELOPE, 0x00, 0x00, 255, tmpTpduBuff, 255);
 	if(retVal != READER_OK) return retVal;
 	
-	retVal = READER_TPDU_Execute(&tpduCmd, &tpduResp, timeout);
+	
+	/* On envoie la requette TPDU */
+	retVal = READER_TPDU_Send(&tpduCmd, timeout);
+	if(retVal != READER_OK) return retVal;
+	
+	/* On recupere la reponse. On attend pas de donnees en retour, juste SW */
+	retVal = READER_TPDU_RcvResponse(&tpduResp, 0, timeout);
 	if(retVal != READER_OK) return retVal;
 	
 	/* On regarde le SW de la reponse et on en déduit si la carte supporte ou non l'instruction ENVELOPE                 */
@@ -313,7 +319,12 @@ READER_Status READER_APDU_ExecuteCase3E(READER_APDU_Command *pApduCmd, READER_AP
 			retVal = READER_TPDU_Forge(&tpduCmd, pApduCmd->header.CLA, READER_APDU_INS_ENVELOPE, 0x00, 0x00, 255, tmpTpduBuff, 255);
 			if(retVal != READER_OK) return retVal;
 			
-			retVal = READER_TPDU_Execute(&tpduCmd, &tpduResp, timeout);
+			/* On envoie la requette TPDU */
+			retVal = READER_TPDU_Send(&tpduCmd, timeout);
+			if(retVal != READER_OK) return retVal;
+			
+			/* On recupere la reponse. On attend pas de donnees en retour, juste SW */
+			retVal = READER_TPDU_RcvResponse(&tpduResp, 0, timeout);
 			if(retVal != READER_OK) return retVal;
 			
 			if((tpduResp.SW1 != 0x90) || (tpduResp.SW2 != 0x00)){  /* A propri la commande ENVELOPE est mal passée */
@@ -328,17 +339,28 @@ READER_Status READER_APDU_ExecuteCase3E(READER_APDU_Command *pApduCmd, READER_AP
 		retVal = READER_TPDU_Forge(&tpduCmd, pApduCmd->header.CLA, READER_APDU_INS_ENVELOPE, 0x00, 0x00, nbResidualBytes, tmpTpduBuff, nbResidualBytes);
 		if(retVal != READER_OK) return retVal;
 		
-		retVal = READER_TPDU_Execute(&tpduCmd, &tpduResp, timeout);
+		/* On envoie la requette TPDU */
+		retVal = READER_TPDU_Send(&tpduCmd, timeout);
+		if(retVal != READER_OK) return retVal;
+		
+		/* On recupere la reponse. On attend pas de donnees en retour, juste SW */
+		retVal = READER_TPDU_RcvResponse(&tpduResp, 0, timeout);
 		if(retVal != READER_OK) return retVal;
 		
 		if((tpduResp.SW1 != 0x90) || (tpduResp.SW2 != 0x00)){  /* A propri la commande ENVELOPE est mal passée */
 			return READER_ERR;  /* A determiner si vraiment on renvoi un erreur a cet endroit */
 		}
 		
-		/* On envoie une commande ENVELOPE vide. Cela permet d'indiquer a la carte que toutes les donnees on ete envoyees */
+		/* On forge une commande ENVELOPE vide. Cela permet d'indiquer a la carte que toutes les donnees on ete envoyees */
 		retVal = READER_TPDU_Forge(&tpduCmd, pApduCmd->header.CLA, READER_APDU_INS_ENVELOPE, 0x00, 0x00, 0, NULL, 0);
 		if(retVal != READER_OK) return retVal;
-		retVal = READER_TPDU_Execute(&tpduCmd, &tpduResp, timeout);
+		
+		/* On envoie la requette TPDU */
+		retVal = READER_TPDU_Send(&tpduCmd, timeout);
+		if(retVal != READER_OK) return retVal;
+		
+		/* On recupere la reponse. On attend pas de donnees en retour, juste SW */
+		retVal = READER_TPDU_RcvResponse(&tpduResp, 0, timeout);
 		if(retVal != READER_OK) return retVal;
 		
 		/* Le SW de la derniere commande ENVELOPE vide est la SW de la commande globale */
