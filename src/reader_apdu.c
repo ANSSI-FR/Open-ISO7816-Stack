@@ -363,7 +363,7 @@ READER_Status READER_APDU_ExecuteCase2E(READER_APDU_Command *pApduCmd, READER_AP
 	READER_TPDU_Response tpduResp;
 	READER_Status retVal;
 	
-	uint32_t Ne, Nm, Nx;            /* Meme notation que ISO7816  */
+	uint32_t Ne, Na, Nm, Nx;            /* Meme notation que ISO7816  */
 	uint32_t i;
 	
 	Ne = pApduCmd->body.Ne;         /* Ne = N expected            */
@@ -373,8 +373,15 @@ READER_Status READER_APDU_ExecuteCase2E(READER_APDU_Command *pApduCmd, READER_AP
 	retVal = READER_TPDU_Forge(&tpduCmd, pApduCmd->header.CLA, pApduCmd->header.INS, pApduCmd->header.P1, pApduCmd->header.P2, 0, NULL, 0);
 	if(retVal != READER_OK) return retVal;
 	
-	retVal = READER_TPDU_Execute(&tpduCmd, &tpduResp, timeout);
+	/* On envoie la requette TPDU */
+	retVal = READER_TPDU_Send(&tpduCmd, timeout);
 	if(retVal != READER_OK) return retVal;
+	
+	/* On recupere la reponse */
+	retVal = READER_TPDU_RcvResponse(&tpduResp, 256, timeout);
+	if((retVal != READER_OK) && (retVal != READER_TIMEOUT_GOT_ONLY_SW)) return retVal;
+	
+	
 	
 	/* On verifie la reponse de la carte */
 	if((tpduResp.SW1 == 0x67) && (tpduResp.SW2 == 0x00)){                   /* La carte a abort total a cause de wrong length */
@@ -383,24 +390,47 @@ READER_Status READER_APDU_ExecuteCase2E(READER_APDU_Command *pApduCmd, READER_AP
 		return READER_OK;
 	}
 	else if(tpduResp.SW1 == 0x6C){                                          /* La carte a abort a cause de wrong lenth, mais indique Na */
+		/* On forge un nouveau TPDU avec P3 = SW2  exactement comme dans le cas 2S.3*/
+		Na = tpduResp.SW2;
+		retVal = READER_TPDU_Forge(&tpduCmd, pApduCmd->header.CLA, pApduCmd->header.INS, pApduCmd->header.P1, pApduCmd->header.P2, READER_APDU_NeToLe(Na), NULL, 0);
+		if(retVal != READER_OK) return retVal;
+	
+		retVal = READER_TPDU_Send(&tpduCmd, timeout);
+		if(retVal != READER_OK) return retVal;
+		
+		retVal = READER_TPDU_RcvResponse(&tpduResp, (Ne<Na)?Ne:Na, timeout);    /* Voir ISO7816-3 section 12.2.3 case 2S.3 */
+		if(retVal != READER_OK) return retVal;
+		
 		retVal = READER_APDU_MapTpduRespToApdu(&tpduResp, pApduResp);
 		if(retVal != READER_OK) return READER_ERR;
-		return READER_OK;
 	}
 	else if((tpduResp.SW1 == 0x90) && (tpduResp.SW2 == 0x00)){
-		
+		if(tpduResp.dataField.size == 256){
+			retVal = READER_APDU_MapTpduRespToApdu(&tpduResp, pApduResp);
+			if(retVal != READER_OK) return READER_ERR;
+		}
+		else{
+			return READER_ERR;
+		}
 	}
 	else if(tpduResp.SW1 == 0x61){
 		/* Tantque il reste des donees a recevoir on envoie des TPDU de type GET RESPONSE */
 		while((Nm > 0) && (tpduResp.SW1 != 0x90)){
-			Nx = tpduResp.SW2;
+			Nx = READER_APDU_LeToNe(tpduResp.SW2);
 			
 			/* Preparation de la commande GET RESPONSE */
 			retVal = READER_TPDU_Forge(&tpduCmd, pApduCmd->header.CLA, READER_APDU_INS_GETRESPONSE, 0x00, 0x00, (Nx < Nm)? Nx:Nm, NULL, 0);
 			if(retVal != READER_ERR) return retVal;
 			
-			retVal = READER_TPDU_Execute(&tpduCmd, &tpduResp, timeout);
+			
+			/* Execution de la commande  */
+			retVal = READER_TPDU_Send(&tpduCmd, timeout);
 			if(retVal != READER_OK) return retVal;
+		
+			retVal = READER_TPDU_RcvResponse(&tpduResp, Nx, timeout);    /* Voir ISO7816-3 section 12.2.3 case 2S.3 */
+			if(retVal != READER_OK) return retVal;
+			
+			
 			
 			/* Selon le status word du GET RESPONSE ... */
 			if(tpduResp.SW1 == 0x61){
