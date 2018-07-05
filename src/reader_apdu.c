@@ -188,7 +188,7 @@ READER_Status READER_APDU_ExecuteCase2S(READER_APDU_Command *pApduCmd, READER_AP
 			pApduCmd->header.INS,
 			pApduCmd->header.P1,
 			pApduCmd->header.P2,
-			Na,
+			READER_APDU_NeToLe(Na),
 			NULL,
 			0
 		);
