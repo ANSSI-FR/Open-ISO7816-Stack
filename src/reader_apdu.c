@@ -539,9 +539,11 @@ READER_Status READER_APDU_ExecuteCase4S(READER_APDU_Command *pApduCmd, READER_AP
 		
 		retVal = READER_APDU_ExecuteCase2S(&newApduCmd, pApduResp, timeout);
 		if(retVal != READER_OK) return retVal;
+		
+		return READER_OK;
 	}
 	/* Cas 4S.4 */
-	else if((tpduResp.SW1 == 0x61) || (tpduResp.SW1 == 0x62) || (tpduResp.SW1 == 0x63) || (((tpduResp.SW1 & 0xF0) == 0x90) && (tpduResp.SW2 != 0x00)) ){
+	else if((tpduResp.SW1 == 0x62) || (tpduResp.SW1 == 0x63) || (((tpduResp.SW1 & 0xF0) == 0x90) && (tpduResp.SW2 != 0x00)) ){
 		retVal = READER_APDU_MapTpduRespToApdu(&tpduResp, pApduResp);
 		if(retVal != READER_OK) return READER_ERR;
 		return READER_OK;

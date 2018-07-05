@@ -45,26 +45,22 @@ int main(void){
 	//pSmartcardTxBuff[11] = 0x70;
 	//pSmartcardTxBuff[12] = 0x70;
 	
-	pSmartcardTxBuff[0] = 0x7F;
-	pSmartcardTxBuff[1] = 0x20;
-	pSmartcardTxBuff[2] = 0x6C;
-	pSmartcardTxBuff[3] = 0x6C;
-	pSmartcardTxBuff[4] = 0x6F;
-	pSmartcardTxBuff[5] = 0x57;
-	pSmartcardTxBuff[6] = 0x6F;
-	pSmartcardTxBuff[7] = 0x72;
-	pSmartcardTxBuff[8] = 0x6C;
-	pSmartcardTxBuff[9] = 0x64;
-	pSmartcardTxBuff[10] = 0x41;
-	pSmartcardTxBuff[11] = 0x70;
-	pSmartcardTxBuff[12] = 0x70;
-	pSmartcardTxBuff[13] = 0x70;
-	pSmartcardTxBuff[14] = 0x70;
-	pSmartcardTxBuff[15] = 0x70;
+	pSmartcardTxBuff[0] = 0xA0;
+	pSmartcardTxBuff[1] = 0x00;
+	pSmartcardTxBuff[2] = 0x00;
+	pSmartcardTxBuff[3] = 0x00;
+	pSmartcardTxBuff[4] = 0x62;
+	pSmartcardTxBuff[5] = 0x03;
+	pSmartcardTxBuff[6] = 0x01;
+	pSmartcardTxBuff[7] = 0x0C;
+	pSmartcardTxBuff[8] = 0x01;
+	pSmartcardTxBuff[9] = 0x01;
 	
 	
-	//READER_APDU_Forge(&apduCmd, 0x00, 0xA4, 0x04, 0x00, 0x0D, pSmartcardTxBuff, 0x12);
-	//READER_APDU_Execute(&apduCmd, &apduResp, READER_HAL_USE_ISO_WT);
+	READER_APDU_Forge(&apduCmd, 0x00, 0xA4, 0x04, 0x00, 0x0A, pSmartcardTxBuff, 0x0A);
+	READER_APDU_Execute(&apduCmd, &apduResp, READER_HAL_USE_ISO_WT);
+	
+	HAL_UART_Transmit(&uartHandleStruct, apduResp.dataBytes, apduResp.dataSize, 1000);
 	
 	//READER_APDU_Forge(&apduCmd, 0x80, 0x10, 0x00, 0x00, 0x10, pSmartcardTxBuff, 0x00);
 	//READER_APDU_Execute(&apduCmd, &apduResp, READER_HAL_USE_ISO_WT);
@@ -72,19 +68,19 @@ int main(void){
 	//READER_APDU_Forge(&apduCmd, 0x80, 0x12, 0x00, 0x00, 0x00, NULL, 0x10);
 	//READER_APDU_Execute(&apduCmd, &apduResp, READER_HAL_USE_ISO_WT);
 	
-	READER_APDU_Forge(&apduCmd, 0xA0, 0xA4, 0x00, 0x00, 0x02, pSmartcardTxBuff, 0x00);
-	READER_APDU_Execute(&apduCmd, &apduResp, READER_HAL_USE_ISO_WT);
+	//READER_APDU_Forge(&apduCmd, 0xA0, 0xA4, 0x00, 0x00, 0x02, pSmartcardTxBuff, 0x00);
+	//READER_APDU_Execute(&apduCmd, &apduResp, READER_HAL_USE_ISO_WT);
+	//
+	//READER_APDU_Forge(&apduCmd, 0xA0, 0xC0, 0x00, 0x00, 0x00, NULL, 0x20);
+	//READER_APDU_Execute(&apduCmd, &apduResp, READER_HAL_USE_ISO_WT);
+	//
+	//READER_APDU_Forge(&apduCmd, 0xA0, 0x88, 0x00, 0x00, 0x10, pSmartcardTxBuff, 0x00);
+	//READER_APDU_Execute(&apduCmd, &apduResp, READER_HAL_USE_ISO_WT);
+	//
+	//READER_APDU_Forge(&apduCmd, 0xA0, 0xC0, 0x00, 0x00, 0x00, NULL, 0x0C);
+	//READER_APDU_Execute(&apduCmd, &apduResp, READER_HAL_USE_ISO_WT);
 	
-	READER_APDU_Forge(&apduCmd, 0xA0, 0xC0, 0x00, 0x00, 0x00, NULL, 0x20);
-	READER_APDU_Execute(&apduCmd, &apduResp, READER_HAL_USE_ISO_WT);
-	
-	READER_APDU_Forge(&apduCmd, 0xA0, 0x88, 0x00, 0x00, 0x10, pSmartcardTxBuff, 0x00);
-	READER_APDU_Execute(&apduCmd, &apduResp, READER_HAL_USE_ISO_WT);
-	
-	READER_APDU_Forge(&apduCmd, 0xA0, 0xC0, 0x00, 0x00, 0x00, NULL, 0x0C);
-	READER_APDU_Execute(&apduCmd, &apduResp, READER_HAL_USE_ISO_WT);
-	
-	HAL_UART_Transmit(&uartHandleStruct, apduResp.dataBytes, apduResp.dataSize, 1000);
+	//HAL_UART_Transmit(&uartHandleStruct, apduResp.dataBytes, apduResp.dataSize, 1000);
 
 	while(1);
 
