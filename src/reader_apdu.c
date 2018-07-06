@@ -534,7 +534,7 @@ READER_Status READER_APDU_ExecuteCase4S(READER_APDU_Command *pApduCmd, READER_AP
 	/* Cas 4S.3 */
 	else if(tpduResp.SW1 == 0x61){
 		Na = READER_APDU_LeToNe(tpduResp.SW2);
-		retVal = READER_APDU_Forge(&newApduCmd, pApduCmd->header.CLA, READER_APDU_INS_GETRESPONSE, 0x00, 0x00, 0, NULL, (Na<Ne)?Na:Ne);
+		retVal = READER_APDU_Forge(&newApduCmd, pApduCmd->header.CLA, READER_APDU_INS_GETRESPONSE, 0x00, 0x00, 0, NULL, (Ne<Na)?Na:Ne);
 		if(retVal != READER_OK) return retVal;
 		
 		retVal = READER_APDU_ExecuteCase2S(&newApduCmd, pApduResp, timeout);
