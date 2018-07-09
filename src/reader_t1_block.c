@@ -54,7 +54,27 @@ READER_Status READER_T1_SetBlockPCB(READER_T1_Block *pBlock, uint8_t PCB){
 
 
 READER_Status READER_T1_SetBlockType(READER_T1_Block *pBlock, READER_T1_BlockType type){
+	/* Voir ISO7816-3 section 11.3.2.2 */
+	uint8_t *pCurrentPCB;
 	
+
+	pCurrentPCB = pBlock->blockFrame + READER_T1_BLOCKFRAME_PCB_POSITION;
+	
+	
+	if(type == READER_T1_IBLOCK){
+		*pCurrentPCB = (*pCurrentPCB) & (0x7F);       /* On force bit 8 a 0 */
+	}
+	else if(type == READER_T1_RBLOCK){
+		*pCurrentPCB = (*pCurrentPCB | 0x80) & 0xBF;  /* On force bits 8 et 7 a 10 */
+	}
+	else if(type == READER_T1_SBLOCK){
+		*pCurrentPCB = (*pCurrentPCB | 0x80) | 0x40;  /* On force bits 8 et 7 a 11 */
+	}
+	else{
+		return READER_ERR;
+	}
+	
+	return READER_OK;
 }
 
 
