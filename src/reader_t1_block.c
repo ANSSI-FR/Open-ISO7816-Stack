@@ -4,14 +4,14 @@
 
 
 READER_Status READER_T1_SetBlockSAD(READER_T1_Block *pBlock, uint8_t SAD){
-	uint8_t *currentNAD;
+	uint8_t *pCurrentNAD;
 	
 	if(SAD > 0x07){
 		return READER_ERR;
 	}
 	
-	currentNAD = pBlock->blockFrame + READER_T1_BLOCKFRAME_NAD_POSITION;
-	*currentNAD = (currentNAD & 0x07) | (SAD & 0x07);                              /* Voir ISO7816-3 section 11.3.2.1 */
+	pCurrentNAD = pBlock->blockFrame + READER_T1_BLOCKFRAME_NAD_POSITION;
+	*pCurrentNAD = (*pCurrentNAD & 0xF8) | (SAD & 0x07);                              /* Voir ISO7816-3 section 11.3.2.1 */
 	
 	return READER_OK;
 }
