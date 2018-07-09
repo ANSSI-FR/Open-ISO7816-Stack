@@ -35,7 +35,7 @@ enum READER_T1_BlockType{
 
 typedef struct READER_T1_Block READER_T1_Block;
 struct READER_T1_Block{
-	uint8_t rawData[READER_T1_BLOC_MAX_DATA_SIZE + 5];  /* INF +NAD +PCB +LEN +CRC/LRC*/
+	uint8_t blockFrame[READER_T1_BLOC_MAX_DATA_SIZE + 5];  /* INF +NAD +PCB +LEN +CRC/LRC*/
 	uint8_t LEN;                                        /* INF field size             */
 	READER_T1_RedundancyType RedundancyType;
 };
