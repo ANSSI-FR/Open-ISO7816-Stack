@@ -43,7 +43,13 @@ READER_Status READER_T1_SetBlockNAD(READER_T1_Block *pBlock, uint8_t NAD){
 
 
 READER_Status READER_T1_SetBlockPCB(READER_T1_Block *pBlock, uint8_t PCB){
+	uint8_t *pCurrentPCB;
 	
+	
+	pCurrentPCB = pBlock->blockFrame + READER_T1_BLOCKFRAME_PCB_POSITION;
+	*pCurrentPCB = PCB;                                                                   /* Voir ISO7816-3 section 11.3.2.1 */
+	
+	return READER_OK;
 }
 
 
