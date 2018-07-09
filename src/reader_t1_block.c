@@ -18,7 +18,16 @@ READER_Status READER_T1_SetBlockSAD(READER_T1_Block *pBlock, uint8_t SAD){
 
 
 READER_Status READER_T1_SetBlockDAD(READER_T1_Block *pBlock, uint8_t DAD){
+	uint8_t *pCurrentNAD;
 	
+	if(DAD > 0x07){
+		return READER_ERR;
+	}
+	
+	pCurrentNAD = pBlock->blockFrame + READER_T1_BLOCKFRAME_NAD_POSITION;
+	*pCurrentNAD = (*pCurrentNAD & 0x8F) | (4<<(DAD & 0x07));                              /* Voir ISO7816-3 section 11.3.2.1 */
+	
+	return READER_OK;
 }
 
 
