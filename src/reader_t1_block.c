@@ -32,7 +32,13 @@ READER_Status READER_T1_SetBlockDAD(READER_T1_Block *pBlock, uint8_t DAD){
 
 
 READER_Status READER_T1_SetBlockNAD(READER_T1_Block *pBlock, uint8_t NAD){
+	uint8_t *pCurrentNAD;
 	
+	
+	pCurrentNAD = pBlock->blockFrame + READER_T1_BLOCKFRAME_NAD_POSITION;
+	*pCurrentNAD = NAD;                                                                   /* Voir ISO7816-3 section 11.3.2.1 */
+	
+	return READER_OK;
 }
 
 
