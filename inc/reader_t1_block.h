@@ -1,7 +1,7 @@
 #include "reader.h"
 
 
-#define READER_T1_BLOC_MAX_DATA_SIZE       254
+#define READER_T1_BLOC_MAX_DATA_SIZE   254  /* Voir ISO7816-3 section 11.3.2.3 */
 
 
 
@@ -22,15 +22,22 @@ enum READER_T1_BlockType{
 };
 
 
+//typedef struct READER_T1_Block READER_T1_Block;
+//struct READER_T1_Block{
+//	uint8_t NAD;
+//	uint8_t PCB;
+//	uint8_t LEN;
+//	uint8_t data[READER_T1_BLOC_MAX_DATA_SIZE];
+//	READER_T1_RedundancyType RedundancyType;
+//	uint8_t LRC;
+//	uint16_t CRC;
+//};
+
 typedef struct READER_T1_Block READER_T1_Block;
 struct READER_T1_Block{
-	uint8_t NAD;
-	uint8_t PCB;
-	uint8_t LEN;
-	uint8_t data[READER_T1_BLOC_MAX_DATA_SIZE];
+	uint8_t rawData[READER_T1_BLOC_MAX_DATA_SIZE + 5];  /* INF +NAD +PCB +LEN +CRC/LRC*/
+	uint8_t LEN;                                        /* INF field size             */
 	READER_T1_RedundancyType RedundancyType;
-	uint8_t LRC;
-	uint16_t CRC;
 };
 
 
