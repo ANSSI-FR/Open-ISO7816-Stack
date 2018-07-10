@@ -79,7 +79,16 @@ READER_Status READER_T1_SetBlockType(READER_T1_Block *pBlock, READER_T1_BlockTyp
 
 
 READER_Status READER_T1_SetBlockLEN(READER_T1_Block *pBlock, uint8_t LEN){
+	uint8_t *pCurrentLEN;
 	
+	if(LEN > READER_T1_BLOCK_MAX_DATA_SIZE){
+		return READER_ERR;
+	}
+
+	pCurrentLEN = pBlock->blockFrame + READER_T1_BLOCKFRAME_LEN_POSITION;
+	*pCurrentLEN = LEN;
+	
+	return READER_OK;
 }
 
 
