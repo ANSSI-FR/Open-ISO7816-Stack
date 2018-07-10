@@ -110,6 +110,8 @@ READER_Status READER_T1_SetBlockLRC(READER_T1_Block *pBlock, uint8_t LRC){
 	currentLEN = READER_T1_GetBlockLEN(pBlock);
 	pCurrentLRC = pBlock->blockFrame + READER_T1_BLOCKFRAME_LEN_POSITION + currentLEN;
 	
+	*pCurrentLRC = LRC;
+	
 	return READER_OK;
 }
 
