@@ -93,8 +93,13 @@ READER_Status READER_T1_SetBlockLEN(READER_T1_Block *pBlock, uint8_t LEN){
 
 
 READER_Status READER_T1_SetBlockRedundancyType(READER_T1_Block *pBlock, READER_T1_RedundancyType type){
+	if((type != READER_T1_CRC) && (type != READER_T1_LRC)){
+		return READER_ERR;
+	}
 	
+	pBlock->RedundancyType = type;
 	
+	return READER_OK;
 }
 
 
