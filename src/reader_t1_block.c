@@ -104,7 +104,13 @@ READER_Status READER_T1_SetBlockRedundancyType(READER_T1_Block *pBlock, READER_T
 
 
 READER_Status READER_T1_SetBlockLRC(READER_T1_Block *pBlock, uint8_t LRC){
+	uint8_t currentLEN;	
+	uint8_t *pCurrentLRC;
 	
+	currentLEN = READER_T1_GetBlockLEN(pBlock);
+	pCurrentLRC = pBlock->blockFrame + READER_T1_BLOCKFRAME_LEN_POSITION + currentLEN;
+	
+	return READER_OK;
 }
 
 
