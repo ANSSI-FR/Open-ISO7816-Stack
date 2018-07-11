@@ -187,7 +187,12 @@ uint8_t READER_T1_GetBlockNAD(const READER_T1_Block *pBlock){
 
 
 uint8_t READER_T1_GetBlockPCB(const READER_T1_Block *pBlock){
+	uint8_t *pCurrentPCB;
 	
+	
+	pCurrentPCB = pBlock->blockFrame + READER_T1_BLOCKFRAME_PCB_POSITION;
+	
+	return *pCurrentPCB;
 }
 
 
