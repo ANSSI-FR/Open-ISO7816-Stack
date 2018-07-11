@@ -3,51 +3,51 @@
 
 
 
-READER_Status READER_T1_SetBlockSAD(READER_T1_Block *pBlock, uint8_t SAD){
+READER_Status READER_T1_SetBlockSAD(READER_T1_Block *pBlock, uint8_t blockSAD){
 	uint8_t *pCurrentNAD;
 	
-	if(SAD > 0x07){
+	if(blockSAD > 0x07){
 		return READER_ERR;
 	}
 	
 	pCurrentNAD = pBlock->blockFrame + READER_T1_BLOCKFRAME_NAD_POSITION;
-	*pCurrentNAD = (*pCurrentNAD & 0xF8) | (SAD & 0x07);                              /* Voir ISO7816-3 section 11.3.2.1 */
+	*pCurrentNAD = (*pCurrentNAD & 0xF8) | (blockSAD & 0x07);                              /* Voir ISO7816-3 section 11.3.2.1 */
 	
 	return READER_OK;
 }
 
 
-READER_Status READER_T1_SetBlockDAD(READER_T1_Block *pBlock, uint8_t DAD){
+READER_Status READER_T1_SetBlockDAD(READER_T1_Block *pBlock, uint8_t blockDAD){
 	uint8_t *pCurrentNAD;
 	
-	if(DAD > 0x07){
+	if(blockDAD > 0x07){
 		return READER_ERR;
 	}
 	
 	pCurrentNAD = pBlock->blockFrame + READER_T1_BLOCKFRAME_NAD_POSITION;
-	*pCurrentNAD = (*pCurrentNAD & 0x8F) | (4<<(DAD & 0x07));                              /* Voir ISO7816-3 section 11.3.2.1 */
+	*pCurrentNAD = (*pCurrentNAD & 0x8F) | (4<<(blockDAD & 0x07));                              /* Voir ISO7816-3 section 11.3.2.1 */
 	
 	return READER_OK;
 }
 
 
-READER_Status READER_T1_SetBlockNAD(READER_T1_Block *pBlock, uint8_t NAD){
+READER_Status READER_T1_SetBlockNAD(READER_T1_Block *pBlock, uint8_t blockNAD){
 	uint8_t *pCurrentNAD;
 	
 	
 	pCurrentNAD = pBlock->blockFrame + READER_T1_BLOCKFRAME_NAD_POSITION;
-	*pCurrentNAD = NAD;                                                                   /* Voir ISO7816-3 section 11.3.2.1 */
+	*pCurrentNAD = blockNAD;                                                                   /* Voir ISO7816-3 section 11.3.2.1 */
 	
 	return READER_OK;
 }
 
 
-READER_Status READER_T1_SetBlockPCB(READER_T1_Block *pBlock, uint8_t PCB){
+READER_Status READER_T1_SetBlockPCB(READER_T1_Block *pBlock, uint8_t blockPCB){
 	uint8_t *pCurrentPCB;
 	
 	
 	pCurrentPCB = pBlock->blockFrame + READER_T1_BLOCKFRAME_PCB_POSITION;
-	*pCurrentPCB = PCB;                                                                   /* Voir ISO7816-3 section 11.3.2.1 */
+	*pCurrentPCB = blockPCB;                                                                   /* Voir ISO7816-3 section 11.3.2.1 */
 	
 	return READER_OK;
 }
@@ -78,15 +78,15 @@ READER_Status READER_T1_SetBlockType(READER_T1_Block *pBlock, READER_T1_BlockTyp
 }
 
 
-READER_Status READER_T1_SetBlockLEN(READER_T1_Block *pBlock, uint8_t LEN){
+READER_Status READER_T1_SetBlockLEN(READER_T1_Block *pBlock, uint8_t blockLEN){
 	uint8_t *pCurrentLEN;
 	
-	if(LEN > READER_T1_BLOCK_MAX_DATA_SIZE){
+	if(blockLEN > READER_T1_BLOCK_MAX_DATA_SIZE){
 		return READER_ERR;
 	}
 
 	pCurrentLEN = pBlock->blockFrame + READER_T1_BLOCKFRAME_LEN_POSITION;
-	*pCurrentLEN = LEN;
+	*pCurrentLEN = blockLEN;
 	
 	return READER_OK;
 }
@@ -103,27 +103,27 @@ READER_Status READER_T1_SetBlockRedundancyType(READER_T1_Block *pBlock, READER_T
 }
 
 
-READER_Status READER_T1_SetBlockLRC(READER_T1_Block *pBlock, uint8_t LRC){
+READER_Status READER_T1_SetBlockLRC(READER_T1_Block *pBlock, uint8_t blockLRC){
 	uint8_t currentLEN;	
 	uint8_t *pCurrentLRC;
 	
 	currentLEN = READER_T1_GetBlockLEN(pBlock);
 	pCurrentLRC = pBlock->blockFrame + READER_T1_BLOCKFRAME_LEN_POSITION + currentLEN;
 	
-	*pCurrentLRC = LRC;
+	*pCurrentLRC = blockLRC;
 	
 	return READER_OK;
 }
 
 
-READER_Status READER_T1_SetBlockCRC(READER_T1_Block *pBlock, uint16_t CRC){
+READER_Status READER_T1_SetBlockCRC(READER_T1_Block *pBlock, uint16_t blockCRC){
 	uint8_t currentLEN;	
 	uint16_t *pCurrentCRC;
 	
 	currentLEN = READER_T1_GetBlockLEN(pBlock);
 	pCurrentCRC = (uint16_t*)(pBlock->blockFrame + READER_T1_BLOCKFRAME_LEN_POSITION + currentLEN);
 	
-	*pCurrentCRC = CRC;
+	*pCurrentCRC = blockCRC;
 	
 	return READER_OK;
 }
@@ -148,3 +148,8 @@ READER_Status READER_T1_SetBlockData(READER_T1_Block *pBlock, uint8_t *data, uin
 	
 	return READER_OK;
 }
+
+
+
+
+
