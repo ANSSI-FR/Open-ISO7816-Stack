@@ -245,7 +245,13 @@ uint8_t READER_T1_GetBlockLRC(const READER_T1_Block *pBlock){
 
 
 uint16_t READER_T1_GetBlockCRC(const READER_T1_Block *pBlock){
+	uint8_t currentLEN;	
+	uint16_t *pCurrentCRC;
 	
+	currentLEN = READER_T1_GetBlockLEN(pBlock);
+	pCurrentCRC = (uint16_t*)(pBlock->blockFrame + READER_T1_BLOCKFRAME_LEN_POSITION + currentLEN);
+	
+	return *pCurrentCRC;
 }
 
 
