@@ -256,5 +256,5 @@ uint16_t READER_T1_GetBlockCRC(const READER_T1_Block *pBlock){
 
 
 uint8_t* READER_T1_GetBlockData(const READER_T1_Block *pBlock){
-	
+	return pBlock->blockFrame + READER_T1_BLOCKFRAME_INF_POSITION;
 }
