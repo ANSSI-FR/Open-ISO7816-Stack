@@ -234,7 +234,13 @@ READER_T1_RedundancyType READER_T1_GetBlockRedundancyType(const READER_T1_Block 
 
 
 uint8_t READER_T1_GetBlockLRC(const READER_T1_Block *pBlock){
+	uint8_t currentLEN;	
+	uint8_t *pCurrentLRC;
 	
+	currentLEN = READER_T1_GetBlockLEN(pBlock);
+	pCurrentLRC = pBlock->blockFrame + READER_T1_BLOCKFRAME_LEN_POSITION + currentLEN;
+	
+	return *pCurrentLRC;
 }
 
 
