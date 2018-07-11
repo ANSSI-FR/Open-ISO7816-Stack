@@ -1,7 +1,11 @@
 #include "reader.h"
 
 
-#define READER_T1_BLOC_MAX_DATA_SIZE   254  /* Voir ISO7816-3 section 11.3.2.3 */
+#define READER_T1_BLOCK_MAX_DATA_SIZE     254     /* Voir ISO7816-3 section 11.3.2.3 */
+#define READER_T1_BLOCKFRAME_NAD_POSITION 0       /* Voir ISO7816-3 section 11.3.1   */
+#define READER_T1_BLOCKFRAME_PCB_POSITION 1       /* Voir ISO7816-3 section 11.3.1   */
+#define READER_T1_BLOCKFRAME_LEN_POSITION 2       /* Voir ISO7816-3 section 11.3.1   */
+#define READER_T1_BLOCKFRAME_INF_POSITION 3       /* Voir ISO7816-3 section 11.3.1   */
 
 
 
@@ -35,8 +39,8 @@ enum READER_T1_BlockType{
 
 typedef struct READER_T1_Block READER_T1_Block;
 struct READER_T1_Block{
-	uint8_t blockFrame[READER_T1_BLOC_MAX_DATA_SIZE + 5];  /* INF +NAD +PCB +LEN +CRC/LRC*/
-	uint8_t LEN;                                        /* INF field size             */
+	uint8_t blockFrame[READER_T1_BLOCK_MAX_DATA_SIZE + 5];  /* INF +NAD +PCB +LEN +CRC/LRC*/
+	uint8_t LEN;                                            /* INF field size             */
 	READER_T1_RedundancyType RedundancyType;
 };
 
@@ -50,9 +54,11 @@ READER_Status READER_T1_SetBlockLEN(READER_T1_Block *pBlock, uint8_t LEN);
 READER_Status READER_T1_SetBlockRedundancyType(READER_T1_Block *pBlock, READER_T1_RedundancyType type);
 READER_Status READER_T1_SetBlockLRC(READER_T1_Block *pBlock, uint8_t LRC);
 READER_Status READER_T1_SetBlockCRC(READER_T1_Block *pBlock, uint16_t CRC);
-READER_Status READER_T1_ComputeBlockLRC(READER_T1_Block *pBlock);
-READER_Status READER_T1_ComputeBlockCRC(READER_T1_Block *pBlock);
 READER_Status READER_T1_SetBlockData(READER_T1_Block *pBlock, uint8_t *data, uint8_t dataSize);
+
+
+uint8_t READER_T1_ComputeBlockLRC(READER_T1_Block *pBlock);
+uint16_t READER_T1_ComputeBlockCRC(READER_T1_Block *pBlock);
 
 
 uint8_t READER_T1_GetBlockSAD(const READER_T1_Block *pBlock);
