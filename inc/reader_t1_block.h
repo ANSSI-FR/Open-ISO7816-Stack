@@ -23,7 +23,8 @@ typedef enum READER_T1_BlockType READER_T1_BlockType;
 enum READER_T1_BlockType{
 	READER_T1_SBLOCK                   = (uint32_t)(0x00000000),
 	READER_T1_RBLOCK                   = (uint32_t)(0x00000001),
-	READER_T1_IBLOCK                   = (uint32_t)(0x00000002)
+	READER_T1_IBLOCK                   = (uint32_t)(0x00000002),
+	READER_T1_BLOCK_ERR                = (uint32_t)(0x00000003)
 };
 
 
