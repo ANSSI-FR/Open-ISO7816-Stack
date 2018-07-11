@@ -210,7 +210,7 @@ uint8_t READER_T1_GetBlockDAD(const READER_T1_Block *pBlock){
 	
 	pCurrentNAD = blockFrame + READER_T1_BLOCKFRAME_NAD_POSITION;
 	
-	return (*pCurrentDAD & 0xE0) >> 4;
+	return (*pCurrentNAD & 0xE0) >> 4;
 }
 
 
@@ -434,7 +434,7 @@ READER_Status READER_T1_SendBlock(READER_T1_Block *pBlock, uint32_t timeout){
 
 
 READER_Status READER_T1_RcvBlock(READER_T1_Block *pBlock, uint32_t timeout){
-	
+	/* On recoit d'abord les trois premiers quoiqu'il arrive. Ensuite on decide ... */
 }
 
 
