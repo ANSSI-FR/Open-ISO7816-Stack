@@ -219,7 +219,12 @@ READER_T1_BlockType READER_T1_GetBlockType(const READER_T1_Block *pBlock){
 
 
 uint8_t READER_T1_GetBlockLEN(const READER_T1_Block *pBlock){
+	uint8_t *pCurrentLEN;
 	
+	
+	pCurrentLEN = pBlock->blockFrame + READER_T1_BLOCKFRAME_LEN_POSITION;
+	
+	return *pCurrentLEN;
 }
 
 
