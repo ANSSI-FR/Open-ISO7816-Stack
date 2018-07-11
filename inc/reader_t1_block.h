@@ -7,6 +7,7 @@
 #define READER_T1_BLOCKFRAME_PCB_POSITION 1       /* Voir ISO7816-3 section 11.3.1   */
 #define READER_T1_BLOCKFRAME_LEN_POSITION 2       /* Voir ISO7816-3 section 11.3.1   */
 #define READER_T1_BLOCKFRAME_INF_POSITION 3       /* Voir ISO7816-3 section 11.3.1   */
+#define READER_T1_CRC_POLY                0x91
 
 
 
@@ -73,6 +74,8 @@ READER_T1_RedundancyType READER_T1_GetBlockRedundancyType(const READER_T1_Block 
 uint8_t READER_T1_GetBlockLRC(const READER_T1_Block *pBlock);
 uint16_t READER_T1_GetBlockCRC(const READER_T1_Block *pBlock);
 uint8_t* READER_T1_GetBlockData(const READER_T1_Block *pBlock);
+uint32_t READER_T1_GetBlockTotalSize(const READER_T1_Block *pBlock);
+uint32_t READER_T1_GetBlockSizeWithoutCheck(const READER_T1_Block *pBlock);
 
 
 

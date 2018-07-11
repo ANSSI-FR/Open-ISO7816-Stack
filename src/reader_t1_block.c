@@ -287,6 +287,55 @@ uint8_t READER_T1_ComputeBlockLRC(READER_T1_Block *pBlock){
 }
 
 
-uint16_t READER_T1_ComputeBlockCRC(READER_T1_Block *pBlock){
+uint16_t READER_T1_ComputeBlockCRC(READER_T1_Block *pBlock){	
+	uint16_t crc = 0x0000;
+	uint32_t len;
+	uint8_t currentByte;
+	uint32_t i, j;
 	
+	
+	len = READER_T1_GetBlockSizeWithoutCheck(pBlock);
+	
+	for(i=0; i<len; i++){
+		currentByte = pBlock->blockFrame[i];
+		
+		crc ^= currentByte;
+		
+		for(j=0; j<8; j++){
+			crc ^= READER_T1_CRC_POLY;
+			crc >>= 1;
+		}
+	}
+	
+	return crc;
+}
+
+uint32_t READER_T1_GetBlockTotalSize(const READER_T1_Block *pBlock){
+	READER_T1_RedundancyType checkType;
+	uint32_t checkLen;
+	uint32_t tmpLen;
+	
+	
+	tmpLen = READER_T1_GetBlockSizeWithoutCheck(pBlock);
+	
+	checkType = READER_T1_GetBlockRedundancyType(pBlock);
+	
+	if(checkType == READER_T1_CRC){
+		checkLen = 2;
+	}
+	else{
+		checkLen = 1;
+	}
+	
+	return tmpLen + checkLen;
+}
+
+
+uint32_t READER_T1_GetBlockSizeWithoutCheck(const READER_T1_Block *pBlock){
+	uint8_t dataLEN;
+	
+	
+	dataLEN = READER_T1_GetBlockLEN(pBlock);
+	
+	return READER_T1_BLOCKFRAME_INF_POSITION + (uint32_t)dataLEN;
 }
