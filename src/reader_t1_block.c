@@ -177,7 +177,12 @@ uint8_t READER_T1_GetBlockDAD(const READER_T1_Block *pBlock){
 
 
 uint8_t READER_T1_GetBlockNAD(const READER_T1_Block *pBlock){
+	uint8_t *pCurrentNAD;
 	
+	
+	pCurrentNAD = pBlock->blockFrame + READER_T1_BLOCKFRAME_NAD_POSITION;
+	
+	return *pCurrentNAD;
 }
 
 
