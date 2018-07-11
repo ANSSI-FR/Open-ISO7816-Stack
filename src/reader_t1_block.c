@@ -5,12 +5,16 @@
 
 READER_Status READER_T1_SetBlockSAD(READER_T1_Block *pBlock, uint8_t blockSAD){
 	uint8_t *pCurrentNAD;
+	uint8_t *blockFrame;
+
 	
 	if(blockSAD > 0x07){
 		return READER_ERR;
 	}
 	
-	pCurrentNAD = pBlock->blockFrame + READER_T1_BLOCKFRAME_NAD_POSITION;
+	blockFrame = READER_T1_GetBlockFrame(pBlock);
+	
+	pCurrentNAD = blockFrame + READER_T1_BLOCKFRAME_NAD_POSITION;
 	*pCurrentNAD = (*pCurrentNAD & 0xF8) | (blockSAD & 0x07);                              /* Voir ISO7816-3 section 11.3.2.1 */
 	
 	return READER_OK;
@@ -19,12 +23,15 @@ READER_Status READER_T1_SetBlockSAD(READER_T1_Block *pBlock, uint8_t blockSAD){
 
 READER_Status READER_T1_SetBlockDAD(READER_T1_Block *pBlock, uint8_t blockDAD){
 	uint8_t *pCurrentNAD;
+	uint8_t *blockFrame;
 	
 	if(blockDAD > 0x07){
 		return READER_ERR;
 	}
 	
-	pCurrentNAD = pBlock->blockFrame + READER_T1_BLOCKFRAME_NAD_POSITION;
+	blockFrame = READER_T1_GetBlockFrame(pBlock);
+	
+	pCurrentNAD = blockFrame + READER_T1_BLOCKFRAME_NAD_POSITION;
 	*pCurrentNAD = (*pCurrentNAD & 0x8F) | (4<<(blockDAD & 0x07));                              /* Voir ISO7816-3 section 11.3.2.1 */
 	
 	return READER_OK;
@@ -33,9 +40,12 @@ READER_Status READER_T1_SetBlockDAD(READER_T1_Block *pBlock, uint8_t blockDAD){
 
 READER_Status READER_T1_SetBlockNAD(READER_T1_Block *pBlock, uint8_t blockNAD){
 	uint8_t *pCurrentNAD;
+	uint8_t *blockFrame;
 	
 	
-	pCurrentNAD = pBlock->blockFrame + READER_T1_BLOCKFRAME_NAD_POSITION;
+	blockFrame = READER_T1_GetBlockFrame(pBlock);
+	
+	pCurrentNAD = blockFrame + READER_T1_BLOCKFRAME_NAD_POSITION;
 	*pCurrentNAD = blockNAD;                                                                   /* Voir ISO7816-3 section 11.3.2.1 */
 	
 	return READER_OK;
@@ -44,9 +54,12 @@ READER_Status READER_T1_SetBlockNAD(READER_T1_Block *pBlock, uint8_t blockNAD){
 
 READER_Status READER_T1_SetBlockPCB(READER_T1_Block *pBlock, uint8_t blockPCB){
 	uint8_t *pCurrentPCB;
+	uint8_t *blockFrame;
 	
 	
-	pCurrentPCB = pBlock->blockFrame + READER_T1_BLOCKFRAME_PCB_POSITION;
+	blockFrame = READER_T1_GetBlockFrame(pBlock);
+	
+	pCurrentPCB = blockFrame + READER_T1_BLOCKFRAME_PCB_POSITION;
 	*pCurrentPCB = blockPCB;                                                                   /* Voir ISO7816-3 section 11.3.2.1 */
 	
 	return READER_OK;
@@ -56,9 +69,12 @@ READER_Status READER_T1_SetBlockPCB(READER_T1_Block *pBlock, uint8_t blockPCB){
 READER_Status READER_T1_SetBlockType(READER_T1_Block *pBlock, READER_T1_BlockType type){
 	/* Voir ISO7816-3 section 11.3.2.2 */
 	uint8_t *pCurrentPCB;
+	uint8_t *blockFrame;
 	
+	
+	blockFrame = READER_T1_GetBlockFrame(pBlock);	
 
-	pCurrentPCB = pBlock->blockFrame + READER_T1_BLOCKFRAME_PCB_POSITION;
+	pCurrentPCB = blockFrame + READER_T1_BLOCKFRAME_PCB_POSITION;
 	
 	
 	if(type == READER_T1_IBLOCK){
@@ -80,12 +96,16 @@ READER_Status READER_T1_SetBlockType(READER_T1_Block *pBlock, READER_T1_BlockTyp
 
 READER_Status READER_T1_SetBlockLEN(READER_T1_Block *pBlock, uint8_t blockLEN){
 	uint8_t *pCurrentLEN;
+	uint8_t *blockFrame;
+
 	
 	if(blockLEN > READER_T1_BLOCK_MAX_DATA_SIZE){
 		return READER_ERR;
 	}
 
-	pCurrentLEN = pBlock->blockFrame + READER_T1_BLOCKFRAME_LEN_POSITION;
+	blockFrame = READER_T1_GetBlockFrame(pBlock);
+
+	pCurrentLEN = blockFrame + READER_T1_BLOCKFRAME_LEN_POSITION;
 	*pCurrentLEN = blockLEN;
 	
 	return READER_OK;
@@ -106,9 +126,13 @@ READER_Status READER_T1_SetBlockRedundancyType(READER_T1_Block *pBlock, READER_T
 READER_Status READER_T1_SetBlockLRC(READER_T1_Block *pBlock, uint8_t blockLRC){
 	uint8_t currentLEN;	
 	uint8_t *pCurrentLRC;
+	uint8_t *blockFrame;
+	
+	
+	blockFrame = READER_T1_GetBlockFrame(pBlock);
 	
 	currentLEN = READER_T1_GetBlockLEN(pBlock);
-	pCurrentLRC = pBlock->blockFrame + READER_T1_BLOCKFRAME_LEN_POSITION + currentLEN;
+	pCurrentLRC = blockFrame + READER_T1_BLOCKFRAME_LEN_POSITION + currentLEN;
 	
 	*pCurrentLRC = blockLRC;
 	
@@ -119,9 +143,13 @@ READER_Status READER_T1_SetBlockLRC(READER_T1_Block *pBlock, uint8_t blockLRC){
 READER_Status READER_T1_SetBlockCRC(READER_T1_Block *pBlock, uint16_t blockCRC){
 	uint8_t currentLEN;	
 	uint16_t *pCurrentCRC;
+	uint8_t *blockFrame;
+	
+	
+	blockFrame = READER_T1_GetBlockFrame(pBlock);
 	
 	currentLEN = READER_T1_GetBlockLEN(pBlock);
-	pCurrentCRC = (uint16_t*)(pBlock->blockFrame + READER_T1_BLOCKFRAME_LEN_POSITION + currentLEN);
+	pCurrentCRC = (uint16_t*)(blockFrame + READER_T1_BLOCKFRAME_LEN_POSITION + currentLEN);
 	
 	*pCurrentCRC = blockCRC;
 	
@@ -132,14 +160,17 @@ READER_Status READER_T1_SetBlockCRC(READER_T1_Block *pBlock, uint16_t blockCRC){
 READER_Status READER_T1_SetBlockData(READER_T1_Block *pBlock, uint8_t *data, uint8_t dataSize){
 	uint32_t i;
 	uint8_t *pBlockData;
+	uint8_t *blockFrame;
 	
+	
+	blockFrame = READER_T1_GetBlockFrame(pBlock);
 	
 	if(dataSize > READER_T1_BLOCK_MAX_DATA_SIZE){
 		return READER_ERR;
 	}
 	
 	
-	pBlockData = pBlock->blockFrame + READER_T1_BLOCKFRAME_INF_POSITION;
+	pBlockData = blockFrame + READER_T1_BLOCKFRAME_INF_POSITION;
 	
 	for(i=0; i<dataSize; i++){
 		pBlockData[i] = data[i];
@@ -158,9 +189,13 @@ READER_Status READER_T1_SetBlockData(READER_T1_Block *pBlock, uint8_t *data, uin
 
 uint8_t READER_T1_GetBlockSAD(const READER_T1_Block *pBlock){
 	uint8_t *pCurrentNAD;
+	uint8_t *blockFrame;
 	
 	
-	pCurrentNAD = pBlock->blockFrame + READER_T1_BLOCKFRAME_NAD_POSITION;
+	blockFrame = READER_T1_GetBlockFrame(pBlock);
+	
+	
+	pCurrentNAD = blockFrame + READER_T1_BLOCKFRAME_NAD_POSITION;
 	
 	return (*pCurrentNAD) & 0x07;
 }
@@ -168,9 +203,12 @@ uint8_t READER_T1_GetBlockSAD(const READER_T1_Block *pBlock){
 
 uint8_t READER_T1_GetBlockDAD(const READER_T1_Block *pBlock){
 	uint8_t *pCurrentNAD;
+	uint8_t *blockFrame;
 	
 	
-	pCurrentNAD = pBlock->blockFrame + READER_T1_BLOCKFRAME_NAD_POSITION;
+	blockFrame = READER_T1_GetBlockFrame(pBlock);	
+	
+	pCurrentNAD = blockFrame + READER_T1_BLOCKFRAME_NAD_POSITION;
 	
 	return (*pCurrentDAD & 0xE0) >> 4;
 }
@@ -178,9 +216,12 @@ uint8_t READER_T1_GetBlockDAD(const READER_T1_Block *pBlock){
 
 uint8_t READER_T1_GetBlockNAD(const READER_T1_Block *pBlock){
 	uint8_t *pCurrentNAD;
+	uint8_t *blockFrame;
 	
 	
-	pCurrentNAD = pBlock->blockFrame + READER_T1_BLOCKFRAME_NAD_POSITION;
+	blockFrame = READER_T1_GetBlockFrame(pBlock);
+	
+	pCurrentNAD = blockFrame + READER_T1_BLOCKFRAME_NAD_POSITION;
 	
 	return *pCurrentNAD;
 }
@@ -188,9 +229,12 @@ uint8_t READER_T1_GetBlockNAD(const READER_T1_Block *pBlock){
 
 uint8_t READER_T1_GetBlockPCB(const READER_T1_Block *pBlock){
 	uint8_t *pCurrentPCB;
+	uint8_t *blockFrame;
 	
 	
-	pCurrentPCB = pBlock->blockFrame + READER_T1_BLOCKFRAME_PCB_POSITION;
+	blockFrame = READER_T1_GetBlockFrame(pBlock);	
+	
+	pCurrentPCB = blockFrame + READER_T1_BLOCKFRAME_PCB_POSITION;
 	
 	return *pCurrentPCB;
 }
@@ -220,9 +264,12 @@ READER_T1_BlockType READER_T1_GetBlockType(const READER_T1_Block *pBlock){
 
 uint8_t READER_T1_GetBlockLEN(const READER_T1_Block *pBlock){
 	uint8_t *pCurrentLEN;
+	uint8_t *blockFrame;
 	
 	
-	pCurrentLEN = pBlock->blockFrame + READER_T1_BLOCKFRAME_LEN_POSITION;
+	blockFrame = READER_T1_GetBlockFrame(pBlock);
+	
+	pCurrentLEN = blockFrame + READER_T1_BLOCKFRAME_LEN_POSITION;
 	
 	return *pCurrentLEN;
 }
@@ -236,9 +283,13 @@ READER_T1_RedundancyType READER_T1_GetBlockRedundancyType(const READER_T1_Block 
 uint8_t READER_T1_GetBlockLRC(const READER_T1_Block *pBlock){
 	uint8_t currentLEN;	
 	uint8_t *pCurrentLRC;
+	uint8_t *blockFrame;
+	
+	
+	blockFrame = READER_T1_GetBlockFrame(pBlock);
 	
 	currentLEN = READER_T1_GetBlockLEN(pBlock);
-	pCurrentLRC = pBlock->blockFrame + READER_T1_BLOCKFRAME_LEN_POSITION + currentLEN;
+	pCurrentLRC = blockFrame + READER_T1_BLOCKFRAME_LEN_POSITION + currentLEN;
 	
 	return *pCurrentLRC;
 }
@@ -247,16 +298,24 @@ uint8_t READER_T1_GetBlockLRC(const READER_T1_Block *pBlock){
 uint16_t READER_T1_GetBlockCRC(const READER_T1_Block *pBlock){
 	uint8_t currentLEN;	
 	uint16_t *pCurrentCRC;
+	uint8_t *blockFrame;
+	
+	
+	blockFrame = READER_T1_GetBlockFrame(pBlock);
 	
 	currentLEN = READER_T1_GetBlockLEN(pBlock);
-	pCurrentCRC = (uint16_t*)(pBlock->blockFrame + READER_T1_BLOCKFRAME_LEN_POSITION + currentLEN);
+	pCurrentCRC = (uint16_t*)(blockFrame + READER_T1_BLOCKFRAME_LEN_POSITION + currentLEN);
 	
 	return *pCurrentCRC;
 }
 
 
 uint8_t* READER_T1_GetBlockData(const READER_T1_Block *pBlock){
-	return pBlock->blockFrame + READER_T1_BLOCKFRAME_INF_POSITION;
+	uint8_t *blockFrame;
+	
+	blockFrame = READER_T1_GetBlockFrame(pBlock);
+	
+	return blockFrame + READER_T1_BLOCKFRAME_INF_POSITION;
 }
 
 
@@ -288,16 +347,20 @@ uint8_t READER_T1_ComputeBlockLRC(READER_T1_Block *pBlock){
 
 
 uint16_t READER_T1_ComputeBlockCRC(READER_T1_Block *pBlock){	
+	uint8_t *blockFrame;
 	uint16_t crc = 0x0000;
 	uint32_t len;
 	uint8_t currentByte;
 	uint32_t i, j;
 	
 	
+	blockFrame = READER_T1_GetBlockFrame(pBlock);
+	
+	
 	len = READER_T1_GetBlockSizeWithoutCheck(pBlock);
 	
 	for(i=0; i<len; i++){
-		currentByte = pBlock->blockFrame[i];
+		currentByte = blockFrame[i];
 		
 		crc ^= currentByte;
 		
@@ -342,6 +405,10 @@ uint32_t READER_T1_GetBlockSizeWithoutCheck(const READER_T1_Block *pBlock){
 
 
 
+uint8_t* READER_T1_GetBlockFrame(const READER_T1_Block *pBlock){
+	return pBlock->blockFrame;
+}
+
 
 
 READER_Status READER_T1_ForgeBlock(READER_T1_Block *pBlock, READER_T1_RedundancyType rType){
@@ -352,10 +419,14 @@ READER_Status READER_T1_ForgeBlock(READER_T1_Block *pBlock, READER_T1_Redundancy
 
 
 READER_Status READER_T1_SendBlock(READER_T1_Block *pBlock, uint32_t timeout){
+	READER_Status retVal;
 	
+	retVal = READER_HAL_SendCharFrame();
 }
 
 
 READER_Status READER_T1_RcvBlock(READER_T1_Block *pBlock, uint32_t timeout){
 	
 }
+
+

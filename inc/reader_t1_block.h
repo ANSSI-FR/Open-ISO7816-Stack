@@ -76,6 +76,7 @@ uint16_t READER_T1_GetBlockCRC(const READER_T1_Block *pBlock);
 uint8_t* READER_T1_GetBlockData(const READER_T1_Block *pBlock);
 uint32_t READER_T1_GetBlockTotalSize(const READER_T1_Block *pBlock);
 uint32_t READER_T1_GetBlockSizeWithoutCheck(const READER_T1_Block *pBlock);
+uint8_t* READER_T1_GetBlockFrame(const READER_T1_Block *pBlock);
 
 
 
