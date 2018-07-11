@@ -153,3 +153,59 @@ READER_Status READER_T1_SetBlockData(READER_T1_Block *pBlock, uint8_t *data, uin
 
 
 
+
+
+
+uint8_t READER_T1_GetBlockSAD(const READER_T1_Block *pBlock){
+	uint8_t *pCurrentNAD;
+	
+	
+	pCurrentNAD = pBlock->blockFrame + READER_T1_BLOCKFRAME_NAD_POSITION;
+	
+	return (*pCurrentNAD) & 0x07;
+}
+
+
+uint8_t READER_T1_GetBlockDAD(const READER_T1_Block *pBlock){
+	
+}
+
+
+uint8_t READER_T1_GetBlockNAD(const READER_T1_Block *pBlock){
+	
+}
+
+
+uint8_t READER_T1_GetBlockPCB(const READER_T1_Block *pBlock){
+	
+}
+
+
+READER_T1_BlockType READER_T1_GetBlockType(const READER_T1_Block *pBlock){
+	
+}
+
+
+uint8_t READER_T1_GetBlockLEN(const READER_T1_Block *pBlock){
+	
+}
+
+
+READER_T1_RedundancyType READER_T1_GetBlockRedundancyType(const READER_T1_Block *pBlock){
+	
+}
+
+
+uint8_t READER_T1_GetBlockLRC(const READER_T1_Block *pBlock){
+	
+}
+
+
+uint16_t READER_T1_GetBlockCRC(const READER_T1_Block *pBlock){
+	
+}
+
+
+uint8_t* READER_T1_GetBlockData(const READER_T1_Block *pBlock){
+	
+}
