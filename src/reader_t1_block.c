@@ -229,7 +229,7 @@ uint8_t READER_T1_GetBlockLEN(const READER_T1_Block *pBlock){
 
 
 READER_T1_RedundancyType READER_T1_GetBlockRedundancyType(const READER_T1_Block *pBlock){
-	
+	return pBlock->RedundancyType;
 }
 
 
