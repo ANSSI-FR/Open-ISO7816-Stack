@@ -79,7 +79,7 @@ uint32_t READER_T1_GetBlockSizeWithoutCheck(const READER_T1_Block *pBlock);
 
 
 
-READER_Status READER_T1_ForgeBlock(READER_T1_Block *pBlock);
+READER_Status READER_T1_ForgeBlock(READER_T1_Block *pBlock, READER_T1_RedundancyType rType);
 READER_Status READER_T1_SendBlock(READER_T1_Block *pBlock, uint32_t timeout);
 READER_Status READER_T1_RcvBlock(READER_T1_Block *pBlock, uint32_t timeout);
 

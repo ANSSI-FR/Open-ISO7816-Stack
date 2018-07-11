@@ -339,3 +339,23 @@ uint32_t READER_T1_GetBlockSizeWithoutCheck(const READER_T1_Block *pBlock){
 	
 	return READER_T1_BLOCKFRAME_INF_POSITION + (uint32_t)dataLEN;
 }
+
+
+
+
+
+READER_Status READER_T1_ForgeBlock(READER_T1_Block *pBlock, READER_T1_RedundancyType rType){
+	pBlock->RedundancyType = rType;
+	
+	return READER_OK;
+}
+
+
+READER_Status READER_T1_SendBlock(READER_T1_Block *pBlock, uint32_t timeout){
+	
+}
+
+
+READER_Status READER_T1_RcvBlock(READER_T1_Block *pBlock, uint32_t timeout){
+	
+}
