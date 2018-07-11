@@ -197,12 +197,13 @@ uint8_t READER_T1_GetBlockPCB(const READER_T1_Block *pBlock){
 
 
 READER_T1_BlockType READER_T1_GetBlockType(const READER_T1_Block *pBlock){
+	/* Voir ISO7816-3 section 11.3.2.2 */
 	uint8_t currentPCB;
 	
 	
 	currentPCB = READER_T1_GetBlockPCB(pBlock);
 	
-	if((currentPCB & 0x80) == 0){
+	if((currentPCB & 0x80) == 0x00){
 		return READER_T1_IBLOCK;
 	}
 	else if((currentPCB & 0xC0) == 0x80){
