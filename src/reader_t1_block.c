@@ -420,8 +420,16 @@ READER_Status READER_T1_ForgeBlock(READER_T1_Block *pBlock, READER_T1_Redundancy
 
 READER_Status READER_T1_SendBlock(READER_T1_Block *pBlock, uint32_t timeout){
 	READER_Status retVal;
+	uint8_t *blockFrame;
+	uint32_t blockFrameSize;
 	
-	retVal = READER_HAL_SendCharFrame();
+	blockFrame = READER_T1_GetBlockFrame(pBlock);
+	blockFrameSize = READER_T1_GetBlockTotalSize(pBlock);
+	
+	retVal = READER_HAL_SendCharFrame(blockFrame, blockFrameSize, timeout);
+	if(retVal != READER_OK) return retVal;
+	
+	return READER_OK;
 }
 
 
