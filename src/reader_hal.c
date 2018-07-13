@@ -716,7 +716,9 @@ READER_Status READER_HAL_SetBWI(uint32_t BWI){
 
 
 READER_Status READER_HAL_SetBGT(uint32_t BGT){
+	globalCurrentSettings.BGT = BGT;
 	
+	return READER_OK;
 }
 
 
