@@ -681,7 +681,7 @@ READER_Status READER_HAL_SetIFSD(uint32_t IFSD){
 
 
 READER_Status READER_HAL_SetBWT(uint32_t BWT){
-	
+	globalCurrentSettings.BWT = BWT;
 }
 
 
