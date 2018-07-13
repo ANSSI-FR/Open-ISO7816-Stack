@@ -692,7 +692,26 @@ READER_Status READER_HAL_SetBWT(uint32_t BWT){
 
 
 READER_Status READER_HAL_SetBWI(uint32_t BWI){
+	READER_Status retVal;
+	uint32_t BWTEtu, BWTMili;
+	uint32_t currentFreq, cuurentF, currentD;
 	
+	currentFreq = READER_HAL_GetFreq();
+	currentF = READER_HAL_GetFi();
+	currentD = READER_HAL_GetDi();
+	
+	BWTEtu = READER_UTILS_ComputeBWTEtu(BWI, currentFreq);
+	BWTMili = READER_UTILS_ComputeBWTMili(BWTEtu, currentF, currentD, currentFreq);
+	
+	/* On modifie le BWT en consequence  */
+	retVal = READER_HAL_SetBWT(BWTMili);
+	if(retVal != READER_OK) return retVal;
+	
+	
+	globalCurrentSettings.BWI = BWI;
+	
+	
+	return READER_OK;
 }
 
 
