@@ -672,16 +672,22 @@ READER_Status READER_HAL_SetWT(uint32_t newWT){
 
 READER_Status READER_HAL_SetIFSC(uint32_t IFSC){
 	globalCurrentSettings.IFSC = IFSC;
+	
+	return READER_OK;
 }
 
 
 READER_Status READER_HAL_SetIFSD(uint32_t IFSD){
 	globalCurrentSettings.IFSD = IFSD;
+	
+	return READER_OK;
 }
 
 
 READER_Status READER_HAL_SetBWT(uint32_t BWT){
 	globalCurrentSettings.BWT = BWT;
+	
+	return READER_OK;
 }
 
 
