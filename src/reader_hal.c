@@ -65,17 +65,18 @@ READER_Status READER_HAL_Init(void){
 	HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_5);   // Attention pas de valeur de retour
 	
 	
-	/* Initialisation de tous les peripheriques materiels */
+	/* Initialisation de tous les peripheriques materiels                                      */
 	if(READER_PERIPH_Init() != READER_OK) return READER_ERR;
 	
 	
-	/* Configuration de tous les etats initiaux des E/S */
+	/* Configuration de tous les etats initiaux des E/S                                        */
 	if(READER_HAL_SetIOLine(READER_HAL_STATE_OFF) != READER_OK)       return READER_ERR;
 	if(READER_HAL_SetPwrLine(READER_HAL_STATE_OFF) != READER_OK)      return READER_ERR;
 	if(READER_HAL_SetRstLine(READER_HAL_STATE_OFF) != READER_OK)      return READER_ERR;
 	if(READER_HAL_SetClkLine(READER_HAL_STATE_OFF) != READER_OK)      return READER_ERR;
 	
-	/* Initialisation du WT, du GT, du Etu (Fi, Di) et de f */
+	/* Initialisation du WT, du GT, du Etu (Fi, Di) et de f                                    */
+	/* Attention, important que pour la toute premiere init, F et D soint init en premier      */
 	//retVal = READER_HAL_SetWT(READER_DEFAULT_WT_MILI);                if(retVal != READER_OK) return retVal;
 	retVal = READER_HAL_SetGT(READER_DEFAULT_GT);                     if(retVal != READER_OK) return retVal;
 	retVal = READER_HAL_SetFi(READER_DEFAULT_FI);                     if(retVal != READER_OK) return retVal;
@@ -434,6 +435,8 @@ READER_Status READER_HAL_SetFreq(uint32_t newFreq){
 	uint32_t oldFreq, oldBaudRate;
 	uint32_t newBaudRate;
 	uint32_t newWaitTime;
+	uint32_t newBlockWaitTimeEtu, newBlockWaitTimeMili;
+	uint32_t BWI;
 	
 	/* On recupere la frequence et la baudrate actuel. Peut aussi etre recupere a partir des infos de *currentSettings */
 	oldFreq = READER_UTILS_GetCardFreq(168000000, 1, 4, smartcardHandleStruct.Init.Prescaler);
@@ -447,9 +450,15 @@ READER_Status READER_HAL_SetFreq(uint32_t newFreq){
 	if(HAL_SMARTCARD_Init(&smartcardHandleStruct) != HAL_OK) return READER_ERR;
 	
 	/* On modifie en consequence la valeur du Wait Time (WT) (car WT est dependant de f) */
-	newWaitTime = READER_UTILS_ComputeWT1(newFreq, globalCurrentSettings.Fi);
+	newWaitTime = READER_UTILS_ComputeWT1(newFreq, READER_HAL_GetFi());
 	retVal = READER_HAL_SetWT(newWaitTime); 
 	if(retVal != READER_OK) return retVal;
+	
+	/* On modifie en consequence la valeur du BWT Voir ISO7816-3 section 11.4.3 */
+	BWI = READER_HAL_GetBWI();
+	newBlockWaitTimeEtu = READER_UTILS_ComputeBWTEtu(BWI, newFreq);
+	newBlockWaitTimeMili = READER_UTILS_ComputeBWTMili(newBlockWaitTimeEtu, READER_HAL_GetFi(), READER_HAL_GetDi(), newFreq);
+	READER_HAL_SetBWT(newBlockWaitTimeMili);
 	
 	/* Mise a jour des informations dans la structure qui contient les parametres de communication */
 	globalCurrentSettings.f = newFreq;
