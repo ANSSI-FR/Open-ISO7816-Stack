@@ -51,6 +51,7 @@ struct READER_HAL_CommSettings{
 	uint32_t Di;
 	uint32_t WT;
 	uint32_t GT;
+	uint32_t BWI;
 	uint32_t BWT;
 	uint32_t BGT;
 	uint32_t IFSC;
