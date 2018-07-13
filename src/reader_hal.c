@@ -670,6 +670,34 @@ READER_Status READER_HAL_SetWT(uint32_t newWT){
 }
 
 
+READER_Status READER_HAL_SetIFSC(uint32_t IFSC){
+	globalCurrentSettings.IFSC = IFSC;
+}
+
+
+READER_Status READER_HAL_SetIFSD(uint32_t IFSD){
+	globalCurrentSettings.IFSD = IFSD;
+}
+
+
+READER_Status READER_HAL_SetBWT(uint32_t BWT){
+	
+}
+
+
+READER_Status READER_HAL_SetBWI(uint32_t BWI){
+	
+}
+
+
+READER_Status READER_HAL_SetBGT(uint32_t BGT){
+	
+}
+
+
+
+
+
 /**
  * \fn uint32_t READER_HAL_GetWT(void)
  * \brief Cette fonction permet d'obtenir le Wait Time (WT) selon les parametres de communication actuels. Attention cette fonction dépend de la variable globale : globalCurrentSettings. Cette variable est locale au fichier "reader_hal.c".
