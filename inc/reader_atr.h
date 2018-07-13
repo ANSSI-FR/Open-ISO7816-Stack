@@ -121,3 +121,5 @@ READER_Status READER_ATR_ApplySettings(READER_ATR_Atr *atr);
 void READER_ATR_ErrHandler(void);
 
 READER_Status READER_ATR_CheckTS(uint8_t TS);
+
+uint32_t READER_ATR_GetBWI(READER_ATR_Atr *pAtr);
