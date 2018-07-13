@@ -103,12 +103,14 @@ uint32_t READER_UTILS_ComputeBWTEtu(uint32_t BWI, uint32_t Fd, uint32_t f){
 }
 
 
-uint32_t READER_UTILS_ComputeBWTEtuMili(uint32_t BWT, uint32_t etuMili){
+uint32_t READER_UTILS_ComputeBWTEtuMili(uint32_t BWT, uint32_t F, uint32_t D, uint32_t f){
+	uint32_t etuMili = READER_UTILS_ComputeEtuMili(F, D, f);
+	
 	return BWT * etuMili;
 }
 
 
 uint32_t READER_UTILS_ComputeEtuMili(uint32_t F, uint32_t D, uint32_t f){
 	/* Voir ISO7816-3 section 7.1 */
-	return (uint32_t)(   (  F / (float)(D)  ) *   (   1 / (float)(f)   )    );
+	return (uint32_t)(   (  F / (float)(D)  ) *   (   1 / (float)(f)   )    ) * 1000;
 }

@@ -18,7 +18,7 @@ uint32_t READER_UTILS_ComputeWT1(uint32_t f, uint32_t Fi);
 uint32_t READER_UTILS_ComputeWT2(uint32_t baudRate, uint32_t Di);
 uint32_t READER_UTILS_ComputeBestFreq(uint32_t maxFreq);
 uint32_t READER_UTILS_ComputeBWTEtu(uint32_t BWI, uint32_t Fd, uint32_t f);
-uint32_t READER_UTILS_ComputeBWTEtuMili(uint32_t BWT, uint32_t etuMili);
+uint32_t READER_UTILS_ComputeBWTEtuMili(uint32_t BWT, uint32_t F, uint32_t D, uint32_t f);
 uint32_t READER_UTILS_ComputeEtuMili(uint32_t F, uint32_t D, uint32_t f);
 
 #endif
