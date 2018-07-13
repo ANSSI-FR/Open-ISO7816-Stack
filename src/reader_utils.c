@@ -90,9 +90,10 @@ uint32_t READER_UTILS_ComputeWT2(uint32_t baudRate, uint32_t Di){
 
 
 
-uint32_t READER_UTILS_ComputeBWTEtu(uint32_t BWI, uint32_t Fd, uint32_t f){
+uint32_t READER_UTILS_ComputeBWTEtu(uint32_t BWI, uint32_t f){
 	/* Voir ISO7816-3 section 11.4.3 */
 	uint32_t i;
+	uint32_t Fd = READER_DEFAULT_FI;
 	float power = 1;
 	
 	for(i=0; i<BWI; i++){
@@ -103,10 +104,10 @@ uint32_t READER_UTILS_ComputeBWTEtu(uint32_t BWI, uint32_t Fd, uint32_t f){
 }
 
 
-uint32_t READER_UTILS_ComputeBWTEtuMili(uint32_t BWT, uint32_t F, uint32_t D, uint32_t f){
+uint32_t READER_UTILS_ComputeBWTMili(uint32_t BWTEtu, uint32_t F, uint32_t D, uint32_t f){
 	uint32_t etuMili = READER_UTILS_ComputeEtuMili(F, D, f);
 	
-	return BWT * etuMili;
+	return BWTEtu * etuMili;
 }
 
 
