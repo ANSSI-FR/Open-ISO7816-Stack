@@ -138,7 +138,7 @@ READER_Status READER_T1_SetBlockLRC(READER_T1_Block *pBlock, uint8_t blockLRC){
 	
 	*pCurrentLRC = blockLRC;
 	
-	/* On mets a jour le RedundancyType a LRC */
+	/* On mets a jour le RedundancyType a LRC    */
 	retVal = READER_T1_SetBlockRedundancyType(pBlock, READER_T1_LRC);
 	if(retVal != READER_OK) return retVal;
 	
@@ -152,12 +152,18 @@ READER_Status READER_T1_SetBlockCRC(READER_T1_Block *pBlock, uint16_t blockCRC){
 	uint8_t *blockFrame;
 	
 	
+	/* On recupere un pointeur sur le block brut */
 	blockFrame = READER_T1_GetBlockFrame(pBlock);
 	
+	/* On place le CRC au bon endroit            */
 	currentLEN = READER_T1_GetBlockLEN(pBlock);
 	pCurrentCRC = (uint16_t*)(blockFrame + READER_T1_BLOCKFRAME_LEN_POSITION + currentLEN);
 	
 	*pCurrentCRC = blockCRC;
+	
+	/* On mets a jour le RedundancyType a LRC    */
+	retVal = READER_T1_SetBlockRedundancyType(pBlock, READER_T1_CRC);
+	if(retVal != READER_OK) return retVal;
 	
 	return READER_OK;
 }
