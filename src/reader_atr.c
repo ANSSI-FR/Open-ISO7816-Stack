@@ -111,7 +111,7 @@ READER_Status READER_ATR_Receive(READER_ATR_Atr *atr){
 READER_Status READER_ATR_ApplySettings(READER_ATR_Atr *atr){
 	READER_Status retVal;
 	uint32_t Fi, Di, R, f;
-	uint32_t IFSC, BWI, BWTEtu, BWTMili, rType;
+	uint32_t IFSC, BWI, BWTEtu, BWTMili, rType, WI;
 	uint32_t newGT;
 	
 	/* Application des parametres Fi et Di (qui definissent le ETU) */
@@ -136,7 +136,9 @@ READER_Status READER_ATR_ApplySettings(READER_ATR_Atr *atr){
 	if(retVal != READER_OK) return retVal;
 	
 	/* Application de WI                        */
-	
+	WI = READER_ATR_GetWI(pAtr);
+	retVal = READER_HAL_SetWI(WI);
+	if(retVal != READER_OK) return retVal;
 	
 	/* Application du parametre GT (guard time) */
 	Fi = READER_HAL_GetFi();
