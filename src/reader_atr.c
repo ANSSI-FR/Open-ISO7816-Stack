@@ -144,6 +144,7 @@ READER_Status READER_ATR_ApplySettings(READER_ATR_Atr *atr){
 	if(retVal != READER_OK) return retVal; 
 	
 	/* Application de parametres T1 */
+	
  
 	
 	return READER_OK;   
@@ -530,5 +531,11 @@ uint32_t READER_ATR_GetBWI(READER_ATR_Atr *pAtr){
 	
 	byte = pAtr->T1Protocol.TBBytes[0];
 	
-	return (uint32_t)((byte & 0xF0) >> 4);                           /* Voir ISO7816-3 section 11.4.3 */
+	if(byte != READER_ATR_NOT_INDICATED){
+		return (uint32_t)((byte & 0xF0) >> 4);                           /* Voir ISO7816-3 section 11.4.3 */
+	}
+	else{
+		return READER_DEFAULT_BWI;
+	}
+	
 }
