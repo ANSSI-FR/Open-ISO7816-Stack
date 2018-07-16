@@ -135,6 +135,9 @@ READER_Status READER_ATR_ApplySettings(READER_ATR_Atr *atr){
 	retVal = READER_HAL_SetEtu(Fi, Di);
 	if(retVal != READER_OK) return retVal;
 	
+	/* Application de WI                        */
+	
+	
 	/* Application du parametre GT (guard time) */
 	Fi = READER_HAL_GetFi();
 	Di = READER_HAL_GetDi();
@@ -587,6 +590,22 @@ uint32_t READER_ATR_GetIFSC(READER_ATR_Atr *pAtr){
 	
 	if(byte == READER_ATR_NOT_INDICATED){
 		return READER_DEFAULT_IFSC;
+	}
+	else{
+		return (uint32_t)byte;
+	}
+}
+
+
+uint32_t READER_ATR_GetWI(READER_ATR_Atr *pAtr){
+	/* Voir ISO7816-3 section 10.2 */
+	uint8_t byte;
+	
+	
+	byte = pAtr->T1Protocol.TCBytes[1];
+	
+	if(byte == READER_ATR_NOT_INDICATED){
+		return READER_DEFAULT_WI;
 	}
 	else{
 		return (uint32_t)byte;

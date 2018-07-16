@@ -117,6 +117,7 @@ READER_ATR_EncodingConv READER_ATR_GetEncoding(uint8_t TS);
 uint32_t READER_ATR_GetBWI(READER_ATR_Atr *pAtr);
 uint32_t READER_ATR_GetRedundancyType(READER_ATR_Atr *pAtr);
 uint32_t READER_ATR_GetIFSC(READER_ATR_Atr *pAtr);
+uint32_t READER_ATR_GetWI(READER_ATR_Atr *pAtr);
 
 READER_Status READER_ATR_Receive(READER_ATR_Atr *atr);
 READER_Status READER_ATR_InitStruct(READER_ATR_Atr *atr);
