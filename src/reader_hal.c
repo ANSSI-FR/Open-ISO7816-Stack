@@ -776,6 +776,11 @@ uint32_t READER_HAL_GetWI(void){
 }
 
 
+uint32_t READER_HAL_GetBWT(void){
+	return globalCurrentSettings.BWT;
+}
+
+
 /**
  * \fn uint32_t READER_HAL_GetGT(void)
  * \brief Cette fonction retourne le Guard Time (GT) actuellement utilisé par toutes les fonctions de la bibliothèque. 
