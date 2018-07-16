@@ -780,6 +780,10 @@ uint32_t READER_HAL_GetBWT(void){
 	return globalCurrentSettings.BWT;
 }
 
+uint32_t READER_HAL_GetBWI(void){
+	return globalCurrentSettings.BWI;
+}
+
 
 /**
  * \fn uint32_t READER_HAL_GetGT(void)

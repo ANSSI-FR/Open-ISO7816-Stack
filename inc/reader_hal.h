@@ -89,6 +89,7 @@ uint32_t READER_HAL_GetFreq(void);
 uint32_t READER_HAL_GetFi(void);
 uint32_t READER_HAL_GetDi(void);
 uint32_t READER_HAL_GetBWT(void);
+uint32_t READER_HAL_GetBWI(void);
 uint32_t READER_HAL_GetRedunancyType(void);
 uint32_t READER_HAL_GetWI(void);
 
