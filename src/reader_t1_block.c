@@ -477,7 +477,7 @@ READER_Status READER_T1_RcvBlock(READER_T1_Block *pBlock, uint32_t timeout){
 	
 	/* Selon le prologue recu ... */
 	rType = READER_T1_GetBlockRedundancyType(pBlock);
-	buffDataSize = READER_T1_GetBlockLEN(pBlock);
+	buffDataSize = MIN(READER_T1_GetBlockLEN(pBlock), READER_T1_BLOCK_MAX_DATA_SIZE);
 	
 	
 	return READER_OK;
