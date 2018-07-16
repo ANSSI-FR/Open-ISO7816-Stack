@@ -787,6 +787,11 @@ uint32_t READER_HAL_GetDi(void){
 	return globalCurrentSettings.Di;
 }
 
+uint32_t READER_HAL_GetRedunancyType(void){
+	return globalCurrentSettings.redundancyType;
+}
+
+
 
 void READER_HAL_ErrHandler(void){
 	while(1){
@@ -802,6 +807,7 @@ void READER_HAL_Delay(uint32_t tMili){
 uint32_t READER_HAL_GetTick(void){
 	return HAL_GetTick();
 }
+
 
 
 /**
