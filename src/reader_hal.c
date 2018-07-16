@@ -442,7 +442,7 @@ READER_Status READER_HAL_SetFreq(uint32_t newFreq){
 	uint32_t newBaudRate;
 	uint32_t newWaitTime;
 	uint32_t newBlockWaitTimeEtu, newBlockWaitTimeMili;
-	uint32_t BWI;
+	uint32_t BWI, WI;
 	
 	/* On recupere la frequence et la baudrate actuel. Peut aussi etre recupere a partir des infos de *currentSettings */
 	oldFreq = READER_UTILS_GetCardFreq(168000000, 1, 4, smartcardHandleStruct.Init.Prescaler);
@@ -456,7 +456,8 @@ READER_Status READER_HAL_SetFreq(uint32_t newFreq){
 	if(HAL_SMARTCARD_Init(&smartcardHandleStruct) != HAL_OK) return READER_ERR;
 	
 	/* On modifie en consequence la valeur du Wait Time (WT) (car WT est dependant de f) */
-	newWaitTime = READER_UTILS_ComputeWT1(newFreq, READER_HAL_GetFi());
+	WI = READER_HAL_GetWI();
+	newWaitTime = READER_UTILS_ComputeWT1(newFreq, READER_HAL_GetFi(), WI);
 	retVal = READER_HAL_SetWT(newWaitTime); 
 	if(retVal != READER_OK) return retVal;
 	
@@ -484,6 +485,7 @@ READER_Status READER_HAL_SetEtu(uint32_t Fi, uint32_t Di){
 	READER_Status retVal;
 	uint32_t freq, newBaudRate;
 	uint32_t newWT;
+	uint32_t WI;
 	
 	/* On recupere les parametres de communication actuels. On aurait aussi pu le faire a partir de la structure globalCurrentSettings */
 	freq = READER_UTILS_GetCardFreq(168000000, 1, 4, smartcardHandleStruct.Init.Prescaler);
@@ -497,7 +499,8 @@ READER_Status READER_HAL_SetEtu(uint32_t Fi, uint32_t Di){
 	if(HAL_SMARTCARD_Init(&smartcardHandleStruct) != HAL_OK) return READER_ERR;
 	
 	/* Le changement de l'etu a pour consequence la modification du Wait Time (WT) */
-	newWT = READER_UTILS_ComputeWT1(freq, Fi);
+	WI = READER_HAL_GetWI();
+	newWT = READER_UTILS_ComputeWT1(freq, Fi, WI);
 	retVal = READER_HAL_SetWT(newWT);
 	if(retVal != READER_OK) return retVal;	
 	

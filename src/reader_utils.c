@@ -64,7 +64,7 @@ uint32_t READER_UTILS_ComputeBestFreq(uint32_t maxFreq){
  * \param f Fréquence actuellement fournie à la carte.
  * \param Di "Clock rate adjustement integer" actuellement utilisé pour communiquer. Voir ISO7816-3 section 7.1.
  */
-uint32_t READER_UTILS_ComputeWT1(uint32_t f, uint32_t Fi){
+uint32_t READER_UTILS_ComputeWT1(uint32_t f, uint32_t Fi, uint32_t WI){
 	/* WT = WI * 960 * (Fi/f)    ISO7816-3 section 10.2                    */
 	/* baudRate = 1/1etu    =>   BR = 1/((F/D)*(1/F))   =>  BR = f*(D/F)   */
 	/* f = BR * (F/D)                                                      */
@@ -72,7 +72,7 @@ uint32_t READER_UTILS_ComputeWT1(uint32_t f, uint32_t Fi){
 	/* WTmili  = WT * 1000                                                 */
 	/* On ajoute +1 pour eviter troncature a 0                             */
 	
-	return (uint32_t)(1000 * READER_DEFAULT_WI * 960 * ((float)Fi / (float)f)) + 1;
+	return (uint32_t)(1000 * WI * 960 * ((float)Fi / (float)f)) + 1;
 }
 
 /**
@@ -82,9 +82,9 @@ uint32_t READER_UTILS_ComputeWT1(uint32_t f, uint32_t Fi){
  * \param f Fréquence actuellement fournie à la carte.
  * \param Fi "Clock rate conversion integer" actuellement utilisé pour communiquer. Voir ISO7816-3 section 7.1.
  */
-uint32_t READER_UTILS_ComputeWT2(uint32_t baudRate, uint32_t Di){
+uint32_t READER_UTILS_ComputeWT2(uint32_t baudRate, uint32_t Di, uint32_t WI){
 	/* Voir explications de la fonction READER_UTILS_ComputeWT1()          */
-	return (uint32_t)(1000 * (float)(READER_DEFAULT_WI * 960 * Di) / (float)baudRate) + 1;
+	return (uint32_t)(1000 * (float)(WI * 960 * Di) / (float)baudRate) + 1;
 }
 
 
