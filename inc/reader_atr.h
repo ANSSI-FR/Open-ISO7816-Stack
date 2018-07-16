@@ -114,6 +114,9 @@ READER_ATR_ClockStopIndicator READER_ATR_GetClockStopIndic(uint8_t TA15);
 READER_ATR_ClassIndicator READER_ATR_GetClassIndic(uint8_t TA15);
 READER_ATR_UseOfSPU READER_ATR_GetUseSPU(uint8_t TB15);
 READER_ATR_EncodingConv READER_ATR_GetEncoding(uint8_t TS);
+uint32_t READER_ATR_GetBWI(READER_ATR_Atr *pAtr);
+uint32_t READER_ATR_GetRedundancyType(READER_ATR_Atr *pAtr);
+uint32_t READER_ATR_GetIFSC(READER_ATR_Atr *pAtr);
 
 READER_Status READER_ATR_Receive(READER_ATR_Atr *atr);
 READER_Status READER_ATR_InitStruct(READER_ATR_Atr *atr);
@@ -122,6 +125,3 @@ READER_Status READER_ATR_ApplySettings(READER_ATR_Atr *atr);
 void READER_ATR_ErrHandler(void);
 
 READER_Status READER_ATR_CheckTS(uint8_t TS);
-
-uint32_t READER_ATR_GetBWI(READER_ATR_Atr *pAtr);
-uint32_t READER_ATR_GetRedundancyType(READER_ATR_Atr *pAtr);

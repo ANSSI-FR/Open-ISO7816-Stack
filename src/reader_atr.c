@@ -562,3 +562,19 @@ uint32_t READER_ATR_GetRedundancyType(READER_ATR_Atr *pAtr){
 		}
 	}
 }
+
+
+uint32_t READER_ATR_GetIFSC(READER_ATR_Atr *pAtr){
+	/* Voir ISO7816-3 section 11.4.2 */
+	uint8_t byte;
+	
+	
+	byte = pAtr->T1Protocol.TABytes[0];
+	
+	if(byte == READER_ATR_NOT_INDICATED){
+		return READER_DEFAULT_IFSC;
+	}
+	else{
+		return (uint32_t)byte;
+	}
+}
