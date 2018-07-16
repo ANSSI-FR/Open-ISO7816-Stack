@@ -56,6 +56,7 @@ struct READER_HAL_CommSettings{
 	uint32_t BGT;
 	uint32_t IFSC;
 	uint32_t IFSD;
+	uint32_t redundancyType;
 };
 
 
