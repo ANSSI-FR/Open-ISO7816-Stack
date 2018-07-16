@@ -679,9 +679,20 @@ READER_Status READER_HAL_SetWT(uint32_t newWT){
 }
 
 READER_Status READER_HAL_SetWI(uint32_t WI){
+	READER_Status retVal;
+	uint32_t WTMili;
+	uint32_t f;
+	uint32_t Fi;
+	
 	globalCurrentSettings.WI = WI;
 	
 	/* Modification de WT en consequence. Voir ISO7816-3 section 10.2 */
+	f = READER_HAL_GetFreq();
+	Fi = READER_HAL_GetFi();
+	
+	WTMili = READER_UTILS_ComputeWT1(f, Fi, WI);
+	retVal = READER_HAL_SetWT(WTMili);
+	if(retVal != READER_OK) return retVal;
 	
 	
 	return READER_OK;
