@@ -675,6 +675,15 @@ READER_Status READER_HAL_SetWT(uint32_t newWT){
 	return READER_OK;
 }
 
+READER_Status READER_HAL_SetWI(uint32_t WI){
+	globalCurrentSettings.WI = WI;
+	
+	/* Modification de WT en consequence. Voir ISO7816-3 section 10.2 */
+	
+	
+	return READER_OK;
+}
+
 
 READER_Status READER_HAL_SetIFSC(uint32_t IFSC){
 	globalCurrentSettings.IFSC = IFSC;
