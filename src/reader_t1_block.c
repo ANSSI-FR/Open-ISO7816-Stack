@@ -484,3 +484,30 @@ READER_Status READER_T1_RcvBlock(READER_T1_Block *pBlock, uint32_t timeout){
 }
 
 
+READER_Status READER_T1_CheckBlockIntegrity(READER_T1_Block *pBlock){
+	READER_T1_RedundancyType rType;
+	uint8_t blockLRC, expectedBlockLRC;
+	uint16_t blockCRC, expectedBlockCRC;
+	
+	
+	rType = READER_T1_GetBlockRedundancyType(pBlock);
+	
+	
+	if(rType == READER_T1_LRC){
+		expectedBlockLRC = READER_T1_GetBlockLRC(pBlock);
+		blockLRC = READER_T1_ComputeBlockLRC(pBlock);
+		
+		if(expectedBlockLRC != blockLRC) return READER_ERR;
+	}
+	else if(rType == READER_T1_CRC){
+		expectedBlockCRC = READER_T1_GetBlockCRC(pBlock);
+		blockCRC = READER_T1_ComputeBlockCRC(pBlock);
+		
+		if(expectedBlockCRC != blockCRC) return READER_ERR;
+	}
+	else{
+		return READER_ERR;
+	}
+	
+	return READER_OK;
+}

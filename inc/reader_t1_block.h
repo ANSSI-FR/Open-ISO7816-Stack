@@ -3,6 +3,7 @@
 
 
 #define READER_T1_BLOCK_MAX_DATA_SIZE     254     /* Voir ISO7816-3 section 11.3.2.3 */
+#define READER_T1_BLOCK_PROLOGUE_SIZE     3
 #define READER_T1_BLOCKFRAME_NAD_POSITION 0       /* Voir ISO7816-3 section 11.3.1   */
 #define READER_T1_BLOCKFRAME_PCB_POSITION 1       /* Voir ISO7816-3 section 11.3.1   */
 #define READER_T1_BLOCKFRAME_LEN_POSITION 2       /* Voir ISO7816-3 section 11.3.1   */
@@ -77,7 +78,7 @@ uint32_t READER_T1_GetBlockTotalSize(const READER_T1_Block *pBlock);
 uint32_t READER_T1_GetBlockSizeWithoutCheck(const READER_T1_Block *pBlock);
 uint8_t* READER_T1_GetBlockFrame(const READER_T1_Block *pBlock);
 
-
+READER_Status READER_T1_CheckBlockIntegrity(READER_T1_Block *pBlock);
 
 READER_Status READER_T1_ForgeBlock(READER_T1_Block *pBlock, READER_T1_RedundancyType rType);
 READER_Status READER_T1_SendBlock(READER_T1_Block *pBlock, uint32_t timeout);
