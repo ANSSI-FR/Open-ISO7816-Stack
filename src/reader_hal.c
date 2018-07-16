@@ -78,17 +78,20 @@ READER_Status READER_HAL_Init(void){
 	/* Initialisation du WT, du GT, du Etu (Fi, Di) et de f                                    */
 	/* Attention, important que pour la toute premiere init, F et D soint init en premier      */
 	//retVal = READER_HAL_SetWT(READER_DEFAULT_WT_MILI);                if(retVal != READER_OK) return retVal;
+	/* Attention l'ordre peut etre important, certaines valeurs dependant des autres           */
 	retVal = READER_HAL_SetGT(READER_DEFAULT_GT);                     if(retVal != READER_OK) return retVal;
 	retVal = READER_HAL_SetFi(READER_DEFAULT_FI);                     if(retVal != READER_OK) return retVal;
 	retVal = READER_HAL_SetDi(READER_DEFAULT_DI);                     if(retVal != READER_OK) return retVal;
 	retVal = READER_HAL_SetEtu(READER_DEFAULT_FI, READER_DEFAULT_DI); if(retVal != READER_OK) return retVal;
 	retVal = READER_HAL_SetFreq(READER_DEFAULT_FREQ);                 if(retVal != READER_OK) return retVal;
+	retVal = READER_HAL_SetWI(READER_DEFAULT_WI);                     if(retVal != READER_OK) return retVal;
 	retVal = READER_HAL_SetBWI(READER_DEFAULT_BWI);                   if(retVal != READER_OK) return retVal;
 	retVal = READER_HAL_SetBWT(READER_DEFAULT_BWT);                   if(retVal != READER_OK) return retVal;
 	retVal = READER_HAL_SetBGT(READER_DEFAULT_BGT);                   if(retVal != READER_OK) return retVal;
 	retVal = READER_HAL_SetIFSC(READER_DEFAULT_IFSC);                 if(retVal != READER_OK) return retVal;
 	retVal = READER_HAL_SetIFSD(READER_DEFAULT_IFSD);                 if(retVal != READER_OK) return retVal;
 	retVal = READER_HAL_SetRedundancyType(READER_DEFAULT_REDUNDANCY_TYPE); if(retVal != READER_OK) return retVal;
+	
 	
 	return READER_OK;
 }
