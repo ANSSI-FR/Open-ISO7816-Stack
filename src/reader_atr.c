@@ -111,6 +111,7 @@ READER_Status READER_ATR_Receive(READER_ATR_Atr *atr){
 READER_Status READER_ATR_ApplySettings(READER_ATR_Atr *atr){
 	READER_Status retVal;
 	uint32_t Fi, Di, R, f;
+	uint32_t IFSC, BWI, BWTEtu, BWTMili, rType;
 	uint32_t newGT;
 	
 	/* Application des parametres Fi et Di (qui definissent le ETU) */
@@ -145,7 +146,20 @@ READER_Status READER_ATR_ApplySettings(READER_ATR_Atr *atr){
 	if(retVal != READER_OK) return retVal; 
 	
 	/* Application de parametres T1 */
+	IFSC = READER_ATR_GetIFSC(atr);
+	BWI = READER_ATR_GetBWI(atr);
+	BWTEtu = READER_UTILS_ComputeBWTEtu(BWI, f);
+	BWTMili = READER_UTILS_ComputeBWTMili(BWTEtu, Fi, Di, f);
+	rType = READER_ATR_GetRedundancyType(atr);
 	
+	retVal = READER_HAL_SetIFSC(IFSC);
+	if(retVal != READER_OK) return retVal;
+	
+	retVal = READER_HAL_SetBWT(BWTMili);
+	if(retVal != READER_OK) return retVal;
+	
+	retVal = READER_HAL_SetRedundancyType(rType);
+	if(retVal != READER_OK) return retVal;
  
 	
 	return READER_OK;   
