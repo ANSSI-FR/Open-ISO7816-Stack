@@ -88,6 +88,7 @@ READER_Status READER_HAL_Init(void){
 	retVal = READER_HAL_SetBGT(READER_DEFAULT_BGT);                   if(retVal != READER_OK) return retVal;
 	retVal = READER_HAL_SetIFSC(READER_DEFAULT_IFSC);                 if(retVal != READER_OK) return retVal;
 	retVal = READER_HAL_SetIFSD(READER_DEFAULT_IFSD);                 if(retVal != READER_OK) return retVal;
+	retVal = READER_HAL_SetRedundancyType(READER_DEFAULT_REDUNDANCY_TYPE); if(retVal != READER_OK) return retVal;
 	
 	return READER_OK;
 }
