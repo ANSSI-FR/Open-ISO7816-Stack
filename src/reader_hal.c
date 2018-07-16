@@ -727,6 +727,13 @@ READER_Status READER_HAL_SetBGT(uint32_t BGT){
 }
 
 
+READER_Status READER_HAL_SetRedundancyType(uint32_t rType){
+	globalCurrentSettings.redundancyType = rType;
+	
+	return READER_OK;
+}
+
+
 
 
 

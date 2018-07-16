@@ -79,6 +79,7 @@ READER_Status READER_HAL_SetIFSD(uint32_t IFSD);
 READER_Status READER_HAL_SetBWT(uint32_t BWT);
 READER_Status READER_HAL_SetBWI(uint32_t BWI);
 READER_Status READER_HAL_SetBGT(uint32_t BGT);
+READER_Status READER_HAL_SetRedundancyType(uint32_t rType);
 uint32_t READER_HAL_GetWT(void);
 uint32_t READER_HAL_GetGT(void);
 uint32_t READER_HAL_GetGTMili(void);
