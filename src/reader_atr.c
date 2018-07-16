@@ -1,6 +1,7 @@
 #include <stdint.h>
 #include "reader_atr.h"
 #include "reader_hal.h"
+#include "reader_t1_block.h"
 
 
 
@@ -538,4 +539,26 @@ uint32_t READER_ATR_GetBWI(READER_ATR_Atr *pAtr){
 		return READER_DEFAULT_BWI;
 	}
 	
+}
+
+
+uint32_t READER_ATR_GetRedundancyType(READER_ATR_Atr *pAtr){
+	/* Voir ISO7816-3 section 11.4.4 */
+	uint8_t byte;
+	
+	
+	byte = pAtr->T1Protocol.TCBytes[0];
+	
+	
+	if(byte == READER_ATR_NOT_INDICATED){
+		return READER_DEFAULT_REDUNDANCY_TYPE;  
+	}
+	else{
+		if(byte & 0x01 == 0x00){
+			return READER_T1_LRC;
+		}
+		else{
+			return READER_T1_CRC;
+		}
+	}
 }

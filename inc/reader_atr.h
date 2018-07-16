@@ -1,5 +1,6 @@
 #include <stdint.h>
 #include "reader_hal.h"
+#include "reader_t1_block.h"
 
 
 #define READER_ATR_MAX_HIST_BYTES        15
@@ -123,3 +124,4 @@ void READER_ATR_ErrHandler(void);
 READER_Status READER_ATR_CheckTS(uint8_t TS);
 
 uint32_t READER_ATR_GetBWI(READER_ATR_Atr *pAtr);
+uint32_t READER_ATR_GetRedundancyType(READER_ATR_Atr *pAtr);
