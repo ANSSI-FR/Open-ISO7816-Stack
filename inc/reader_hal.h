@@ -89,6 +89,7 @@ uint32_t READER_HAL_GetFreq(void);
 uint32_t READER_HAL_GetFi(void);
 uint32_t READER_HAL_GetDi(void);
 uint32_t READER_HAL_GetRedunancyType(void);
+uint32_t READER_HAL_GetWI(void);
 
 READER_Status READER_HAL_SetPwrLine(READER_HAL_State state);
 READER_Status READER_HAL_SetRstLine(READER_HAL_State state);
