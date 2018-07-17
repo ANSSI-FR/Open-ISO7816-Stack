@@ -23,8 +23,8 @@ READER_T1_SeqNumber READER_T1_GetExpectedBlockSeqNumber(READER_T1_Block *pBlock)
 READER_Status READER_T1_ForgeRBlock(READER_T1_Block *pBlock, READER_T1_ACKType ack, READER_T1_SeqNumber expctdBlockSeq);
 
 READER_Status READER_T1_SendBlockACK(READER_T1_Block *pBlock, READER_T1_SeqNumber expctdBlockSeq, uint32_t timeout);
-READER_Status READER_T1_SendBlockNACK(READER_T1_Block *pBlock, READER_T1_SeqNumber expctdBlockSeq);
-READER_Status READER_T1_SendBlockNACK_CRCLRC(READER_T1_Block *pBlock, READER_T1_SeqNumber expctdBlockSeq);
+READER_Status READER_T1_SendBlockNACK(READER_T1_Block *pBlock, READER_T1_SeqNumber expctdBlockSeq, uint32_t timeout);
+READER_Status READER_T1_SendBlockNACK_CRCLRC(READER_T1_Block *pBlock, READER_T1_SeqNumber expctdBlockSeq, uint32_t timeout);
 
 
 
