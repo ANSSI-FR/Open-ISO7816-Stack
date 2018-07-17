@@ -505,7 +505,7 @@ READER_Status READER_T1_RcvBlock(READER_T1_Block *pBlock, uint32_t timeout){
 	
 	if(buffSize > READER_T1_BLOCK_MAX_DATA_SIZE) return READER_ERR;
 	
-	buffSize += 2; /* On prevoit de recevoir les Data et LRC/CRC */
+	buffSize += READER_T1_GetBlockRedundancyLen(pBlock);   /* On prevoit de recevoir les Data et LRC/CRC */
 	
 	/* On recoit les data et CRC/LRC d'un seul coups */
 	retVal = READER_HAL_RcvCharFrameCount(buffData, buffSize, &count, timeout);
@@ -514,16 +514,21 @@ READER_Status READER_T1_RcvBlock(READER_T1_Block *pBlock, uint32_t timeout){
 	
 	/* Recuperation du code correcteur d'erreur  */
 	if(rType == READER_T1_LRC){
-		
+		LRC = buff[buffSize-1];
+		retVal = READER_T1_SetBlockLRC(pBlock, LRC);
+		if(retVal != READER_OK) return retVal;
 	}
 	else if(rType == READER_T1_CRC){
-		
+		CRC = *(uint16_t*)(buff + buffSize - 2);
+		retVal = READER_T1_SetBlockCRC(pBlock, CRC);
+		if(retVal != READER_OK) return retVal;
 	}
 	else{
 		return READER_ERR;
 	}
 	
 	/* A la fin parceque potentiellment traitement long */
+	/* On complete le nv block forge avec les data      */
 	retVal = READER_T1_SetBlockData(pBlock, buff, buffSize); 
 	if(retVal != READER_OK) return retVal;
 	
