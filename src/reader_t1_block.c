@@ -473,7 +473,7 @@ READER_Status READER_T1_RcvBlock(READER_T1_Block *pBlock, uint32_t timeout){
 	uint32_t count;
 	
 	
-	/* On recoit d'abord les trois premiers (Prologue du block) quoiqu'il arrive. Ensuite on decide ... */
+	/* On recoit d'abord les trois premiers caracteres (Prologue du block) quoiqu'il arrive. Ensuite on decide ... */
 	retVal = READER_HAL_RcvCharFrameCount(buffPrologue, READER_T1_BLOCK_PROLOGUE_SIZE, &count, timeout);
 	if(retVal != READER_OK) return retVal;
 	
