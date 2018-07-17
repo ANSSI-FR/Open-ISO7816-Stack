@@ -122,7 +122,7 @@ READER_Status READER_T1_ForgeRBlock(READER_T1_Block *pBlock, READER_T1_ACKType a
 
 
 
-READER_Status READER_T1_SendBlockACK(READER_T1_Block *pBlock, READER_T1_SeqNumber expctdBlockSeq){
+READER_Status READER_T1_SendBlockACK(READER_T1_Block *pBlock, READER_T1_SeqNumber expctdBlockSeq, uint32_t timeout){
 	READER_T1_Block block;
 	READER_Status retVal;
 	
