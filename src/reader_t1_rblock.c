@@ -15,15 +15,16 @@ READER_Status READER_T1_SetBlockACKType(READER_T1_Block *pBlock, READER_T1_ACKTy
 	currentPCB = READER_T1_GetBlockPCB(pBlock);
 	
 	
-	
 	if(ack == READER_T1_ACKTYPE_ACK){
-		newPCB = currentPCB & 0x;
+		newPCB = currentPCB & 0xD0;
 	}
 	else if(ack == READER_T1_ACKTYPE_NACK){
-		
+		newPCB = currentPCB & 0xD0;
+		newPCB = newPCB | 0x02;
 	}
 	else if(ack == READER_T1_ACKTYPE_NACK_CRCLRC){
-		
+		newPCB = currentPCB & 0xD0;
+		newPCB = newPCB | 0x01;
 	}
 	else{
 		return READER_ERR;
@@ -35,6 +36,8 @@ READER_Status READER_T1_SetBlockACKType(READER_T1_Block *pBlock, READER_T1_ACKTy
 	
 	return READER_OK;
 }
+
+
 
 
 
