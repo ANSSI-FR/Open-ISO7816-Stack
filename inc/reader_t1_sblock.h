@@ -23,25 +23,25 @@ enum READER_T1_SBlockType{
 READER_Status READER_T1_ForgeSBlock(READER_T1_Block *pBlock, READER_T1_SBlockType type);
 
 
-READER_Status READER_T1_SendBlockRESYNCHRequ(void);
-READER_Status READER_T1_RcvBlockRESYNCHResp(void);
-READER_Status READER_T1_SendBlockRESYNCHResp(void);
-READER_Status READER_T1_ExecuteRESYNCH(void);
+READER_Status READER_T1_SendBlockRESYNCHRequ(uint32_t timeout);
+READER_Status READER_T1_RcvBlockRESYNCHResp(uint32_t timeout);
+READER_Status READER_T1_SendBlockRESYNCHResp(uint32_t timeout);
+READER_Status READER_T1_ExecuteRESYNCH(uint32_t timeout);
 
-READER_Status READER_T1_SendBlockIFSRequ(uint8_t requValue);
-READER_Status READER_T1_RcvBlockIFSResp(uint8_t requValue);
-READER_Status READER_T1_SendBlockIFSResp(uint8_t requValue);
-READER_Status READER_T1_ExecuteIFS(uint8_t requValue);
+READER_Status READER_T1_SendBlockIFSRequ(uint8_t requValue, uint32_t timeout);
+READER_Status READER_T1_RcvBlockIFSResp(uint8_t requValue, uint32_t timeout);
+READER_Status READER_T1_SendBlockIFSResp(uint8_t requValue, uint32_t timeout);
+READER_Status READER_T1_ExecuteIFS(uint8_t requValue, uint32_t timeout);
 
-READER_Status READER_T1_SendBlockABORTRequ(void);
-READER_Status READER_T1_RcvBlockABORTResp(void);
-READER_Status READER_T1_SendBlockABORTResp(void);
-READER_Status READER_T1_ExecuteABORT(void);
+READER_Status READER_T1_SendBlockABORTRequ(uint32_t timeout);
+READER_Status READER_T1_RcvBlockABORTResp(uint32_t timeout);
+READER_Status READER_T1_SendBlockABORTResp(uint32_t timeout);
+READER_Status READER_T1_ExecuteABORT(uint32_t timeout);
 
-READER_Status READER_T1_SendBlockWTXRequ(uint8_t requValue);
-READER_Status READER_T1_RcvBlockWTXResp(uint8_t requValue);
-READER_Status READER_T1_SendBlockWTXResp(uint8_t requValue);
-READER_Status READER_T1_ExecuteWTX(uint8_t requValue);
+READER_Status READER_T1_SendBlockWTXRequ(uint8_t requValue, uint32_t timeoutv);
+READER_Status READER_T1_RcvBlockWTXResp(uint8_t requValue, uint32_t timeout);
+READER_Status READER_T1_SendBlockWTXResp(uint8_t requValue, uint32_t timeout);
+READER_Status READER_T1_ExecuteWTX(uint8_t requValue, uint32_t timeout);
 
 
 #endif
