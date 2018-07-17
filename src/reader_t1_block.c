@@ -424,7 +424,10 @@ uint8_t* READER_T1_GetBlockFrame(const READER_T1_Block *pBlock){
 
 
 READER_Status READER_T1_ForgeBlock(READER_T1_Block *pBlock, READER_T1_RedundancyType rType){
-	pBlock->RedundancyType = rType;
+	READER_Status retVal;
+	
+	retVal = READER_T1_SetBlockRedundancyType(pBlock, rType);
+	if(retVal != READER_OK) return retVal;
 	
 	return READER_OK;
 }
