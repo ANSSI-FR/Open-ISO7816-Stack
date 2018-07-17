@@ -38,6 +38,24 @@ READER_Status READER_T1_SetBlockACKType(READER_T1_Block *pBlock, READER_T1_ACKTy
 }
 
 
+READER_T1_ACKType READER_T1_GetBlockACKType(READER_T1_Block *pBlock){
+	uint8_t currentPCB;
+	
+	
+	currentPCB = READER_T1_GetBlockPCB(pBlock);
+	
+	if((currentPCB & 0x20 == 0x00) && (currentPCB & 0x0F == 0x00)){
+		return READER_T1_ACKTYPE_ACK;
+	}
+	else if((currentPCB & 0x20 == 0x00) && (currentPCB & 0x0F == 0x01)){
+		return READER_T1_ACKTYPE_NACK_CRCLRC;
+	}
+	else{
+		return READER_T1_ACKTYPE_NACK;
+	}
+}
+
+
 
 
 
