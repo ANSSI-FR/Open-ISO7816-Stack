@@ -119,3 +119,30 @@ READER_Status READER_T1_ForgeRBlock(READER_T1_Block *pBlock, READER_T1_ACKType a
 	
 	return READER_OK;
 }
+
+
+
+READER_Status READER_T1_SendBlockACK(READER_T1_Block *pBlock, READER_T1_SeqNumber expctdBlockSeq){
+	READER_T1_Block block;
+	READER_Status retVal;
+	
+	
+	retVal = READER_T1_ForgeRBlock(&block, READER_T1_ACKTYPE_ACK, expctdBlockSeq);
+	if(retVal != READER_OK) return retVal;
+	
+	retVal = READER_T1_SendBlock(&block, timeout);
+	if(retVal != READER_OK) return retVal;
+	
+	
+	return READER_OK;
+}
+
+
+READER_Status READER_T1_SendBlockNACK(READER_T1_Block *pBlock, READER_T1_SeqNumber expctdBlockSeq){
+	
+}
+
+
+READER_Status READER_T1_SendBlockNACK_CRCLRC(READER_T1_Block *pBlock, READER_T1_SeqNumber expctdBlockSeq){
+	
+}
