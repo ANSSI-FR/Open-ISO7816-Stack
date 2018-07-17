@@ -6,7 +6,7 @@
 
 
 
-READER_Status READER_T1_SetBlockACK(READER_T1_Block *pBlock, READER_T1_ACKType ack){
+READER_Status READER_T1_SetBlockACKType(READER_T1_Block *pBlock, READER_T1_ACKType ack){
 	READER_Status retVal;
 	uint8_t currentPCB, newPCB;
 	

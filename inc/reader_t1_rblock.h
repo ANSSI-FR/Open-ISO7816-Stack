@@ -14,7 +14,7 @@ enum READER_T1_ACKType{
 
 
 
-READER_Status READER_T1_SetBlockACK(READER_T1_Block *pBlock, READER_T1_ACKType ack);
+READER_Status READER_T1_SetBlockACKType(READER_T1_Block *pBlock, READER_T1_ACKType ack);
 READER_Status READER_T1_SetExpectedBlockSeqNumber(READER_T1_Block *pBlock, READER_T1_SeqNumber seq);
 
 READER_T1_ACKType READER_T1_GetBlockACK(READER_T1_Block *pBlock);
