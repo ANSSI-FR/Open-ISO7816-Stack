@@ -20,7 +20,7 @@ enum READER_T1_SBlockType{
 
 
 
-READER_Status READER_T1_ForgeSBlock(READER_T1_Block *pBlock, READER_T1_SBlockType type, uint8_t data);
+READER_Status READER_T1_ForgeSBlock(READER_T1_Block *pBlock, READER_T1_SBlockType type);
 
 
 READER_Status READER_T1_SendBlockRESYNCHRequ(void);
