@@ -422,6 +422,20 @@ uint8_t* READER_T1_GetBlockFrame(const READER_T1_Block *pBlock){
 }
 
 
+uint32_t READER_T1_GetBlockRedundancyLen(const READER_T1_Block *pBlock){
+	READER_T1_RedundancyType rType;
+	
+	rType = READER_T1_GetBlockRedundancyType(pBlock);
+	
+	if(rType == READER_T1_LRC){
+		return 1
+	}
+	else{
+		return 2;
+	}
+}
+
+
 
 READER_Status READER_T1_ForgeBlock(READER_T1_Block *pBlock, READER_T1_RedundancyType rType){
 	READER_Status retVal;
@@ -452,8 +466,8 @@ READER_Status READER_T1_RcvBlock(READER_T1_Block *pBlock, uint32_t timeout){
 	READER_Status retVal;
 	READER_T1_RedundancyType rType;
 	uint8_t buffPrologue[READER_T1_BLOCK_PROLOGUE_SIZE];
-	uint8_t buffData[READER_T1_BLOCK_MAX_DATA_SIZE];
-	uint32_t buffDataSize;
+	uint8_t buff[READER_T1_BLOCK_MAX_DATA_SIZE + 2];  /* MAXDATA + MAX CRC */
+	uint32_t buffSize;
 	uint8_t LRC;
 	uint16_t CRC;
 	uint32_t count;
@@ -466,6 +480,13 @@ READER_Status READER_T1_RcvBlock(READER_T1_Block *pBlock, uint32_t timeout){
 	if(count != READER_T1_BLOCK_PROLOGUE_SIZE){
 		return READER_ERR;
 	}
+	
+	
+	/* On forge un block vide                                           */
+	rType = READER_HAL_GetRedunancyType();
+	retVal = READER_T1_ForgeBlock(pBlock, rType);
+	if(retVal != READER_OK) return retVal;
+	
 	
 	/* On commence a fabriquer le block a partir des donnees recues ... */
 	retVal = READER_T1_SetBlockNAD(pBlock, buffPrologue[READER_T1_BLOCKFRAME_NAD_POSITION]);
@@ -480,7 +501,31 @@ READER_Status READER_T1_RcvBlock(READER_T1_Block *pBlock, uint32_t timeout){
 	
 	/* Selon le prologue recu ... */
 	rType = READER_T1_GetBlockRedundancyType(pBlock);
-	buffDataSize = MIN(READER_T1_GetBlockLEN(pBlock), READER_T1_BLOCK_MAX_DATA_SIZE);
+	buffSize = READER_T1_GetBlockLEN(pBlock);
+	
+	if(buffSize > READER_T1_BLOCK_MAX_DATA_SIZE) return READER_ERR;
+	
+	buffSize += 2; /* On prevoit de recevoir les Data et LRC/CRC */
+	
+	/* On recoit les data et CRC/LRC d'un seul coups */
+	retVal = READER_HAL_RcvCharFrameCount(buffData, buffSize, &count, timeout);
+	if(retVal != READER_OK) return retVal;
+	if(count != buffSize) return READER_ERR;
+	
+	/* Recuperation du code correcteur d'erreur  */
+	if(rType == READER_T1_LRC){
+		
+	}
+	else if(rType == READER_T1_CRC){
+		
+	}
+	else{
+		return READER_ERR;
+	}
+	
+	/* A la fin parceque potentiellment traitement long */
+	retVal = READER_T1_SetBlockData(pBlock, buff, buffSize); 
+	if(retVal != READER_OK) return retVal;
 	
 	
 	return READER_OK;

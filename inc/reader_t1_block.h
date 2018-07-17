@@ -75,6 +75,7 @@ uint8_t READER_T1_GetBlockPCB(const READER_T1_Block *pBlock);
 READER_T1_BlockType READER_T1_GetBlockType(const READER_T1_Block *pBlock);
 uint8_t READER_T1_GetBlockLEN(const READER_T1_Block *pBlock);
 READER_T1_RedundancyType READER_T1_GetBlockRedundancyType(const READER_T1_Block *pBlock);
+uint32_t READER_T1_GetBlockRedundancyLen(const READER_T1_Block *pBlock);
 uint8_t READER_T1_GetBlockLRC(const READER_T1_Block *pBlock);
 uint16_t READER_T1_GetBlockCRC(const READER_T1_Block *pBlock);
 uint8_t* READER_T1_GetBlockData(const READER_T1_Block *pBlock);
