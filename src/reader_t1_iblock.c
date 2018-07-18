@@ -97,11 +97,18 @@ READER_Status READER_T1_ForgeIBlock(READER_T1_Block *pBlock, uint8_t *data, uint
 	READER_T1_RedundancyType rType;
 	READER_Status retVal;
 	
+	
+	/* On fabrique un Block vierge       */
 	rType = READER_HAL_GetRedunancyType();
 	
 	retVal = READER_T1_ForgeBlock(pBlock, rType);
 	if(retVal != READER_OK) return retVal;
 	
+	/* On indique que c'est un I-BLOCK   */
+	retVal = READER_T1_SetBlockType(pBlock, READER_T1_IBLOCK);
+	if(retVal != READER_OK) return retVal;
+	
+	/* On indique les infos propres aux I-BLOCKs */
 	retVal = READER_T1_SetBlockData(pBlock, data, dataSize);
 	if(retVal != READER_OK) return retVal;
 	
