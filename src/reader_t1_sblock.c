@@ -124,3 +124,12 @@ READER_Status READER_T1_SetBlockSPayload(READER_T1_Block *pBlock, uint8_t payloa
 	return READER_OK;
 }
 
+
+uint8_t READER_T1_GetBlockSPayload(READER_T1_Block *pBlock){
+	uint8_t *pPayload;
+	
+	pPayload = READER_T1_GetBlockData(pBlock);
+	
+	return *pPayload;
+}
+
