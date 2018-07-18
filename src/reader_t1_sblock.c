@@ -356,7 +356,16 @@ READER_Status READER_T1_SendBlockIFSResp(uint8_t requValue, uint32_t timeout){
 
 
 READER_Status READER_T1_ExecuteIFS(uint8_t requValue, uint32_t timeout){
+	READER_Status retVal;
 	
+	
+	retVal = READER_T1_SendBlockIFSRequ(requValue, timeout);
+	if(retVal != READER_OK) return retVal;
+	
+	retVal = READER_T1_RcvBlockIFSResp(requValue, timeout);
+	if(retVal != READER_OK) return retVal;
+	
+	return READER_OK;
 }
 
 
