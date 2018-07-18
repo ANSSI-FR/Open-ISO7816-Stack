@@ -180,7 +180,14 @@ READER_Status READER_T1_RcvBlockRESYNCHResp(uint32_t timeout){
 
 READER_Status READER_T1_SendBlockRESYNCHResp(uint32_t timeout){
 	READER_Status retVal;
+	READER_T1_Block block;
 	
+	
+	retVal = READER_T1_ForgeSBlock(&block, READER_T1_STYPE_RESYNCH_RESP);
+	if(retVal != READER_OK) return retVal;
+	
+	retVal = READER_T1_SendBlock(&block, timeout);
+	if(retVal != READER_OK) return retVal;
 	
 	return READER_OK;
 }
