@@ -287,6 +287,7 @@ READER_Status READER_T1_ExecuteABORT(uint32_t timeout){
 
 
 
+
 READER_Status READER_T1_SendBlockIFSRequ(uint8_t requValue, uint32_t timeout){
 	READER_Status retVal;
 	READER_T1_Block block;
@@ -306,7 +307,33 @@ READER_Status READER_T1_SendBlockIFSRequ(uint8_t requValue, uint32_t timeout){
 
 
 READER_Status READER_T1_RcvBlockIFSResp(uint8_t requValue, uint32_t timeout){
+	READER_Status retVal;
+	READER_T1_Block block;
+	READER_T1_BlockType blockType;
+	READER_T1_SBlockType sBlockType;
+	uint8_t payload;
 	
+	
+	/* On recoit un Block                            */
+	retVal = READER_T1_RcvBlock(&block, timeout);
+	if(retVal != READER_OK) return retVal;
+	
+	/* On verifie que c'est bien un IFS RESPONSE */
+	blockType = READER_T1_GetBlockType(&block);
+	sBlockType = READER_T1_GetBlockSType(&block);
+	
+	if((blockType != READER_T1_SBLOCK) || (sBlockType != READER_T1_STYPE_IFS_RESP)){
+		return READER_ERR;
+	}
+
+	
+	/* On verifie que la payload du S-BLOCK correspond bien au requValue */
+	payload = READER_T1_GetBlockSPayload(&block);
+	if(payload != requValue){
+		return READER_ERR;
+	}
+	
+	return READER_OK;
 }
 
 
