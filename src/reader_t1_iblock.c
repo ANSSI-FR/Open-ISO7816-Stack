@@ -59,14 +59,13 @@ READER_Status READER_T1_SetBlockMBit(READER_T1_Block *pBlock, READER_T1_MBit mBi
 
 READER_T1_SeqNumber READER_T1_GetBlockSeqNumber(READER_T1_Block *pBlock){
 	/* Voir ISO7816-3 section 11.3.2.2 */
-	READER_Status retVal;
-	uint8_t currentPCB, newPCB;
+	uint8_t currentPCB;
 	
 	
 	
 	currentPCB = READER_T1_GetBlockPCB(pBlock);
 	
-	if((currentPCB & ~0xBF) == 0x00){
+	if((currentPCB & 0x40) == 0x00){
 		return READER_T1_SEQNUM_ZERO;
 	}
 	else{
@@ -77,8 +76,7 @@ READER_T1_SeqNumber READER_T1_GetBlockSeqNumber(READER_T1_Block *pBlock){
 
 READER_T1_MBit READER_T1_GetBlockMBit(READER_T1_Block *pBlock){
 	/* Voir ISO7816-3 section 11.3.2.2 */
-	READER_Status retVal;
-	uint8_t currentPCB, newPCB;
+	uint8_t currentPCB;
 	
 	
 	

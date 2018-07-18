@@ -1,6 +1,10 @@
 #ifndef __READER_T1_IBLOCK_H__
 #define __READER_T1_IBLOCK_H__
 
+#include "reader.h"
+#include "reader_hal.h"
+#include "reader_t1_block.h"
+
 
 
 typedef enum READER_T1_SeqNumber READER_T1_SeqNumber;

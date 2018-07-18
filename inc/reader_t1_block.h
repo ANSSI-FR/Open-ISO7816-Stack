@@ -19,7 +19,7 @@
 typedef enum READER_T1_RedundancyType READER_T1_RedundancyType;
 enum READER_T1_RedundancyType{
 	READER_T1_CRC                      = (uint32_t)(0x00000000),
-	READER_T1_LRC                      = (uint32_t)(0x00000001)
+	READER_T1_LRC                      = (uint32_t)(0x00000001)      /* Attention READER_DEFAULT_REDUNDANCY_TYPE dans reader.h depend de cette valeur */
 };
 
 
@@ -68,20 +68,20 @@ uint8_t READER_T1_ComputeBlockLRC(READER_T1_Block *pBlock);
 uint16_t READER_T1_ComputeBlockCRC(READER_T1_Block *pBlock);
 
 
-uint8_t READER_T1_GetBlockSAD(const READER_T1_Block *pBlock);
-uint8_t READER_T1_GetBlockDAD(const READER_T1_Block *pBlock);
-uint8_t READER_T1_GetBlockNAD(const READER_T1_Block *pBlock);
-uint8_t READER_T1_GetBlockPCB(const READER_T1_Block *pBlock);
-READER_T1_BlockType READER_T1_GetBlockType(const READER_T1_Block *pBlock);
-uint8_t READER_T1_GetBlockLEN(const READER_T1_Block *pBlock);
-READER_T1_RedundancyType READER_T1_GetBlockRedundancyType(const READER_T1_Block *pBlock);
-uint32_t READER_T1_GetBlockRedundancyLen(const READER_T1_Block *pBlock);
-uint8_t READER_T1_GetBlockLRC(const READER_T1_Block *pBlock);
-uint16_t READER_T1_GetBlockCRC(const READER_T1_Block *pBlock);
-uint8_t* READER_T1_GetBlockData(const READER_T1_Block *pBlock);
-uint32_t READER_T1_GetBlockTotalSize(const READER_T1_Block *pBlock);
-uint32_t READER_T1_GetBlockSizeWithoutCheck(const READER_T1_Block *pBlock);
-uint8_t* READER_T1_GetBlockFrame(const READER_T1_Block *pBlock);
+uint8_t READER_T1_GetBlockSAD(READER_T1_Block *pBlock);
+uint8_t READER_T1_GetBlockDAD(READER_T1_Block *pBlock);
+uint8_t READER_T1_GetBlockNAD(READER_T1_Block *pBlock);
+uint8_t READER_T1_GetBlockPCB(READER_T1_Block *pBlock);
+READER_T1_BlockType READER_T1_GetBlockType(READER_T1_Block *pBlock);
+uint8_t READER_T1_GetBlockLEN(READER_T1_Block *pBlock);
+READER_T1_RedundancyType READER_T1_GetBlockRedundancyType(READER_T1_Block *pBlock);
+uint32_t READER_T1_GetBlockRedundancyLen(READER_T1_Block *pBlock);
+uint8_t READER_T1_GetBlockLRC(READER_T1_Block *pBlock);
+uint16_t READER_T1_GetBlockCRC(READER_T1_Block *pBlock);
+uint8_t* READER_T1_GetBlockData(READER_T1_Block *pBlock);
+uint32_t READER_T1_GetBlockTotalSize(READER_T1_Block *pBlock);
+uint32_t READER_T1_GetBlockSizeWithoutCheck(READER_T1_Block *pBlock);
+uint8_t* READER_T1_GetBlockFrame(READER_T1_Block *pBlock);
 
 READER_Status READER_T1_CheckBlockIntegrity(READER_T1_Block *pBlock);
 

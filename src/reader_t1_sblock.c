@@ -88,28 +88,28 @@ READER_T1_SBlockType READER_T1_GetBlockSType(READER_T1_Block *pBlock){
 	
 	currentPCB = READER_T1_GetBlockPCB(pBlock);
 	
-	if(currentPCB & 0x3F == 0x00){
+	if((currentPCB & 0x3F) == 0x00){
 		return READER_T1_STYPE_RESYNCH_REQU;
 	}
-	else if(currentPCB & 0x3F == 0x20){
+	else if((currentPCB & 0x3F) == 0x20){
 		return READER_T1_STYPE_RESYNCH_RESP;
 	}
-	else if(currentPCB & 0x3F == 0x01){
+	else if((currentPCB & 0x3F) == 0x01){
 		return READER_T1_STYPE_IFS_REQU;
 	}
-	else if(currentPCB & 0x3F == 0x21){
+	else if((currentPCB & 0x3F) == 0x21){
 		return READER_T1_STYPE_IFS_RESP;
 	}
-	else if(currentPCB & 0x3F == 0x02){
+	else if((currentPCB & 0x3F) == 0x02){
 		return READER_T1_STYPE_ABORT_REQU;
 	}
-	else if(currentPCB & 0x3F == 0x22){
+	else if((currentPCB & 0x3F) == 0x22){
 		return READER_T1_STYPE_ABORT_RESP;
 	}
-	else if(currentPCB & 0x3F == 0x03){
+	else if((currentPCB & 0x3F) == 0x03){
 		return READER_T1_STYPE_WTX_REQU;
 	}
-	else if(currentPCB & 0x3F == 0x23){
+	else if((currentPCB & 0x3F) == 0x23){
 		return READER_T1_STYPE_WTX_RESP;
 	}
 	else{

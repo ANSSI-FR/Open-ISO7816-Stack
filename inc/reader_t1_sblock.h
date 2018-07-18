@@ -2,10 +2,13 @@
 #define __READER_T1_SBLOCK_H__
 
 
+#include "reader.h"
+#include "reader_hal.h"
+#include "reader_t1_block.h"
 
 
 
-typedef enum READER_T1_ACKType READER_T1_ACKType;
+typedef enum READER_T1_SBlockType READER_T1_SBlockType;
 enum READER_T1_SBlockType{
 	READER_T1_STYPE_RESYNCH_REQU        =       (uint32_t)(0x00000000),
 	READER_T1_STYPE_RESYNCH_RESP        =       (uint32_t)(0x00000001),
@@ -44,7 +47,7 @@ READER_Status READER_T1_RcvBlockABORTResp(uint32_t timeout);
 READER_Status READER_T1_SendBlockABORTResp(uint32_t timeout);
 READER_Status READER_T1_ExecuteABORT(uint32_t timeout);
 
-READER_Status READER_T1_SendBlockWTXRequ(uint8_t requValue, uint32_t timeoutv);
+READER_Status READER_T1_SendBlockWTXRequ(uint8_t requValue, uint32_t timeout);
 READER_Status READER_T1_RcvBlockWTXResp(uint8_t requValue, uint32_t timeout);
 READER_Status READER_T1_SendBlockWTXResp(uint8_t requValue, uint32_t timeout);
 READER_Status READER_T1_ExecuteWTX(uint8_t requValue, uint32_t timeout);

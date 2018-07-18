@@ -136,7 +136,7 @@ READER_Status READER_ATR_ApplySettings(READER_ATR_Atr *atr){
 	if(retVal != READER_OK) return retVal;
 	
 	/* Application de WI                        */
-	WI = READER_ATR_GetWI(pAtr);
+	WI = READER_ATR_GetWI(atr);
 	retVal = READER_HAL_SetWI(WI);
 	if(retVal != READER_OK) return retVal;
 	

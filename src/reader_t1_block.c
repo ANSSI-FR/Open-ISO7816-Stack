@@ -147,6 +147,7 @@ READER_Status READER_T1_SetBlockLRC(READER_T1_Block *pBlock, uint8_t blockLRC){
 
 
 READER_Status READER_T1_SetBlockCRC(READER_T1_Block *pBlock, uint16_t blockCRC){
+	READER_Status retVal;
 	uint8_t currentLEN;	
 	uint16_t *pCurrentCRC;
 	uint8_t *blockFrame;
@@ -204,7 +205,7 @@ READER_Status READER_T1_SetBlockData(READER_T1_Block *pBlock, uint8_t *data, uin
 
 
 
-uint8_t READER_T1_GetBlockSAD(const READER_T1_Block *pBlock){
+uint8_t READER_T1_GetBlockSAD(READER_T1_Block *pBlock){
 	uint8_t *pCurrentNAD;
 	uint8_t *blockFrame;
 	
@@ -218,7 +219,7 @@ uint8_t READER_T1_GetBlockSAD(const READER_T1_Block *pBlock){
 }
 
 
-uint8_t READER_T1_GetBlockDAD(const READER_T1_Block *pBlock){
+uint8_t READER_T1_GetBlockDAD(READER_T1_Block *pBlock){
 	uint8_t *pCurrentNAD;
 	uint8_t *blockFrame;
 	
@@ -231,7 +232,7 @@ uint8_t READER_T1_GetBlockDAD(const READER_T1_Block *pBlock){
 }
 
 
-uint8_t READER_T1_GetBlockNAD(const READER_T1_Block *pBlock){
+uint8_t READER_T1_GetBlockNAD(READER_T1_Block *pBlock){
 	uint8_t *pCurrentNAD;
 	uint8_t *blockFrame;
 	
@@ -244,7 +245,7 @@ uint8_t READER_T1_GetBlockNAD(const READER_T1_Block *pBlock){
 }
 
 
-uint8_t READER_T1_GetBlockPCB(const READER_T1_Block *pBlock){
+uint8_t READER_T1_GetBlockPCB(READER_T1_Block *pBlock){
 	uint8_t *pCurrentPCB;
 	uint8_t *blockFrame;
 	
@@ -257,7 +258,7 @@ uint8_t READER_T1_GetBlockPCB(const READER_T1_Block *pBlock){
 }
 
 
-READER_T1_BlockType READER_T1_GetBlockType(const READER_T1_Block *pBlock){
+READER_T1_BlockType READER_T1_GetBlockType(READER_T1_Block *pBlock){
 	/* Voir ISO7816-3 section 11.3.2.2 */
 	uint8_t currentPCB;
 	
@@ -279,7 +280,7 @@ READER_T1_BlockType READER_T1_GetBlockType(const READER_T1_Block *pBlock){
 }
 
 
-uint8_t READER_T1_GetBlockLEN(const READER_T1_Block *pBlock){
+uint8_t READER_T1_GetBlockLEN(READER_T1_Block *pBlock){
 	uint8_t *pCurrentLEN;
 	uint8_t *blockFrame;
 	
@@ -292,12 +293,12 @@ uint8_t READER_T1_GetBlockLEN(const READER_T1_Block *pBlock){
 }
 
 
-READER_T1_RedundancyType READER_T1_GetBlockRedundancyType(const READER_T1_Block *pBlock){
+READER_T1_RedundancyType READER_T1_GetBlockRedundancyType(READER_T1_Block *pBlock){
 	return pBlock->RedundancyType;
 }
 
 
-uint8_t READER_T1_GetBlockLRC(const READER_T1_Block *pBlock){
+uint8_t READER_T1_GetBlockLRC(READER_T1_Block *pBlock){
 	uint8_t currentLEN;	
 	uint8_t *pCurrentLRC;
 	uint8_t *blockFrame;
@@ -312,7 +313,7 @@ uint8_t READER_T1_GetBlockLRC(const READER_T1_Block *pBlock){
 }
 
 
-uint16_t READER_T1_GetBlockCRC(const READER_T1_Block *pBlock){
+uint16_t READER_T1_GetBlockCRC(READER_T1_Block *pBlock){
 	uint8_t currentLEN;	
 	uint16_t *pCurrentCRC;
 	uint8_t *blockFrame;
@@ -327,7 +328,7 @@ uint16_t READER_T1_GetBlockCRC(const READER_T1_Block *pBlock){
 }
 
 
-uint8_t* READER_T1_GetBlockData(const READER_T1_Block *pBlock){
+uint8_t* READER_T1_GetBlockData(READER_T1_Block *pBlock){
 	uint8_t *blockFrame;
 	
 	blockFrame = READER_T1_GetBlockFrame(pBlock);
@@ -390,7 +391,7 @@ uint16_t READER_T1_ComputeBlockCRC(READER_T1_Block *pBlock){
 	return crc;
 }
 
-uint32_t READER_T1_GetBlockTotalSize(const READER_T1_Block *pBlock){
+uint32_t READER_T1_GetBlockTotalSize(READER_T1_Block *pBlock){
 	READER_T1_RedundancyType checkType;
 	uint32_t checkLen;
 	uint32_t tmpLen;
@@ -411,7 +412,7 @@ uint32_t READER_T1_GetBlockTotalSize(const READER_T1_Block *pBlock){
 }
 
 
-uint32_t READER_T1_GetBlockSizeWithoutCheck(const READER_T1_Block *pBlock){
+uint32_t READER_T1_GetBlockSizeWithoutCheck(READER_T1_Block *pBlock){
 	uint8_t dataLEN;
 	
 	
@@ -422,18 +423,18 @@ uint32_t READER_T1_GetBlockSizeWithoutCheck(const READER_T1_Block *pBlock){
 
 
 
-uint8_t* READER_T1_GetBlockFrame(const READER_T1_Block *pBlock){
+uint8_t* READER_T1_GetBlockFrame(READER_T1_Block *pBlock){
 	return pBlock->blockFrame;
 }
 
 
-uint32_t READER_T1_GetBlockRedundancyLen(const READER_T1_Block *pBlock){
+uint32_t READER_T1_GetBlockRedundancyLen(READER_T1_Block *pBlock){
 	READER_T1_RedundancyType rType;
 	
 	rType = READER_T1_GetBlockRedundancyType(pBlock);
 	
 	if(rType == READER_T1_LRC){
-		return 1
+		return 1;
 	}
 	else{
 		return 2;
@@ -482,8 +483,8 @@ READER_Status READER_T1_RcvBlock(READER_T1_Block *pBlock, uint32_t timeout){
 	uint8_t buffPrologue[READER_T1_BLOCK_PROLOGUE_SIZE];
 	uint8_t buff[READER_T1_BLOCK_MAX_DATA_SIZE + 2];  /* MAXDATA + MAX CRC */
 	uint32_t buffSize;
-	uint8_t LRC;
-	uint16_t CRC;
+	uint8_t blockLRC;
+	uint16_t blockCRC;
 	uint32_t count;
 	
 	
@@ -522,19 +523,19 @@ READER_Status READER_T1_RcvBlock(READER_T1_Block *pBlock, uint32_t timeout){
 	buffSize += READER_T1_GetBlockRedundancyLen(pBlock);   /* On prevoit de recevoir les Data et LRC/CRC */
 	
 	/* On recoit les data et CRC/LRC d'un seul coups */
-	retVal = READER_HAL_RcvCharFrameCount(buffData, buffSize, &count, timeout);
+	retVal = READER_HAL_RcvCharFrameCount(buff, buffSize, &count, timeout);
 	if(retVal != READER_OK) return retVal;
 	if(count != buffSize) return READER_ERR;
 	
 	/* Recuperation du code correcteur d'erreur  */
 	if(rType == READER_T1_LRC){
-		LRC = buff[buffSize-1];
-		retVal = READER_T1_SetBlockLRC(pBlock, LRC);
+		blockLRC = buff[buffSize-1];
+		retVal = READER_T1_SetBlockLRC(pBlock, blockLRC);
 		if(retVal != READER_OK) return retVal;
 	}
 	else if(rType == READER_T1_CRC){
-		CRC = *(uint16_t*)(buff + buffSize - 2);
-		retVal = READER_T1_SetBlockCRC(pBlock, CRC);
+		blockCRC = *(uint16_t*)(buff + buffSize - 2);
+		retVal = READER_T1_SetBlockCRC(pBlock, blockCRC);
 		if(retVal != READER_OK) return retVal;
 	}
 	else{

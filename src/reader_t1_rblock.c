@@ -44,10 +44,10 @@ READER_T1_ACKType READER_T1_GetBlockACKType(READER_T1_Block *pBlock){
 	
 	currentPCB = READER_T1_GetBlockPCB(pBlock);
 	
-	if((currentPCB & 0x20 == 0x00) && (currentPCB & 0x0F == 0x00)){
+	if(((currentPCB & 0x20) == 0x00) && ((currentPCB & 0x0F) == 0x00)){
 		return READER_T1_ACKTYPE_ACK;
 	}
-	else if((currentPCB & 0x20 == 0x00) && (currentPCB & 0x0F == 0x01)){
+	else if(((currentPCB & 0x20) == 0x00) && ((currentPCB & 0x0F) == 0x01)){
 		return READER_T1_ACKTYPE_NACK_CRCLRC;
 	}
 	else{
@@ -59,17 +59,17 @@ READER_T1_ACKType READER_T1_GetBlockACKType(READER_T1_Block *pBlock){
 
 
 
-READER_Status READER_T1_SetExpectedBlockSeqNumber(READER_T1_Block *pBlock, READER_T1_SeqNumber seq){
+READER_Status READER_T1_SetExpectedBlockSeqNumber(READER_T1_Block *pBlock, READER_T1_ExpSeqNumber seq){
 	/* Voir ISO7816-3 section 11.3.2.2 */
 	READER_Status retVal;
 	uint8_t currentPCB, newPCB;
 	
 	currentPCB = READER_T1_GetBlockPCB(pBlock);
 	
-	if(seq == READER_T1_SEQNUM_ZERO){
+	if(seq == READER_T1_EXPSEQNUM_ZERO){
 		newPCB = currentPCB & 0xBF ;
 	}
-	else if(seq == READER_T1_SEQNUM_ONE){
+	else if(seq == READER_T1_EXPSEQNUM_ONE){
 		newPCB = currentPCB | ~0xBF ;
 	}
 	else{
@@ -84,26 +84,25 @@ READER_Status READER_T1_SetExpectedBlockSeqNumber(READER_T1_Block *pBlock, READE
 }
 
 
-READER_T1_SeqNumber READER_T1_GetExpectedBlockSeqNumber(READER_T1_Block *pBlock){
+READER_T1_ExpSeqNumber READER_T1_GetExpectedBlockSeqNumber(READER_T1_Block *pBlock){
 	/* Voir ISO7816-3 section 11.3.2.2 */
-	READER_Status retVal;
-	uint8_t currentPCB, newPCB;
+	uint8_t currentPCB;
 	
 	
 	
 	currentPCB = READER_T1_GetBlockPCB(pBlock);
 	
 	if((currentPCB & ~0xBF) == 0x00){
-		return READER_T1_SEQNUM_ZERO;
+		return READER_T1_EXPSEQNUM_ZERO;
 	}
 	else{
-		return READER_T1_SEQNUM_ONE;
+		return READER_T1_EXPSEQNUM_ONE;
 	}
 }
 
 
 
-READER_Status READER_T1_ForgeRBlock(READER_T1_Block *pBlock, READER_T1_ACKType ack, READER_T1_SeqNumber expctdBlockSeq){
+READER_Status READER_T1_ForgeRBlock(READER_T1_Block *pBlock, READER_T1_ACKType ack, READER_T1_ExpSeqNumber expctdBlockSeq){
 	READER_T1_RedundancyType rType;
 	READER_Status retVal;
 	
@@ -128,7 +127,7 @@ READER_Status READER_T1_ForgeRBlock(READER_T1_Block *pBlock, READER_T1_ACKType a
 
 
 
-READER_Status READER_T1_SendBlockACK(READER_T1_Block *pBlock, READER_T1_SeqNumber expctdBlockSeq, uint32_t timeout){
+READER_Status READER_T1_SendBlockACK(READER_T1_Block *pBlock, READER_T1_ExpSeqNumber expctdBlockSeq, uint32_t timeout){
 	READER_T1_Block block;
 	READER_Status retVal;
 	
@@ -144,7 +143,7 @@ READER_Status READER_T1_SendBlockACK(READER_T1_Block *pBlock, READER_T1_SeqNumbe
 }
 
 
-READER_Status READER_T1_SendBlockNACK(READER_T1_Block *pBlock, READER_T1_SeqNumber expctdBlockSeq, uint32_t timeout){
+READER_Status READER_T1_SendBlockNACK(READER_T1_Block *pBlock, READER_T1_ExpSeqNumber expctdBlockSeq, uint32_t timeout){
 	READER_T1_Block block;
 	READER_Status retVal;
 	
@@ -160,7 +159,7 @@ READER_Status READER_T1_SendBlockNACK(READER_T1_Block *pBlock, READER_T1_SeqNumb
 }
 
 
-READER_Status READER_T1_SendBlockNACK_CRCLRC(READER_T1_Block *pBlock, READER_T1_SeqNumber expctdBlockSeq, uint32_t timeout){
+READER_Status READER_T1_SendBlockNACK_CRCLRC(READER_T1_Block *pBlock, READER_T1_ExpSeqNumber expctdBlockSeq, uint32_t timeout){
 	READER_T1_Block block;
 	READER_Status retVal;
 	

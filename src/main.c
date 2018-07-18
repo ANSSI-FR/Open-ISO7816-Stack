@@ -4,6 +4,7 @@
 #include "reader_atr.h"
 #include "reader_tpdu.h"
 #include "reader_apdu.h"
+#include "reader_t1_block.h"
 
 
 UART_HandleTypeDef uartHandleStruct;
