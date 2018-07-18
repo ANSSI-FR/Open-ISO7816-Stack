@@ -18,7 +18,8 @@ READER_Status READER_T1_ForgeSBlock(READER_T1_Block *pBlock, READER_T1_SBlockTyp
 	retVal = READER_T1_ForgeBlock(pBlock, rType);
 	if(retVal != READER_OK) return retVal;
 	
-	retVal = READER_T1_SetBlock
+	retVal = READER_T1_SetBlockSType(pBlock, type);
+	if(retVal != READER_OK) return retVal;
 	
 	return READER_OK;
 }
