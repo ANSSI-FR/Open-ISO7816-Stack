@@ -369,3 +369,91 @@ READER_Status READER_T1_ExecuteIFS(uint8_t requValue, uint32_t timeout){
 }
 
 
+
+
+
+
+
+
+
+READER_Status READER_T1_SendBlockWTXRequ(uint8_t requValue, uint32_t timeout){
+	READER_Status retVal;
+	READER_T1_Block block;
+	
+	
+	retVal = READER_T1_ForgeSBlock(&block, READER_T1_STYPE_WTX_REQU);
+	if(retVal != READER_OK) return retVal;
+	
+	retVal = READER_T1_SetBlockSPayload(&block, requValue);
+	if(retVal != READER_OK) return retVal;
+	
+	retVal = READER_T1_SendBlock(&block, timeout);
+	if(retVal != READER_OK) return retVal;
+	
+	return READER_OK;
+}
+
+
+READER_Status READER_T1_RcvBlockWTXResp(uint8_t requValue, uint32_t timeout){
+	READER_Status retVal;
+	READER_T1_Block block;
+	READER_T1_BlockType blockType;
+	READER_T1_SBlockType sBlockType;
+	uint8_t payload;
+	
+	
+	/* On recoit un Block                            */
+	retVal = READER_T1_RcvBlock(&block, timeout);
+	if(retVal != READER_OK) return retVal;
+	
+	/* On verifie que c'est bien un WTX RESPONSE */
+	blockType = READER_T1_GetBlockType(&block);
+	sBlockType = READER_T1_GetBlockSType(&block);
+	
+	if((blockType != READER_T1_SBLOCK) || (sBlockType != READER_T1_STYPE_WTX_RESP)){
+		return READER_ERR;
+	}
+
+	
+	/* On verifie que la payload du S-BLOCK correspond bien au requValue */
+	payload = READER_T1_GetBlockSPayload(&block);
+	if(payload != requValue){
+		return READER_ERR;
+	}
+	
+	return READER_OK;
+}
+
+
+READER_Status READER_T1_SendBlockWTXResp(uint8_t requValue, uint32_t timeout){
+	READER_Status retVal;
+	READER_T1_Block block;
+	
+	
+	retVal = READER_T1_ForgeSBlock(&block, READER_T1_STYPE_WTX_RESP);
+	if(retVal != READER_OK) return retVal;
+	
+	retVal = READER_T1_SetBlockSPayload(&block, requValue);
+	if(retVal != READER_OK) return retVal;
+	
+	retVal = READER_T1_SendBlock(&block, timeout);
+	if(retVal != READER_OK) return retVal;
+	
+	return READER_OK;
+}
+
+
+READER_Status READER_T1_ExecuteWTX(uint8_t requValue, uint32_t timeout){
+	READER_Status retVal;
+	
+	
+	retVal = READER_T1_SendBlockWTXRequ(requValue, timeout);
+	if(retVal != READER_OK) return retVal;
+	
+	retVal = READER_T1_RcvBlockWTXResp(requValue, timeout);
+	if(retVal != READER_OK) return retVal;
+	
+	return READER_OK;
+}
+
+
