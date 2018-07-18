@@ -156,9 +156,25 @@ READER_Status READER_T1_SendBlockRESYNCHRequ(uint32_t timeout){
 
 READER_Status READER_T1_RcvBlockRESYNCHResp(uint32_t timeout){
 	READER_Status retVal;
+	READER_T1_Block block;
+	READER_T1_BlockType blockType;
+	READER_T1_SBlockType sBlockType;
 	
 	
-	return READER_OK;
+	/* On recoit un Block                            */
+	retVal = READER_T1_RcvBlock(&block, timeout);
+	if(retVal != READER_OK) return retVal;
+	
+	/* On verifie que c'est bien un RESYNCH RESPONSE */
+	blockType = READER_T1_GetBlockType(&block);
+	sBlockType = READER_T1_GetBlockSType(&block);
+	
+	if((blockType == READER_T1_SBLOCK) && (sBlockType == READER_T1_STYPE_RESYNCH_RESP)){
+		return READER_OK;
+	}
+	else{
+		return READER_ERR;
+	}
 }
 
 
