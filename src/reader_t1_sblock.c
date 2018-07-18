@@ -79,6 +79,7 @@ READER_Status READER_T1_SetBlockSType(READER_T1_Block *pBlock, READER_T1_SBlockT
 
 
 READER_T1_SBlockType READER_T1_GetBlockSType(READER_T1_Block *pBlock){
+	/* Voir ISO7816-3 section 11.3.2.2 */
 	uint8_t currentPCB;
 	
 	currentPCB = READER_T1_GetBlockPCB(pBlock);
@@ -112,4 +113,14 @@ READER_T1_SBlockType READER_T1_GetBlockSType(READER_T1_Block *pBlock){
 	}
 }
 
+
+READER_Status READER_T1_SetBlockSPayload(READER_T1_Block *pBlock, uint8_t payload){
+	READER_Status retVal;
+	
+	retVal = READER_T1_SetBlockData(pBlock, &payload, 1);
+	if(retVal != READER_OK) return retVal;
+	
+	
+	return READER_OK;
+}
 
