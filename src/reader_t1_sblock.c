@@ -206,3 +206,77 @@ READER_Status READER_T1_ExecuteRESYNCH(uint32_t timeout){
 	return READER_OK;
 }
 
+
+
+
+
+
+
+READER_Status READER_T1_SendBlockABORTRequ(uint32_t timeout){
+	READER_Status retVal;
+	READER_T1_Block block;
+	
+	
+	retVal = READER_T1_ForgeSBlock(&block, READER_T1_STYPE_ABORT_REQU);
+	if(retVal != READER_OK) return retVal;
+	
+	retVal = READER_T1_SendBlock(&block, timeout);
+	if(retVal != READER_OK) return retVal;
+	
+	return READER_OK;
+}
+
+
+READER_Status READER_T1_RcvBlockABORTResp(uint32_t timeout){
+	READER_Status retVal;
+	READER_T1_Block block;
+	READER_T1_BlockType blockType;
+	READER_T1_SBlockType sBlockType;
+	
+	
+	/* On recoit un Block                            */
+	retVal = READER_T1_RcvBlock(&block, timeout);
+	if(retVal != READER_OK) return retVal;
+	
+	/* On verifie que c'est bien un ABORT RESPONSE */
+	blockType = READER_T1_GetBlockType(&block);
+	sBlockType = READER_T1_GetBlockSType(&block);
+	
+	if((blockType == READER_T1_SBLOCK) && (sBlockType == READER_T1_STYPE_ABORT_RESP)){
+		return READER_OK;
+	}
+	else{
+		return READER_ERR;
+	}
+}
+
+
+READER_Status READER_T1_SendBlockABORTResp(uint32_t timeout){
+	READER_Status retVal;
+	READER_T1_Block block;
+	
+	
+	retVal = READER_T1_ForgeSBlock(&block, READER_T1_STYPE_ABORT_RESP);
+	if(retVal != READER_OK) return retVal;
+	
+	retVal = READER_T1_SendBlock(&block, timeout);
+	if(retVal != READER_OK) return retVal;
+	
+	return READER_OK;
+}
+
+
+READER_Status READER_T1_ExecuteABORT(uint32_t timeout){
+	READER_Status retVal;
+	
+	
+	retVal = READER_T1_SendBlockABORTRequ(timeout);
+	if(retVal != READER_OK) return retVal;
+	
+	retVal = READER_T1_RcvBlockABORTResp(timeout);
+	if(retVal != READER_OK) return retVal;
+	
+	return READER_OK;
+}
+
+
