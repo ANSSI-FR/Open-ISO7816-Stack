@@ -107,10 +107,16 @@ READER_Status READER_T1_ForgeRBlock(READER_T1_Block *pBlock, READER_T1_ACKType a
 	READER_T1_RedundancyType rType;
 	READER_Status retVal;
 	
+	/* On fabrique un Block vierge      */
 	rType = READER_HAL_GetRedunancyType();
 	retVal = READER_T1_ForgeBlock(pBlock, rType);
 	if(retVal != READER_OK) return retVal;
 	
+	/* On indique que c'est un R-BLOCK  */
+	retVal = READER_T1_SetBlockType(pBlock, READER_T1_RBLOCK);
+	if(retVal != READER_OK) return retVal;
+	
+	/* On indique les infos propres aux R-BLOCKs */
 	retVal = READER_T1_SetBlockACKType(pBlock, ack);
 	if(retVal != READER_OK) return retVal;
 	
