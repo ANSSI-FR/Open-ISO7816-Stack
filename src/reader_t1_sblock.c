@@ -77,3 +77,39 @@ READER_Status READER_T1_SetBlockSType(READER_T1_Block *pBlock, READER_T1_SBlockT
 }
 
 
+
+READER_T1_SBlockType READER_T1_GetBlockSType(READER_T1_Block *pBlock){
+	uint8_t currentPCB;
+	
+	currentPCB = READER_T1_GetBlockPCB(pBlock);
+	
+	if(currentPCB & 0x3F == 0x00){
+		return READER_T1_STYPE_RESYNCH_REQU;
+	}
+	else if(currentPCB & 0x3F == 0x20){
+		return READER_T1_STYPE_RESYNCH_RESP;
+	}
+	else if(currentPCB & 0x3F == 0x01){
+		return READER_T1_STYPE_IFS_REQU;
+	}
+	else if(currentPCB & 0x3F == 0x21){
+		return READER_T1_STYPE_IFS_RESP;
+	}
+	else if(currentPCB & 0x3F == 0x02){
+		return READER_T1_STYPE_ABORT_REQU;
+	}
+	else if(currentPCB & 0x3F == 0x22){
+		return READER_T1_STYPE_ABORT_RESP;
+	}
+	else if(currentPCB & 0x3F == 0x03){
+		return READER_T1_STYPE_WTX_REQU;
+	}
+	else if(currentPCB & 0x3F == 0x23){
+		return READER_T1_STYPE_WTX_RESP;
+	}
+	else{
+		return READER_T1_STYPE_DEPRECATED;
+	}
+}
+
+
