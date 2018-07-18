@@ -170,6 +170,7 @@ READER_Status READER_T1_SetBlockCRC(READER_T1_Block *pBlock, uint16_t blockCRC){
 
 
 READER_Status READER_T1_SetBlockData(READER_T1_Block *pBlock, uint8_t *data, uint8_t dataSize){
+	READER_Status retVal;
 	uint32_t i;
 	uint8_t *pBlockData;
 	uint8_t *blockFrame;
@@ -180,6 +181,9 @@ READER_Status READER_T1_SetBlockData(READER_T1_Block *pBlock, uint8_t *data, uin
 	if(dataSize > READER_T1_BLOCK_MAX_DATA_SIZE){
 		return READER_ERR;
 	}
+	
+	retVal = READER_T1_SetBlockLEN(pBlock, dataSize);
+	if(retVal != READER_OK) return retVal;
 	
 	
 	pBlockData = blockFrame + READER_T1_BLOCKFRAME_INF_POSITION;
