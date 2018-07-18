@@ -6,18 +6,21 @@
 
 
 
-
-
-
 READER_Status READER_T1_ForgeSBlock(READER_T1_Block *pBlock, READER_T1_SBlockType type){
 	READER_T1_RedundancyType rType;
 	READER_Status retVal;
 	
 	
+	/* On fabrique un Block vierge     */
 	rType = READER_HAL_GetRedunancyType();
 	retVal = READER_T1_ForgeBlock(pBlock, rType);
 	if(retVal != READER_OK) return retVal;
 	
+	/* On indique de c'est un S-BLOCK  */
+	retVal = READER_T1_SetBlockType(pBlock, READER_T1_SBLOCK);
+	if(retVal != READER_OK) return retVal;
+	
+	/* On indique le type de S-BLOCK (RESYNCH, ABORT, ...) */
 	retVal = READER_T1_SetBlockSType(pBlock, type);
 	if(retVal != READER_OK) return retVal;
 	
@@ -132,5 +135,42 @@ uint8_t READER_T1_GetBlockSPayload(READER_T1_Block *pBlock){
 	pPayload = READER_T1_GetBlockData(pBlock);
 	
 	return *pPayload;
+}
+
+
+
+READER_Status READER_T1_SendBlockRESYNCHRequ(uint32_t timeout){
+	READER_Status retVal;
+	READER_T1_Block block;
+	
+	
+	retVal = READER_T1_ForgeSBlock(pBlock, READER_T1_STYPE_RESYNCH_REQU);
+	if(retVal != READER_OK) return retVal;
+	
+	return READER_OK;
+}
+
+
+READER_Status READER_T1_RcvBlockRESYNCHResp(uint32_t timeout){
+	READER_Status retVal;
+	
+	
+	return READER_OK;
+}
+
+
+READER_Status READER_T1_SendBlockRESYNCHResp(uint32_t timeout){
+	READER_Status retVal;
+	
+	
+	return READER_OK;
+}
+
+
+READER_Status READER_T1_ExecuteRESYNCH(uint32_t timeout){
+	READER_Status retVal;
+	
+	
+	return READER_OK;
 }
 
