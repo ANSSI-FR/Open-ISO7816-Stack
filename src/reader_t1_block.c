@@ -182,10 +182,11 @@ READER_Status READER_T1_SetBlockData(READER_T1_Block *pBlock, uint8_t *data, uin
 		return READER_ERR;
 	}
 	
+	/* Mise a jour du LEN du Block */
 	retVal = READER_T1_SetBlockLEN(pBlock, dataSize);
 	if(retVal != READER_OK) return retVal;
 	
-	
+	/* Recuperation du pointeur sur le champ de donnees du block et insertion des data */
 	pBlockData = blockFrame + READER_T1_BLOCKFRAME_INF_POSITION;
 	
 	for(i=0; i<dataSize; i++){
