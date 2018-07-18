@@ -197,6 +197,12 @@ READER_Status READER_T1_ExecuteRESYNCH(uint32_t timeout){
 	READER_Status retVal;
 	
 	
+	retVal = READER_T1_SendBlockRESYNCHRequ(timeout);
+	if(retVal != READER_OK) return retVal;
+	
+	retVal = READER_T1_RcvBlockRESYNCHResp(timeout);
+	if(retVal != READER_OK) return retVal;
+	
 	return READER_OK;
 }
 
