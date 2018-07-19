@@ -442,6 +442,33 @@ uint32_t READER_T1_GetBlockRedundancyLen(READER_T1_Block *pBlock){
 }
 
 
+READER_Status READER_T1_UpdateBlockChecksum(READER_T1_Block *pBlock){
+	READER_Status retVal;
+	READER_T1_RedundancyType rType;
+	uint16_t blockCRC;
+	uint8_t blockLRC;
+	
+	
+	rType = READER_T1_GetBlockRedundancyType(pBlock);
+	
+	if(rType == READER_T1_LRC){
+		blockLRC = READER_T1_ComputeBlockLRC(pBlock);
+		retVal = READER_T1_SetBlockLRC(pBlock, blockLRC);
+		if(retVal != READER_OK) return retVal;
+	}
+	else if(rType == READER_T1_CRC){
+		blockCRC = READER_T1_ComputeBlockCRC(pBlock);
+		retVal = READER_T1_SetBlockCRC(pBlock, blockCRC);
+		if(retVal != READER_OK) return retVal;
+	}
+	else{
+		return READER_ERR;
+	}
+	
+	return READER_OK;
+}
+
+
 
 READER_Status READER_T1_ForgeBlock(READER_T1_Block *pBlock, READER_T1_RedundancyType rType){
 	READER_Status retVal;

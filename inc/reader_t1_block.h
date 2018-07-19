@@ -63,6 +63,8 @@ READER_Status READER_T1_SetBlockLRC(READER_T1_Block *pBlock, uint8_t blockLRC);
 READER_Status READER_T1_SetBlockCRC(READER_T1_Block *pBlock, uint16_t blockCRC);
 READER_Status READER_T1_SetBlockData(READER_T1_Block *pBlock, uint8_t *data, uint8_t dataSize);
 
+READER_Status READER_T1_UpdateBlockChecksum(READER_T1_Block *pBlock);
+
 
 uint8_t READER_T1_ComputeBlockLRC(READER_T1_Block *pBlock);
 uint16_t READER_T1_ComputeBlockCRC(READER_T1_Block *pBlock);
