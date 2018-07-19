@@ -4,6 +4,7 @@
 
 
 READER_Status READER_T1_SetBlockSAD(READER_T1_Block *pBlock, uint8_t blockSAD){
+	READER_Status retVal;
 	uint8_t *pCurrentNAD;
 	uint8_t *blockFrame;
 
@@ -17,11 +18,16 @@ READER_Status READER_T1_SetBlockSAD(READER_T1_Block *pBlock, uint8_t blockSAD){
 	pCurrentNAD = blockFrame + READER_T1_BLOCKFRAME_NAD_POSITION;
 	*pCurrentNAD = (*pCurrentNAD & 0xF8) | (blockSAD & 0x07);                              /* Voir ISO7816-3 section 11.3.2.1 */
 	
+	/* On met a jour le checksum du Block */
+	retVal = READER_T1_UpdateBlockChecksum(pBlock);
+	if(retVal != READER_OK) return retVal;
+	
 	return READER_OK;
 }
 
 
 READER_Status READER_T1_SetBlockDAD(READER_T1_Block *pBlock, uint8_t blockDAD){
+	READER_Status retVal;
 	uint8_t *pCurrentNAD;
 	uint8_t *blockFrame;
 	
@@ -34,11 +40,16 @@ READER_Status READER_T1_SetBlockDAD(READER_T1_Block *pBlock, uint8_t blockDAD){
 	pCurrentNAD = blockFrame + READER_T1_BLOCKFRAME_NAD_POSITION;
 	*pCurrentNAD = (*pCurrentNAD & 0x8F) | (4<<(blockDAD & 0x07));                              /* Voir ISO7816-3 section 11.3.2.1 */
 	
+	/* On met a jour le checksum du Block */
+	retVal = READER_T1_UpdateBlockChecksum(pBlock);
+	if(retVal != READER_OK) return retVal;
+	
 	return READER_OK;
 }
 
 
 READER_Status READER_T1_SetBlockNAD(READER_T1_Block *pBlock, uint8_t blockNAD){
+	READER_Status retVal;
 	uint8_t *pCurrentNAD;
 	uint8_t *blockFrame;
 	
@@ -48,11 +59,16 @@ READER_Status READER_T1_SetBlockNAD(READER_T1_Block *pBlock, uint8_t blockNAD){
 	pCurrentNAD = blockFrame + READER_T1_BLOCKFRAME_NAD_POSITION;
 	*pCurrentNAD = blockNAD;                                                                   /* Voir ISO7816-3 section 11.3.2.1 */
 	
+	/* On met a jour le checksum du Block */
+	retVal = READER_T1_UpdateBlockChecksum(pBlock);
+	if(retVal != READER_OK) return retVal;
+	
 	return READER_OK;
 }
 
 
 READER_Status READER_T1_SetBlockPCB(READER_T1_Block *pBlock, uint8_t blockPCB){
+	READER_Status retVal;
 	uint8_t *pCurrentPCB;
 	uint8_t *blockFrame;
 	
@@ -62,12 +78,17 @@ READER_Status READER_T1_SetBlockPCB(READER_T1_Block *pBlock, uint8_t blockPCB){
 	pCurrentPCB = blockFrame + READER_T1_BLOCKFRAME_PCB_POSITION;
 	*pCurrentPCB = blockPCB;                                                                   /* Voir ISO7816-3 section 11.3.2.1 */
 	
+	/* On met a jour le checksum du Block */
+	retVal = READER_T1_UpdateBlockChecksum(pBlock);
+	if(retVal != READER_OK) return retVal;
+	
 	return READER_OK;
 }
 
 
 READER_Status READER_T1_SetBlockType(READER_T1_Block *pBlock, READER_T1_BlockType type){
 	/* Voir ISO7816-3 section 11.3.2.2 */
+	READER_Status retVal;
 	uint8_t *pCurrentPCB;
 	uint8_t *blockFrame;
 	
@@ -90,11 +111,16 @@ READER_Status READER_T1_SetBlockType(READER_T1_Block *pBlock, READER_T1_BlockTyp
 		return READER_ERR;
 	}
 	
+	/* On met a jour le checksum du Block */
+	retVal = READER_T1_UpdateBlockChecksum(pBlock);
+	if(retVal != READER_OK) return retVal;
+	
 	return READER_OK;
 }
 
 
 READER_Status READER_T1_SetBlockLEN(READER_T1_Block *pBlock, uint8_t blockLEN){
+	READER_Status retVal;
 	uint8_t *pCurrentLEN;
 	uint8_t *blockFrame;
 
@@ -108,16 +134,25 @@ READER_Status READER_T1_SetBlockLEN(READER_T1_Block *pBlock, uint8_t blockLEN){
 	pCurrentLEN = blockFrame + READER_T1_BLOCKFRAME_LEN_POSITION;
 	*pCurrentLEN = blockLEN;
 	
+	/* On met a jour le checksum du Block */
+	retVal = READER_T1_UpdateBlockChecksum(pBlock);
+	if(retVal != READER_OK) return retVal;
+	
 	return READER_OK;
 }
 
 
 READER_Status READER_T1_SetBlockRedundancyType(READER_T1_Block *pBlock, READER_T1_RedundancyType type){
+	READER_Status retVal;
 	if((type != READER_T1_CRC) && (type != READER_T1_LRC)){
 		return READER_ERR;
 	}
 	
 	pBlock->RedundancyType = type;
+	
+	/* On met a jour le checksum du Block */
+	retVal = READER_T1_UpdateBlockChecksum(pBlock);
+	if(retVal != READER_OK) return retVal;
 	
 	return READER_OK;
 }
@@ -142,6 +177,10 @@ READER_Status READER_T1_SetBlockLRC(READER_T1_Block *pBlock, uint8_t blockLRC){
 	retVal = READER_T1_SetBlockRedundancyType(pBlock, READER_T1_LRC);
 	if(retVal != READER_OK) return retVal;
 	
+	/* On met a jour le checksum du Block */
+	retVal = READER_T1_UpdateBlockChecksum(pBlock);
+	if(retVal != READER_OK) return retVal;
+	
 	return READER_OK;
 }
 
@@ -164,6 +203,10 @@ READER_Status READER_T1_SetBlockCRC(READER_T1_Block *pBlock, uint16_t blockCRC){
 	
 	/* On mets a jour le RedundancyType a LRC    */
 	retVal = READER_T1_SetBlockRedundancyType(pBlock, READER_T1_CRC);
+	if(retVal != READER_OK) return retVal;
+	
+	/* On met a jour le checksum du Block */
+	retVal = READER_T1_UpdateBlockChecksum(pBlock);
 	if(retVal != READER_OK) return retVal;
 	
 	return READER_OK;
@@ -193,6 +236,10 @@ READER_Status READER_T1_SetBlockData(READER_T1_Block *pBlock, uint8_t *data, uin
 	for(i=0; i<dataSize; i++){
 		pBlockData[i] = data[i];
 	}
+	
+	/* On met a jour le checksum du Block */
+	retVal = READER_T1_UpdateBlockChecksum(pBlock);
+	if(retVal != READER_OK) return retVal;
 	
 	
 	return READER_OK;
