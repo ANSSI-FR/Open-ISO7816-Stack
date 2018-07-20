@@ -87,6 +87,38 @@ READER_Status READER_T1_IsBlockNACK(READER_T1_Block *pPrevIBlock, READER_T1_Bloc
 }
 
 
-READER_Status READER_T1_RcvBlockAndCheck(READER_T1_Block *pBlock){
+
+READER_Status READER_T1_RcvBlockAndCheck(READER_T1_Block *pBlock, READER_T1_SeqNumber expectedSeqNum){
+	READER_Status retVal
 	
+	
+	
+	
+	return READER_OK;
+}
+
+
+
+
+READER_Status READER_T1_ProcessCorruptedBlock(READER_T1_Block *pBlock, READER_T1_SeqNumber expectedSeqNum){
+	READER_T1_BlockType bType;
+	READER_Status retVal;
+	
+	
+	bType = READER_T1_GetBlockType(pBlock);
+	
+	if(bType == READER_T1_RBLOCK){        /* Voir ISO7816-3 section 11.6.3.2, rule 7.2 */
+		
+	}
+	else if(bType == READER_T1_IBLOCK){   /* Voir ISO7816-3 section 11.6.3.2, rule 7.1 */
+		
+	}
+	else if(bType == READER_T1_SBLOCK){   /* Voir ISO7816-3 section 11.6.3.2, rule 7.3 */
+		
+	}
+	else{
+		return READER_ERR;
+	}
+	
+	return READER_OK;
 }
