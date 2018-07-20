@@ -10,13 +10,15 @@
 
 
 
-READER_Status READER_T1_IsBlockACK(READER_T1_Block *pBlockSnd, READER_T1_Block *pBlockRcvd);
-READER_Status READER_T1_IsBlockNACK(READER_T1_Block *pBlockSnd, READER_T1_Block *pBlockRcvd);
+READER_Status READER_T1_IsIBlockACK(READER_T1_Block *pPrevIBlock, READER_T1_Block *pRcvdBlock);
+READER_Status READER_T1_IsIBlockNACK(READER_T1_Block *pPrevBlock, READER_T1_Block *pRcvdBlock);
 READER_Status READER_T1_ProcessSBlockRequ(READER_T1_Block *pSBlockRequ);
 READER_Status READER_T1_ProcessResynchRequ(READER_T1_Block *pSBlockRequ);
 READER_Status READER_T1_ProcessAbortRequ(READER_T1_Block *pSBlockRequ);
 READER_Status READER_T1_ProcessWTXRequ(READER_T1_Block *pSBlockRequ);
 READER_Status READER_T1_ProcessIFSRequ(READER_T1_Block *pSBlockRequ);
+READER_Status READER_T1_ProcessCorruptedBlock(READER_T1_Block *pBlock);
+READER_Status READER_T1_RcvBlockAndCheck(READER_T1_Block *pBlock);
 
 
 
