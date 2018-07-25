@@ -21,12 +21,13 @@
 
 typedef enum READER_Status READER_Status;
 enum READER_Status{
-	READER_OK                   = (0x00000001),
-	READER_NO                   = (0x00000000),
-	READER_ERR                  = (0x00000002),
-	READER_TIMEOUT              = (0x00000003),
-	READER_TIMEOUT_GOT_ONLY_SW  = (0X00000004),
-	READER_BUSY                 = (0x00000005)
+	READER_OK                   = (uint32_t)(0x00000001),
+	READER_NO                   = (uint32_t)(0x00000000),
+	READER_ERR                  = (uint32_t)(0x00000002),
+	READER_TIMEOUT              = (uint32_t)(0x00000003),
+	READER_TIMEOUT_GOT_ONLY_SW  = (uint32_t)(0X00000004),
+	READER_BUSY                 = (uint32_t)(0x00000005),
+	READER_TOO_MUCH_TRIES       = (uint32_t)(0x00000006)
 };
 
 
