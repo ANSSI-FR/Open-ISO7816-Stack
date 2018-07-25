@@ -88,7 +88,7 @@ READER_Status READER_T1_IsBlockNACK(READER_T1_Block *pPrevIBlock, READER_T1_Bloc
 
 
 
-READER_Status READER_T1_RcvBlockAndCheck(READER_T1_Block *pBlock, READER_T1_SeqNumber expectedSeqNum){
+READER_Status READER_T1_RcvBlockAndCheck(READER_T1_Block *pBlock, READER_T1_SeqNumber expectedSeqNum, uint32_t timeout){
 	READER_Status retVal
 	
 	
