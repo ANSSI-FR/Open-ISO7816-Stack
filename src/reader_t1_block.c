@@ -551,6 +551,13 @@ READER_Status READER_T1_SendBlock(READER_T1_Block *pBlock, uint32_t timeout){
 }
 
 
+/**
+ * \fn READER_Status READER_T1_RcvBlock(READER_T1_Block *pBlock, uint32_t timeout)
+ * \brief Cette fonction permet de recevoir un Block. La fonction recoit d'abord le prologue du Block, puis à partir des informations qui y sont contenues, elle recoit le reste du Block. Attention cette fonction ne vérifie pas l'intégrité du Block, pas de vérification du checksum.
+ * \return La fonction revoie un code de type READER_Status. Le retour est READER_OK si le Block esr reçu en entier et si le formatage du Block reçu est correct.
+ * \param *pBlock Pointeur sur une structure de type READER_T1_Block. Le contenu du Block reçu sera placé à l'intérieur.
+ * \param timeout Il s'agit de la valeur du timeout pour chaque caractère en milisecondes.
+ */
 READER_Status READER_T1_RcvBlock(READER_T1_Block *pBlock, uint32_t timeout){
 	READER_Status retVal;
 	READER_T1_RedundancyType rType;
