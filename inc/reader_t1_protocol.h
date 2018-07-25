@@ -18,7 +18,7 @@ READER_Status READER_T1_ProcessAbortRequ(READER_T1_Block *pSBlockRequ);
 READER_Status READER_T1_ProcessWTXRequ(READER_T1_Block *pSBlockRequ);
 READER_Status READER_T1_ProcessIFSRequ(READER_T1_Block *pSBlockRequ);
 READER_Status READER_T1_ProcessCorruptedBlock(READER_T1_Block *pBlock, READER_T1_SeqNumber expectedSeqNum);
-READER_Status READER_T1_RcvBlockAndCheck(READER_T1_Block *pBlock, READER_T1_SeqNumber expectedSeqNum, uint32_t timeout);
+READER_Status READER_T1_RcvBlockAndCheck(READER_T1_Block *pBlock, uint32_t timeout);
 
 
 
