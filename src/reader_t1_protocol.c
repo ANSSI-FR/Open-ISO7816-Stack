@@ -89,16 +89,35 @@ READER_Status READER_T1_IsBlockNACK(READER_T1_Block *pPrevIBlock, READER_T1_Bloc
 
 /**
  * \fn READER_Status READER_T1_RcvBlockAndCheck(READER_T1_Block *pBlock, READER_T1_SeqNumber expectedSeqNum, uint32_t timeout)
- * \brief Cette fonction recoit un Block, vérifie son intégrité et effectue les actions nécessaires si le bloc n'est pas correct jusque obtenir un Block correct ou abandonner. Cette fonction n'est pas spécifique à un type de Block particilier (I, R ou S). Donc les vérificatiosn propres à un type des Block particulier ne sont pas réalisés.
+ * \brief Cette fonction recoit un Block, vérifie son intégrité et effectue les actions nécessaires si le bloc n'est pas intègre jusque obtenir un Block intègre ou abandonner. Cette fonction n'est pas spécifique à un type de Block particilier (I, R ou S). Donc les vérifications propres à un type des Block particulier ne sont pas effectuées. Seules les vérifications d'intégrité (checksum) sont effectuées. Si le Block est totalement mauvais (problème de formattage ou désynchro), cette fonction ne le gère pas. Il faut le prendre en compte à la sortie de la fonction.
  * \return La fonction retourne un code de type READER_Status. Le retour est READER_OK si le Block est reçu correctement (du premier coups ou bien après l'application du protocole de gestion des erreurs), READER_ERR si la fonction n'est pas parvenue à recevoir un Block correct malgré les différents mécanismes de renvoi prévus par le protocole T=1.
  * \param *pBlock Pointeur sur une structure de type READER_T1_Block. Le contenu du Block reçu sera placé à l'intérieur.
  * \param timeout Il s'agit de la valeur du timeout pour chaque caractère en milisecondes.
  */
-READER_Status READER_T1_RcvBlockAndCheck(READER_T1_Block *pBlock, uint32_t timeout){
+READER_Status READER_T1_RcvBlockAndCheck(READER_T1_Block *pPrevSndBlock, READER_T1_Block *pRcvdBlock, uint32_t timeout, uint32_t maxTries){
 	READER_Status retVal
 	
-	retVal = READER_T1_RcvBlock(pBlock, timeout);
 	
+	if(maxTries <= 0){
+		return READER_TOO_MUCH_TRIES;
+	}
+	
+	/* Reception du Block et verification erreurs et timeout ... */
+	retVal = READER_T1_RcvBlock(pRcvdBlock, timeout);
+	if(retVal == READER_TIMEOUT){
+		retVal = READER_T1_ProcessCorruptedBlock(pRcvdBlock, timeout, maxTries-1);    /* Le process pour un bloc timeout est le le meme que pour un Block corrompu. Voir ISO7816-3 section 11.6.3.2 rule 7 */
+		if(retVal != READER_OK) return retVal;
+	}
+	else if(retVal != READER_OK){
+		return retVal;
+	}
+	
+	/* Verification de l'integrite du Block                      */
+	retVal = READER_T1_CheckBlockIntegrity(pRcvdBlock);
+	if(retVal != READER_OK){
+		retVal = READER_T1_ProcessCorruptedBlock(pRcvdBlock, timeout, maxTries-1);
+		if(retVal != READER_OK) return retVal;
+	}
 	
 	return READER_OK;
 }
@@ -106,15 +125,24 @@ READER_Status READER_T1_RcvBlockAndCheck(READER_T1_Block *pBlock, uint32_t timeo
 
 
 
-READER_Status READER_T1_ProcessCorruptedBlock(READER_T1_Block *pBlock, READER_T1_SeqNumber expectedSeqNum){
+READER_Status READER_T1_ProcessCorruptedBlock(READER_T1_Block *pPrevSndBlock, READER_T1_Block *pRcvdBlock, uint32_t timeout, uint32_t maxTries){
 	READER_T1_BlockType bType;
+	READER_T1_Block nackBlock;
 	READER_Status retVal;
 	
 	
-	bType = READER_T1_GetBlockType(pBlock);
+	/* On fabrique et on envoir un NACK Block    */
+	retVal = READER_T1_ForgeRBlock(&nackBlock, READER_T1_ACKTYPE_NACK, );
+	
+	
+	bType = READER_T1_GetBlockType(pRcvdBlock);
 	
 	if(bType == READER_T1_RBLOCK){        /* Voir ISO7816-3 section 11.6.3.2, rule 7.2 */
+		retVal = READER_T1_SendBlock(pRcvdBlock, timeout);
+		if(retVal != READER_OK) return retVal;
 		
+		retVal = READER_T1_RcvBlockAndCheck(pRcvdBlock, timeout, maxTries);
+		if(retVal != READER_OK) return retVal;
 	}
 	else if(bType == READER_T1_IBLOCK){   /* Voir ISO7816-3 section 11.6.3.2, rule 7.1 */
 		

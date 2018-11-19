@@ -47,7 +47,7 @@ enum READER_T1_BlockType{
 
 typedef struct READER_T1_Block READER_T1_Block;
 struct READER_T1_Block{
-	uint8_t blockFrame[READER_T1_BLOCK_MAX_DATA_SIZE + 5];  /* INF +NAD +PCB +LEN +CRC/LRC*/
+	uint8_t blockFrame[READER_T1_BLOCK_MAX_DATA_SIZE + 6];  /* INF +NAD +PCB +LEN +CRC/LRC*/
 	READER_T1_RedundancyType RedundancyType;
 };
 
@@ -62,6 +62,7 @@ READER_Status READER_T1_SetBlockRedundancyType(READER_T1_Block *pBlock, READER_T
 READER_Status READER_T1_SetBlockLRC(READER_T1_Block *pBlock, uint8_t blockLRC);
 READER_Status READER_T1_SetBlockCRC(READER_T1_Block *pBlock, uint16_t blockCRC);
 READER_Status READER_T1_SetBlockData(READER_T1_Block *pBlock, uint8_t *data, uint8_t dataSize);
+READER_Status READER_T1_SetBlockMBit(READER_T1_Block *pBlock, uint32_t mBit);
 
 READER_Status READER_T1_UpdateBlockChecksum(READER_T1_Block *pBlock);
 
@@ -84,12 +85,16 @@ uint8_t* READER_T1_GetBlockData(READER_T1_Block *pBlock);
 uint32_t READER_T1_GetBlockTotalSize(READER_T1_Block *pBlock);
 uint32_t READER_T1_GetBlockSizeWithoutCheck(READER_T1_Block *pBlock);
 uint8_t* READER_T1_GetBlockFrame(READER_T1_Block *pBlock);
+uint32_t READER_T1_GetBlockMBit(READER_T1_Block *pBlock);
 
 READER_Status READER_T1_CheckBlockIntegrity(READER_T1_Block *pBlock);
 
 READER_Status READER_T1_ForgeBlock(READER_T1_Block *pBlock, READER_T1_RedundancyType rType);
 READER_Status READER_T1_SendBlock(READER_T1_Block *pBlock, uint32_t timeout);
 READER_Status READER_T1_RcvBlock(READER_T1_Block *pBlock, uint32_t timeout);
+
+
+READER_Status READER_T1_CopyBlock(READER_T1_Block *pBlockDest, READER_T1_Block *pBlockSource);
 
 
 #endif

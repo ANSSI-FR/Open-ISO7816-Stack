@@ -1,0 +1,454 @@
+#include "reader_t1_context_handler.h"
+
+
+/* Initialisation de la structure */
+READER_Status READER_T1_CONTEXT_Init(READER_T1_ContextHandler *pContext){
+	
+}
+
+
+/* Accesseurs sur les parametres actuels de communication */
+READER_Status READER_T1_CONTEXT_GetCurrentBGT(READER_T1_ContextHandler *pContext, uint32_t *pBgt){
+	*pBgt = pContext->currentBGT;
+	return READER_OK;
+}
+
+
+READER_Status READER_T1_CONTEXT_GetCurrentBWT(READER_T1_ContextHandler *pContext, uint32_t *pBwt){
+	*pBwt = pContext->currentBWT;
+	return READER_OK;
+}
+
+
+READER_Status READER_T1_CONTEXT_GetCurrentCGT(READER_T1_ContextHandler *pContext, uint32_t *pCgt){
+	*pCgt = pContext->currentCGT;
+	return READER_OK;
+}
+
+
+READER_Status READER_T1_CONTEXT_GetCurrentCWT(READER_T1_ContextHandler *pContext, uint32_t *pCwt){
+	*pCwt = pContext->currentCWT;
+	return READER_OK;
+}
+
+
+READER_Status READER_T1_CONTEXT_GetCurrentCWI(READER_T1_ContextHandler *pContext, uint32_t *pCwi){
+	*pCwi = pContext->currentCWI;
+	return READER_OK;
+}
+
+
+READER_Status READER_T1_CONTEXT_GetCurrentBWI(READER_T1_ContextHandler *pContext, uint32_t *pBwi){
+	*pBwi = pContext->currentBWI;
+	return READER_OK;
+}
+
+
+READER_Status READER_T1_CONTEXT_GetCurrentIFSC(READER_T1_ContextHandler *pContext, uint32_t *pIfsc){
+	*pIfsc = pContext->currentIFSC;
+	return READER_OK;
+}
+
+
+READER_Status READER_T1_CONTEXT_GetCurrentIFSD(READER_T1_ContextHandler *pContext, uint32_t *pIfsd){
+	*pIfsd = pContext->currentIFSD;
+	return READER_OK;
+}
+
+
+READER_Status READER_T1_CONTEXT_GetCurrentRedundancyType(READER_T1_ContextHandler *pContext, READER_T1_RedundancyType *pRType){
+	if(pContext->currentRType == READER_T1_CRC){
+		*pRType = pContext->currentRType;
+	}
+	else if(pContext->currentRType == READER_T1_LRC){
+		*pRType = pContext->currentRType;
+	}
+	else{
+		return READER_ERR;
+	}
+	
+	return READER_OK;
+}
+
+
+
+READER_Status READER_T1_CONTEXT_SetCurrentBGT(READER_T1_ContextHandler *pContext, uint32_t bgt){
+	pContext->currentBGT = bgt;
+	return READER_OK;
+}
+
+
+READER_Status READER_T1_CONTEXT_SetCurrentBWT(READER_T1_ContextHandler *pContext, uint32_t bwt){
+	pContext->currentBWT = bwt;
+	return READER_OK;
+}
+
+
+READER_Status READER_T1_CONTEXT_SetCurrentCGT(READER_T1_ContextHandler *pContext, uint32_t cgt){
+	pContext->currentCGT = cgt;
+	return READER_OK;
+}
+
+
+READER_Status READER_T1_CONTEXT_SetCurrentCWT(READER_T1_ContextHandler *pContext, uint32_t cwt){
+	pContext->currentCWT = cwt;
+	return READER_OK;
+}
+
+
+READER_Status READER_T1_CONTEXT_SetCurrentCWI(READER_T1_ContextHandler *pContext, uint32_t cwi){
+	pContext->currentCWI = cwi;
+	return READER_OK;
+}
+
+
+READER_Status READER_T1_CONTEXT_SetCurrentBWI(READER_T1_ContextHandler *pContext, uint32_t bwi){
+	pContext->currentBWI = bwi;
+	return READER_OK;
+}
+
+
+READER_Status READER_T1_CONTEXT_SetCurrentIFSC(READER_T1_ContextHandler *pContext, uint32_t ifsc){
+	if((ifsc >= 0x01) && (ifsc <= 0xFE)){   /* Voir ISO7816-3 section 11.4.2 */
+		pContext->currentIFSC = ifsc;
+	}
+	else{
+		return READER_ERR;
+	}
+	
+	return READER_OK;
+}
+
+
+READER_Status READER_T1_CONTEXT_SetCurrentIFSD(READER_T1_ContextHandler *pContext, uint32_t ifsd){
+	if((ifsd >= 0x01) && (ifsd <= 0xFE)){   /* Voir ISO7816-3 section 11.4.2 */
+		pContext->currentIFSC = ifsd;
+	}
+	else{
+		return READER_ERR;
+	}
+	
+	return READER_OK;
+}
+
+
+READER_Status READER_T1_CONTEXT_SetCurrentRedundancyType(READER_T1_ContextHandler *pContext, READER_T1_RedundancyType rType){
+	if(rType == READER_T1_CRC){
+		pContext->currentRType = rType;
+	}
+	else if(rType == READER_T1_LRC){
+		pContext->currentRType = rType;
+	}
+	else{
+		return READER_ERR;
+	}
+	
+	return READER_OK;
+}
+
+
+
+READER_Status READER_T1_CONTEXT_GetApduResponse(READER_T1_ContextHandler *pContext, READER_APDU_Response *pApduResp){
+	
+}
+
+
+/* Manipulation des compteurs de redemande d'infos et de demandes de resynchro ... */
+READER_Status READER_T1_CONTEXT_IncRepeatCounter(READER_T1_ContextHandler *pContext){
+	if(pContext->repeatCounter < READER_T1_MAX_REAPEAT){
+		pContext->repeatCounter = pContext->repeatCounter + 1;
+	}
+	else{
+		return READER_ERR;
+	}
+	
+	return READER_OK;
+}
+
+
+READER_Status READER_T1_CONTEXT_GetRepeatCounter(READER_T1_ContextHandler *pContext, uint32_t *pCounter){
+	*pCounter = pContext->repeatCounter;
+	return READER_OK;
+}
+
+
+READER_Status READER_T1_CONTEXT_SetRepeatCounter(READER_T1_ContextHandler *pContext, uint32_t counter){
+	pContext->repeatCounter = counter;
+	return READER_OK;
+}
+
+
+READER_Status READER_T1_CONTEXT_CheckRepeatCounter(READER_T1_ContextHandler *pContext){
+	if(pContext->repeatCounter < READER_T1_MAX_REAPEAT){
+		return READER_OK;
+	}
+	else{
+		return READER_NO;
+	}
+}
+
+
+READER_Status READER_T1_CONTEXT_IncResynchCounter(READER_T1_ContextHandler *pContext){
+	if(pContext->resynchCounter < READER_T1_MAX_RESYNCH){
+		pContext->resynchCounter = pContext->resynchCounter + 1;
+	}
+	else{
+		return READER_ERR;
+	}
+	
+	return READER_OK;
+}
+
+
+READER_Status READER_T1_CONTEXT_GetResynchCounter(READER_T1_ContextHandler *pContext, uint32_t *pCounter){
+	*pCounter = pContext->resynchCounter;
+	return READER_OK;
+}
+
+
+READER_Status READER_T1_CONTEXT_SetResynchCounter(READER_T1_ContextHandler *pContext, uint32_t counter){
+	pContext-resynchCounter = counter;
+	return READER_OK;
+}
+
+
+READER_Status READER_T1_CONTEXT_CheckResynchCounter(READER_T1_ContextHandler *pContext){
+	if(pContext->resynchCounter < READER_T1_MAX_RESYNCH){
+		return READER_OK;
+	}
+	else{
+		return READER_NO;
+	}
+}
+
+
+READER_Status READER_T1_CONTEXT_GetACKStatus(READER_T1_ContextHandler *pContext, READER_T1_ACKStatus *pACKStatus){
+	if(pContext->ACKStatus == READER_T1_ACK){
+		*pACKStatus = READER_T1_ACK;
+	}
+	else if(pContext->ACKStatus == READER_T1_NOACK){
+		*pACKStatus = READER_T1_NOACK;
+	}
+	else{
+		return READER_ERR;
+	}
+	
+	return READER_OK;
+}
+
+
+READER_Status READER_T1_CONTEXT_SetACKStatus(READER_T1_ContextHandler *pContext, READER_T1_ACKStatus ACKStatus){
+	if(ACKStatus == READER_T1_ACK){
+		pContext->ACKStatus = READER_T1_ACK;
+	}
+	else if(ACKStatus == READER_T1_NOACK){
+		pContext->ACKStatus = READER_T1_NOACK;
+	}
+	else{
+		return READER_ERR;
+	}
+	
+	return READER_OK;
+}
+
+
+/* Manipulation des derniers blocs envoyes/recus */
+READER_Status READER_T1_CONTEXT_GetLastSent(READER_T1_ContextHandler *pContext, READER_T1_Block *pBlock){
+	READER_Status retVal;
+	
+	if(&(pContext->lastSent) == NULL){
+		pBlock = NULL;   /* A VERIFIER SI CA MARCHE !!!  */
+	}
+	else{
+		retVal = READER_T1_CopyBlock(pBlock, &(pContext->lastSent));
+		if(retVal != READER_OK) return retVal;
+	}
+	
+	return READER_OK;
+}
+
+
+READER_Status READER_T1_CONTEXT_GetLastIBlockSent(READER_T1_ContextHandler *pContext, READER_T1_Block *pBlock){
+	READER_Status retVal;
+	
+	if(&(pContext->lastIBlockSent) == NULL){
+		pBlock = NULL;
+	}
+	else{
+		retVal = READER_T1_CopyBlock(pBlock, &(pContext->lastIBlockSent));
+		if(retVal != READER_OK) return retVal;
+	}
+	
+	return READER_OK;
+}
+
+
+READER_Status READER_T1_CONTEXT_GetLastRcvd(READER_T1_ContextHandler *pContext, READER_T1_Block *pBlock){
+	READER_Status retVal;
+	
+	if(&(pContext->lastRcvd) == NULL){
+		pBlock = NULL;
+	}
+	else{
+		retVal = READER_T1_CopyBlock(pBlock, &(pContext->lastRcvd));
+		if(retVal != READER_OK) return retVal;
+	}
+	
+	return READER_OK;
+}
+
+
+
+READER_Status READER_T1_CONTEXT_SetLastSent(READER_T1_ContextHandler *pContext, READER_T1_Block *pBlock){
+	READER_Status retVal;
+	
+	if(pBlock == NULL){
+		&(pContext->lastSent) = NULL;
+	}
+	else{
+		retVal = READER_T1_CopyBlock(&(pContext->lastSent), pBlock);
+		if(retVal != READER_OK) return retVal;
+	}
+	
+	return READER_OK;
+}
+
+
+READER_Status READER_T1_CONTEXT_SetLastIBlockSent(READER_T1_ContextHandler *pContext, READER_T1_Block *pBlock){
+	READER_Status retVal;
+	
+	if(pBlock == NULL){
+		&(pContext->lastIBlockSent) = NULL;
+	}
+	else{
+		retVal = READER_T1_CopyBlock(&(pContext->lastIBlockSent), pBlock);
+		if(retVal != READER_OK) return retVal;
+	}
+	
+	return READER_OK;
+}
+
+
+READER_Status READER_T1_CONTEXT_SetLastRcvd(READER_T1_ContextHandler *pContext, READER_T1_Block *pBlock){
+	READER_Status retVal;
+	
+	if(pBlock == NULL){
+		&(pContext->lastRcvd) = NULL;
+	}
+	else{
+		retVal = READER_T1_CopyBlock(&(pContext->lastRcvd), pBlock);
+		if(retVal != READER_OK) return retVal;
+	}
+	
+	return READER_OK;
+}
+
+
+READER_Status READER_T1_CONTEXT_GetLastSentType(READER_T1_ContextHandler *pContext, READER_T1_BlockType *pType){
+	READER_T1_BlockType bType;
+	
+	
+	bType = READER_T1_GetBlockType(&(pContext->lastSent));
+	
+	if(bType == READER_T1_BLOCK_ERR){
+		return READER_ERR;
+	}
+	
+	*pType = bType;
+
+	return READER_OK;
+}
+
+
+
+
+
+/* Manipulation des numeros de sequence */
+READER_Status READER_T1_CONTEXT_GetDeviceCompleteSeqNum(READER_T1_ContextHandler *pContext, uint32_t *pSeqNum){
+	*pSeqNum = pContext->deviceCompleteSeqNum;
+	return READER_OK;
+}
+
+
+READER_Status READER_T1_CONTEXT_SetDeviceCompleteSeqNum(READER_T1_ContextHandler *pContext, uint32_t seqNum){
+	pContext->deviceCompleteSeqNum = seqNum;
+	return READER_OK;
+}
+
+
+READER_Status READER_T1_CONTEXT_IncDeviceCompleteSeqNum(READER_T1_ContextHandler *pContext){
+	/* A priori si on overflotte c'est pas grave, N(S) reste inchange */
+	pContext->deviceCompleteSeqNum = pContext->deviceCompleteSeqNum + 1;
+	return READER_OK;
+}
+
+
+READER_Status READER_T1_CONTEXT_GetCardCompleteSeqNum(READER_T1_ContextHandler *pContext, uint32_t *pSeqNum){
+	*pSeqNum = pContext->cardCompleteSeqNum;
+	return READER_OK;
+}
+
+
+READER_Status READER_T1_CONTEXT_SetCardCompleteSeqNum(READER_T1_ContextHandler *pContext, uint32_t seqNum){
+	pContext->cardCompleteSeqNum = seqNum;
+	return READER_OK;
+}
+
+
+READER_Status READER_T1_CONTEXT_IncCardCompleteSeqNum(READER_T1_ContextHandler *pContext){
+	/* A priori si on overflotte c'est pas grave, N(S) reste inchange */
+	pContext->cardCompleteSeqNum = pContext->cardCompleteSeqNum + 1;
+	return READER_OK;
+}
+
+
+READER_Status READER_T1_CONTEXT_GetCardSeqNum(READER_T1_ContextHandler *pContext, uint32_t *pSeqNum){
+	*pSeqNum = (pContext->cardCompleteSeqNum) & 0x00000001;
+	return READER_OK;
+}
+
+
+READER_Status READER_T1_CONTEXT_GetDeviceSeqNum(READER_T1_ContextHandler *pContext, uint32_t *pSeqNum){
+	*pSeqNum = (pContext->deviceCompleteSeqNum) & 0x00000001;
+	return READER_OK;
+}
+
+
+/* Gestion du chainage */
+READER_Status READER_T1_CONTEXT_DeviceIsChainingLastBlock(READER_T1_ContextHandler *pContext, READER_T1_ChainingStatus *chainingStatus){
+	READER_Status retVal;
+	READER_T1_Block block;
+	uint32_t mBit;
+	
+	retval = READER_T1_CONTEXT_GetLastIBlockSent(pContext, &block);
+	if(retVal != READER_OK) return retVal;
+	
+	/* verifier que c'est bien un I Block*/
+	mBit = READER_T1_GetBlockMBit(&block);
+	
+	return READER_OK;
+}
+
+
+READER_Status READER_T1_CONTEXT_CardIsChainingLastBlock(READER_T1_ContextHandler *pContext, READER_T1_ChainingStatus *chainingStatus){
+	
+}
+
+
+READER_Status READER_T1_CONTEXT_DeviceIsChaining(READER_T1_ContextHandler *pContext, READER_T1_ChainingStatus *chainingStatus){
+	
+}
+
+
+READER_Status READER_T1_CONTEXT_CardIsChaining(READER_T1_ContextHandler *pContext, READER_T1_ChainingStatus *chainingStatus){
+	
+}
+
+
+
+/* Manipuation des S-Blocks */
+READER_Status READER_T1_CONTEXT_IsSblockExpectedNow(READER_T1_ContextHandler *pContext){
+	
+}
+
+

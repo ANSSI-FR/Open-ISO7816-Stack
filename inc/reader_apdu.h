@@ -9,8 +9,8 @@
 #define READER_APDU_INS_ENVELOPE        (uint8_t)(0xC2)
 #define READER_APDU_INS_GETRESPONSE     (uint8_t)(0xC0)
 
-#define READER_APDU_CMD_MAX_SIZE         4000                        /* La norme ISO fixe un maximum de 65535 caracteres */
-#define READER_APDU_RESP_MAX_SIZE        4000                        /* La norme ISO fixe un maximum de 65536 caracteres */
+#define READER_APDU_CMD_MAX_SIZE         400                        /* La norme ISO fixe un maximum de 65535 caracteres */
+#define READER_APDU_RESP_MAX_SIZE        400                        /* La norme ISO fixe un maximum de 65536 caracteres */
 
 
 typedef enum READER_APDU_ProtocolCase READER_APDU_ProtocolCase;
