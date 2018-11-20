@@ -312,7 +312,7 @@ READER_Status READER_T1_CONTEXT_GetLastIBlockRcvd(READER_T1_ContextHandler *pCon
 	READER_T1_BlockType bType;
 	
 	
-	/* Si il n'y a pas de dernier I-Block recu (on en a pas encore envoye) */
+	/* Si il n'y a pas de dernier I-Block recu (on en a pas encore recu) */
 	if(&(pContext->lastIBlockRcvd) == NULL){
 		pBlock = NULL;
 	}
@@ -483,7 +483,28 @@ READER_Status READER_T1_CONTEXT_CardIsChainingLastBlock(READER_T1_ContextHandler
 	
 	
 	/* On recupere le dernier I-Block qu'on a recu de la carte */
-	retVal = READER_T1_CONTEXT_GetLast
+	retVal = READER_T1_CONTEXT_GetLastIBlockRcvd(pContext, &block);
+	if(retVal != READER_OK) return retVal;
+	
+	/* On verifie qu'il existe effectivement un dernier I-Block Recu */
+	if(&block == NULL){
+		*pChainingStatus = READER_T1_CHAINING_NO;
+	}
+	
+	/* On recupere le mBit du dernier I-Block recu */
+	mBit = READER_T1_GetBlockMBit(&block);
+	
+	if(mBit == 0){
+		*pChainingStatus = READER_T1_CHAINING_NO;
+	}
+	else if(mBit == 1){
+		*pChainingStatus = READER_T1_CHAINING_YES;
+	}
+	else{
+		return READER_ERR;
+	}
+	
+	return READER_OK;
 }
 
 
