@@ -13,9 +13,6 @@ READER_Status READER_T1_BUFFER_Init(READER_T1_ContextHandler *pContext){
 	
 	pBlockBuff->indexBottom = 0;
 	pBlockBuff->indexTop = 0;
-	pBlockBuff->flagEmpty = 1;
-	pBlockBuff->flagFull = 0;
-	pBlockBuff->length = 0;
 	
 	return READER_OK;
 }
