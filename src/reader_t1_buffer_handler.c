@@ -22,7 +22,13 @@ READER_Status READER_T1_BUFFER_Init(READER_T1_ContextHandler *pContext){
 
 
 READER_Status READER_T1_BUFFER_Clear(READER_T1_ContextHandler *pContext){
+	READER_Status retVal;
 	
+	
+	retVal = READER_T1_BUFFER_Init(pContext);
+	if(retVal != READER_OK) return retVal;
+	
+	return READER_OK;
 }
 
 
