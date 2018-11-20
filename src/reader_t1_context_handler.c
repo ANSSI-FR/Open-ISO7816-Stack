@@ -512,8 +512,23 @@ READER_Status READER_T1_CONTEXT_CardIsChainingLastBlock(READER_T1_ContextHandler
 }
 
 
-READER_Status READER_T1_CONTEXT_DeviceIsChaining(READER_T1_ContextHandler *pContext, READER_T1_ChainingStatus *chainingStatus){
+READER_Status READER_T1_CONTEXT_DeviceIsChaining(READER_T1_ContextHandler *pContext, READER_T1_ChainingStatus *pChainingStatus){
+	READER_T1_ChainingStatus status;
 	
+	/* On recupere le flag de situation globale de chainage, on fait des verif et on renvoi */
+	status = pContext->deviceIsChaining;
+	
+	if(status == READER_T1_CHAINING_YES){
+		*pChainingStatus = READER_T1_CHAINING_YES;
+	}
+	else if(status == READER_T1_CHAINING_NO){
+		*pChainingStatus = READER_T1_CHAINING_NO;
+	}
+	else{
+		return READER_ERR;
+	}
+	
+	return READER_OK;
 }
 
 
