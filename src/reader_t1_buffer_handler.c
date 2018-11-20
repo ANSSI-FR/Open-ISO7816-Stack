@@ -78,7 +78,20 @@ READER_Status READER_T1_BUFFER_IsEmpty(READER_T1_ContextHandler *pContext, READE
 
 
 READER_Status READER_T1_BUFFER_IsFull(READER_T1_ContextHandler *pContext, READER_T1_BufferStatus *pStatus){
+	READER_T1_BlockBuffer *pBlockBuff;
+	READER_Status retVal;
 	
+	retVal = READER_T1_CONTEXT_GetBlockBuff(pContext, &pBlockBuff);
+	if(retVal != READER_OK) return retVal;
+	
+	if(pBlockBuff->length == STATICBUFF_MAXSIZE){
+		*pStatus = READER_T1_BUFFER_FULL;
+	}
+	else{
+		*pStatus = READER_T1_BUFFER_NOTFULL;
+	}
+	
+	return READER_OK;
 }
 
 
