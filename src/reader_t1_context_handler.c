@@ -424,7 +424,7 @@ READER_Status READER_T1_CONTEXT_GetDeviceSeqNum(READER_T1_ContextHandler *pConte
 
 
 /* Gestion du chainage */
-READER_Status READER_T1_CONTEXT_DeviceIsChainingLastBlock(READER_T1_ContextHandler *pContext, READER_T1_ChainingStatus *chainingStatus){
+READER_Status READER_T1_CONTEXT_DeviceIsChainingLastBlock(READER_T1_ContextHandler *pContext, READER_T1_ChainingStatus *pChainingStatus){
 	READER_Status retVal;
 	READER_T1_Block block;
 	uint32_t mBit;
@@ -435,9 +435,18 @@ READER_Status READER_T1_CONTEXT_DeviceIsChainingLastBlock(READER_T1_ContextHandl
 	retval = READER_T1_CONTEXT_GetLastIBlockSent(pContext, &block);
 	if(retVal != READER_OK) return retVal;
 	
-	
-	/* verifier que c'est bien un I Block*/
+	/* On recupere le M-Bit du dernier I-Block ... */
 	mBit = READER_T1_GetBlockMBit(&block);
+	
+	if(mBit == 0){
+		*pChainingStatus = READER_T1_CHAINING_NO;
+	}
+	else if(mBit == 1){
+		*pChainingStatus = READER_T1_CHAINING_YES;
+	}
+	else{
+		return READER_ERR;
+	}
 	
 	return READER_OK;
 }
