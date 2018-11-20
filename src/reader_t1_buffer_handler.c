@@ -146,7 +146,46 @@ READER_Status READER_T1_BUFFER_Enqueue(READER_T1_ContextHandler *pContext, READE
 
 
 READER_Status READER_T1_BUFFER_Dequeue(READER_T1_ContextHandler *pContext, READER_T1_Block *pBlock){
+	READER_T1_BlockBuffer *pBlockBuffer;
+	READER_T1_Block *pBlockTab;
+	READER_T1_BufferStatus bStatus;
+	READER_Status retVal;
+	uint32_t indexBottom, newBottomIndex, length;
 	
+	
+	/* On verifie  que le buffer n'est pas vide */
+	retVal = READER_T1_BUFFER_IsEmpty(pContext, &bStatus);
+	if(retVal != READER_OK) return retVal;
+	
+	if(bStatus == READER_T1_BUFFER_EMPTY){
+		return READER_ERR;
+	}
+	
+	/* On recupere un pointeur sur la structure du buffer dans le contexte */
+	retVal = READER_T1_CONTEXT_GetBlockBuff(pContext, &pBlockBuff);
+	if(retVal != READER_OK) return retVal;
+	
+	/* Dans la stucture du buffer on recupere un pointeur sur le tableau de Blocks */
+	pBlockTab = &(pBlockBuff->blockBuff);
+	
+	
+	/* On recupere le Block qui est pointe par indexBottom */
+	indexBottom = pBlockBuff->indexBottom;
+	
+	retVal = READER_T1_CopyBlock(pBlock, &(pBlockTab[indexBottom]));
+	if(retVal != READER_OK) return retVal;
+	
+	/* On mets a jour la valeur de indexBottom */
+	retVal = READER_T1_BUFFER_GetLength(pContext, &length);
+	if(retVal != READER_OK) return retVal;
+	
+	/* Si le Block suivant existe, alors on decale l'index de Bottom. */
+	if(length > 1){
+		newBottomIndex = (indexBottom + 1) % STATICBUFF_MAXSIZE;
+		pBlockBuff->indexBottom = newBottomIndex;
+	}
+	
+	return READER_OK;
 }
 
 
