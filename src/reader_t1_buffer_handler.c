@@ -60,7 +60,20 @@ READER_Status READER_T1_BUFFER_PlacesLeft(READER_T1_ContextHandler *pContext, ui
 
 
 READER_Status READER_T1_BUFFER_IsEmpty(READER_T1_ContextHandler *pContext, READER_T1_BufferStatus *pStatus){
+	READER_T1_BlockBuffer *pBlockBuff;
+	READER_Status retVal;
 	
+	retVal = READER_T1_CONTEXT_GetBlockBuff(pContext, &pBlockBuff);
+	if(retVal != READER_OK) return retVal;
+	
+	if(pBlockBuff->length == 0){
+		*pStatus = READER_T1_BUFFER_EMPTY;
+	}
+	else{
+		*pStatus = READER_T1_BUFFER_NOTEMPTY;
+	}
+	
+	return READER_OK;
 }
 
 
