@@ -71,12 +71,14 @@ READER_Status READER_T1_BUFFER_PlacesLeft(READER_T1_ContextHandler *pContext, ui
 
 
 READER_Status READER_T1_BUFFER_IsEmpty(READER_T1_ContextHandler *pContext, READER_T1_BufferStatus *pStatus){
-	READER_T1_BlockBuffer *pBlockBuff;
+	uint32_t length;
 	READER_Status retVal;
 	
-	retVal = READER_T1_CONTEXT_GetBlockBuff(pContext, &pBlockBuff);
+	/* On recupere la taille des donnees dans le buffer */
+	retVal = READER_T1_BUFFER_GetLength(pContext, &length);
 	if(retVal != READER_OK) return retVal;
 	
+	/* Le buffer est vide si la taille des donnees est de zero */
 	if(pBlockBuff->length == 0){
 		*pStatus = READER_T1_BUFFER_EMPTY;
 	}
