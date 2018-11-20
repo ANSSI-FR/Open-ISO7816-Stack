@@ -116,7 +116,6 @@ READER_Status READER_T1_BUFFER_Enqueue(READER_T1_ContextHandler *pContext, READE
 	READER_T1_Block *pBlockTab;
 	READER_T1_BufferStatus bStatus;
 	uint32_t newTopIndex;
-	uint32_t placesLeft;
 	READER_Status retVal;
 	
 	
@@ -200,7 +199,48 @@ READER_Status READER_T1_BUFFER_Dequeue(READER_T1_ContextHandler *pContext, READE
 
 
 READER_Status READER_T1_BUFFER_Stack(READER_T1_ContextHandler *pContext, READER_T1_Block *pBlock){
+	READER_T1_BlockBuffer *pBlockBuffer;
+	READER_T1_Block *pBlockTab;
+	READER_T1_BufferStatus bStatus;
+	uint32_t newBottomIndex;
+	READER_Status retVal;
 	
+	
+	/* On verifie  que le buffer n'est pas plein */
+	retVal = READER_T1_BUFFER_IsFull(pContext, &bStatus);
+	if(retVal != READER_OK) return retVal;
+	
+	if(bStatus == READER_T1_BUFFER_FULL){
+		return READER_ERR;
+	}
+	
+	/* On recupere un pointeur sur la structure du buffer dans le contexte */
+	retVal = READER_T1_CONTEXT_GetBlockBuff(pContext, &pBlockBuff);
+	if(retVal != READER_OK) return retVal;
+	
+	/* Dans la stucture du buffer on recupere un pointeur sur le tableau de Blocks */
+	pBlockTab = &(pBlockBuff->blockBuff);
+	
+	
+	/* On calcule le nouveau IndexBottom et on mets le Block a la position calculee */
+	if(pBlockBuff->indexBottom == 0){
+		newBottomIndex = STATICBUFF_MAXSIZE + pBlockBuff->indexBottom - 1;
+	}
+	else{
+		newBottomIndex = pBlockBuff->indexBottom - 1;
+	}
+	
+	retVal = READER_T1_CopyBlock(&(pBlockTab[newBottomIndex]), pBlock);
+	if(retVal != READER_OK) return retVal;
+	
+	pBlockBuff->indexBottom = newBottomIndex;
+	
+	
+	
+	/* On mets a jour la length */
+	pBlockBuff->length += 1;
+	
+	return READER_OK;
 }
 
 
