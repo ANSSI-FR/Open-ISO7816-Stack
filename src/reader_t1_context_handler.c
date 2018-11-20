@@ -453,11 +453,15 @@ READER_Status READER_T1_CONTEXT_DeviceIsChainingLastBlock(READER_T1_ContextHandl
 	READER_T1_Block block;
 	uint32_t mBit;
 	
-	/* On prends le dernier I-Block qu'on a envoye et on regarde le M-Bit */
 	
 	/* On recupere a partir du context handler le dernier I-Block qu'on a envoye */
 	retval = READER_T1_CONTEXT_GetLastIBlockSent(pContext, &block);
 	if(retVal != READER_OK) return retVal;
+	
+	/* On verifie qu'il existe effectivement un dernier I-Block envoye */
+	if(&block == NULL){
+		*pChainingStatus = READER_T1_CHAINING_NO;
+	}
 	
 	/* On recupere le M-Bit du dernier I-Block ... */
 	mBit = READER_T1_GetBlockMBit(&block);
