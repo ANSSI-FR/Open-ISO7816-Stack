@@ -11,8 +11,8 @@ READER_Status READER_T1_BUFFER_Init(READER_T1_ContextHandler *pContext){
 	retVal = READER_T1_CONTEXT_GetBlockBuff(pContext, &pBlockBuff);   /* On passe le pointeur sur le pointeur */
 	if(retVal != REDAER_OK) return retVal;
 	
-	pBlockBuff->indexFirst = 0;
-	pBlockBuff->indexLast = 0;
+	pBlockBuff->indexBottom = 0;
+	pBlockBuff->indexTop = 0;
 	pBlockBuff->flagEmpty = 1;
 	pBlockBuff->flagFull = 0;
 	pBlockBuff->length = 0;
@@ -35,22 +35,22 @@ READER_Status READER_T1_BUFFER_Clear(READER_T1_ContextHandler *pContext){
 READER_Status READER_T1_BUFFER_PlacesLeft(READER_T1_ContextHandler *pContext, uint32_t *places){
 	READER_T1_BlockBuffer *pBlockBuff;
 	READER_Status retVal;
-	uint32_t indexFirst, indexLast;
+	uint32_t indexBottom, indexTop;
 	uint32_t placesLeft;
 	
 	
 	retVal = READER_T1_CONTEXT_GetBlockBuff(pContext, &pBlockBuff);
 	if(retVal != READER_OK) return retVal;
 	
-	indexFirst = pBlockBuff->indexFirst;
-	indexLast = pBlockBuff->indexLast;
+	indexBottom = pBlockBuff->indexBottom;
+	indexTop = pBlockBuff->indexTop;
 	
-	if(indexFirst <= indexLast){
-		placesLeft = (indexLast - indexFirst) + 1;
+	if(indexBottom <= indexTop){
+		placesLeft = (indexTop - indexBottom) + 1;
 	}
 	else{
-		palcesLeft = STATICBUFF_MAXSIZE - indexFirst;
-		placesLeft += indexLast + 1;
+		palcesLeft = STATICBUFF_MAXSIZE - indexBottom;
+		placesLeft += indexTop + 1;
 	}
 	
 	*places = placesLeft;
