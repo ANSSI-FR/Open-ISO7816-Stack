@@ -567,3 +567,9 @@ READER_Status READER_T1_CONTEXT_IsSblockExpectedNow(READER_T1_ContextHandler *pC
 }
 
 
+READER_Status READER_T1_CONTEXT_GetBlockBuff(READER_T1_ContextHandler *pContext, READER_T1_BlockBuffer *pBlockBuff){
+	pBlockBuff = pContext->blockBuff;
+	
+	return READER_OK;
+}
+
