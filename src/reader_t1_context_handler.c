@@ -307,6 +307,30 @@ READER_Status READER_T1_CONTEXT_GetLastRcvd(READER_T1_ContextHandler *pContext, 
 }
 
 
+READER_Status READER_T1_CONTEXT_GetLastIBlockRcvd(READER_T1_ContextHandler *pContext, READER_T1_Block *pBlock){
+	READER_Status retVal;
+	READER_T1_BlockType bType;
+	
+	
+	/* Si il n'y a pas de dernier I-Block recu (on en a pas encore envoye) */
+	if(&(pContext->lastIBlockRcvd) == NULL){
+		pBlock = NULL;
+	}
+	/* Si il y en a un ... On le copie ... */
+	else{
+		retVal = READER_T1_CopyBlock(pBlock, &(pContext->lastIBlockRcvd));
+		if(retVal != READER_OK) return retVal;
+		
+		/* On verifie que c'est effectivement un I-Block */
+		bType = READER_T1_GetBlockType(pBlock);
+		if(bType != READER_T1_IBLOCK) return READER_ERR;
+	}
+	
+	
+	return READER_OK;
+}
+
+
 
 READER_Status READER_T1_CONTEXT_SetLastSent(READER_T1_ContextHandler *pContext, READER_T1_Block *pBlock){
 	READER_Status retVal;

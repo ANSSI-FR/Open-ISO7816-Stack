@@ -74,6 +74,7 @@ struct READER_T1_ContextHandler{
 	READER_T1_Block lastSent;
 	READER_T1_Block lastIBlockSent;
 	READER_T1_Block lastRcvd;
+	READER_T1_Block lastIBlockRcvd;
 	
 	READER_T1_ChainingStatus cardIsChainingLastBlock;
 	READER_T1_ChainingStatus deviceIsChainingLastBlock;
@@ -140,6 +141,7 @@ READER_Status READER_T1_CONTEXT_SetACKStatus(READER_T1_ContextHandler *pContext,
 READER_Status READER_T1_CONTEXT_GetLastSent(READER_T1_ContextHandler *pContext, READER_T1_Block *pBlock);
 READER_Status READER_T1_CONTEXT_GetLastIBlockSent(READER_T1_ContextHandler *pContext, READER_T1_Block *pBlock);
 READER_Status READER_T1_CONTEXT_GetLastRcvd(READER_T1_ContextHandler *pContext, READER_T1_Block *pBlock);
+READER_Status READER_T1_CONTEXT_GetLastIBlockRcvd(READER_T1_ContextHandler *pContext, READER_T1_Block *pBlock);
 
 READER_Status READER_T1_CONTEXT_SetLastSent(READER_T1_ContextHandler *pContext, READER_T1_Block *pBlock);
 READER_Status READER_T1_CONTEXT_SetLastIBlockSent(READER_T1_ContextHandler *pContext, READER_T1_Block *pBlock);
