@@ -53,6 +53,7 @@ enum READER_T1_BufferStatus{
 READER_Status READER_T1_BUFFER_Init(READER_T1_ContextHandler *pContext);
 READER_Status READER_T1_BUFFER_Clear(READER_T1_ContextHandler *pContext);
 READER_Status READER_T1_BUFFER_PlacesLeft(READER_T1_ContextHandler *pContext, uint32_t *places);
+READER_Status READER_T1_BUFFER_GetLength(READER_T1_ContextHandler *pContext, uint32_t *length);
 READER_Status READER_T1_BUFFER_IsEmpty(READER_T1_ContextHandler *pContext, READER_T1_BufferStatus *pStatus);
 READER_Status READER_T1_BUFFER_IsFull(READER_T1_ContextHandler *pContext, READER_T1_BufferStatus *pStatus);
 READER_Status READER_T1_BUFFER_Enqueue(READER_T1_ContextHandler *pContext, READER_T1_Block *pBlock);
