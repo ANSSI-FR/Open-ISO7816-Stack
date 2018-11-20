@@ -57,25 +57,12 @@ READER_Status READER_T1_BUFFER_GetLength(READER_T1_ContextHandler *pContext, uin
 
 
 READER_Status READER_T1_BUFFER_PlacesLeft(READER_T1_ContextHandler *pContext, uint32_t *places){
-	READER_T1_BlockBuffer *pBlockBuff;
 	READER_Status retVal;
-	uint32_t indexBottom, indexTop;
 	uint32_t placesUsed;
 	
 	
-	retVal = READER_T1_CONTEXT_GetBlockBuff(pContext, &pBlockBuff);
+	retVal = READER_T1_BUFFER_PlacesLeft(pContext, &placesUsed);
 	if(retVal != READER_OK) return retVal;
-	
-	indexBottom = pBlockBuff->indexBottom;
-	indexTop = pBlockBuff->indexTop;
-	
-	if(indexBottom <= indexTop){
-		placesUsed = (indexTop - indexBottom) + 1;
-	}
-	else{
-		palcesUsed = STATICBUFF_MAXSIZE - indexBottom;
-		placesUsed += indexTop + 1;
-	}
 	
 	*places = STATICBUFF_MAXSIZE - placesUsed;
 	
