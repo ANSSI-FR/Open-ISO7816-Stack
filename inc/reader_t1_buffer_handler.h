@@ -47,7 +47,8 @@ typedef enum READER_T1_BufferStatus READER_T1_BufferStatus;
 enum READER_T1_BufferStatus{
 	READER_T1_BUFFER_EMPTY             =       (uint32_t)(0x00000000),
 	READER_T1_BUFFER_NOTEMPTY          =       (uint32_t)(0x00000001),
-	READER_T1_BUFFER_FULL              =       (uint32_t)(0x00000002)
+	READER_T1_BUFFER_FULL              =       (uint32_t)(0x00000002),
+	READER_T1_BUFFER_NOTFULL           =       (uint32_t)(0x00000003)
 };
 
 
