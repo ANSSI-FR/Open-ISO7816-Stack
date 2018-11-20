@@ -143,6 +143,9 @@ READER_Status READER_T1_BUFFER_Enqueue(READER_T1_ContextHandler *pContext, READE
 	
 	pBlockBuff->indexTop = newTopIndex;
 	
+	/* On mets a jour la length */
+	pBlockBuff->length += 1;
+	
 	
 	return READER_OK;
 }
@@ -187,6 +190,10 @@ READER_Status READER_T1_BUFFER_Dequeue(READER_T1_ContextHandler *pContext, READE
 		newBottomIndex = (indexBottom + 1) % STATICBUFF_MAXSIZE;
 		pBlockBuff->indexBottom = newBottomIndex;
 	}
+	
+	/* On mets a jour la length */
+	pBlockBuff->length -= 1;
+	
 	
 	return READER_OK;
 }
