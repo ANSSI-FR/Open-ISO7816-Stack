@@ -36,6 +36,7 @@ struct READER_T1_BlockBuffer{
 	READER_T1_Block blockBuff[STATICBUFF_MAXSIZE];
 	uint32_t indexBottom;
 	uint32_t indexTop;
+	uint32_t length;
 };
 
 

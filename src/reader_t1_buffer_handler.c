@@ -13,6 +13,7 @@ READER_Status READER_T1_BUFFER_Init(READER_T1_ContextHandler *pContext){
 	
 	pBlockBuff->indexBottom = 0;
 	pBlockBuff->indexTop = 0;
+	pBlockBuff->length = 0;
 	
 	return READER_OK;
 }
@@ -32,25 +33,27 @@ READER_Status READER_T1_BUFFER_Clear(READER_T1_ContextHandler *pContext){
 READER_Status READER_T1_BUFFER_GetLength(READER_T1_ContextHandler *pContext, uint32_t *length){
 	READER_T1_BlockBuffer *pBlockBuff;
 	READER_Status retVal;
-	uint32_t indexBottom, indexTop;
-	uint32_t placesUsed;
+	//uint32_t indexBottom, indexTop;
+	//uint32_t placesUsed;
 	
 	
 	retVal = READER_T1_CONTEXT_GetBlockBuff(pContext, &pBlockBuff);
 	if(retVal != READER_OK) return retVal;
 	
-	indexBottom = pBlockBuff->indexBottom;
-	indexTop = pBlockBuff->indexTop;
+	//indexBottom = pBlockBuff->indexBottom;
+	//indexTop = pBlockBuff->indexTop;
+	//
+	//if(indexBottom <= indexTop){
+	//	placesUsed = (indexTop - indexBottom) + 1;
+	//}
+	//else{
+	//	palcesUsed = STATICBUFF_MAXSIZE - indexBottom;
+	//	placesUsed += indexTop + 1;
+	//}
+	//
+	//*length = placesUsed;
 	
-	if(indexBottom <= indexTop){
-		placesUsed = (indexTop - indexBottom) + 1;
-	}
-	else{
-		palcesUsed = STATICBUFF_MAXSIZE - indexBottom;
-		placesUsed += indexTop + 1;
-	}
-	
-	*length = placesUsed;
+	*length = pBlockBuff->length;
 	
 	return READER_OK;
 }
