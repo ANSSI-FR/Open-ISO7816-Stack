@@ -33,7 +33,29 @@ READER_Status READER_T1_BUFFER_Clear(READER_T1_ContextHandler *pContext){
 
 
 READER_Status READER_T1_BUFFER_PlacesLeft(READER_T1_ContextHandler *pContext, uint32_t *places){
+	READER_T1_BlockBuffer *pBlockBuff;
+	READER_Status retVal;
+	uint32_t indexFirst, indexLast;
+	uint32_t placesLeft;
 	
+	
+	retVal = READER_T1_CONTEXT_GetBlockBuff(pContext, &pBlockBuff);
+	if(retVal != READER_OK) return retVal;
+	
+	indexFirst = pBlockBuff->indexFirst;
+	indexLast = pBlockBuff->indexLast;
+	
+	if(indexFirst <= indexLast){
+		placesLeft = (indexLast - indexFirst) + 1;
+	}
+	else{
+		palcesLeft = STATICBUFF_MAXSIZE - indexFirst;
+		placesLeft += indexLast + 1;
+	}
+	
+	*places = placesLeft;
+	
+	return READER_OK;
 }
 
 
