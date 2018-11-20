@@ -552,8 +552,18 @@ READER_Status READER_T1_CONTEXT_CardIsChaining(READER_T1_ContextHandler *pContex
 
 
 /* Manipuation des S-Blocks */
-READER_Status READER_T1_CONTEXT_IsSblockExpectedNow(READER_T1_ContextHandler *pContext){
+READER_Status READER_T1_CONTEXT_IsSblockExpectedNow(READER_T1_ContextHandler *pContext, READER_T1_SBlockExpected *pExp){
+	if(pContext->SBlockExpected == READER_T1_SBLOCK_EXPECTED_YES){
+		*pExp = READER_T1_SBLOCK_EXPECTED_YES;
+	}
+	else of(pContext->SBlockExpected == READER_T1_SBLOCK_EXPECTED_NO){
+		*pExp = READER_T1_SBLOCK_EXPECTED_NO;
+	}
+	else{
+		return READER_ERR;
+	}
 	
+	return READER_OK;
 }
 
 
