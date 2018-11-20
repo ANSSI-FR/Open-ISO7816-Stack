@@ -8,21 +8,7 @@
 
 
 
-#define MAX(x,y) x > y ? x : y
 
-
-
-/* Choix de ces valeurs en fonction de ISO7816-3 section 11.4.2 et contraintes cible dev */
-#define READER_T1_MAX_IFSD_ACCEPTED 0xFE
-#define READER_T1_MIN_IFSD_ACCEPTED 0x10
-#define READER_T1_MAX_IFSC_ACCEPTED 0xFE
-#define READER_T1_MIN_IFSC_ACCEPTED 0x10  
-
-
-#define COMPUTE_STATICBUFF_MAXSIZE(apdu_maxlength, block_data_minlength, tolerence) ((apdu_maxlength / block_data_minlength) + 1) + tolerence
-#define APDU_MAXLENGTH READER_APDU_CMD_MAX_SIZE
-
-#define STATICBUFF_MAXSIZE COMPUTE_STATICBUFF_MAXSIZE(APDU_MAXLENGTH, READER_T1_MIN_IFSC_ACCEPTED, 20)
 
 
 
@@ -54,7 +40,7 @@ enum READER_T1_SBlockExpected{
 
 typedef struct READER_T1_ContextHandler READER_T1_ContextHandler;
 struct READER_T1_ContextHandler{
-	READER_T1_Block blockBuff[STATICBUFF_MAXSIZE];    /* Buffer de tous les blocks qui vont etre envoyes */
+	    /* Buffer de tous les blocks qui vont etre envoyes */
 	READER_APDU_Response RcvdApduResp;                /* Donnees recues                                  */
 	
 	uint32_t currentIFSC;
