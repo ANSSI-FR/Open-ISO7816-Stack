@@ -163,6 +163,6 @@ READER_Status READER_T1_CONTEXT_CardIsChaining(READER_T1_ContextHandler *pContex
 READER_Status READER_T1_CONTEXT_IsSblockExpectedNow(READER_T1_ContextHandler *pContext);
 
 
-READER_Status READER_T1_CONTEXT_GetBlockBuff(READER_T1_ContextHandler *pContext, READER_T1_BlockBuffer *pBlockBuff);
+READER_Status READER_T1_CONTEXT_GetBlockBuff(READER_T1_ContextHandler *pContext, READER_T1_BlockBuffer **pBlockBuff);
 
 #endif

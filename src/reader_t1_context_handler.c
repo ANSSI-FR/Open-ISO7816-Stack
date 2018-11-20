@@ -567,8 +567,17 @@ READER_Status READER_T1_CONTEXT_IsSblockExpectedNow(READER_T1_ContextHandler *pC
 }
 
 
-READER_Status READER_T1_CONTEXT_GetBlockBuff(READER_T1_ContextHandler *pContext, READER_T1_BlockBuffer *pBlockBuff){
-	pBlockBuff = pContext->blockBuff;
+READER_Status READER_T1_CONTEXT_GetBlockBuff(READER_T1_ContextHandler *pContext, READER_T1_BlockBuffer **pBlockBuff){
+	/* On recupere un pointeur qui pointe sur le pointeur de blockBuff                                              */
+	/* On veut que ce pointeur pointe desormais sur le blockBuff qui se trouve dans le contexte   de communication  */
+	
+	/* (*pBlockBuff) est la valeur du pointeur qui est pointe par pBlockBuff                                        */
+	/* (*pBlockBuff) est un pointeur. C'est celui qui est utilise en dehors de la fonction pour pointer sur le buff */
+	/* On modifie (*pBlockBuff) pour qu'il pointe desormais sur le buff qui se trouve dans le contexte              */
+	/* On accede a (*pBlockBuff) via un pointeur qui pointe dessus. Ce pointeur est pBlockBuff (param de la fct)    */
+	/* (A priori pContext->blockBuff n'est pas un pointeur, mais la struct en elle meme ???)                        */
+	*pBlockBuff = &(pContext->blockBuff);
+	
 	
 	return READER_OK;
 }
