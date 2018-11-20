@@ -270,14 +270,23 @@ READER_Status READER_T1_CONTEXT_GetLastSent(READER_T1_ContextHandler *pContext, 
 
 READER_Status READER_T1_CONTEXT_GetLastIBlockSent(READER_T1_ContextHandler *pContext, READER_T1_Block *pBlock){
 	READER_Status retVal;
+	READER_T1_BlockType bType;
 	
+	
+	/* Si il n'y a pas de dernier I-Block envoye (on en a pas encore envoye) */
 	if(&(pContext->lastIBlockSent) == NULL){
 		pBlock = NULL;
 	}
+	/* Si il y en a un ... On le copie ... */
 	else{
 		retVal = READER_T1_CopyBlock(pBlock, &(pContext->lastIBlockSent));
 		if(retVal != READER_OK) return retVal;
+		
+		/* On verifie que c'est effectivement un I-Block */
+		bType = READER_T1_GetBlockType(pBlock);
+		if(bType != READER_T1_IBLOCK) return READER_ERR;
 	}
+	
 	
 	return READER_OK;
 }
@@ -420,8 +429,12 @@ READER_Status READER_T1_CONTEXT_DeviceIsChainingLastBlock(READER_T1_ContextHandl
 	READER_T1_Block block;
 	uint32_t mBit;
 	
+	/* On prends le dernier I-Block qu'on a envoye et on regarde le M-Bit */
+	
+	/* On recupere a partir du context handler le dernier I-Block qu'on a envoye */
 	retval = READER_T1_CONTEXT_GetLastIBlockSent(pContext, &block);
 	if(retVal != READER_OK) return retVal;
+	
 	
 	/* verifier que c'est bien un I Block*/
 	mBit = READER_T1_GetBlockMBit(&block);
