@@ -452,8 +452,14 @@ READER_Status READER_T1_CONTEXT_DeviceIsChainingLastBlock(READER_T1_ContextHandl
 }
 
 
-READER_Status READER_T1_CONTEXT_CardIsChainingLastBlock(READER_T1_ContextHandler *pContext, READER_T1_ChainingStatus *chainingStatus){
+READER_Status READER_T1_CONTEXT_CardIsChainingLastBlock(READER_T1_ContextHandler *pContext, READER_T1_ChainingStatus *pChainingStatus){
+	READER_Status retVal;
+	READER_T1_Block block;
+	uint32_t mBit;
 	
+	
+	/* On recupere le dernier I-Block qu'on a recu de la carte */
+	retVal = READER_T1_CONTEXT_GetLast
 }
 
 
