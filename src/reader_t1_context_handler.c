@@ -312,15 +312,21 @@ READER_Status READER_T1_CONTEXT_GetLastIBlockSent(READER_T1_ContextHandler *pCon
 }
 
 
-READER_Status READER_T1_CONTEXT_GetLastRcvd(READER_T1_ContextHandler *pContext, READER_T1_Block *pBlock){
+READER_Status READER_T1_CONTEXT_GetLastRcvd(READER_T1_ContextHandler *pContext, READER_T1_Block **ppBlockDest){
 	READER_Status retVal;
+	READER_T1_Block *pBlockDest;
+	
+	
+	pBlockDest = *ppBlockDest;
 	
 	if(&(pContext->lastRcvd) == NULL){
-		pBlock = NULL;
+		pBlockDest = NULL;
 	}
 	else{
-		retVal = READER_T1_CopyBlock(pBlock, &(pContext->lastRcvd));
-		if(retVal != READER_OK) return retVal;
+		/* On ne fait plus de recopie du Block. On renvoie un pointeur sur le Block qui se trouve dans le contexte */
+		//retVal = READER_T1_CopyBlock(pBlock, &(pContext->lastRcvd));
+		//if(retVal != READER_OK) return retVal;
+		pBlockDest = &(pContext->lastRcvd);
 	}
 	
 	return READER_OK;
