@@ -125,7 +125,7 @@ READER_Status READER_T1_CONTEXT_SetACKStatus(READER_T1_ContextHandler *pContext,
 
 
 /* Manipulation des derniers blocs envoyes/recus */
-READER_Status READER_T1_CONTEXT_GetLastSent(READER_T1_ContextHandler *pContext, READER_T1_Block *pBlock);
+READER_Status READER_T1_CONTEXT_GetLastSent(READER_T1_ContextHandler *pContext, READER_T1_Block **ppBlockDest);
 READER_Status READER_T1_CONTEXT_GetLastIBlockSent(READER_T1_ContextHandler *pContext, READER_T1_Block *pBlock);
 READER_Status READER_T1_CONTEXT_GetLastRcvd(READER_T1_ContextHandler *pContext, READER_T1_Block *pBlock);
 READER_Status READER_T1_CONTEXT_GetLastIBlockRcvd(READER_T1_ContextHandler *pContext, READER_T1_Block *pBlock);

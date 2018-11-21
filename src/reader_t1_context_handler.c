@@ -252,16 +252,31 @@ READER_Status READER_T1_CONTEXT_SetACKStatus(READER_T1_ContextHandler *pContext,
 }
 
 
-/* Manipulation des derniers blocs envoyes/recus */
-READER_Status READER_T1_CONTEXT_GetLastSent(READER_T1_ContextHandler *pContext, READER_T1_Block *pBlock){
+/* Manipulation des derniers blocs envoyes/recus                                                                                      */
+
+/* Attention, on ne recopie pas le Block. On retourne juste un pointeur sur le Block qui se trouve a l'interieur du contexte.         */
+READER_Status READER_T1_CONTEXT_GetLastSent(READER_T1_ContextHandler *pContext, READER_T1_Block **ppBlockDest){
+	/* **ppBlockDest, On recupere un pointeur qui pointe sur un pointeur du Block de destination                                      */
+	/* Attention il faut que l'espace memoire soit deja allour auaravent pour le Block                                                */
+	/* Attention, fuite memeoire si on fait ensuite pointer sur NULL !!!                                                              */
+
+	READER_T1_Block *pBlockDest;
 	READER_Status retVal;
 	
+	
+	/* On recupere un pointeur qui pointe sur le pointeur qui pointe sur le dernier Block Envoye qui se trouve dans le contexte       */
+	/* Le pointeur sur le pointeur nous permet de modifier le pointeur qui pointe sur le Block.                                       */
+	/* Cette teechnique nous permet de renvoyer un pointeur sans utiliser les valeurs de retour de la fonction (qui sont deja utilise pour le code d'erreur) */
+	
+	pBlockDest = *ppBlockDest;
+	
 	if(&(pContext->lastSent) == NULL){
-		pBlock = NULL;   /* A VERIFIER SI CA MARCHE !!!  */
+		pBlockDest = NULL; 
 	}
 	else{
-		retVal = READER_T1_CopyBlock(pBlock, &(pContext->lastSent));
-		if(retVal != READER_OK) return retVal;
+		pBlockDest = &(pContext->lastSent);    /* Finalement on n'effectue pas de recopie de Blocks */
+		//retVal = READER_T1_CopyBlock(pBlockDest, &(pContext->lastSent));
+		//if(retVal != READER_OK) return retVal;
 	}
 	
 	return READER_OK;
