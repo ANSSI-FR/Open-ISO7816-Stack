@@ -468,12 +468,22 @@ READER_Status READER_T1_CONTEXT_IncCardCompleteSeqNum(READER_T1_ContextHandler *
 
 READER_Status READER_T1_CONTEXT_GetCardSeqNum(READER_T1_ContextHandler *pContext, uint32_t *pSeqNum){
 	*pSeqNum = (pContext->cardCompleteSeqNum) & 0x00000001;
+	
+	if((*pSeqNum != 0) && (*pSeqNum != 1)){
+		return READER_ERR;
+	}
+	
 	return READER_OK;
 }
 
 
 READER_Status READER_T1_CONTEXT_GetDeviceSeqNum(READER_T1_ContextHandler *pContext, uint32_t *pSeqNum){
 	*pSeqNum = (pContext->deviceCompleteSeqNum) & 0x00000001;
+	
+	if((*pSeqNum != 0) && (*pSeqNum != 1)){
+		return READER_ERR;
+	}
+	
 	return READER_OK;
 }
 
