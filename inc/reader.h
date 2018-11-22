@@ -27,7 +27,9 @@ enum READER_Status{
 	READER_TIMEOUT              = (uint32_t)(0x00000003),
 	READER_TIMEOUT_GOT_ONLY_SW  = (uint32_t)(0X00000004),
 	READER_BUSY                 = (uint32_t)(0x00000005),
-	READER_TOO_MUCH_TRIES       = (uint32_t)(0x00000006)
+	READER_TOO_MUCH_TRIES       = (uint32_t)(0x00000006),
+	READER_EMPTY                = (uint32_t)(0x00000007),
+	READER_FULL                 = (uint32_t)(0x00000008)
 };
 
 

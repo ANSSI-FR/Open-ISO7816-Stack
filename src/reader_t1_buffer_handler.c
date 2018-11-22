@@ -124,7 +124,7 @@ READER_Status READER_T1_BUFFER_Enqueue(READER_T1_ContextHandler *pContext, READE
 	if(retVal != READER_OK) return retVal;
 	
 	if(bStatus == READER_T1_BUFFER_FULL){
-		return READER_ERR;
+		return READER_FULL;
 	}
 	
 	/* On recupere un pointeur sur la structure du buffer dans le contexte */
@@ -137,6 +137,7 @@ READER_Status READER_T1_BUFFER_Enqueue(READER_T1_ContextHandler *pContext, READE
 	/* On calcule le nouveau top index et on place le Block a la position caculee */
 	newTopIndex = (pBlockBuff->indexTop + 1) % STATICBUFF_MAXSIZE;
 	
+	/* Attention, important de faire une copie ici. Le Block que l'on stack existe generalement dans le contexte local d'une fonction. Il faut imperativement le copier dans la memoire du contexte. */
 	retVal = READER_T1_CopyBlock(&(pBlockTab[newTopIndex]), pBlock);
 	if(retVal != READER_OK) return retVal;
 	
@@ -163,7 +164,7 @@ READER_Status READER_T1_BUFFER_Dequeue(READER_T1_ContextHandler *pContext, READE
 	if(retVal != READER_OK) return retVal;
 	
 	if(bStatus == READER_T1_BUFFER_EMPTY){
-		return READER_ERR;
+		return READER_EMPTY;
 	}
 	
 	/* On recupere un pointeur sur la structure du buffer dans le contexte */
@@ -211,7 +212,7 @@ READER_Status READER_T1_BUFFER_Stack(READER_T1_ContextHandler *pContext, READER_
 	if(retVal != READER_OK) return retVal;
 	
 	if(bStatus == READER_T1_BUFFER_FULL){
-		return READER_ERR;
+		return READER_FULL;
 	}
 	
 	/* On recupere un pointeur sur la structure du buffer dans le contexte */
@@ -259,6 +260,9 @@ READER_Status READER_T1_BUFFER_Delete(READER_T1_ContextHandler *pContext, uint32
 	/* Dans la stucture du Buffer on recupere un pointeur sur le tableau de Blocks    */
 	pBlockTab = &(pBlockBuff->blockBuff);
 	
+	/* On verifie que le Buffer n'est pas vide ...                                    */
+	
+	
 	/* On regarde si index existe ...                                                 */
 	
 	
@@ -269,9 +273,40 @@ READER_Status READER_T1_BUFFER_Delete(READER_T1_ContextHandler *pContext, uint32
 }
 
 
+READER_Status READER_T1_BUFFER_ShiftInBottomDirection(READER_T1_ContextHandler *pContext){
+	
+}
+
+
+READER_Status READER_T1_BUFFER_ShiftInTopDirection(READER_T1_ContextHandler *pContext){
+	
+}
+
+
 /* On enleve les R-Blocks et S-BLocks qui se trouvent dans le Buffer */
 READER_Status READER_T1_BUFFER_StrapControlBlocks(READER_T1_ContextHandler *pContext){
+	READER_Status retVal, retVal2;
+	READER_T1_Block tmpBlock;
+	READER_T1_BlockType bType;
 	
+	
+	/* On depile les Blocks jusqu'au premier I-Block                               */
+	do{
+		retVal = READER_T1_BUFFER_Dequeue(pContext, &tmpBlock);
+		if((retVal != READER_OK) && (retVal != READER_EMPTY)) return retVal;        /* Si on a une erreur autre que Buffer vide, alors on quitte de suite. */
+		                                                                            /* A partir de la, retVal vaut sois READER_OK, sois READER_EMPTY ...   */
+		if(retVal != READER_EMPTY){                                                 
+			bType = READER_T1_GetBlockType(&tmpBlock);                              
+		}
+		else{
+			bType = READER_T1_BLOCK_ERR;
+		}
+		
+		if(bType == READER_T1_IBLOCK){
+			retVal2 = READER_T1_BUFFER_Stack(pContext, &tmpBlock);
+			if(retVal2 != READER_OK) return retVal2;
+		}                                                                           
+	}while((bType != READER_T1_IBLOCK) && (retVal != READER_EMPTY));                /* ie : on s'arrete si on a un I-Block, ou si c'est vide               */
 	
 	
 	return READER_OK;

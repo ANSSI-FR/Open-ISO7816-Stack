@@ -204,7 +204,7 @@ READER_Status READER_T1_ERR_DoResynch(READER_T1_ContextHandler *pContext){
 	retVal = READER_T1_CONTEXT_GetLastIBlockSent(pContext, &pLastBlock);
 	if(retVal != READER_OK) return retVal;
 	
-	/* On fait une copie de ce Block dans une variable locale a la fonction (le buffer du contexte ca etre modifie par la suite ) */
+	/* On fait une copie de ce Block dans une variable locale a la fonction (le contexte va etre reinitialise par la suite) */
 	retVal = READER_T1_CopyBlock(&tmpBlock, pLastBlock);
 	if(retVal != READER_OK) return retVal;
 	
@@ -212,9 +212,11 @@ READER_Status READER_T1_ERR_DoResynch(READER_T1_ContextHandler *pContext){
 	retVal = READER_T1_CONTEXT_InitParams(pContext);
 	if(retVal != READER_OK) return retVal;
 	
-	/* On enleve les S-Blocks et R-Blocks du Buffer d'envoi ?                              */
+	/* On enleve les S-Blocks et R-Blocks en sortie du Buffer d'envoi ?                    */
+	retVal = READER_T1_BUFFER_StrapControlBlocks(pContext);
+	if(retVal != READER_OK) return retVal;
 	
-	/* On Stack le dernier I-Block sur la pile d'envoi                                     */
+	/* On Stack le dernier I-Block qu'on avait envoye sur la pile d'envoi (Rule 6.5) (pour le re-envoyer)  */
 	retVal = READER_T1_BUFFER_Stack(pContext, &tmpBlock);
 	if(retVal != READER_OK) return retVal;	
 	
@@ -222,8 +224,20 @@ READER_Status READER_T1_ERR_DoResynch(READER_T1_ContextHandler *pContext){
 }
 
 
-READER_Status READER_T1_ERR_DoReset(void){
+READER_Status READER_T1_ERR_DoReset(READER_T1_ContextHandler *pContext){
+	READER_Status retVal;
 	
+	
+	retVal = READER_T1_CONTEXT_Init(pContext);
+	if(retVal != READER_OK) return retVal;
+	
+	retVal = READER_HAL_Init();
+	if(retVal != READER_OK) return retVal;
+	
+	retVal = READER_HAL_DoColdReset();
+	if(retVal != READER_OK) return retVal;
+	
+	return READER_OK;
 }
 
 

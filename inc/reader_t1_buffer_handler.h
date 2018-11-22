@@ -61,6 +61,8 @@ READER_Status READER_T1_BUFFER_Enqueue(READER_T1_ContextHandler *pContext, READE
 READER_Status READER_T1_BUFFER_Dequeue(READER_T1_ContextHandler *pContext, READER_T1_Block *pBlock);
 READER_Status READER_T1_BUFFER_Stack(READER_T1_ContextHandler *pContext, READER_T1_Block *pBlock);
 READER_Status READER_T1_BUFFER_Delete(READER_T1_ContextHandler *pContext, uint32_t index);
+READER_Status READER_T1_BUFFER_ShiftInBottomDirection(READER_T1_ContextHandler *pContext);
+READER_Status READER_T1_BUFFER_ShiftInTopDirection(READER_T1_ContextHandler *pContext);
 
 
 READER_Status READER_T1_BUFFER_StrapControlBlocks(READER_T1_ContextHandler *pContext);
