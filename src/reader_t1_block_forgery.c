@@ -25,8 +25,44 @@ READER_Status READER_T1_FORGE_ChainingRBlockForCard(READER_T1_ContextHandler *pC
 }
 
 
-READER_Status READER_T1_FORGE_NACKRBlock(READER_T1_ContextHandler *pContext, READER_T1_Block *pBlockDest){
+READER_Status READER_T1_FORGE_NACKRBlock(READER_T1_ContextHandler *pContext, READER_T1_Block *pBlockDest, READER_T1_Block *pPreviouslySentBlock){
+	READER_Status retVal;
+	READER_T1_Block *pPreviouslySentBlock;
+	READER_T1_BlockType bType;
+	uint32_t deviceCompleteSeqNum, deviceCompleteSeqNum;
 	
+	
+	/* C'est la premiere reception ?? (Voir rule 7.5/7.6) */
+	retVal = READER_T1_CONTEXT_GetCardCompleteSeqNum(pContext, &cardCompleteSeqNum);
+	if(retVal != READER_OK) return retVal;
+	
+	retVal = READER_T1_CONTEXT_GetDeviceCompleteSeqNum(pContext, &deviceCompleteSeqNum);
+	if(retVal != READER_OK) return retVal;
+	
+	if((cardCompleteSeqNum == 0) && (deviceCompleteSeqNum == 0)){          /* C'est la rule 7.5/7.6 */
+		/* On fabrique un R-Block avec num de seq 0  */
+		retVal = READER_T1_ForgeRBlock(pBlockDest, READER_T1_ACKTYPE_NACK, 0);
+		if(retVal != READER_OK) return retVal;
+	}
+	else{
+		/* Ce n'est pas la premiere reception. On regarde le type du precedent Block qu'on a envoye */		
+		bType = READER_T1_GetBlockType(pPreviouslySentBlock);
+		
+		if(bType == READER_T1_IBLOCK){
+			
+		}
+		else if(bType == READER_T1_RBLOCK){
+			
+		}
+		else{
+			/* Ici, on ne gere pas les cas S-Block. Ca doit etre gere en amont de cette fonction. */
+			return READER_ERR;
+		}
+		
+		
+	}
+	
+	return READER_OK;
 }
 
 

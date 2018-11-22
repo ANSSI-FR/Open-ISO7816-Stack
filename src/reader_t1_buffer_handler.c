@@ -230,6 +230,7 @@ READER_Status READER_T1_BUFFER_Stack(READER_T1_ContextHandler *pContext, READER_
 		newBottomIndex = pBlockBuff->indexBottom - 1;
 	}
 	
+	/* Attention, important de faire une copie ici. Le Block que l'on stack existe generalement dans le contexte local d'une fonction. Il faut imperativement le copier dans la memoire du contexte. */
 	retVal = READER_T1_CopyBlock(&(pBlockTab[newBottomIndex]), pBlock);
 	if(retVal != READER_OK) return retVal;
 	

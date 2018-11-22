@@ -154,16 +154,7 @@ READER_Status READER_T1_CONTEXT_GetApduResponse(READER_T1_ContextHandler *pConte
 
 
 /* Manipulation des compteurs de redemande d'infos et de demandes de resynchro ... */
-READER_Status READER_T1_CONTEXT_IncRepeatCounter(READER_T1_ContextHandler *pContext){
-	if(pContext->repeatCounter < READER_T1_MAX_REAPEAT){
-		pContext->repeatCounter = pContext->repeatCounter + 1;
-	}
-	else{
-		return READER_ERR;
-	}
-	
-	return READER_OK;
-}
+
 
 
 READER_Status READER_T1_CONTEXT_GetRepeatCounter(READER_T1_ContextHandler *pContext, uint32_t *pCounter){
@@ -178,26 +169,10 @@ READER_Status READER_T1_CONTEXT_SetRepeatCounter(READER_T1_ContextHandler *pCont
 }
 
 
-READER_Status READER_T1_CONTEXT_CheckRepeatCounter(READER_T1_ContextHandler *pContext){
-	if(pContext->repeatCounter < READER_T1_MAX_REAPEAT){
-		return READER_OK;
-	}
-	else{
-		return READER_NO;
-	}
-}
 
 
-READER_Status READER_T1_CONTEXT_IncResynchCounter(READER_T1_ContextHandler *pContext){
-	if(pContext->resynchCounter < READER_T1_MAX_RESYNCH){
-		pContext->resynchCounter = pContext->resynchCounter + 1;
-	}
-	else{
-		return READER_ERR;
-	}
-	
-	return READER_OK;
-}
+
+
 
 
 READER_Status READER_T1_CONTEXT_GetResynchCounter(READER_T1_ContextHandler *pContext, uint32_t *pCounter){
@@ -212,14 +187,7 @@ READER_Status READER_T1_CONTEXT_SetResynchCounter(READER_T1_ContextHandler *pCon
 }
 
 
-READER_Status READER_T1_CONTEXT_CheckResynchCounter(READER_T1_ContextHandler *pContext){
-	if(pContext->resynchCounter < READER_T1_MAX_RESYNCH){
-		return READER_OK;
-	}
-	else{
-		return READER_NO;
-	}
-}
+
 
 
 READER_Status READER_T1_CONTEXT_GetACKStatus(READER_T1_ContextHandler *pContext, READER_T1_ACKStatus *pACKStatus){
@@ -413,6 +381,22 @@ READER_Status READER_T1_CONTEXT_GetLastSentType(READER_T1_ContextHandler *pConte
 	
 	
 	bType = READER_T1_GetBlockType(&(pContext->lastSent));
+	
+	if(bType == READER_T1_BLOCK_ERR){
+		return READER_ERR;
+	}
+	
+	*pType = bType;
+
+	return READER_OK;
+}
+
+
+READER_Status READER_T1_CONTEXT_GetLastRcvdType(READER_T1_ContextHandler *pContext, READER_T1_BlockType *pType){
+	READER_T1_BlockType bType;
+	
+	
+	bType = READER_T1_GetBlockType(&(pContext->lastRcvd));
 	
 	if(bType == READER_T1_BLOCK_ERR){
 		return READER_ERR;

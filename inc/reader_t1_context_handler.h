@@ -54,6 +54,7 @@ struct READER_T1_ContextHandler{
 	uint32_t currentCGT;
 	READER_T1_RedundancyType currentRType;
 	
+	/* Error Handling */
 	uint32_t resynchCounter;
 	uint32_t repeatCounter;
 	
@@ -109,15 +110,11 @@ READER_Status READER_T1_CONTEXT_GetApduResponse(READER_T1_ContextHandler *pConte
 
 
 /* Manipulation des compteurs de redemande d'infos et de demandes de resynchro ... */
-READER_Status READER_T1_CONTEXT_IncRepeatCounter(READER_T1_ContextHandler *pContext);
 READER_Status READER_T1_CONTEXT_GetRepeatCounter(READER_T1_ContextHandler *pContext, uint32_t *pCounter);
 READER_Status READER_T1_CONTEXT_SetRepeatCounter(READER_T1_ContextHandler *pContext, uint32_t counter);
-READER_Status READER_T1_CONTEXT_CheckRepeatCounter(READER_T1_ContextHandler *pContext);
 
-READER_Status READER_T1_CONTEXT_IncResynchCounter(READER_T1_ContextHandler *pContext);
 READER_Status READER_T1_CONTEXT_GetResynchCounter(READER_T1_ContextHandler *pContext, uint32_t *pCounter);
 READER_Status READER_T1_CONTEXT_SetResynchCounter(READER_T1_ContextHandler *pContext, uint32_t counter);
-READER_Status READER_T1_CONTEXT_CheckResynchCounter(READER_T1_ContextHandler *pContext);
 
 
 READER_Status READER_T1_CONTEXT_GetACKStatus(READER_T1_ContextHandler *pContext, READER_T1_ACKStatus *pACKStatus);
@@ -135,6 +132,7 @@ READER_Status READER_T1_CONTEXT_SetLastIBlockSent(READER_T1_ContextHandler *pCon
 READER_Status READER_T1_CONTEXT_SetLastRcvd(READER_T1_ContextHandler *pContext, READER_T1_Block *pBlock);
 
 READER_Status READER_T1_CONTEXT_GetLastSentType(READER_T1_ContextHandler *pContext, READER_T1_BlockType *pType);
+READER_Status READER_T1_CONTEXT_GetLastRcvdType(READER_T1_ContextHandler *pContext, READER_T1_BlockType *pType);
 
 
 
