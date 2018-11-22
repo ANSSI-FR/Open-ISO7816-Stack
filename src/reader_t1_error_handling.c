@@ -138,15 +138,12 @@ READER_Status READER_T1_ERR_DealWithError(READER_T1_ContextHandler *pContext, ui
 		if(retVal != READER_OK) return retVal;
 	}
 	else if(retVal == READER_NO){
+
 		/* On verifie le compteur de Resynchro */
 		retVal = READER_T1_ERR_CheckResynchCounter(pContext);
 		if(retVal == READER_OK){
 			/* On fait une demande de Resynchro */
 			retVal = READER_T1_ERR_DoResynch(pContext);
-			if(retVal != READER_OK) return retVal;
-			
-			/* On incremente le compteur de demandes de Resynchro */
-			retVal = READER_T1_ERR_IncResynchCounter(pContext);
 			if(retVal != READER_OK) return retVal;
 		}
 		else if(retVal == READER_NO){
@@ -155,12 +152,43 @@ READER_Status READER_T1_ERR_DealWithError(READER_T1_ContextHandler *pContext, ui
 			if(retVal != READER_OK) return retVal;
 		}
 		else{
-			return READER_ERR;
+			return retVal;
 		}
 	}
 	else{
-		return READER_ERR;
+		return retVal;
 	}
+	
+	return READER_OK;
+}
+
+
+
+/* Attention, on retourne READER_NO si on a pas pu faire de Resynch (compteur max atteint), c'est le contexte exterieur a la fonction qui doit effectuer le DoReset() */
+READER_Status READER_T1_ERR_DoResynchRequ(READER_T1_ContextHandler *pContext){
+	READER_Status retVal;
+	READER_T1_Block block;
+	
+	
+	/* On verifie le compteur de Resynch                                                    */
+	retVal = READER_T1_ERR_CheckResynchCounter(pContext);
+	if(retVal != READER_OK) return retVal;
+	
+	/* On forge un Block de requette de Resynchro                                           */
+	retVal = READER_T1_ForgeSBlock(&block, READER_T1_STYPE_RESYNCH_REQU);
+	if(retVal != READER_OK) return retVal;
+	
+	/* On Stack le S-Block ainsi forge dans le Buffer d'envoi                               */
+	retVal = READER_T1_BUFFER_Stack(pContext, &block);
+	if(retVal != READER_OK) return retVal;
+	
+	/* On positionne les flags qui indiquent qu'on attend un S-Block en retour ...          */
+	retVal = READER_T1_CONTEXT_SetSBlockExpected(pContext, READER_T1_STYPE_RESYNCH_RESP);	
+	if(retVal != READER_OK) return retVal;
+		
+	/* On incremente le compteur de demandes de Resynchro                                   */
+	retVal = READER_T1_ERR_IncResynchCounter(pContext);
+	if(retVal != READER_OK) return retVal;
 	
 	return READER_OK;
 }

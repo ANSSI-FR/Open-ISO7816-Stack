@@ -22,6 +22,7 @@ READER_Status READER_T1_ERR_CheckRepeatCounter(READER_T1_ContextHandler *pContex
 
 READER_Status READER_T1_ERR_IncResynchCounter(READER_T1_ContextHandler *pContext);
 READER_Status READER_T1_ERR_CheckResynchCounter(READER_T1_ContextHandler *pContext);
+READER_Status READER_T1_ERR_DoResynchRequ(READER_T1_ContextHandler *pContext);
 READER_Status READER_T1_ERR_DoResynch(READER_T1_ContextHandler *pContext);
 
 READER_Status READER_T1_ERR_DoReset(void);

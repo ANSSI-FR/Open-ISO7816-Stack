@@ -158,7 +158,9 @@ READER_Status READER_T1_CONTEXT_CardIsChaining(READER_T1_ContextHandler *pContex
 
 
 /* Manipuation des S-Blocks */
-READER_Status READER_T1_CONTEXT_IsSblockExpectedNow(READER_T1_ContextHandler *pContext);
+READER_Status READER_T1_CONTEXT_IsSblockExpectedNow(READER_T1_ContextHandler *pContext, READER_T1_SBlockExpected *pExp);
+READER_Status READER_T1_CONTEXT_GetSBlockExpectedType(READER_T1_ContextHandler *pContext, READER_T1_SBlockType *pType);
+READER_Status READER_T1_CONTEXT_SetSBlockExpected(READER_T1_ContextHandler *pContext, READER_T1_SBlockType type);
 
 
 READER_Status READER_T1_CONTEXT_GetBlockBuff(READER_T1_ContextHandler *pContext, READER_T1_BlockBuffer **pBlockBuff);

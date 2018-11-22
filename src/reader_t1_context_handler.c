@@ -592,6 +592,87 @@ READER_Status READER_T1_CONTEXT_IsSblockExpectedNow(READER_T1_ContextHandler *pC
 }
 
 
+READER_Status READER_T1_CONTEXT_GetSBlockExpectedType(READER_T1_ContextHandler *pContext, READER_T1_SBlockType *pType){
+	READER_Status retVal;
+	READER_T1_SBlockExpected isExp;
+	READER_T1_SBlockType tmpType;
+	
+	
+	/* On verifie qu'il y a effectivement un S-Block qui est attendu ... */
+	retVal = READER_T1_CONTEXT_IsSblockExpectedNow(pContext, &isExp);
+	if(retVal != READER_OK) return retVal;
+	if(isExp != READER_T1_SBLOCK_EXPECTED_YES) return READER_ERR;
+	
+	/* On verifie le type de S-Block attendu, on regare aussi si ce type est valide ... */
+	tmpType = pContext->SBlockExpectedType;
+	
+	switch(tmpType){
+		case READER_T1_STYPE_RESYNCH_RESP:
+			*pType = tmpType;
+			break;
+		case READER_T1_STYPE_RESYNCH_REQU:
+			*pType = tmpType;
+			break;
+		case READER_T1_STYPE_ABORT_RESP:
+			*pType = tmpType;
+			break;
+		case READER_T1_STYPE_ABORT_REQU:
+			*pType = tmpType;
+			break;
+		case READER_T1_STYPE_IFS_REQU:
+			*pType = tmpType;
+			break;
+		case READER_T1_STYPE_IFS_RESP:
+			*pType = tmpType;
+			break;
+		case READER_T1_STYPE_WTX_REQU:
+			*pType = tmpType;
+			break;
+		case READER_T1_STYPE_WTX_RESP:
+			*pType = tmpType;
+			break;
+		default :
+			return READER_ERR;
+	}
+	
+	return READER_OK;
+}
+
+
+READER_Status READER_T1_CONTEXT_SetSBlockExpected(READER_T1_ContextHandler *pContext, READER_T1_SBlockType type){
+	/* On verifie que le type passe en parametre est valide                      */
+	switch(type){
+		case READER_T1_STYPE_RESYNCH_RESP:
+			break;
+		case READER_T1_STYPE_RESYNCH_REQU:
+			break;
+		case READER_T1_STYPE_ABORT_RESP:
+			break;
+		case READER_T1_STYPE_ABORT_REQU:
+			break;
+		case READER_T1_STYPE_IFS_REQU:
+			break;
+		case READER_T1_STYPE_IFS_RESP:
+			break;
+		case READER_T1_STYPE_WTX_REQU:
+			break;
+		case READER_T1_STYPE_WTX_RESP:
+			break;
+		default :
+			return READER_ERR;
+	}
+	
+	/* On indique dans le contexte le type de S-Block qui est attendu            */
+	pContext->SBlockExpectedType = type;
+	
+	/* On positionne le flag qui indique qu'un S-Block est attendu               */
+	pContext->SBlockExpected = READER_T1_SBLOCK_EXPECTED_YES;
+	
+	return READER_OK;
+}
+
+
+
 READER_Status READER_T1_CONTEXT_GetBlockBuff(READER_T1_ContextHandler *pContext, READER_T1_BlockBuffer **pBlockBuff){
 	/* On recupere un pointeur qui pointe sur le pointeur de blockBuff                                              */
 	/* On veut que ce pointeur pointe desormais sur le blockBuff qui se trouve dans le contexte   de communication  */
