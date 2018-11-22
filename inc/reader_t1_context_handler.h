@@ -11,10 +11,20 @@
 
 
 
-
-
 #define READER_T1_MAX_REAPEAT 0x03
 #define READER_T1_MAX_RESYNCH 0x03
+
+
+#define READER_T1_CONTEXT_DEFAULT_IFSC      (uint32_t)(32)        /* Voir ISO7816-3 section 11.4.2 */
+#define READER_T1_CONTEXT_DEFAULT_IFSD      (uint32_t)(32)        /* Voir ISO7816-3 section 11.4.2 */
+#define READER_T1_CONTEXT_DEFAULT_CWI       (uint32_t)(13)        /* Voir ISO7816-3 section 11.4.3 */
+#define READER_T1_CONTEXT_DEFAULT_BWI       (uint32_t)(4)         /* Voir ISO7816-3 section 11.4.3 */
+#define READER_T1_CONTEXT_DEFAULT_BWT       (uint32_t)()
+#define READER_T1_CONTEXT_DEFAULT_BGT       (uint32_t)()
+#define READER_T1_CONTEXT_DEFAULT_CWT       (uint32_t)()
+#define READER_T1_CONTEXT_DEFAULT_CGT       (uint32_t)()
+#define READER_T1_CONTEXT_DEFAULT_CORRCODE  READER_T1_LRC         /* Voir ISO7816-3 section 11.4.4 */
+
 
 
 
@@ -75,13 +85,15 @@ struct READER_T1_ContextHandler{
 	
 	READER_T1_SBlockExpected SBlockExpected;
 	READER_T1_SBlockType SBlockExpectedType;
-	uint32_t SblockRequCounter;
+	uint32_t SBlockRequCounter;
 	
 	
 };
 
 /* Initialisation de la structure */
 READER_Status READER_T1_CONTEXT_Init(READER_T1_ContextHandler *pContext);
+READER_Status READER_T1_CONTEXT_InitParams(READER_T1_ContextHandler *pContext);
+READER_Status READER_T1_CONTEXT_InitBuffer(READER_T1_ContextHandler *pContext);
 
 
 /* Accesseurs sur les parametres actuels de communication */
@@ -130,10 +142,10 @@ READER_Status READER_T1_CONTEXT_GetLastIBlockRcvd(READER_T1_ContextHandler *pCon
 READER_Status READER_T1_CONTEXT_SetLastSent(READER_T1_ContextHandler *pContext, READER_T1_Block *pBlock);
 READER_Status READER_T1_CONTEXT_SetLastIBlockSent(READER_T1_ContextHandler *pContext, READER_T1_Block *pBlock);
 READER_Status READER_T1_CONTEXT_SetLastRcvd(READER_T1_ContextHandler *pContext, READER_T1_Block *pBlock);
+READER_Status READER_T1_CONTEXT_SetLastIBlockRcvd(READER_T1_ContextHandler *pContext, READER_T1_Block *pBlock);
 
 READER_Status READER_T1_CONTEXT_GetLastSentType(READER_T1_ContextHandler *pContext, READER_T1_BlockType *pType);
 READER_Status READER_T1_CONTEXT_GetLastRcvdType(READER_T1_ContextHandler *pContext, READER_T1_BlockType *pType);
-
 
 
 /* Manipulation des numeros de sequence */
@@ -155,12 +167,21 @@ READER_Status READER_T1_CONTEXT_CardIsChainingLastBlock(READER_T1_ContextHandler
 READER_Status READER_T1_CONTEXT_DeviceIsChaining(READER_T1_ContextHandler *pContext, READER_T1_ChainingStatus *pChainingStatus);
 READER_Status READER_T1_CONTEXT_CardIsChaining(READER_T1_ContextHandler *pContext, READER_T1_ChainingStatus *pChainingStatus);
 
+READER_Status READER_T1_CONTEXT_SetDeviceChainingSituationFlag(READER_T1_ContextHandler *pContext, READER_T1_ChainingStatus chainingStatus);
+READER_Status READER_T1_CONTEXT_SetDeviceChainingLastBlockFlag(READER_T1_ContextHandler *pContext, READER_T1_ChainingStatus chainingStatus);
+READER_Status READER_T1_CONTEXT_SetCardChainingSituationFlag(READER_T1_ContextHandler *pContext, READER_T1_ChainingStatus chainingStatus);
+READER_Status READER_T1_CONTEXT_SetCardChainingLastBlockFlag(READER_T1_ContextHandler *pContext, READER_T1_ChainingStatus chainingStatus);
 
 
 /* Manipuation des S-Blocks */
 READER_Status READER_T1_CONTEXT_IsSblockExpectedNow(READER_T1_ContextHandler *pContext, READER_T1_SBlockExpected *pExp);
 READER_Status READER_T1_CONTEXT_GetSBlockExpectedType(READER_T1_ContextHandler *pContext, READER_T1_SBlockType *pType);
 READER_Status READER_T1_CONTEXT_SetSBlockExpected(READER_T1_ContextHandler *pContext, READER_T1_SBlockType type);
+READER_Status READER_T1_CONTEXT_SetNoSBlockExpected(READER_T1_ContextHandler *pContext);
+
+READER_Status READER_T1_CONTEXT_GetSBlockRequCounter(READER_T1_ContextHandler *pContext, uint32_t *pCounter);
+READER_Status READER_T1_CONTEXT_SetSBlockRequCounter(READER_T1_ContextHandler *pContext, uint32_t counter);
+READER_Status READER_T1_CONTEXT_IncSBlockRequCounter(READER_T1_ContextHandler *pContext);
 
 
 READER_Status READER_T1_CONTEXT_GetBlockBuff(READER_T1_ContextHandler *pContext, READER_T1_BlockBuffer **pBlockBuff);

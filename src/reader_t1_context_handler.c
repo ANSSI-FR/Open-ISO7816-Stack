@@ -2,8 +2,106 @@
 
 
 /* Initialisation de la structure */
+
 READER_Status READER_T1_CONTEXT_Init(READER_T1_ContextHandler *pContext){
+	READER_Status retVal;
 	
+	retVal = READER_T1_CONTEXT_InitParams(pContext);
+	if(retVal != READER_OK) return retVal;
+	
+	retVal = READER_T1_CONTEXT_InitBuffer(pContext);
+	if(retVal != READER_OK) return retVal;
+	
+	return READER_OK;
+}
+
+
+READER_Status READER_T1_CONTEXT_InitParams(READER_T1_ContextHandler *pContext){
+	/* On reinitialise tous les parametres de communication dans le contexte               */
+	retVal = READER_T1_CONTEXT_SetDeviceCompleteSeqNum(pContext, 0);
+	if(retVal != READER_OK) return retVal;
+	
+	retVal = READER_T1_CONTEXT_SetCardCompleteSeqNum(pContext, 0);
+	if(retVal != READER_OK) return retVal;
+	
+	retVal = READER_T1_CONTEXT_SetRepeatCounter(pContext, 0);
+	if(retVal != READER_OK) return retVal;
+	
+	retVal = READER_T1_CONTEXT_SetResynchCounter(pContext, 0);
+	if(retVal != READER_OK) return retVal;
+	
+	retVal = READER_T1_CONTEXT_SetACKStatus(pContext, READER_T1_NOACK);
+	if(retVal != READER_OK) return retVal;
+	
+	retVal = READER_T1_CONTEXT_SetLastSent(pContext, NULL);
+	if(retVal != READER_OK) return retVal;
+	
+	retVal = READER_T1_CONTEXT_SetLastIBlockSent(pContext, NULL);
+	if(retVal != READER_OK) return retVal;
+	
+	retVal = READER_T1_CONTEXT_SetLastRcvd(pContext, NULL);
+	if(retVal != READER_OK) return retVal;
+	
+	retVal = READER_T1_CONTEXT_SetLastIBlockRcvd(pContext, NULL);
+	if(retVal != READER_OK) return retVal;
+	
+	retVal = READER_T1_CONTEXT_SetDeviceChainingLastBlockFlag(pContext, READER_T1_CHAINING_NO);
+	if(retVal != READER_OK) return retVal;
+	
+	retVal = READER_T1_CONTEXT_SetDeviceChainingSituationFlag(pContext, READER_T1_CHAINING_NO);
+	if(retVal != READER_OK) return retVal;
+	
+	retVal = READER_T1_CONTEXT_SetCardChainingLastBlockFlag(pContext, READER_T1_CHAINING_NO);
+	if(retVal != READER_OK) return retVal;
+	
+	retVal = READER_T1_CONTEXT_SetCardChainingSituationFlag(pContext, READER_T1_CHAINING_NO);
+	if(retVal != READER_OK) return retVal;
+	
+	retVal = READER_T1_CONTEXT_SetNoSBlockExpected(pContext);
+	if(retVal != READER_OK) return retVal;
+	
+	retVal = READER_T1_CONTEXT_SetSBlockRequCounter(pContext, 0);
+	if(retVal != READER_OK) return retVal;
+	
+	retVal = READER_T1_CONTEXT_SetCurrentBGT(pContext, READER_T1_CONTEXT_DEFAULT_BGT);
+	if(retVal != READER_OK) return retVal;
+	
+	retVal = READER_T1_CONTEXT_SetCurrentBWT(pContext, READER_T1_CONTEXT_DEFAULT_BWT);
+	if(retVal != READER_OK) return retVal;
+	
+	retVal = READER_T1_CONTEXT_SetCurrentCGT(pContext, READER_T1_CONTEXT_DEFAULT_CGT);
+	if(retVal != READER_OK) return retVal;
+	
+	retVal = READER_T1_CONTEXT_SetCurrentCWT(pContext, READER_T1_CONTEXT_DEFAULT_CWT);
+	if(retVal != READER_OK) return retVal;
+	
+	retVal = READER_T1_CONTEXT_SetCurrentBWI(pContext, READER_T1_CONTEXT_DEFAULT_BWI);
+	if(retVal != READER_OK) return retVal;
+	
+	retVal = READER_T1_CONTEXT_SetCurrentCWI(pContext, READER_T1_CONTEXT_DEFAULT_CWI);
+	if(retVal != READER_OK) return retVal;
+	
+	retVal = READER_T1_CONTEXT_SetCurrentIFSC(pContext, READER_T1_CONTEXT_DEFAULT_IFSC);
+	if(retVal != READER_OK) return retVal;
+	
+	retVal = READER_T1_CONTEXT_SetCurrentIFSD(pContext, READER_T1_CONTEXT_DEFAULT_IFSD);
+	if(retVal != READER_OK) return retVal;
+	
+	retVal = READER_T1_CONTEXT_SetCurrentRedundancyType(pContext, READER_T1_CONTEXT_DEFAULT_CORRCODE);
+	if(retVal != READER_OK) return retVal;
+	
+	return READER_OK;
+}
+
+
+READER_Status READER_T1_CONTEXT_InitBuffer(READER_T1_ContextHandler *pContext){
+	READER_Status retVal;
+	
+	
+	retVal = READER_T1_BUFFER_Init(pContext);
+	if(retVal != READER_OK) return retVal;
+	
+	return READER_OK;
 }
 
 
@@ -361,6 +459,21 @@ READER_Status READER_T1_CONTEXT_SetLastIBlockSent(READER_T1_ContextHandler *pCon
 }
 
 
+READER_Status READER_T1_CONTEXT_SetLastIBlockRcvd(READER_T1_ContextHandler *pContext, READER_T1_Block *pBlock){
+	READER_Status retVal;
+	
+	if(pBlock == NULL){
+		&(pContext->lastIBlockRcvd) = NULL;
+	}
+	else{
+		retVal = READER_T1_CopyBlock(&(pContext->lastIBlockRcvd), pBlock);
+		if(retVal != READER_OK) return retVal;
+	}
+	
+	return READER_OK;
+}
+
+
 READER_Status READER_T1_CONTEXT_SetLastRcvd(READER_T1_ContextHandler *pContext, READER_T1_Block *pBlock){
 	READER_Status retVal;
 	
@@ -575,6 +688,66 @@ READER_Status READER_T1_CONTEXT_CardIsChaining(READER_T1_ContextHandler *pContex
 }
 
 
+READER_Status READER_T1_CONTEXT_SetDeviceChainingSituationFlag(READER_T1_ContextHandler *pContext, READER_T1_ChainingStatus chainingStatus){
+	if(chainingStatus == READER_T1_CHAINING_YES){
+		pContext->deviceIsChaining = READER_T1_CHAINING_YES;
+	}
+	else if(chainingStatus == READER_T1_CHAINING_NO){
+		pContext->deviceIsChaining = READER_T1_CHAINING_NO;
+	}
+	else{
+		return READER_ERR;
+	}	
+	
+	return READER_OK;
+}
+
+
+READER_Status READER_T1_CONTEXT_SetDeviceChainingLastBlockFlag(READER_T1_ContextHandler *pContext, READER_T1_ChainingStatus chainingStatus){
+	if(chainingStatus == READER_T1_CHAINING_YES){
+		pContext->deviceIsChainingLastBlock = READER_T1_CHAINING_YES;
+	}
+	else if(chainingStatus == READER_T1_CHAINING_NO){
+		pContext->deviceIsChainingLastBlock = READER_T1_CHAINING_NO;
+	}
+	else{
+		return READER_ERR;
+	}	
+	
+	return READER_OK;
+}
+
+
+READER_Status READER_T1_CONTEXT_SetCardChainingSituationFlag(READER_T1_ContextHandler *pContext, READER_T1_ChainingStatus chainingStatus){
+	if(chainingStatus == READER_T1_CHAINING_YES){
+		pContext->cardIsChaining = READER_T1_CHAINING_YES;
+	}
+	else if(chainingStatus == READER_T1_CHAINING_NO){
+		pContext->cardIsChaining = READER_T1_CHAINING_NO;
+	}
+	else{
+		return READER_ERR;
+	}	
+	
+	return READER_OK;
+}
+
+
+READER_Status READER_T1_CONTEXT_SetCardChainingLastBlockFlag(READER_T1_ContextHandler *pContext, READER_T1_ChainingStatus chainingStatus){
+	if(chainingStatus == READER_T1_CHAINING_YES){
+		pContext->cardIsChainingLastBlock = READER_T1_CHAINING_YES;
+	}
+	else if(chainingStatus == READER_T1_CHAINING_NO){
+		pContext->cardIsChainingLastBlock = READER_T1_CHAINING_NO;
+	}
+	else{
+		return READER_ERR;
+	}	
+	
+	return READER_OK;
+}
+
+
 
 /* Manipuation des S-Blocks */
 READER_Status READER_T1_CONTEXT_IsSblockExpectedNow(READER_T1_ContextHandler *pContext, READER_T1_SBlockExpected *pExp){
@@ -671,6 +844,48 @@ READER_Status READER_T1_CONTEXT_SetSBlockExpected(READER_T1_ContextHandler *pCon
 	return READER_OK;
 }
 
+
+READER_Status READER_T1_CONTEXT_SetNoSBlockExpected(READER_T1_ContextHandler *pContext){
+	pContext->SBlockExpected = READER_T1_SBLOCK_EXPECTED_NO;
+	
+	return READER_OK;
+}
+
+
+READER_Status READER_T1_CONTEXT_GetSBlockRequCounter(READER_T1_ContextHandler *pContext, uint32_t *pCounter){
+	*pCounter = pContext->SBlockRequCounter;
+	
+	return READER_OK;
+}
+
+
+READER_Status READER_T1_CONTEXT_SetSBlockRequCounter(READER_T1_ContextHandler *pContext, uint32_t counter){
+	pContext->SBlockRequCounter = counter;
+	
+	return READER_OK;
+}
+
+
+READER_Status READER_T1_CONTEXT_IncSBlockRequCounter(READER_T1_ContextHandler *pContext){
+	uint32_t counter, newCounter;
+	READER_Status retVal;
+	
+	
+	retVal = READER_T1_CONTEXT_GetSBlockRequCounter(pContext, &counter);
+	if(retVal != READER_OK) return retVal;
+	
+	if(counter < 0xFFFFFFFF){
+		newCounter = counter + 1;
+	}
+	else{
+		return READER_ERR;
+	}
+	
+	retVal = READER_T1_CONTEXT_SetSBlockRequCounter(pContext, newCounter);
+	if(retVal != READER_OK) return retVal;
+	
+	return READER_OK;
+}
 
 
 READER_Status READER_T1_CONTEXT_GetBlockBuff(READER_T1_ContextHandler *pContext, READER_T1_BlockBuffer **pBlockBuff){

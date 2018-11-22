@@ -64,7 +64,7 @@ READER_Status READER_T1_BUFFER_PlacesLeft(READER_T1_ContextHandler *pContext, ui
 	uint32_t placesUsed;
 	
 	
-	retVal = READER_T1_BUFFER_PlacesLeft(pContext, &placesUsed);
+	retVal = READER_T1_BUFFER_GetLength(pContext, &placesUsed);
 	if(retVal != READER_OK) return retVal;
 	
 	*places = STATICBUFF_MAXSIZE - placesUsed;
@@ -244,4 +244,36 @@ READER_Status READER_T1_BUFFER_Stack(READER_T1_ContextHandler *pContext, READER_
 	return READER_OK;
 }
 
+
+READER_Status READER_T1_BUFFER_Delete(READER_T1_ContextHandler *pContext, uint32_t index){
+	READER_T1_BlockBuffer *pBlockBuffer;
+	READER_T1_Block *pBlockTab;
+	READER_Status retVal;
+	uint32_t currentIndex;
+	
+	
+	/* On recupere un pointeur sur la structure du buffer dans le contexte            */
+	retVal = READER_T1_CONTEXT_GetBlockBuff(pContext, &pBlockBuff);
+	if(retVal != READER_OK) return retVal;
+	
+	/* Dans la stucture du Buffer on recupere un pointeur sur le tableau de Blocks    */
+	pBlockTab = &(pBlockBuff->blockBuff);
+	
+	/* On regarde si index existe ...                                                 */
+	
+	
+	/*  */
+	
+	
+	return READER_OK;
+}
+
+
+/* On enleve les R-Blocks et S-BLocks qui se trouvent dans le Buffer */
+READER_Status READER_T1_BUFFER_StrapControlBlocks(READER_T1_ContextHandler *pContext){
+	
+	
+	
+	return READER_OK;
+}
 
