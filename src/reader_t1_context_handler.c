@@ -585,6 +585,52 @@ READER_Status READER_T1_CONTEXT_GetDeviceSeqNum(READER_T1_ContextHandler *pConte
 }
 
 
+READER_Status READER_T1_CONTEXT_ComputeNextDeviceSeqNum(READER_T1_ContextHandler *pContext, uint32_t *pSeqNum){
+	uint32_t deviceSeqNum, nextDeviceSeqNum;
+	READER_Status retVal;
+	
+	
+	retVal = READER_T1_CONTEXT_GetDeviceCompleteSeqNum(pContext, &deviceSeqNum);
+	if(retVal != READER_OK) return retVal;
+	
+	nextDeviceSeqNum = (deviceSeqNum + 1) & 0x00000001;     /* Numero de sequence modulo 2 ... */
+	
+	*pSeqNum = nextDeviceSeqNum;
+	
+	return READER_OK;
+}
+
+
+READER_Status READER_T1_CONTEXT_ComputeNextCardSeqNum(READER_T1_ContextHandler *pContext, uint32_t *pSeqNum){
+	uint32_t cardSeqNum, nextCardSeqNum;
+	READER_Status retVal;
+	
+	
+	retVal = READER_T1_CONTEXT_GetCardCompleteSeqNum(pContext, &cardSeqNum);
+	if(retVal != READER_OK) return retVal;
+	
+	nextCardSeqNum = (cardSeqNum + 1) & 0x00000001;     /* Numero de sequence modulo 2 ... */
+	
+	*pSeqNum = nextCardSeqNum;
+	
+	return READER_OK;
+}
+
+
+READER_Status READER_T1_CONTEXT_GetCardExpectedSeqNum(READER_T1_ContextHandler *pContext, uint32_t *pSeqNum){
+	uint32_t seqNum;
+	READER_Status retVal;
+	
+	
+	retVal = READER_T1_CONTEXT_ComputeNextCardSeqNum(pContext, &seqNum);
+	if(retVal != READER_OK) return retVal;
+	
+	*pSeqNum = seqNum;
+	
+	return READER_OK;
+}
+
+
 /* Gestion du chainage */
 READER_Status READER_T1_CONTEXT_DeviceIsChainingLastBlock(READER_T1_ContextHandler *pContext, READER_T1_ChainingStatus *pChainingStatus){
 	READER_Status retVal;

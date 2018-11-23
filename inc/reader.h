@@ -29,7 +29,9 @@ enum READER_Status{
 	READER_BUSY                 = (uint32_t)(0x00000005),
 	READER_TOO_MUCH_TRIES       = (uint32_t)(0x00000006),
 	READER_EMPTY                = (uint32_t)(0x00000007),
-	READER_FULL                 = (uint32_t)(0x00000008)
+	READER_FULL                 = (uint32_t)(0x00000008),
+	READER_BAD_ARG              = (uint32_t)(0x00000009),
+	READER_TOO_LONG             = (uint32_t)(0x0000000A)
 };
 
 

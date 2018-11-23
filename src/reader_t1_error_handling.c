@@ -73,43 +73,13 @@ READER_Status READER_T1_ERR_IsItFirstReception(READER_T1_ContextHandler *pContex
 }
 
 
-
+/* Juste un wraper pour READER_T1_FORGE_ErrorBlock */
 READER_Status READER_T1_ERR_ForgeErrorBlock(READER_T1_ContextHandler *pContext, READER_T1_Block *pBlockDest, uint32_t integrityFlag){
 	READER_Status retVal;
-	READER_T1_Block *pPreviouslySentBlock;
-	READER_T1_BlockType bType;
 	
 	
-	/* On regarde si c'est la premiere reception  */
-	retVal = READER_T1_ERR_IsItFirstReception(pContext);
-	
-	if(retVal == READER_OK){    /* Rules 7.5 and 7.6 ... */
-		retVal = READER_T1_FORGE_NACKR0(pContext, pBlockDest, integrityFlag);
-		if(retVal != READER_OK) return retVal;
-	}
-	/* Il y a deja eu au moins un echange (1 emission et 1 reception) */
-	else{
-		/* On recupere le type du dernier Block envoye ...            */
-		retVal = READER_T1_CONTEXT_GetLastSentType(pContext, &bType);
-		if(retVal != READER_OK) return retVal;
-		
-		/* Selon le type du dernier Block envoye (rules 7.1, 7.2 rt 7.3) ... */
-		if(bType == READER_T1_IBLOCK){
-			retVal = READER_T1_FORGE_NACK71(pContext, pBlockDest, integrityFlag);
-			if(retVal != READER_OK) return retVal;
-		}
-		else if(bType == READER_T1_RBLOCK){
-			retVal = READER_T1_FORGE_NACK72(pContext, pBlockDest, integrityFlag);
-			if(retVal != READER_OK) return retVal;
-		}
-		else if(bType == READER_T1_SBLOCK){
-			/* A coder plus tard */
-		}
-		else{
-			return READER_ERR;
-		}
-	}
-	
+	retVal = READER_T1_FORGE_ErrorBlock(pContext, pBlockDest, integrityFlag);
+	if(retVal != READER_OK) return retVal;
 	
 	return READER_OK;
 }
