@@ -31,7 +31,8 @@ enum READER_Status{
 	READER_EMPTY                = (uint32_t)(0x00000007),
 	READER_FULL                 = (uint32_t)(0x00000008),
 	READER_BAD_ARG              = (uint32_t)(0x00000009),
-	READER_TOO_LONG             = (uint32_t)(0x0000000A)
+	READER_TOO_LONG             = (uint32_t)(0x0000000A),
+	READER_DOESNT_EXIST         = (uint32_t)(0x0000000B)
 };
 
 

@@ -6,11 +6,13 @@
 
 
 
-#define READER_APDU_INS_ENVELOPE        (uint8_t)(0xC2)
-#define READER_APDU_INS_GETRESPONSE     (uint8_t)(0xC0)
+#define READER_APDU_INS_ENVELOPE         (uint8_t)(0xC2)
+#define READER_APDU_INS_GETRESPONSE      (uint8_t)(0xC0)
 
-#define READER_APDU_CMD_MAX_SIZE         400                        /* La norme ISO fixe un maximum de 65535 caracteres */
-#define READER_APDU_RESP_MAX_SIZE        400                        /* La norme ISO fixe un maximum de 65536 caracteres */
+#define READER_APDU_HEADER_SIZE          (uint32_t)(4)
+#define READER_APDU_CMD_DATA_MAX_SIZE    (uint32_t)(400)                                   /* La norme ISO fixe un maximum de 65535 caracteres */
+#define READER_APDU_RESP_MAX_SIZE        (uint32_t)(400)                                   /* La norme ISO fixe un maximum de 65536 caracteres */
+#define READER_APDU_CMD_MAX_TOTALSIZE    (uint32_t)(READER_APDU_CMD_DATA_MAX_SIZE + 6)     /* Taille max des donnees + CLA, INS, P1, P2, Le, Lc */
 
 
 typedef enum READER_APDU_ProtocolCase READER_APDU_ProtocolCase;
@@ -31,7 +33,7 @@ typedef struct READER_APDU_Body READER_APDU_Body;
 struct READER_APDU_Body{
 	uint32_t Nc;
 	uint32_t Ne;
-	uint8_t dataBytes[READER_APDU_CMD_MAX_SIZE];  /* Taille max du data field d'une commande APDU */
+	uint8_t dataBytes[READER_APDU_CMD_DATA_MAX_SIZE];  /* Taille max du data field d'une commande APDU */
 };
 
 
@@ -60,6 +62,7 @@ struct READER_APDU_Response{
 };
 
 
+READER_Status READER_APDU_CheckCmdValidity(READER_APDU_Command *pApduCmd);
 READER_APDU_ProtocolCase READER_APDU_GetProtocolCase(READER_APDU_Command *pApduCmd);
 READER_Status READER_APDU_Execute(READER_APDU_Command *pApduCmd, READER_APDU_Response *pApduResp, uint32_t timeout);
 

@@ -428,6 +428,66 @@ READER_Status READER_T1_CONTEXT_GetLastIBlockRcvd(READER_T1_ContextHandler *pCon
 }
 
 
+READER_Status READER_T1_CONTEXT_GetLastIBlockSentSeqSum(READER_T1_ContextHandler *pContext, uint32_t *pSeqNum){
+	READER_Status retVal;
+	READER_T1_Block *pLastBlock;
+	READER_T1_SeqNumber tmpSeqNum;
+	
+	
+	/* On recupere le dernier I-Block envoye                                 */
+	retVal = READER_T1_CONTEXT_GetLastIBlockSent(pContext, &pLastBlock);
+	if(retVal != READER_OK) return retVal;
+	
+	if(pLastBlock == NULL){
+		return READER_ERR;      /* Il n'y a pas de dernier I-Block envoye    */
+	}
+	
+	/* On recupere le numero de sequence                                     */
+	tmpSeqNum = READER_T1_GetBlockSeqNumber(pLastBlock);
+	if(tmpSeqNum == READER_T1_SEQNUM_ONE){
+		*pSeqNum = 1;
+	}
+	else if(tmpSeqNum == READER_T1_SEQNUM_ZERO){
+		*pSeqNum = 0;
+	}
+	else{
+		return READER_ERR;
+	}
+	
+	return READER_OK;
+}
+
+
+READER_Status READER_T1_CONTEXT_GetLastIBlockRcvdSeqSum(READER_T1_ContextHandler *pContext, uint32_t *pSeqNum){
+	READER_Status retVal;
+	READER_T1_Block *pLastBlock;
+	READER_T1_SeqNumber tmpSeqNum;
+	
+	
+	/* On recupere le dernier I-Block recu                                   */
+	retVal = READER_T1_CONTEXT_GetLastIBlockRcvd(pContext, &pLastBlock);
+	if(retVal != READER_OK) return retVal;
+	
+	if(pLastBlock == NULL){
+		return READER_ERR;      /* Il n'y a pas de dernier I-Block envoye    */
+	}
+	
+	/* On recupere le numero de sequence                                     */
+	tmpSeqNum = READER_T1_GetBlockSeqNumber(pLastBlock);
+	if(tmpSeqNum == READER_T1_SEQNUM_ONE){
+		*pSeqNum = 1;
+	}
+	else if(tmpSeqNum == READER_T1_SEQNUM_ZERO){
+		*pSeqNum = 0;
+	}
+	else{
+		return READER_ERR;
+	}
+	
+	return READER_OK;
+}
+
+
 
 READER_Status READER_T1_CONTEXT_SetLastSent(READER_T1_ContextHandler *pContext, READER_T1_Block *pBlock){
 	READER_Status retVal;
@@ -489,11 +549,24 @@ READER_Status READER_T1_CONTEXT_SetLastRcvd(READER_T1_ContextHandler *pContext, 
 }
 
 
+/* retourne une valeur autre que READER_OK si le dernier Block envoye n'existe pas ou si la fontion a rencontre une erreur */
 READER_Status READER_T1_CONTEXT_GetLastSentType(READER_T1_ContextHandler *pContext, READER_T1_BlockType *pType){
 	READER_T1_BlockType bType;
+	READER_T1_Block *pLastBlock;
+	READER_Status retVal;
 	
 	
-	bType = READER_T1_GetBlockType(&(pContext->lastSent));
+	/* On recupere un pointeur sur le dernier Block envoye           */
+	retVal = READER_T1_CONTEXT_GetLastSent(pContext, &pLastBlock);
+	if(retVal != READER_OK) return retVal;
+	
+	/* Si le dernier Block envoye n'existe pas, on revoie une erreur */
+	if(pLastBlock == NULL){
+		return READER_DOESNT_EXIST;
+	}
+	
+	/* On recupere le Type du dernier Block Envoye */
+	bType = READER_T1_GetBlockType(pLastBlock);
 	
 	if(bType == READER_T1_BLOCK_ERR){
 		return READER_ERR;
@@ -505,11 +578,24 @@ READER_Status READER_T1_CONTEXT_GetLastSentType(READER_T1_ContextHandler *pConte
 }
 
 
+/* retourne une valeur autre que READER_OK si le dernier Block recu n'existe pas ou si la fontion a rencontre une erreur */
 READER_Status READER_T1_CONTEXT_GetLastRcvdType(READER_T1_ContextHandler *pContext, READER_T1_BlockType *pType){
 	READER_T1_BlockType bType;
+	READER_T1_Block *pLastBlock;
+	READER_Status retVal;
 	
 	
-	bType = READER_T1_GetBlockType(&(pContext->lastRcvd));
+	/* On recupere un pointeur sur le dernier Block recu              */
+	retVal = READER_T1_CONTEXT_GetLastRcvd(pContext, &pLastBlock);
+	if(retVal != READER_OK) return retVal;
+	
+	/* Si le dernier Block recu n'existe pas, on revoie une erreur    */
+	if(pLastBlock == NULL){
+		return READER_DOESNT_EXIST;
+	}
+	
+	/* On recupere le Type du dernier Block Recu                      */
+	bType = READER_T1_GetBlockType(pLastBlock);
 	
 	if(bType == READER_T1_BLOCK_ERR){
 		return READER_ERR;

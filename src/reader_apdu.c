@@ -3,6 +3,24 @@
 #include "reader_apdu.h"
 
 
+
+
+
+READER_Status READER_APDU_CheckCmdValidity(READER_APDU_Command *pApduCmd){
+	if(pApduCmd->body.Nc > 65535){
+		return READER_ERR;
+	}
+	
+	if(pApduCmd->body.Ne > 65536){
+		return READER_ERR;
+	}	
+	
+	/* Voir si il n'y a pas d'autres tests a rajouter ... */
+	
+	return READER_OK;
+}
+
+
 /**
  * \fn READER_APDU_ProtocolCase READER_APDU_GetProtocolCase(READER_APDU_Command *pApduCmd)
  * \brief Cette fonction analyse une structure de type READER_APDU_Command et en déduit dans quel "sous cas" du protocole cet APDU appartient. Par exemple 2E, 2S, 3E, 3S, 4E, 4S etc ...

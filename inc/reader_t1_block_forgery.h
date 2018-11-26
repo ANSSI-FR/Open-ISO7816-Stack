@@ -22,9 +22,16 @@ READER_Status READER_T1_FORGE_ACKIBlock(READER_T1_ContextHandler *pContext, READ
 READER_Status READER_T1_FORGE_DataIBlock(READER_T1_ContextHandler *pContext, READER_T1_Block *pBlockDest, uint8_t *dataBuff, uint32_t dataSize, uint32_t mBit);
 
 READER_Status READER_T1_FORGE_SliceDataAndFillBuffer(READER_T1_ContextHandler *pContext, uint8_t *dataBuff, uint32_t dataSize);
+READER_Status READER_T1_FORGE_FillBuffWithAPDU(READER_T1_ContextHandler *pContext, READER_APDU_Command *pApduCmd);
 
 
-
+READER_Status READER_T1_FORGE_FillBuffWithAPDUCase1(READER_T1_ContextHandler *pContext, READER_APDU_Command *pApduCmd);
+READER_Status READER_T1_FORGE_FillBuffWithAPDUCase2S(READER_T1_ContextHandler *pContext, READER_APDU_Command *pApduCmd);
+READER_Status READER_T1_FORGE_FillBuffWithAPDUCase2E(READER_T1_ContextHandler *pContext, READER_APDU_Command *pApduCmd);
+READER_Status READER_T1_FORGE_FillBuffWithAPDUCase3S(READER_T1_ContextHandler *pContext, READER_APDU_Command *pApduCmd);
+READER_Status READER_T1_FORGE_FillBuffWithAPDUCase3E(READER_T1_ContextHandler *pContext, READER_APDU_Command *pApduCmd);
+READER_Status READER_T1_FORGE_FillBuffWithAPDUCase4S(READER_T1_ContextHandler *pContext, READER_APDU_Command *pApduCmd);
+READER_Status READER_T1_FORGE_FillBuffWithAPDUCase4E(READER_T1_ContextHandler *pContext, READER_APDU_Command *pApduCmd);
 
 
 

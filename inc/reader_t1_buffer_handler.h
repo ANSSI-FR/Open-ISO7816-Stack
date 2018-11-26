@@ -23,7 +23,7 @@
 
 
 #define COMPUTE_STATICBUFF_MAXSIZE(apdu_maxlength, block_data_minlength, tolerence) ((apdu_maxlength / block_data_minlength) + 1) + tolerence
-#define APDU_MAXLENGTH READER_APDU_CMD_MAX_SIZE
+#define APDU_MAXLENGTH READER_APDU_CMD_DATA_MAX_SIZE
 
 #define STATICBUFF_MAXSIZE COMPUTE_STATICBUFF_MAXSIZE(APDU_MAXLENGTH, READER_T1_MIN_IFSC_ACCEPTED, 20)
 
