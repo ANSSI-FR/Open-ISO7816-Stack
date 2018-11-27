@@ -151,6 +151,7 @@ READER_Status READER_T1_BUFFER_Enqueue(READER_T1_ContextHandler *pContext, READE
 }
 
 
+/* Cree une copie du Block a l'emplacement du pointeur de destination ... */
 READER_Status READER_T1_BUFFER_Dequeue(READER_T1_ContextHandler *pContext, READER_T1_Block *pBlock){
 	READER_T1_BlockBuffer *pBlockBuffer;
 	READER_T1_Block *pBlockTab;

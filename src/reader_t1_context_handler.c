@@ -6,7 +6,7 @@
 READER_Status READER_T1_CONTEXT_Init(READER_T1_ContextHandler *pContext){
 	READER_Status retVal;
 	
-	retVal = READER_T1_CONTEXT_InitParams(pContext);
+	retVal = READER_T1_CONTEXT_InitSettings(pContext);
 	if(retVal != READER_OK) return retVal;
 	
 	retVal = READER_T1_CONTEXT_InitBuffer(pContext);
@@ -16,8 +16,45 @@ READER_Status READER_T1_CONTEXT_Init(READER_T1_ContextHandler *pContext){
 }
 
 
-READER_Status READER_T1_CONTEXT_InitParams(READER_T1_ContextHandler *pContext){
-	/* On reinitialise tous les parametres de communication dans le contexte               */
+READER_Status READER_T1_CONTEXT_InitCommSettings(READER_T1_ContextHandler *pContext){
+	READER_Status retVal;
+	
+	
+	retVal = READER_T1_CONTEXT_SetCurrentBGT(pContext, READER_T1_CONTEXT_DEFAULT_BGT);
+	if(retVal != READER_OK) return retVal;
+	
+	retVal = READER_T1_CONTEXT_SetCurrentBWT(pContext, READER_T1_CONTEXT_DEFAULT_BWT);
+	if(retVal != READER_OK) return retVal;
+	
+	retVal = READER_T1_CONTEXT_SetCurrentCGT(pContext, READER_T1_CONTEXT_DEFAULT_CGT);
+	if(retVal != READER_OK) return retVal;
+	
+	retVal = READER_T1_CONTEXT_SetCurrentCWT(pContext, READER_T1_CONTEXT_DEFAULT_CWT);
+	if(retVal != READER_OK) return retVal;
+	
+	retVal = READER_T1_CONTEXT_SetCurrentBWI(pContext, READER_T1_CONTEXT_DEFAULT_BWI);
+	if(retVal != READER_OK) return retVal;
+	
+	retVal = READER_T1_CONTEXT_SetCurrentCWI(pContext, READER_T1_CONTEXT_DEFAULT_CWI);
+	if(retVal != READER_OK) return retVal;
+	
+	retVal = READER_T1_CONTEXT_SetCurrentIFSC(pContext, READER_T1_CONTEXT_DEFAULT_IFSC);
+	if(retVal != READER_OK) return retVal;
+	
+	retVal = READER_T1_CONTEXT_SetCurrentIFSD(pContext, READER_T1_CONTEXT_DEFAULT_IFSD);
+	if(retVal != READER_OK) return retVal;
+	
+	retVal = READER_T1_CONTEXT_SetCurrentRedundancyType(pContext, READER_T1_CONTEXT_DEFAULT_CORRCODE);
+	if(retVal != READER_OK) return retVal;
+	
+	return READER_OK;
+}
+
+
+READER_Status READER_T1_CONTEXT_InitContextSettings(READER_T1_ContextHandler *pContext){
+	READER_Status retVal;
+	
+	
 	retVal = READER_T1_CONTEXT_SetDeviceCompleteSeqNum(pContext, 0);
 	if(retVal != READER_OK) return retVal;
 	
@@ -63,31 +100,20 @@ READER_Status READER_T1_CONTEXT_InitParams(READER_T1_ContextHandler *pContext){
 	retVal = READER_T1_CONTEXT_SetSBlockRequCounter(pContext, 0);
 	if(retVal != READER_OK) return retVal;
 	
-	retVal = READER_T1_CONTEXT_SetCurrentBGT(pContext, READER_T1_CONTEXT_DEFAULT_BGT);
+	return READER_OK;
+}
+
+
+READER_Status READER_T1_CONTEXT_InitSettings(READER_T1_ContextHandler *pContext){
+	READER_Status retVal;
+	
+	
+	/* On reinitialise tous les parametres de communication dans le contexte               */
+	
+	retVal = READER_T1_CONTEXT_InitCommSettings(pContext);
 	if(retVal != READER_OK) return retVal;
 	
-	retVal = READER_T1_CONTEXT_SetCurrentBWT(pContext, READER_T1_CONTEXT_DEFAULT_BWT);
-	if(retVal != READER_OK) return retVal;
-	
-	retVal = READER_T1_CONTEXT_SetCurrentCGT(pContext, READER_T1_CONTEXT_DEFAULT_CGT);
-	if(retVal != READER_OK) return retVal;
-	
-	retVal = READER_T1_CONTEXT_SetCurrentCWT(pContext, READER_T1_CONTEXT_DEFAULT_CWT);
-	if(retVal != READER_OK) return retVal;
-	
-	retVal = READER_T1_CONTEXT_SetCurrentBWI(pContext, READER_T1_CONTEXT_DEFAULT_BWI);
-	if(retVal != READER_OK) return retVal;
-	
-	retVal = READER_T1_CONTEXT_SetCurrentCWI(pContext, READER_T1_CONTEXT_DEFAULT_CWI);
-	if(retVal != READER_OK) return retVal;
-	
-	retVal = READER_T1_CONTEXT_SetCurrentIFSC(pContext, READER_T1_CONTEXT_DEFAULT_IFSC);
-	if(retVal != READER_OK) return retVal;
-	
-	retVal = READER_T1_CONTEXT_SetCurrentIFSD(pContext, READER_T1_CONTEXT_DEFAULT_IFSD);
-	if(retVal != READER_OK) return retVal;
-	
-	retVal = READER_T1_CONTEXT_SetCurrentRedundancyType(pContext, READER_T1_CONTEXT_DEFAULT_CORRCODE);
+	retVal = READER_T1_CONTEXT_InitContextSettings(pContext);
 	if(retVal != READER_OK) return retVal;
 	
 	return READER_OK;

@@ -16,6 +16,13 @@ READER_Status READER_T1_ERR_IncRepeatCounter(READER_T1_ContextHandler *pContext)
 }
 
 
+READER_Status READER_T1_ERR_ClearRepeatCounter(READER_T1_ContextHandler *pContext){
+	pContext->repeatCounter = 0;
+	
+	return READER_OK;
+}
+
+
 
 READER_Status READER_T1_ERR_CheckRepeatCounter(READER_T1_ContextHandler *pContext){
 	if(pContext->repeatCounter < READER_T1_MAX_REAPEAT){
@@ -35,6 +42,13 @@ READER_Status READER_T1_ERR_IncResynchCounter(READER_T1_ContextHandler *pContext
 	else{
 		return READER_ERR;
 	}
+	
+	return READER_OK;
+}
+
+
+READER_Status READER_T1_ERR_ClearResynchCounter(READER_T1_ContextHandler *pContext){
+	pContext->resynchCounter = 0;
 	
 	return READER_OK;
 }
@@ -133,7 +147,7 @@ READER_Status READER_T1_ERR_DealWithError(READER_T1_ContextHandler *pContext, ui
 }
 
 
-
+/* On fait des verifications et on envoie de requette de resynchro, on mets a jour les flags ...  */
 /* Attention, on retourne READER_NO si on a pas pu faire de Resynch (compteur max atteint), c'est le contexte exterieur a la fonction qui doit effectuer le DoReset() */
 READER_Status READER_T1_ERR_PrepareResynchRequ(READER_T1_ContextHandler *pContext){
 	READER_Status retVal;
@@ -164,6 +178,7 @@ READER_Status READER_T1_ERR_PrepareResynchRequ(READER_T1_ContextHandler *pContex
 }
 
 
+/* On applique la resynchro sur le contexte de communcation                                    */
 READER_Status READER_T1_ERR_DoResynch(READER_T1_ContextHandler *pContext){
 	READER_T1_Block *pLastBlock;
 	READER_T1_Block tmpBlock;
@@ -179,7 +194,7 @@ READER_Status READER_T1_ERR_DoResynch(READER_T1_ContextHandler *pContext){
 	if(retVal != READER_OK) return retVal;
 	
 	/* On reinitialise tous les parametres de communication dans le contexte               */
-	retVal = READER_T1_CONTEXT_InitParams(pContext);
+	retVal = READER_T1_CONTEXT_InitContextSettings(pContext);
 	if(retVal != READER_OK) return retVal;
 	
 	/* On enleve les S-Blocks et R-Blocks en sortie du Buffer d'envoi ?                    */

@@ -92,7 +92,9 @@ struct READER_T1_ContextHandler{
 
 /* Initialisation de la structure */
 READER_Status READER_T1_CONTEXT_Init(READER_T1_ContextHandler *pContext);
-READER_Status READER_T1_CONTEXT_InitParams(READER_T1_ContextHandler *pContext);
+READER_Status READER_T1_CONTEXT_InitSettings(READER_T1_ContextHandler *pContext);
+READER_Status READER_T1_CONTEXT_InitCommSettings(READER_T1_ContextHandler *pContext);
+READER_Status READER_T1_CONTEXT_InitContextSettings(READER_T1_ContextHandler *pContext);
 READER_Status READER_T1_CONTEXT_InitBuffer(READER_T1_ContextHandler *pContext);
 
 
