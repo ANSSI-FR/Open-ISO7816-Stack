@@ -517,15 +517,62 @@ READER_Status READER_T1_CONTROL_ApplyIBlockRcvd(READER_T1_ContextHandler *pConte
 
 READER_Status READER_T1_CONTROL_ApplyRBlockRcvd(READER_T1_ContextHandler *pContext, READER_T1_Block *pBlock){
 	READER_Status retVal;
+	READER_T1_Block *pLastBlock;
+	READER_T1_SeqNumber tmpSeqNumRBlock;
+	uint32_t seqNumRBlock, seqNumIBlock;
 	
 	
-	/* On verifie si c'est pertiant de recevoir un R-Block maintenant  */
+	/* On verifie si c'est pertinant de recevoir un R-Block maintenant  */
 	
 	
 	/* Ce R-Block est il un ACK d'un precedent Block qu'on a envoye ?  */
+	retVal = READER_T1_CONTROL_IsRBlockACK(pContext, pBlock);
+	if((retVal != READER_OK) && (retVal != READER_NO)) return retVal;
+	
+	/* Si ce R-Block est un ACK ...                                        */
+	if(retVal == READER_YES){
+		retVal = READER_T1_CONTEXT_SetACKStatus(pContext, READER_T1_ACK);
+		if(retVal != READER_OK) return retVal;
+	}
+	/* Si ce R-Block n'est pas un ACK ...                                  */
+	else{
+		/* On regarde le numero de sequence du R-Block et du dernier I-Block qu'on a envoye ...  */
+		tmpSeqNumRBlock = READER_T1_GetBlockSeqNumber(pBlock);
+		if(tmpSeqNumRBlock == READER_T1_SEQNUM_ONE){
+			seqNumRBlock = 1;
+		}
+		else if(tmpSeqNumRBlock == READER_T1_SEQNUM_ZERO){
+			seqNumRBlock = 0;
+		}
+		else{
+			return READER_ERR;
+		}
+		
+		retVal = READER_T1_CONTEXT_GetLastIBlockSentSeqSum(pContext, &seqNumIBlock);
+		if(retVal != READER_OK) return retVal;
+		
+		/* On compare les numeros de sequence du R-Block et du dernier I-Block envoye ...   */
+		if(seqNumRBlock == seqNumIBlock){
+			/* On recupere et on prepare le dernier I-Block qu'on a envoye */
+			retVal = READER_T1_CONTEXT_GetLastIBlockSent(pContext, &pLastBlock);
+			if(retVal != READER_OK) return retVal;
+			
+			retVal = READER_T1_BUFFER_Stack(pContext, pLastBlock);
+			if(retVal != READER_OK) return retVal;
+		}
+		else{
+			/* On recupere et on prepare le dernier Block qu'on a envoye   */
+			retVal = READER_T1_CONTEXT_GetLastSent(pContext, &pLastBlock);
+			if(retVal != READER_OK) return retVal;
+			
+			retVal = READER_T1_BUFFER_Stack(pContext, pLastBlock);
+			if(retVal != READER_OK) return retVal;
+		}
+	}
 	
 	
-	/*  */
+	
+	
 	
 	return READER_OK;
 }
