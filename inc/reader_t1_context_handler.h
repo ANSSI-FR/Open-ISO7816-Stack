@@ -6,6 +6,7 @@
 #include "reader_hal.h"
 #include "reader_t1_block"
 #include "reader_t1_buffer_handler.h"
+#include "reader_t1_rcptbuffer_handler.h"
 
 
 
@@ -49,10 +50,12 @@ enum READER_T1_SBlockExpected{
 };
 
 
+
 typedef struct READER_T1_ContextHandler READER_T1_ContextHandler;
 struct READER_T1_ContextHandler{
 	READER_T1_BlockBuffer blockBuff;
-	READER_APDU_Response RcvdApduResp;                /* Donnees recues                                  */
+	READER_T1_ReceptionBuff receptionBuff;
+	
 	
 	uint32_t currentIFSC;
 	uint32_t currentIFSD;

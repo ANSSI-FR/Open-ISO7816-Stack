@@ -570,15 +570,17 @@ READER_Status READER_T1_CONTROL_ApplyRBlockRcvd(READER_T1_ContextHandler *pConte
 		}
 	}
 	
-	
-	
-	
-	
 	return READER_OK;
 }
 
 
 READER_Status READER_T1_CONTROL_ApplySBlockRcvd(READER_T1_ContextHandler *pContext, READER_T1_Block *pBlock){
 	
+	/* A coder plus tard ...  */
+	
+	/* Requ ou Resp ? Un S-Block etait attendu ? Il est du bon Type ? */
+	
+	
+	return READER_OK;
 }
 

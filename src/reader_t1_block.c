@@ -375,6 +375,7 @@ uint16_t READER_T1_GetBlockCRC(READER_T1_Block *pBlock){
 }
 
 
+/* retourne un pointeur sur les donnes du Block */
 uint8_t* READER_T1_GetBlockData(READER_T1_Block *pBlock){
 	uint8_t *blockFrame;
 	

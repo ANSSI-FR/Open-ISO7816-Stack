@@ -12,6 +12,7 @@
 #define READER_APDU_HEADER_SIZE          (uint32_t)(4)
 #define READER_APDU_CMD_DATA_MAX_SIZE    (uint32_t)(400)                                   /* La norme ISO fixe un maximum de 65535 caracteres */
 #define READER_APDU_RESP_MAX_SIZE        (uint32_t)(400)                                   /* La norme ISO fixe un maximum de 65536 caracteres */
+#define READER_APDU_RESP_MAX_TOTALSIZE   (uint32_t)(READER_APDU_RESP_MAX_SIZE + 2)                                   /* La norme ISO fixe un maximum de 65536 caracteres */
 #define READER_APDU_CMD_MAX_TOTALSIZE    (uint32_t)(READER_APDU_CMD_DATA_MAX_SIZE + 6)     /* Taille max des donnees + CLA, INS, P1, P2, Le, Lc */
 
 
