@@ -24,7 +24,7 @@ READER_Status READER_T1_CONTROL_CheckRBlockIsValid(READER_T1_Block *pBlock){
 }
 
 
-
+/* Retourne READER_NO si le numero de sequence c'est pas Valide. Retourne READER_ERR en cas d'erreur interne. */
 READER_Status READER_T1_CONTROL_IsSeqNumValid(READER_T1_ContextHandler *pContext, READER_T1_Block *pBlock){
 	READER_Status retVal;
 	READER_T1_BlockType bType;
@@ -397,19 +397,119 @@ READER_Status READER_T1_CONTROL_RcvBlock(READER_T1_ContextHandler *pContext, REA
 
 READER_Status READER_T1_CONTROL_ApplyIBlockRcvd(READER_T1_ContextHandler *pContext, READER_T1_Block *pBlock){
 	READER_Status retVal;
+	READER_T1_ACKStatus ACKStatus;
+	READER_T1_ChainingStatus chainingStatus;
+	READER_T1_ChainingStatus globalChainingStatus, lastBlockChainingStatus;
+	READER_T1_MBit mBit;
+	READER_T1_Block tmpBlock;
 
 
 	/* On verifie si c'est pertinant de recevoir un I-Block maintenant ... */
 	
 
 	/* On verifie le numero de sequence */
+	retVal = READER_T1_CONTROL_IsSeqNumValid(pContext, pBlock);
+	if((retVal != READER_OK) && (retVal != READER_NO)) return retVal;
+	
+	if(retVal == READER_NO){
+		retVal = READER_T1_ERR_DealWithError(pContext, 0);     /* On Stack le bon error Block dans le Buffer d'envoi et on s'arrete la ... */
+		if(retVal != READER_OK) return retVal;
+		
+		return READER_OK
+	}
 	
 	
-	/* On mets a jour la situation de l'ACK */
+	/* On regarde si ce I-Block est un ACK ...                                                                                      */
+	retVal = READER_T1_CONTROL_IsIBlockACK(pContext, pBlock);
+	if((retVal != READER_OK) && (retVal != READER_NO)) return retVal;
+	
+	/* Si ce I-Block est un ACK, on mets a jour la situation de l'ACK dans le contexte (Flag)                                       */
+	if(retVal == READER_OK){
+		retVal = READER_T1_CONTEXT_SetACKStatus(pContext, READER_T1_ACK);
+		if(retVal != READER_OK) return retVal;
+	}
+	
+	/* Si ce I-Block n'est pas un ACK ...                                                                                           */
+	else if(retVal == READER_NO){
+		/* On regarde si on a deja precedement recu un ACK */
+		retVal = READER_T1_CONTEXT_GetACKStatus(pContext, &ACKStatus);
+		if(retVal != READER_OK) return retVal;
+		
+		/* On regarde si on est en situation de chainage   */
+		retVal = READER_T1_CONTEXT_CardIsChaining(pContext, &chainingStatus);
+		if(retVal != READER_OK) return retVal;
+		
+		/* On gere les cas problematiques ...                                                                                        */
+		/* Si on a pas deja recu d'ACK auparavent et que ce I-Block n'est pas lui meme un ACK ...                                    */
+		if(ACKStatus == READER_T1_NOACK){
+			retVal = READER_T1_ERR_DoResynch(pContext);
+			if(retVal != READER_OK) return retVal;
+		}
+		
+		/* Si ce Block ne constitue pas un ACK, qu'on a deja recu un ACK auparavent, mais qu'on n'est pas en situation de chainage   */
+		if((ACKStatus == READER_T1_ACK) && (chainingStatus == READER_T1_CHAINING_NO)){
+			retVal = READER_T1_ERR_DoResynch(pContext);
+			if(retVal != READER_OK) return retVal;
+		}
+	}
+	else{
+		return READER_ERR;
+	}
 	
 	
-	/* On extrait les donnees contenues dans le I-Block */
+	/* On extrait les donnees contenues dans le I-Block                                                        */
 	
+	
+	
+	/* On regarde le M-Bit de la du Block en provenance de la carte et on mets a jour les flags ...            */
+	mBit = READER_T1_GetBlockMBit(pBlock);
+	if(mBit == READER_T1_MBIT_ZERO){
+		/* On mets a jour la situation de chainage                                                             */
+		retVal = READER_T1_CONTEXT_SetCardChainingLastBlockFlag(pContext, READER_T1_CHAINING_NO);
+		if(retVal != READER_OK) return retVal;
+	}
+	else if(mBit == READER_T1_MBIT_ONE){
+		/* On mets a jour la situation de chainage                                                             */
+		retVal = READER_T1_CONTEXT_SetCardChainingLastBlockFlag(pContext, READER_T1_CHAINING_YES);
+		if(retVal != READER_OK) return retVal;
+		
+		retVal = READER_T1_CONTEXT_SetCardChainingSituationFlag(pContext, READER_T1_CHAINING_YES);
+		if(retVal != READER_OK) return retVal;
+	}
+	else{
+		return READER_ERR;
+	}
+	
+	
+	/* Si on est en situation globale de chainage ...                                                         */
+	retVal = READER_T1_CONTEXT_CardIsChainingLastBlock(pContext, &lastBlockChainingStatus);
+	if(retVal != READER_OK) return retVal;
+	
+	retVal = READER_T1_CONTEXT_CardIsChaining(pContext, &globalChainingStatus);
+	if(retVal != READER_OK) return retVal;
+	
+	
+	if(globalChainingStatus == READER_T1_CHAINING_YES){
+		if(lastBlockChainingStatus == READER_T1_CHAINING_YES){
+			/* On prepare un R-Block de chainage */
+			retVal = READER_T1_FORGE_ChainingRBlockForCard(pContext, &tmpBlock);
+			if(retVal != READER_OK) return retVal;
+			
+			retVal = READER_T1_BUFFER_Stack(pContext, &tmpBlock);
+			if(retVal != READER_OK) return retVal;
+		}
+		else if(lastBlockChainingStatus == READER_T1_CHAINING_NO){
+			/* On prepare un I-Block d'ACK       */
+			retVal = READER_T1_FORGE_ACKIBlock(pContext, &tmpBlock);
+			if(retVal != READER_OK) return retVal;
+			
+			retVal = READER_T1_BUFFER_Stack(pContext, &tmpBlock);
+			if(retVal != READER_OK) return retVal;
+		}
+		else{
+			return READER_ERR;
+		}
+	}
 	
 	return READER_OK;
 }
