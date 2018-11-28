@@ -458,7 +458,8 @@ READER_Status READER_T1_CONTROL_ApplyIBlockRcvd(READER_T1_ContextHandler *pConte
 	
 	
 	/* On extrait les donnees contenues dans le I-Block                                                        */
-	
+	retVal = READER_T1_RCPTBUFF_ExtractDataFromIBlock(*pContext, pBlock);
+	if(retVal != READER_OK) return retVal;
 	
 	
 	/* On regarde le M-Bit de la du Block en provenance de la carte et on mets a jour les flags ...            */
