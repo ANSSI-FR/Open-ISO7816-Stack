@@ -47,7 +47,7 @@ READER_Status READER_T1_RCPTBUFF_ExtractDataFromIBlock(READER_T1_ContextHandler 
 		return READER_OK;
 	}
 	
-	pRcptBuff = pRcptBuff + rcptBuffdataSize;
+	pRcptBuff = pRcptBuff + rcptBuffDataSize;
 	
 	for(i=0; i<blockLength; i++){
 		pRcptBuff[i] = pBlockDataBuff[i];

@@ -6,7 +6,7 @@
 /* Permet de faire des verificatios elementaires sur un R-Block ...       */
 /* Retourne  READER_NO si e n'est pas un R-Block valide. READER_OK sinon. */
 READER_Status READER_T1_CONTROL_CheckRBlockIsValid(READER_T1_Block *pBlock){
-	READER_Status retVal;
+	READER_T1_BlockType bType;
 	
 	
 	/* On verifie que le Block passe en parametre existe ... */
@@ -71,9 +71,7 @@ READER_Status READER_T1_CONTROL_IsSeqNumValid(READER_T1_ContextHandler *pContext
 /* Retourne READER_OK si OK, READER_NO si c'est pas un ACK et READER_ERR en cas d'erreur               */
 READER_Status READER_T1_CONTROL_IsRBlockACK(READER_T1_ContextHandler *pContext, READER_T1_Block *pBlock){
 	READER_Status retVal;
-	READER_T1_BlockType bType;
 	READER_T1_ChainingStatus chainingStatus;
-	READER_T1_SeqNumber nextIBlockSeqNum;
 	READER_T1_ExpSeqNumber blockSeqNum;
 	READER_T1_Block *pLastBlock;
 	uint32_t tmpNextIBlockSeqNum, tmpBlockSeqNum;
@@ -116,7 +114,7 @@ READER_Status READER_T1_CONTROL_IsRBlockACK(READER_T1_ContextHandler *pContext, 
 	if(tmpNextIBlockSeqNum == 0){
 		tmpNextIBlockSeqNum = 1;
 	}
-	else if(tmpNExtIBlockSeqNum == 1){
+	else if(tmpNextIBlockSeqNum == 1){
 		tmpNextIBlockSeqNum = 0;
 	}
 	else{
@@ -176,7 +174,11 @@ READER_Status READER_T1_CONTROL_IsIBlockACK(READER_T1_ContextHandler *pContext, 
 	
 	/* On recupere le type du dernier Block envoye (et on verifie en meme temps si il existe) */
 	retVal = READER_T1_CONTEXT_GetLastSentType(pContext, &bType);
-	if(retVal != READER_OK) return retVal;
+	if((retVal != READER_OK) && (retVal != READER_DOESNT_EXIST)) return retVal;
+	
+	if(retVal == READER_DOESNT_EXIST){
+		return READER_NO;
+	}
 	
 	/* On examine le type du dernier Block envoye ...                                         */
 	if(bType == READER_T1_BLOCK_ERR){
@@ -217,7 +219,7 @@ READER_Status READER_T1_CONTROL_SendBlock(READER_T1_ContextHandler *pContext, RE
 	if(retVal != READER_OK) return retVal; 
 	   
 	/* On envoie le block                                                       */
-	retVal = READER_T1_CONTEXT_GetCurrentCWT(pContext, ,&currentCWT);
+	retVal = READER_T1_CONTEXT_GetCurrentCWT(pContext, &currentCWT);
 	if(retVal != READER_OK) return retVal;
 	
 	retVal = READER_T1_SendBlock(&blockToSend, currentCWT);
@@ -241,7 +243,7 @@ READER_Status READER_T1_CONTROL_SendBlock(READER_T1_ContextHandler *pContext, RE
 		if(retVal != READER_OK) return retVal;	
 	}
 	else if(bType == READER_T1_SBLOCK){
-		retVal = READER_T1_CONTROL_SBlockSentUpdateContext(pContext, blockToSend);
+		retVal = READER_T1_CONTROL_SBlockSentUpdateContext(pContext, &blockToSend);
 		if(retVal != READER_OK) return retVal;	
 	}
 	else{
@@ -268,7 +270,7 @@ READER_Status READER_T1_CONTROL_IBlockSentUpdateContext(READER_T1_ContextHandler
 	READER_T1_MBit mBit;
 	
 	/* On Set le dernier I-Block envoye                                                */
-	retVal = READER_T1_CONTEXT_SetLastIBlockSent(pContext, &blockToSend);
+	retVal = READER_T1_CONTEXT_SetLastIBlockSent(pContext, pBlock);
 	if(retVal != READER_OK) return retVal;
 	
 	/* On met a jour le flag de chainage du dernier Block et le flag de situation de chainage                            */
@@ -278,7 +280,7 @@ READER_Status READER_T1_CONTROL_IBlockSentUpdateContext(READER_T1_ContextHandler
 		retVal = READER_T1_CONTEXT_SetDeviceChainingLastBlockFlag(pContext, READER_T1_CHAINING_YES);
 		if(retVal != READER_OK) return retVal;
 		
-		retVal = READER_T1_CONTEXT_SetDeviceChainingSituationFlag(pContext, READER_T1_CHAINING_YES;
+		retVal = READER_T1_CONTEXT_SetDeviceChainingSituationFlag(pContext, READER_T1_CHAINING_YES);
 		if(retVal != READER_OK) return retVal;
 	}
 	else if(mBit == READER_T1_MBIT_ZERO){
@@ -415,7 +417,7 @@ READER_Status READER_T1_CONTROL_ApplyIBlockRcvd(READER_T1_ContextHandler *pConte
 		retVal = READER_T1_ERR_DealWithError(pContext, 0);     /* On Stack le bon error Block dans le Buffer d'envoi et on s'arrete la ... */
 		if(retVal != READER_OK) return retVal;
 		
-		return READER_OK
+		return READER_OK;
 	}
 	
 	
@@ -458,7 +460,7 @@ READER_Status READER_T1_CONTROL_ApplyIBlockRcvd(READER_T1_ContextHandler *pConte
 	
 	
 	/* On extrait les donnees contenues dans le I-Block                                                        */
-	retVal = READER_T1_RCPTBUFF_ExtractDataFromIBlock(*pContext, pBlock);
+	retVal = READER_T1_RCPTBUFF_ExtractDataFromIBlock(pContext, pBlock);
 	if(retVal != READER_OK) return retVal;
 	
 	
@@ -531,7 +533,7 @@ READER_Status READER_T1_CONTROL_ApplyRBlockRcvd(READER_T1_ContextHandler *pConte
 	if((retVal != READER_OK) && (retVal != READER_NO)) return retVal;
 	
 	/* Si ce R-Block est un ACK ...                                        */
-	if(retVal == READER_YES){
+	if(retVal == READER_OK){
 		retVal = READER_T1_CONTEXT_SetACKStatus(pContext, READER_T1_ACK);
 		if(retVal != READER_OK) return retVal;
 	}

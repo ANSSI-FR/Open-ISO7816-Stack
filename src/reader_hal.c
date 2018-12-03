@@ -6,13 +6,8 @@
  */
 
 
-#include "reader_hal.h"
-#include "reader.h"
-#include "reader_periph.h"
-#include "reader_utils.h"
-#include "stm32f4xx_hal.h"
 
-#include <stdint.h>
+#include "reader_hal.h"
 
 
 #define SMARTCARD_TX_FROM_SCRATCH

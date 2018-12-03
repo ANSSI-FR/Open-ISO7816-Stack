@@ -2,6 +2,8 @@
 #define __READER_H__
 
 
+#include <stdint.h>
+
 
 
 #define READER_DEFAULT_FI         (uint32_t)(372)

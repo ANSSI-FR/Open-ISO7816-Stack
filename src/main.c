@@ -1,10 +1,8 @@
 #include "main.h"
 #include "reader_hal.h"
-#include "stm32f4xx_hal.h"
+#include "reader_t0_apdu.h"
+#include "reader_t1_apdu.h"
 #include "reader_atr.h"
-#include "reader_tpdu.h"
-#include "reader_apdu.h"
-#include "reader_t1_block.h"
 
 
 UART_HandleTypeDef uartHandleStruct;
@@ -59,27 +57,27 @@ int main(void){
 	
 	
 	READER_APDU_Forge(&apduCmd, 0x00, 0xA4, 0x04, 0x00, 0x0A, pSmartcardTxBuff, 0x0A);
-	READER_APDU_Execute(&apduCmd, &apduResp, READER_HAL_USE_ISO_WT);
+	READER_T0_APDU_Execute(&apduCmd, &apduResp, READER_HAL_USE_ISO_WT);
 	
 	HAL_UART_Transmit(&uartHandleStruct, apduResp.dataBytes, apduResp.dataSize, 1000);
 	
 	//READER_APDU_Forge(&apduCmd, 0x80, 0x10, 0x00, 0x00, 0x10, pSmartcardTxBuff, 0x00);
-	//READER_APDU_Execute(&apduCmd, &apduResp, READER_HAL_USE_ISO_WT);
+	//READER_T0_APDU_Execute(&apduCmd, &apduResp, READER_HAL_USE_ISO_WT);
 	//
 	//READER_APDU_Forge(&apduCmd, 0x80, 0x12, 0x00, 0x00, 0x00, NULL, 0x10);
-	//READER_APDU_Execute(&apduCmd, &apduResp, READER_HAL_USE_ISO_WT);
+	//READER_T0_APDU_Execute(&apduCmd, &apduResp, READER_HAL_USE_ISO_WT);
 	
 	//READER_APDU_Forge(&apduCmd, 0xA0, 0xA4, 0x00, 0x00, 0x02, pSmartcardTxBuff, 0x00);
-	//READER_APDU_Execute(&apduCmd, &apduResp, READER_HAL_USE_ISO_WT);
+	//READER_T0_APDU_Execute(&apduCmd, &apduResp, READER_HAL_USE_ISO_WT);
 	//
 	//READER_APDU_Forge(&apduCmd, 0xA0, 0xC0, 0x00, 0x00, 0x00, NULL, 0x20);
-	//READER_APDU_Execute(&apduCmd, &apduResp, READER_HAL_USE_ISO_WT);
+	//READER_T0_APDU_Execute(&apduCmd, &apduResp, READER_HAL_USE_ISO_WT);
 	//
 	//READER_APDU_Forge(&apduCmd, 0xA0, 0x88, 0x00, 0x00, 0x10, pSmartcardTxBuff, 0x00);
-	//READER_APDU_Execute(&apduCmd, &apduResp, READER_HAL_USE_ISO_WT);
+	//READER_T0_APDU_Execute(&apduCmd, &apduResp, READER_HAL_USE_ISO_WT);
 	//
 	//READER_APDU_Forge(&apduCmd, 0xA0, 0xC0, 0x00, 0x00, 0x00, NULL, 0x0C);
-	//READER_APDU_Execute(&apduCmd, &apduResp, READER_HAL_USE_ISO_WT);
+	//READER_T0_APDU_Execute(&apduCmd, &apduResp, READER_HAL_USE_ISO_WT);
 	
 	//HAL_UART_Transmit(&uartHandleStruct, apduResp.dataBytes, apduResp.dataSize, 1000);
 

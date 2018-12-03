@@ -1,11 +1,10 @@
 #include "reader_t1_block_forgery.h"
 
 
-#define MIN(X, Y) (((X) < (Y)) ? (X) : (Y))
 
 
 READER_Status READER_T1_FORGE_ChainingRBlockForCard(READER_T1_ContextHandler *pContext, READER_T1_Block *pBlockDest){
-	uint32_t cardSeqNum, nextSeqNum;
+	uint32_t nextSeqNum;
 	READER_Status retVal;
 	
 	
@@ -31,7 +30,6 @@ READER_Status READER_T1_FORGE_ChainingRBlockForCard(READER_T1_ContextHandler *pC
 
 READER_Status READER_T1_FORGE_ErrorBlock(READER_T1_ContextHandler *pContext, READER_T1_Block *pBlockDest, uint32_t integrityFlag){
 	READER_Status retVal;
-	READER_T1_Block *pPreviouslySentBlock;
 	READER_T1_BlockType bType;
 	
 	
@@ -97,7 +95,7 @@ READER_Status READER_T1_FORGE_NACKR0(READER_T1_ContextHandler *pContext, READER_
 READER_Status READER_T1_FORGE_NACK71(READER_T1_ContextHandler *pContext, READER_T1_Block *pBlockDest, uint32_t integrityFlag){
 	READER_Status retVal;
 	READER_T1_SeqNumber seqNum;
-	READER_T1_ACKType = ACKType;
+	READER_T1_ACKType ACKType;
 	READER_T1_Block *pLastSent;
 	READER_T1_BlockType bType;
 	uint32_t seq;
@@ -106,10 +104,6 @@ READER_Status READER_T1_FORGE_NACK71(READER_T1_ContextHandler *pContext, READER_
 	/* On verifie que le dernier Block envoye existe et c'est bien un I-Block                           */
 	retVal = READER_T1_CONTEXT_GetLastSent(pContext, &pBlockDest);
 	if(retVal != READER_OK) return retVal;
-	
-	if(pLastSent == NULL){
-		return READER_ERR;
-	}
 	
 	bType = READER_T1_GetBlockType(pLastSent);
 	if(bType != READER_T1_RBLOCK){
@@ -133,7 +127,7 @@ READER_Status READER_T1_FORGE_NACK71(READER_T1_ContextHandler *pContext, READER_
 	
 	/* On indique le type de NACK ...                     */
 	if(integrityFlag == 0){
-		ACKType = READER_T1_ACKTYPE_NACK
+		ACKType = READER_T1_ACKTYPE_NACK;
 	}
 	else if(integrityFlag == 1){
 		ACKType = READER_T1_ACKTYPE_NACK_CRCLRC;
@@ -161,10 +155,6 @@ READER_Status READER_T1_FORGE_NACK72(READER_T1_ContextHandler *pContext, READER_
 	retVal = READER_T1_CONTEXT_GetLastSent(pContext, &pLastSent);
 	if(retVal != READER_OK) return retVal;
 	
-	/* On verifie que le dernier Block envoye existe ...                  */
-	if(pLastSent == NULL){
-		return READER_ERR;
-	}
 	
 	/* On verifie que le dernier Block envoye est bien un R-Block ...     */
 	bType = READER_T1_GetBlockType(pLastSent);
@@ -272,7 +262,7 @@ READER_Status READER_T1_FORGE_SliceDataAndFillBuffer(READER_T1_ContextHandler *p
 	retVal = READER_T1_BUFFER_PlacesLeft(pContext, &buffPlacesLeft);
 	if(retVal != READER_OK) return retVal;
 	
-	if(buffPlacesLeft < nbBlockNeeded){
+	if(buffPlacesLeft < nbBlocksNeeded){
 		return READER_TOO_LONG;
 	}
 	

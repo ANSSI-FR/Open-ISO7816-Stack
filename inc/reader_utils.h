@@ -1,8 +1,12 @@
+#include "stm32f4xx_hal.h"
+#include "reader.h"
+
+
+
 #ifndef __READER_UTILS_H__
 #define __READER_UTILS_H__
 
-#include "stm32f4xx_hal.h"
-#include "reader.h"
+
 
 
 #define MIN(a, b)  ((a<b)? a:b)

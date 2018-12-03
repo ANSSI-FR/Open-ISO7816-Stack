@@ -683,36 +683,36 @@ READER_Status READER_T1_CopyBlock(READER_T1_Block *pBlockDest, READER_T1_Block *
 
 
 
-uint32_t READER_T1_GetBlockMBit(READER_T1_Block *pBlock){
-	uint8_t blockPCB;
-	uint32_t mBit;
-	
-	blockPCB = READER_T1_GetBlockPCB(pBlock);
-	mBit = (uint32_t)((blockPCB & 0x20)>>5);            /* Voir ISO7816-3 section 11.3.2.2 */
-	
-	return mBit;
-}
+//uint32_t READER_T1_GetBlockMBit(READER_T1_Block *pBlock){
+//	uint8_t blockPCB;
+//	uint32_t mBit;
+//	
+//	blockPCB = READER_T1_GetBlockPCB(pBlock);
+//	mBit = (uint32_t)((blockPCB & 0x20)>>5);            /* Voir ISO7816-3 section 11.3.2.2 */
+//	
+//	return mBit;
+//}
 
 
-READER_Status READER_T1_SetBlockMBit(READER_T1_Block *pBlock, uint32_t mBit){
-	READER_Status retVal;
-	uint8_t blockPCB, newBlockPCB;
-	
-	
-	blockPCB = READER_T1_GetBlockPCB(pBlock);
-	
-	if(mBit == 0){
-		newBlockPCB = blockPCB & 0xDF;             /* On passe le 6ieme bit a 0. Voir ISO7816-3 section 11.3.2.2 */
-	}
-	else if(mBit == 1){
-		newBlockPCB = blockPCB | 0x20;             /* On passe le 6ieme bit a 1. Voir ISO7816-3 section 11.3.2.2 */
-	}
-	else{
-		return READER_ERR;
-	}
-	
-	retVal = READER_T1_SetBlockPCB(pBlock, newBlockPCB);
-	if(retVal != READER_OK) return retVal;
-	
-	return READER_OK;
-}
+//READER_Status READER_T1_SetBlockMBit(READER_T1_Block *pBlock, uint32_t mBit){
+//	READER_Status retVal;
+//	uint8_t blockPCB, newBlockPCB;
+//	
+//	
+//	blockPCB = READER_T1_GetBlockPCB(pBlock);
+//	
+//	if(mBit == 0){
+//		newBlockPCB = blockPCB & 0xDF;             /* On passe le 6ieme bit a 0. Voir ISO7816-3 section 11.3.2.2 */
+//	}
+//	else if(mBit == 1){
+//		newBlockPCB = blockPCB | 0x20;             /* On passe le 6ieme bit a 1. Voir ISO7816-3 section 11.3.2.2 */
+//	}
+//	else{
+//		return READER_ERR;
+//	}
+//	
+//	retVal = READER_T1_SetBlockPCB(pBlock, newBlockPCB);
+//	if(retVal != READER_OK) return retVal;
+//	
+//	return READER_OK;
+//}

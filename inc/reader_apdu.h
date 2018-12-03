@@ -1,8 +1,10 @@
+
+#include "reader_hal.h"
+
+
 #ifndef __READER_APDU_H__
 #define __READER_APDU_H__
 
-#include "reader_hal.h"
-#include "reader_tpdu.h"
 
 
 
@@ -63,20 +65,20 @@ struct READER_APDU_Response{
 };
 
 
+typedef enum READER_APDU_Protocol READER_APDU_Protocol;
+enum READER_APDU_Protocol{
+	READER_APDU_PROTOCOL_T0         =   (uint32_t)(0x00000000),
+	READER_APDU_PROTOCOL_T1         =   (uint32_t)(0x00000001)
+};
+
+
+
+
+
 READER_Status READER_APDU_CheckCmdValidity(READER_APDU_Command *pApduCmd);
 READER_APDU_ProtocolCase READER_APDU_GetProtocolCase(READER_APDU_Command *pApduCmd);
-READER_Status READER_APDU_Execute(READER_APDU_Command *pApduCmd, READER_APDU_Response *pApduResp, uint32_t timeout);
 
-READER_Status READER_APDU_ExecuteCase1(READER_APDU_Command *pApduCmd, READER_APDU_Response *pApduResp, uint32_t timeout);
-READER_Status READER_APDU_ExecuteCase2S(READER_APDU_Command *pApduCmd, READER_APDU_Response *pApduResp, uint32_t timeout);
-READER_Status READER_APDU_ExecuteCase2E(READER_APDU_Command *pApduCmd, READER_APDU_Response *pApduResp, uint32_t timeout);
-READER_Status READER_APDU_ExecuteCase3S(READER_APDU_Command *pApduCmd, READER_APDU_Response *pApduResp, uint32_t timeout);
-READER_Status READER_APDU_ExecuteCase3E(READER_APDU_Command *pApduCmd, READER_APDU_Response *pApduResp, uint32_t timeout);
-READER_Status READER_APDU_ExecuteCase4S(READER_APDU_Command *pApduCmd, READER_APDU_Response *pApduResp, uint32_t timeout);
-READER_Status READER_APDU_ExecuteCase4E(READER_APDU_Command *pApduCmd, READER_APDU_Response *pApduResp, uint32_t timeout);
 
-READER_Status READER_APDU_RcvSW(uint16_t *SW, uint32_t timeout);
-READER_Status READER_APDU_RcvResponse(uint8_t *buffer, uint32_t Ne, uint16_t *SW, uint32_t timeout);
 
 READER_Status READER_APDU_Forge(READER_APDU_Command *pApduCmd, uint8_t CLA, uint8_t INS, uint8_t P1, uint8_t P2, uint32_t Nc, uint8_t *pData, uint32_t Ne);
 READER_Status READER_APDU_CopyCommand(READER_APDU_Command *pSourceApdu, READER_APDU_Command *pDestApdu);
@@ -87,8 +89,6 @@ uint16_t READER_APDU_NcToLc(uint16_t Nc);
 uint16_t READER_APDU_NeToLe(uint16_t Ne);
 uint16_t READER_APDU_LcToNc(uint16_t Lc);
 uint16_t READER_APDU_LeToNe(uint16_t Le);
-
-READER_Status READER_APDU_MapTpduRespToApdu(READER_TPDU_Response *pTpduResp, READER_APDU_Response *pApduResp);
 
 
 

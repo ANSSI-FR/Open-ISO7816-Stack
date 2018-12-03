@@ -70,17 +70,17 @@ READER_Status READER_T1_CONTEXT_InitContextSettings(READER_T1_ContextHandler *pC
 	retVal = READER_T1_CONTEXT_SetACKStatus(pContext, READER_T1_NOACK);
 	if(retVal != READER_OK) return retVal;
 	
-	retVal = READER_T1_CONTEXT_SetLastSent(pContext, NULL);
-	if(retVal != READER_OK) return retVal;
-	
-	retVal = READER_T1_CONTEXT_SetLastIBlockSent(pContext, NULL);
-	if(retVal != READER_OK) return retVal;
-	
-	retVal = READER_T1_CONTEXT_SetLastRcvd(pContext, NULL);
-	if(retVal != READER_OK) return retVal;
-	
-	retVal = READER_T1_CONTEXT_SetLastIBlockRcvd(pContext, NULL);
-	if(retVal != READER_OK) return retVal;
+	//retVal = READER_T1_CONTEXT_SetLastSent(pContext, NULL);
+	//if(retVal != READER_OK) return retVal;
+	//
+	//retVal = READER_T1_CONTEXT_SetLastIBlockSent(pContext, NULL);
+	//if(retVal != READER_OK) return retVal;
+	//
+	//retVal = READER_T1_CONTEXT_SetLastRcvd(pContext, NULL);
+	//if(retVal != READER_OK) return retVal;
+	//
+	//retVal = READER_T1_CONTEXT_SetLastIBlockRcvd(pContext, NULL);
+	//if(retVal != READER_OK) return retVal;
 	
 	retVal = READER_T1_CONTEXT_SetDeviceChainingLastBlockFlag(pContext, READER_T1_CHAINING_NO);
 	if(retVal != READER_OK) return retVal;
@@ -99,6 +99,11 @@ READER_Status READER_T1_CONTEXT_InitContextSettings(READER_T1_ContextHandler *pC
 	
 	retVal = READER_T1_CONTEXT_SetSBlockRequCounter(pContext, 0);
 	if(retVal != READER_OK) return retVal;
+	
+	pContext->lastSentExistenceFlag = READER_T1_BLOCK_EXISTS_NO;
+	pContext->lastIBlockSentExistenceFlag = READER_T1_BLOCK_EXISTS_NO;
+	pContext->lastRcvdExistenceFlag = READER_T1_BLOCK_EXISTS_NO;
+	pContext->lastIBlockRcvdExistenceFlag = READER_T1_BLOCK_EXISTS_NO;
 	
 	return READER_OK;
 }
@@ -272,13 +277,7 @@ READER_Status READER_T1_CONTEXT_SetCurrentRedundancyType(READER_T1_ContextHandle
 
 
 
-READER_Status READER_T1_CONTEXT_GetApduResponse(READER_T1_ContextHandler *pContext, READER_APDU_Response *pApduResp){
-	
-}
-
-
 /* Manipulation des compteurs de redemande d'infos et de demandes de resynchro ... */
-
 
 
 READER_Status READER_T1_CONTEXT_GetRepeatCounter(READER_T1_ContextHandler *pContext, uint32_t *pCounter){
@@ -306,7 +305,7 @@ READER_Status READER_T1_CONTEXT_GetResynchCounter(READER_T1_ContextHandler *pCon
 
 
 READER_Status READER_T1_CONTEXT_SetResynchCounter(READER_T1_ContextHandler *pContext, uint32_t counter){
-	pContext-resynchCounter = counter;
+	pContext->resynchCounter = counter;
 	return READER_OK;
 }
 
@@ -346,109 +345,82 @@ READER_Status READER_T1_CONTEXT_SetACKStatus(READER_T1_ContextHandler *pContext,
 
 /* Manipulation des derniers blocs envoyes/recus                                                                                      */
 
-/* Attention, on ne recopie pas le Block. On retourne juste un pointeur sur le Block qui se trouve a l'interieur du contexte.         */
-READER_Status READER_T1_CONTEXT_GetLastSent(READER_T1_ContextHandler *pContext, READER_T1_Block **ppBlockDest){
-	/* **ppBlockDest, On recupere un pointeur qui pointe sur un pointeur du Block de destination                                      */
-	/* Attention il faut que l'espace memoire soit deja allour auaravent pour le Block                                                */
-	/* Attention, fuite memeoire si on fait ensuite pointer sur NULL !!!                                                              */
 
-	READER_T1_Block *pBlockDest;
+READER_Status READER_T1_CONTEXT_GetLastSent(READER_T1_ContextHandler *pContext, READER_T1_Block **ppBlockDest){
 	READER_Status retVal;
 	
 	
-	/* On recupere un pointeur qui pointe sur le pointeur qui pointe sur le dernier Block Envoye qui se trouve dans le contexte       */
-	/* Le pointeur sur le pointeur nous permet de modifier le pointeur qui pointe sur le Block.                                       */
-	/* Cette teechnique nous permet de renvoyer un pointeur sans utiliser les valeurs de retour de la fonction (qui sont deja utilise pour le code d'erreur) */
+	/* On verifie qu'il existe effectivement un dernier Block envoye ...  */
+	retVal = READER_T1_CONTEXT_LastSentExists(pContext);
+	if(retVal != READER_OK) return retVal;
 	
-	pBlockDest = *ppBlockDest;
-	
-	if(&(pContext->lastSent) == NULL){
-		pBlockDest = NULL; 
-	}
-	else{
-		pBlockDest = &(pContext->lastSent);    /* Finalement on n'effectue pas de recopie de Blocks */
-		//retVal = READER_T1_CopyBlock(pBlockDest, &(pContext->lastSent));
-		//if(retVal != READER_OK) return retVal;
-	}
+	/* On positionne le pointeur sur le dernier Block envoye ...  */
+	*ppBlockDest = &(pContext->lastSent);
 	
 	return READER_OK;
 }
 
 
 READER_Status READER_T1_CONTEXT_GetLastIBlockSent(READER_T1_ContextHandler *pContext, READER_T1_Block **ppBlockDest){
-	READER_Status retVal;
 	READER_T1_BlockType bType;
 	READER_T1_Block *pBlockDest;
+	READER_Status retVal;
 	
 	
 	pBlockDest = *ppBlockDest;
 	
-	/* Si il n'y a pas de dernier I-Block envoye (on en a pas encore envoye) */
-	if(&(pContext->lastIBlockSent) == NULL){
-		pBlockDest = NULL;
-	}
-	/* Si il y en a un ... On le copie ... */
-	else{
-		/* On ne fait plus de recopie du Block. On renvoie un pointeur sur le Block qui se trouve dans le contexte */
-		//retVal = READER_T1_CopyBlock(pBlock, &(pContext->lastIBlockSent));
-		//if(retVal != READER_OK) return retVal;
-		pBlockDest = &(pContext->lastIBlockSent);
-		
-		/* On verifie que c'est effectivement un I-Block */
-		bType = READER_T1_GetBlockType(pBlockDest);
-		if(bType != READER_T1_IBLOCK) return READER_ERR;
+	/* On verifie qu'il existe effectivement un dernier I-Block envoye ...  */
+	retVal = READER_T1_CONTEXT_LastIBlockSentExists(pContext);
+	if(retVal != READER_OK) return retVal;
+	
+	/* Si ce Block existe, on verifie son type avant de le servir ...  */
+	bType = READER_T1_GetBlockType(pBlockDest);
+	if(bType != READER_T1_IBLOCK){
+		return READER_ERR;
 	}
 	
+	/* Si tout est bon, on positionne le pointeur sur le bon Block ...  */
+	*ppBlockDest = &(pContext->lastIBlockSent);
 	
 	return READER_OK;
 }
 
 
 READER_Status READER_T1_CONTEXT_GetLastRcvd(READER_T1_ContextHandler *pContext, READER_T1_Block **ppBlockDest){
-	READER_Status retVal;
-	READER_T1_Block *pBlockDest;
+	READER_Status retVal; 
 	
 	
-	pBlockDest = *ppBlockDest;
+	/* On verifie qu'il existe un dernier Block recu ...  */
+	retVal = READER_T1_CONTEXT_LastRcvdExists(pContext);
+	if(retVal != READER_OK) return retVal;
 	
-	if(&(pContext->lastRcvd) == NULL){
-		pBlockDest = NULL;
-	}
-	else{
-		/* On ne fait plus de recopie du Block. On renvoie un pointeur sur le Block qui se trouve dans le contexte */
-		//retVal = READER_T1_CopyBlock(pBlock, &(pContext->lastRcvd));
-		//if(retVal != READER_OK) return retVal;
-		pBlockDest = &(pContext->lastRcvd);
-	}
+	/* On positionne le pointeur sur le dernier Block recu ...  */
+	*ppBlockDest = &(pContext->lastRcvd);
 	
 	return READER_OK;
 }
 
 
 READER_Status READER_T1_CONTEXT_GetLastIBlockRcvd(READER_T1_ContextHandler *pContext, READER_T1_Block **ppBlockDest){
-	READER_Status retVal;
-	READER_T1_BlockType bType;
 	READER_T1_Block *pBlockDest;
+	READER_T1_BlockType bType;
+	READER_Status retVal;
 	
 	
-	pBlockDest = *ppBlockDest;	
+	pBlockDest = *ppBlockDest;
 	
-	/* Si il n'y a pas de dernier I-Block recu (on en a pas encore recu) */
-	if(&(pContext->lastIBlockRcvd) == NULL){
-		pBlockDest = NULL;
-	}
-	/* Si il y en a un ... On le copie ... */
-	else{
-		/* On ne fait plus de recopie du Block. On renvoie un pointeur sur le Block qui se trouve dans le contexte */
-		//retVal = READER_T1_CopyBlock(pBlock, &(pContext->lastIBlockRcvd));
-		//if(retVal != READER_OK) return retVal;
-		pBlockDest = &(pContext->lastIBlockRcvd);
-		
-		/* On verifie que c'est effectivement un I-Block */
-		bType = READER_T1_GetBlockType(pBlockDest);
-		if(bType != READER_T1_IBLOCK) return READER_ERR;
+	/* On verifie qu'il existe un dernier I-Block recu ...  */
+	retVal = READER_T1_CONTEXT_LastIBlockRcvdExists(pContext);
+	if(retVal != READER_OK) return retVal;
+	
+	/* On verifie que c'est bien un I-Block ...  */
+	bType = READER_T1_GetBlockType(pBlockDest);
+	if(bType != READER_T1_IBLOCK){
+		return READER_ERR;
 	}
 	
+	/* Si tout est bon, on positionne le pointeur sur le dernier I-Block recu qui se trouve dans le Contexte ...  */
+	*ppBlockDest = &(pContext->lastIBlockRcvd);
 	
 	return READER_OK;
 }
@@ -463,10 +435,6 @@ READER_Status READER_T1_CONTEXT_GetLastIBlockSentSeqSum(READER_T1_ContextHandler
 	/* On recupere le dernier I-Block envoye                                 */
 	retVal = READER_T1_CONTEXT_GetLastIBlockSent(pContext, &pLastBlock);
 	if(retVal != READER_OK) return retVal;
-	
-	if(pLastBlock == NULL){
-		return READER_ERR;      /* Il n'y a pas de dernier I-Block envoye    */
-	}
 	
 	/* On recupere le numero de sequence                                     */
 	tmpSeqNum = READER_T1_GetBlockSeqNumber(pLastBlock);
@@ -494,16 +462,13 @@ READER_Status READER_T1_CONTEXT_GetLastIBlockRcvdSeqSum(READER_T1_ContextHandler
 	retVal = READER_T1_CONTEXT_GetLastIBlockRcvd(pContext, &pLastBlock);
 	if(retVal != READER_OK) return retVal;
 	
-	if(pLastBlock == NULL){
-		return READER_ERR;      /* Il n'y a pas de dernier I-Block envoye    */
-	}
-	
 	/* On recupere le numero de sequence                                     */
 	tmpSeqNum = READER_T1_GetBlockSeqNumber(pLastBlock);
 	if(tmpSeqNum == READER_T1_SEQNUM_ONE){
 		*pSeqNum = 1;
 	}
 	else if(tmpSeqNum == READER_T1_SEQNUM_ZERO){
+		
 		*pSeqNum = 0;
 	}
 	else{
@@ -515,16 +480,77 @@ READER_Status READER_T1_CONTEXT_GetLastIBlockRcvdSeqSum(READER_T1_ContextHandler
 
 
 
+/* On retourne READER_OK si existe, READER_DOESNT_EXIST so n'existe pas et READER_ERR en cas d'erreur interne ...  */
+READER_Status READER_T1_CONTEXT_LastSentExists(READER_T1_ContextHandler *pContext){
+	if(pContext->lastSentExistenceFlag == READER_T1_BLOCK_EXISTS_YES){
+		return READER_OK;
+	}
+	else if(pContext->lastSentExistenceFlag == READER_T1_BLOCK_EXISTS_NO){
+		return READER_DOESNT_EXIST;
+	}
+	else{
+		return READER_ERR;
+	}	
+}
+
+
+/* On retourne READER_OK si existe, READER_DOESNT_EXIST so n'existe pas et READER_ERR en cas d'erreur interne ...  */
+READER_Status READER_T1_CONTEXT_LastIBlockSentExists(READER_T1_ContextHandler *pContext){
+	if(pContext->lastIBlockSentExistenceFlag == READER_T1_BLOCK_EXISTS_YES){
+		return READER_OK;
+	}
+	else if(pContext->lastIBlockSentExistenceFlag == READER_T1_BLOCK_EXISTS_NO){
+		return READER_DOESNT_EXIST;
+	}
+	else{
+		return READER_ERR;
+	}	
+}
+
+
+/* On retourne READER_OK si existe, READER_DOESNT_EXIST so n'existe pas et READER_ERR en cas d'erreur interne ...  */
+READER_Status READER_T1_CONTEXT_LastRcvdExists(READER_T1_ContextHandler *pContext){
+	if(pContext->lastRcvdExistenceFlag == READER_T1_BLOCK_EXISTS_YES){
+		return READER_OK;
+	}
+	else if(pContext->lastRcvdExistenceFlag == READER_T1_BLOCK_EXISTS_NO){
+		return READER_DOESNT_EXIST;
+	}
+	else{
+		return READER_ERR;
+	}	
+}
+
+
+/* On retourne READER_OK si existe, READER_DOESNT_EXIST so n'existe pas et READER_ERR en cas d'erreur interne ...  */
+READER_Status READER_T1_CONTEXT_LastIBlockRcvdExists(READER_T1_ContextHandler *pContext){
+	if(pContext->lastIBlockRcvdExistenceFlag == READER_T1_BLOCK_EXISTS_YES){
+		return READER_OK;
+	}
+	else if(pContext->lastIBlockRcvdExistenceFlag == READER_T1_BLOCK_EXISTS_NO){
+		return READER_DOESNT_EXIST;
+	}
+	else{
+		return READER_ERR;
+	}	
+}
+
+
+
 READER_Status READER_T1_CONTEXT_SetLastSent(READER_T1_ContextHandler *pContext, READER_T1_Block *pBlock){
 	READER_Status retVal;
 	
+	/* On verifie les parametres ...  */
 	if(pBlock == NULL){
-		&(pContext->lastSent) = NULL;
+		return READER_ERR;
 	}
-	else{
-		retVal = READER_T1_CopyBlock(&(pContext->lastSent), pBlock);
-		if(retVal != READER_OK) return retVal;
-	}
+	
+	/* On recopie le Block dans le contexte de communication ...  */
+	retVal = READER_T1_CopyBlock(&(pContext->lastSent), pBlock);
+	if(retVal != READER_OK) return retVal;
+	
+	/* On mets a jour le flag d'existance de ce Block dans le contexte de communication ... */
+	pContext->lastSentExistenceFlag = READER_T1_BLOCK_EXISTS_YES;
 	
 	return READER_OK;
 }
@@ -533,13 +559,18 @@ READER_Status READER_T1_CONTEXT_SetLastSent(READER_T1_ContextHandler *pContext, 
 READER_Status READER_T1_CONTEXT_SetLastIBlockSent(READER_T1_ContextHandler *pContext, READER_T1_Block *pBlock){
 	READER_Status retVal;
 	
+	
+	/* On verifie les perametres ...  */
 	if(pBlock == NULL){
-		&(pContext->lastIBlockSent) = NULL;
+		return READER_ERR;
 	}
-	else{
-		retVal = READER_T1_CopyBlock(&(pContext->lastIBlockSent), pBlock);
-		if(retVal != READER_OK) return retVal;
-	}
+	
+	/* On recopie le Block dans le contexte de communication ...  */
+	retVal = READER_T1_CopyBlock(&(pContext->lastIBlockSent), pBlock);
+	if(retVal != READER_OK) return retVal;
+	
+	/* On mets a jour le flag qui indique l'existance de ce Block dans le contexte de communication ...  */
+	pContext->lastIBlockSentExistenceFlag = READER_T1_BLOCK_EXISTS_YES;
 	
 	return READER_OK;
 }
@@ -548,13 +579,18 @@ READER_Status READER_T1_CONTEXT_SetLastIBlockSent(READER_T1_ContextHandler *pCon
 READER_Status READER_T1_CONTEXT_SetLastIBlockRcvd(READER_T1_ContextHandler *pContext, READER_T1_Block *pBlock){
 	READER_Status retVal;
 	
+	
+	/* On verifie les parametres ...  */
 	if(pBlock == NULL){
-		&(pContext->lastIBlockRcvd) = NULL;
+		return READER_ERR;
 	}
-	else{
-		retVal = READER_T1_CopyBlock(&(pContext->lastIBlockRcvd), pBlock);
-		if(retVal != READER_OK) return retVal;
-	}
+
+	/* On recopie le Block dans le contexte de communication ...  */
+	retVal = READER_T1_CopyBlock(&(pContext->lastIBlockRcvd), pBlock);
+	if(retVal != READER_OK) return retVal;
+	
+	/* On mets a jour le Flag qui indique l'existance de ce Block ...  */
+	pContext->lastIBlockRcvdExistenceFlag = READER_T1_BLOCK_EXISTS_YES;
 	
 	return READER_OK;
 }
@@ -563,13 +599,18 @@ READER_Status READER_T1_CONTEXT_SetLastIBlockRcvd(READER_T1_ContextHandler *pCon
 READER_Status READER_T1_CONTEXT_SetLastRcvd(READER_T1_ContextHandler *pContext, READER_T1_Block *pBlock){
 	READER_Status retVal;
 	
+	
+	/* On verifie les parametres ...  */
 	if(pBlock == NULL){
-		&(pContext->lastRcvd) = NULL;
+		return READER_ERR;
 	}
-	else{
-		retVal = READER_T1_CopyBlock(&(pContext->lastRcvd), pBlock);
-		if(retVal != READER_OK) return retVal;
-	}
+	
+	/* On recopie le Block dans le contexte de communication ...  */
+	retVal = READER_T1_CopyBlock(&(pContext->lastRcvd), pBlock);
+	if(retVal != READER_OK) return retVal;
+	
+	/* On mets a jour le Flag qui inique l'existance de ce Block ... */
+	pContext->lastRcvdExistenceFlag = READER_T1_BLOCK_EXISTS_YES;
 	
 	return READER_OK;
 }
@@ -585,11 +626,6 @@ READER_Status READER_T1_CONTEXT_GetLastSentType(READER_T1_ContextHandler *pConte
 	/* On recupere un pointeur sur le dernier Block envoye           */
 	retVal = READER_T1_CONTEXT_GetLastSent(pContext, &pLastBlock);
 	if(retVal != READER_OK) return retVal;
-	
-	/* Si le dernier Block envoye n'existe pas, on revoie une erreur */
-	if(pLastBlock == NULL){
-		return READER_DOESNT_EXIST;
-	}
 	
 	/* On recupere le Type du dernier Block Envoye */
 	bType = READER_T1_GetBlockType(pLastBlock);
@@ -614,11 +650,6 @@ READER_Status READER_T1_CONTEXT_GetLastRcvdType(READER_T1_ContextHandler *pConte
 	/* On recupere un pointeur sur le dernier Block recu              */
 	retVal = READER_T1_CONTEXT_GetLastRcvd(pContext, &pLastBlock);
 	if(retVal != READER_OK) return retVal;
-	
-	/* Si le dernier Block recu n'existe pas, on revoie une erreur    */
-	if(pLastBlock == NULL){
-		return READER_DOESNT_EXIST;
-	}
 	
 	/* On recupere le Type du dernier Block Recu                      */
 	bType = READER_T1_GetBlockType(pLastBlock);
@@ -747,25 +778,20 @@ READER_Status READER_T1_CONTEXT_GetCardExpectedSeqNum(READER_T1_ContextHandler *
 READER_Status READER_T1_CONTEXT_DeviceIsChainingLastBlock(READER_T1_ContextHandler *pContext, READER_T1_ChainingStatus *pChainingStatus){
 	READER_Status retVal;
 	READER_T1_Block block;
-	uint32_t mBit;
+	READER_T1_MBit mBit;
 	
 	
 	/* On recupere a partir du context handler le dernier I-Block qu'on a envoye */
-	retval = READER_T1_CONTEXT_GetLastIBlockSent(pContext, &block);
+	retVal = READER_T1_CONTEXT_GetLastIBlockSent(pContext, &block);
 	if(retVal != READER_OK) return retVal;
-	
-	/* On verifie qu'il existe effectivement un dernier I-Block envoye */
-	if(&block == NULL){
-		*pChainingStatus = READER_T1_CHAINING_NO;
-	}
 	
 	/* On recupere le M-Bit du dernier I-Block ... */
 	mBit = READER_T1_GetBlockMBit(&block);
 	
-	if(mBit == 0){
+	if(mBit == READER_T1_MBIT_ZERO){
 		*pChainingStatus = READER_T1_CHAINING_NO;
 	}
-	else if(mBit == 1){
+	else if(mBit == READER_T1_MBIT_ONE){
 		*pChainingStatus = READER_T1_CHAINING_YES;
 	}
 	else{
@@ -779,25 +805,25 @@ READER_Status READER_T1_CONTEXT_DeviceIsChainingLastBlock(READER_T1_ContextHandl
 READER_Status READER_T1_CONTEXT_CardIsChainingLastBlock(READER_T1_ContextHandler *pContext, READER_T1_ChainingStatus *pChainingStatus){
 	READER_Status retVal;
 	READER_T1_Block block;
-	uint32_t mBit;
+	READER_T1_MBit mBit;
 	
 	
 	/* On recupere le dernier I-Block qu'on a recu de la carte */
 	retVal = READER_T1_CONTEXT_GetLastIBlockRcvd(pContext, &block);
-	if(retVal != READER_OK) return retVal;
+	if((retVal != READER_OK) && (retVal != READER_DOESNT_EXIST)) return retVal;
 	
 	/* On verifie qu'il existe effectivement un dernier I-Block Recu */
-	if(&block == NULL){
+	if(retVal == READER_DOESNT_EXIST){
 		*pChainingStatus = READER_T1_CHAINING_NO;
 	}
 	
 	/* On recupere le mBit du dernier I-Block recu */
 	mBit = READER_T1_GetBlockMBit(&block);
 	
-	if(mBit == 0){
+	if(mBit == READER_T1_MBIT_ZERO){
 		*pChainingStatus = READER_T1_CHAINING_NO;
 	}
-	else if(mBit == 1){
+	else if(mBit == READER_T1_MBIT_ONE){
 		*pChainingStatus = READER_T1_CHAINING_YES;
 	}
 	else{
@@ -829,6 +855,8 @@ READER_Status READER_T1_CONTEXT_DeviceIsChaining(READER_T1_ContextHandler *pCont
 
 
 READER_Status READER_T1_CONTEXT_CardIsChaining(READER_T1_ContextHandler *pContext, READER_T1_ChainingStatus *pChainingStatus){
+	READER_T1_ChainingStatus status;
+	
 	/* On recupere le flag de situation globale de chainage, on fait des verif et on renvoi */
 	status = pContext->cardIsChaining;
 	
@@ -912,7 +940,7 @@ READER_Status READER_T1_CONTEXT_IsSblockExpectedNow(READER_T1_ContextHandler *pC
 	if(pContext->SBlockExpected == READER_T1_SBLOCK_EXPECTED_YES){
 		*pExp = READER_T1_SBLOCK_EXPECTED_YES;
 	}
-	else of(pContext->SBlockExpected == READER_T1_SBLOCK_EXPECTED_NO){
+	else if(pContext->SBlockExpected == READER_T1_SBLOCK_EXPECTED_NO){
 		*pExp = READER_T1_SBLOCK_EXPECTED_NO;
 	}
 	else{
@@ -1046,7 +1074,7 @@ READER_Status READER_T1_CONTEXT_IncSBlockRequCounter(READER_T1_ContextHandler *p
 }
 
 
-READER_Status READER_T1_CONTEXT_GetBlockBuff(READER_T1_ContextHandler *pContext, READER_T1_BlockBuffer **pBlockBuff){
+READER_Status READER_T1_CONTEXT_GetBlockBuff(READER_T1_ContextHandler *pContext, READER_T1_BlockBuffer **ppBlockBuff){
 	/* On recupere un pointeur qui pointe sur le pointeur de blockBuff                                              */
 	/* On veut que ce pointeur pointe desormais sur le blockBuff qui se trouve dans le contexte   de communication  */
 	
@@ -1055,7 +1083,7 @@ READER_Status READER_T1_CONTEXT_GetBlockBuff(READER_T1_ContextHandler *pContext,
 	/* On modifie (*pBlockBuff) pour qu'il pointe desormais sur le buff qui se trouve dans le contexte              */
 	/* On accede a (*pBlockBuff) via un pointeur qui pointe dessus. Ce pointeur est pBlockBuff (param de la fct)    */
 	/* (A priori pContext->blockBuff n'est pas un pointeur, mais la struct en elle meme ???)                        */
-	*pBlockBuff = &(pContext->blockBuff);
+	*ppBlockBuff = &(pContext->blockBuff);
 	
 	
 	return READER_OK;

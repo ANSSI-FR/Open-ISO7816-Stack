@@ -1,17 +1,9 @@
+#include "reader_t1.h"
+
+
+
 #ifndef __READER_T1_RCPTBUFFER_HANDLER_H__
 #define __READER_T1_RCPTBUFFER_HANDLER_H__
-
-
-#include "reader.h"
-
-
-
-typedef struct READER_T1_ReceptionBuff READER_T1_ReceptionBuff;
-struct READER_T1_ReceptionBuff{
-	uint8_t rawReceptionBuff[READER_APDU_RESP_MAX_TOTALSIZE];
-	uint32_t dataSize;
-};
-
 
 
 

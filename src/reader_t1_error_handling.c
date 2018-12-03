@@ -67,7 +67,7 @@ READER_Status READER_T1_ERR_CheckResynchCounter(READER_T1_ContextHandler *pConte
 
 
 READER_Status READER_T1_ERR_IsItFirstReception(READER_T1_ContextHandler *pContext){
-	uint32_t deviceCompleteSeqNum, deviceCompleteSeqNum;
+	uint32_t deviceCompleteSeqNum, cardCompleteSeqNum;
 	READER_Status retVal;
 	
 	/* On recupere les numeros de sequence cote carte et cote lecteur */
@@ -132,7 +132,7 @@ READER_Status READER_T1_ERR_DealWithError(READER_T1_ContextHandler *pContext, ui
 		}
 		else if(retVal == READER_NO){
 			/* On procede a une reinitialisation de la carte */
-			retVal = READER_T1_ERR_DoReset();
+			retVal = READER_T1_ERR_DoReset(pContext);
 			if(retVal != READER_OK) return retVal;
 		}
 		else{

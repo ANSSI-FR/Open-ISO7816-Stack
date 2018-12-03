@@ -1,10 +1,8 @@
+#include "reader_t1.h"
+
+
 #ifndef __READER_T1_CONTROL_H__
 #define __READER_T1_CONTROL_H__
-
-
-#include "reader.h"
-#include "reader_t1_block"
-#include "reader_t1_context_handler.h"
 
 
 

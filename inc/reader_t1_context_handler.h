@@ -1,13 +1,9 @@
+#include "reader_hal.h"
+#include "reader_t1.h"
+
+
 #ifndef __READER_T1_CONTEXT_HANDLER_H__
 #define __READER_T1_CONTEXT_HANDLER_H__
-
-
-#include "reader.h"
-#include "reader_hal.h"
-#include "reader_t1_block"
-#include "reader_t1_buffer_handler.h"
-#include "reader_t1_rcptbuffer_handler.h"
-
 
 
 
@@ -20,12 +16,43 @@
 #define READER_T1_CONTEXT_DEFAULT_IFSD      (uint32_t)(32)        /* Voir ISO7816-3 section 11.4.2 */
 #define READER_T1_CONTEXT_DEFAULT_CWI       (uint32_t)(13)        /* Voir ISO7816-3 section 11.4.3 */
 #define READER_T1_CONTEXT_DEFAULT_BWI       (uint32_t)(4)         /* Voir ISO7816-3 section 11.4.3 */
-#define READER_T1_CONTEXT_DEFAULT_BWT       (uint32_t)()
-#define READER_T1_CONTEXT_DEFAULT_BGT       (uint32_t)()
-#define READER_T1_CONTEXT_DEFAULT_CWT       (uint32_t)()
-#define READER_T1_CONTEXT_DEFAULT_CGT       (uint32_t)()
+#define READER_T1_CONTEXT_DEFAULT_BWT       (uint32_t)(1)
+#define READER_T1_CONTEXT_DEFAULT_BGT       (uint32_t)(1)
+#define READER_T1_CONTEXT_DEFAULT_CWT       (uint32_t)(1)
+#define READER_T1_CONTEXT_DEFAULT_CGT       (uint32_t)(1)
 #define READER_T1_CONTEXT_DEFAULT_CORRCODE  READER_T1_LRC         /* Voir ISO7816-3 section 11.4.4 */
 
+
+
+/* Choix de ces valeurs en fonction de ISO7816-3 section 11.4.2 et contraintes cible dev */
+#define READER_T1_MAX_IFSD_ACCEPTED 0xFE
+#define READER_T1_MIN_IFSD_ACCEPTED 0x10
+#define READER_T1_MAX_IFSC_ACCEPTED 0xFE
+#define READER_T1_MIN_IFSC_ACCEPTED 0x10  
+
+
+#define COMPUTE_READER_T1_CONTEXT_STATICBUFF_MAXSIZE(apdu_maxlength, block_data_minlength, tolerence) ((apdu_maxlength / block_data_minlength) + 1) + tolerence
+#define APDU_MAXLENGTH READER_APDU_CMD_DATA_MAX_SIZE
+
+#define READER_T1_CONTEXT_STATICBUFF_MAXSIZE COMPUTE_READER_T1_CONTEXT_STATICBUFF_MAXSIZE(APDU_MAXLENGTH, READER_T1_MIN_IFSC_ACCEPTED, 20)
+
+
+
+
+typedef struct READER_T1_BlockBuffer READER_T1_BlockBuffer;
+struct READER_T1_BlockBuffer{
+	READER_T1_Block blockBuff[READER_T1_CONTEXT_STATICBUFF_MAXSIZE];
+	uint32_t indexBottom;
+	uint32_t indexTop;
+	uint32_t length;
+};
+
+
+typedef struct READER_T1_ReceptionBuff READER_T1_ReceptionBuff;
+struct READER_T1_ReceptionBuff{
+	uint8_t rawReceptionBuff[READER_APDU_RESP_MAX_TOTALSIZE];
+	uint32_t dataSize;
+};
 
 
 
@@ -50,6 +77,12 @@ enum READER_T1_SBlockExpected{
 };
 
 
+typedef enum READER_T1_BlockExistence READER_T1_BlockExistence;
+enum READER_T1_BlockExistence{
+	READER_T1_BLOCK_EXISTS_YES            =       (uint32_t)(0x00000001),
+	READER_T1_BLOCK_EXISTS_NO             =       (uint32_t)(0x00000000)
+};
+
 
 typedef struct READER_T1_ContextHandler READER_T1_ContextHandler;
 struct READER_T1_ContextHandler{
@@ -72,10 +105,16 @@ struct READER_T1_ContextHandler{
 	uint32_t repeatCounter;
 	
 	READER_T1_ACKStatus ACKStatus;
+	
 	READER_T1_Block lastSent;
 	READER_T1_Block lastIBlockSent;
 	READER_T1_Block lastRcvd;
 	READER_T1_Block lastIBlockRcvd;
+	
+	READER_T1_BlockExistence lastSentExistenceFlag;
+	READER_T1_BlockExistence lastIBlockSentExistenceFlag;
+	READER_T1_BlockExistence lastRcvdExistenceFlag;
+	READER_T1_BlockExistence lastIBlockRcvdExistenceFlag;
 	
 	READER_T1_ChainingStatus cardIsChainingLastBlock;
 	READER_T1_ChainingStatus deviceIsChainingLastBlock;
@@ -123,9 +162,6 @@ READER_Status READER_T1_CONTEXT_SetCurrentIFSD(READER_T1_ContextHandler *pContex
 READER_Status READER_T1_CONTEXT_SetCurrentRedundancyType(READER_T1_ContextHandler *pContext, READER_T1_RedundancyType rType);
 
 
-READER_Status READER_T1_CONTEXT_GetApduResponse(READER_T1_ContextHandler *pContext, READER_APDU_Response *pApduResp);
-
-
 /* Manipulation des compteurs de redemande d'infos et de demandes de resynchro ... */
 READER_Status READER_T1_CONTEXT_GetRepeatCounter(READER_T1_ContextHandler *pContext, uint32_t *pCounter);
 READER_Status READER_T1_CONTEXT_SetRepeatCounter(READER_T1_ContextHandler *pContext, uint32_t counter);
@@ -153,6 +189,11 @@ READER_Status READER_T1_CONTEXT_SetLastIBlockRcvd(READER_T1_ContextHandler *pCon
 
 READER_Status READER_T1_CONTEXT_GetLastSentType(READER_T1_ContextHandler *pContext, READER_T1_BlockType *pType);
 READER_Status READER_T1_CONTEXT_GetLastRcvdType(READER_T1_ContextHandler *pContext, READER_T1_BlockType *pType);
+
+READER_Status READER_T1_CONTEXT_LastSentExists(READER_T1_ContextHandler *pContext);
+READER_Status READER_T1_CONTEXT_LastIBlockSentExists(READER_T1_ContextHandler *pContext);
+READER_Status READER_T1_CONTEXT_LastRcvdExists(READER_T1_ContextHandler *pContext);
+READER_Status READER_T1_CONTEXT_LastIBlockRcvdExists(READER_T1_ContextHandler *pContext);
 
 
 /* Manipulation des numeros de sequence */
@@ -196,6 +237,6 @@ READER_Status READER_T1_CONTEXT_SetSBlockRequCounter(READER_T1_ContextHandler *p
 READER_Status READER_T1_CONTEXT_IncSBlockRequCounter(READER_T1_ContextHandler *pContext);
 
 
-READER_Status READER_T1_CONTEXT_GetBlockBuff(READER_T1_ContextHandler *pContext, READER_T1_BlockBuffer **pBlockBuff);
+READER_Status READER_T1_CONTEXT_GetBlockBuff(READER_T1_ContextHandler *pContext, READER_T1_BlockBuffer **ppBlockBuff);
 
 #endif

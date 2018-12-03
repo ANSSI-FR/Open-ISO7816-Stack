@@ -1,7 +1,4 @@
-#include <stdint.h>
 #include "reader_atr.h"
-#include "reader_hal.h"
-#include "reader_t1_block.h"
 
 
 
@@ -573,7 +570,7 @@ uint32_t READER_ATR_GetRedundancyType(READER_ATR_Atr *pAtr){
 		return READER_DEFAULT_REDUNDANCY_TYPE;  
 	}
 	else{
-		if(byte & 0x01 == 0x00){
+		if((byte & 0x01) == 0x00){
 			return READER_T1_LRC;
 		}
 		else{

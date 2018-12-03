@@ -1,10 +1,10 @@
-#ifndef __READER_T1_SBLOCK_H__
-#define __READER_T1_SBLOCK_H__
-
-
 #include "reader.h"
 #include "reader_hal.h"
 #include "reader_t1_block.h"
+
+
+#ifndef __READER_T1_SBLOCK_H__
+#define __READER_T1_SBLOCK_H__
 
 
 

@@ -1,6 +1,11 @@
 #include <stdint.h>
 #include "reader_hal.h"
-#include "reader_t1_block.h"
+#include "reader_t1.h"
+
+
+#ifndef __READER_ATR_H__
+#define __READER_ATR_H__
+
 
 
 #define READER_ATR_MAX_HIST_BYTES        15
@@ -126,3 +131,5 @@ READER_Status READER_ATR_ApplySettings(READER_ATR_Atr *atr);
 void READER_ATR_ErrHandler(void);
 
 READER_Status READER_ATR_CheckTS(uint8_t TS);
+
+#endif
