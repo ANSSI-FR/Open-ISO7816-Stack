@@ -560,7 +560,7 @@ READER_Status READER_T1_SendBlock(READER_T1_Block *pBlock, uint32_t timeout){
  * \param *pBlock Pointeur sur une structure de type READER_T1_Block. Le contenu du Block reçu sera placé à l'intérieur.
  * \param timeout Il s'agit de la valeur du timeout pour chaque caractère en milisecondes.
  */
-READER_Status READER_T1_RcvBlock(READER_T1_Block *pBlock, uint32_t currentCWT, uint32_t currentBWT){
+READER_Status READER_T1_RcvBlock(READER_T1_Block *pBlock, uint32_t currentCWT){
 	READER_Status retVal;
 	READER_T1_RedundancyType rType;
 	uint8_t buffPrologue[READER_T1_BLOCK_PROLOGUE_SIZE];
