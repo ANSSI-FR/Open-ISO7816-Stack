@@ -73,7 +73,6 @@ READER_Status READER_T1_CONTROL_IsRBlockACK(READER_T1_ContextHandler *pContext, 
 	READER_Status retVal;
 	READER_T1_ChainingStatus chainingStatus;
 	READER_T1_ExpSeqNumber blockSeqNum;
-	READER_T1_Block *pLastBlock;
 	uint32_t tmpNextIBlockSeqNum, tmpBlockSeqNum;
 	
 	/* On procede de la maniere suivante (non detaille dans la spec) :                                            */

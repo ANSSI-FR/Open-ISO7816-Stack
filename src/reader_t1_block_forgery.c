@@ -102,7 +102,7 @@ READER_Status READER_T1_FORGE_NACK71(READER_T1_ContextHandler *pContext, READER_
 	
 	
 	/* On verifie que le dernier Block envoye existe et c'est bien un I-Block                           */
-	retVal = READER_T1_CONTEXT_GetLastSent(pContext, &pBlockDest);
+	retVal = READER_T1_CONTEXT_GetLastSent(pContext, &pLastSent);
 	if(retVal != READER_OK) return retVal;
 	
 	bType = READER_T1_GetBlockType(pLastSent);

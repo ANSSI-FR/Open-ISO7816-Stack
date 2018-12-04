@@ -32,6 +32,10 @@ READER_Status READER_T1_RCPTBUFF_ExtractDataFromIBlock(READER_T1_ContextHandler 
 		return READER_ERR;
 	}
 	
+	/* On recupere la valeur du parametre IFSD qui est actuelement utilise par la communication ...  */
+	retVal = READER_T1_CONTEXT_GetCurrentIFSD(pContext, &currentIFSD);
+	if(retVal != READER_OK) return retVal;
+	
 	/* On verifie que le LEN du I-Block est bien inferieur au current IFSD ... */
 	blockLength = READER_T1_GetBlockLEN(pBlock);
 	if((uint32_t)(blockLength) > currentIFSD){
@@ -81,7 +85,7 @@ READER_Status READER_T1_RCPTBUFF_CreateAPDUResp(READER_T1_ContextHandler *pConte
 	
 	/* On recopie les donnees                           */
 	for(i=0; i<rcptBuffDataSize-2; i++){
-		pApduResp->dataBytes[i] = pRcptBuff[i];
+		pApduRespBuff[i] = pRcptBuff[i];
 	}
 	
 	/* On indique SW1 et SW2                            */
