@@ -537,15 +537,24 @@ READER_Status READER_T1_ForgeBlock(READER_T1_Block *pBlock, READER_T1_Redundancy
 }
 
 
-READER_Status READER_T1_SendBlock(READER_T1_Block *pBlock, uint32_t timeout){
+READER_Status READER_T1_SendBlock(READER_T1_Block *pBlock, uint32_t currentCWT, uint32_t extraStartDelay){
 	READER_Status retVal;
 	uint8_t *blockFrame;
 	uint32_t blockFrameSize;
+	uint32_t tickstart;
 	
+	
+	/* On recupere les donnees a envoyer sous format brut ...  */
 	blockFrame = READER_T1_GetBlockFrame(pBlock);
 	blockFrameSize = READER_T1_GetBlockTotalSize(pBlock);
 	
-	retVal = READER_HAL_SendCharFrame(blockFrame, blockFrameSize, timeout);
+	/* On patiente extraDelay milisecondes (arrondi a la milisec inf, pour eviter de depasser) ...  */
+	while((READER_HAL_GetTick() - tickstart) < extraStartDelay){
+		
+	}
+	
+	/* On envoie toutes les donnees brutes. Le temps maximal dont ont dispose pour envoyer un caractere est currentCWT ... */
+	retVal = READER_HAL_SendCharFrame(blockFrame, blockFrameSize, currentCWT);
 	if(retVal != READER_OK) return retVal;
 	
 	return READER_OK;
@@ -560,7 +569,7 @@ READER_Status READER_T1_SendBlock(READER_T1_Block *pBlock, uint32_t timeout){
  * \param *pBlock Pointeur sur une structure de type READER_T1_Block. Le contenu du Block reçu sera placé à l'intérieur.
  * \param timeout Il s'agit de la valeur du timeout pour chaque caractère en milisecondes.
  */
-READER_Status READER_T1_RcvBlock(READER_T1_Block *pBlock, uint32_t currentCWT){
+READER_Status READER_T1_RcvBlock(READER_T1_Block *pBlock, uint32_t currentCWT, uint32_t extraTimeout){
 	READER_Status retVal;
 	READER_T1_RedundancyType rType;
 	uint8_t buffPrologue[READER_T1_BLOCK_PROLOGUE_SIZE];
@@ -573,11 +582,24 @@ READER_Status READER_T1_RcvBlock(READER_T1_Block *pBlock, uint32_t currentCWT){
 	
 	/* Quoi qu'il arrive on veut recuperer les trois premiers caracteres du Block (Prologue).   */
 	/* Ensuite, en fonction des valeurs recues, on decide ...                                   */
-
-	retVal = READER_HAL_RcvCharFrameCount(buffPrologue, READER_T1_BLOCK_PROLOGUE_SIZE, &count, currentCWT);
+	
+	/* On recoit le premier caractere separepment (on prend en compte le WT entre deux Blocks)  */
+	/* En l'occurence on ajoute le WT du Block au WT du premier caractere                       */
+	/* Il s'agit du premier caractere du Prologue                                               */
+	/* Le extraTimeout est calcule a plus haut niveau ...                                       */
+	retVal = READER_HAL_RcvCharFrameCount(buffPrologue, 1, &count, currentCWT + extraTimeout);
 	if(retVal != READER_OK) return retVal;
 	
-	if(count != READER_T1_BLOCK_PROLOGUE_SIZE){
+	if(count != 1){
+		return READER_ERR;
+	}
+	
+	/* Ensuite on recupere les deux suivants du prologue ...                                    */
+
+	retVal = READER_HAL_RcvCharFrameCount(buffPrologue +1, READER_T1_BLOCK_PROLOGUE_SIZE-1, &count, currentCWT);
+	if(retVal != READER_OK) return retVal;
+	
+	if(count != READER_T1_BLOCK_PROLOGUE_SIZE -1){
 		return READER_ERR;
 	}
 	

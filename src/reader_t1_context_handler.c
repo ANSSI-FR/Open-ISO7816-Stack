@@ -100,10 +100,15 @@ READER_Status READER_T1_CONTEXT_InitContextSettings(READER_T1_ContextHandler *pC
 	retVal = READER_T1_CONTEXT_SetSBlockRequCounter(pContext, 0);
 	if(retVal != READER_OK) return retVal;
 	
+	//retVal = READER_T1_CONTEXT_SetTickLastSentStart(pContext);
+	//if(retVal != READER_OK) return retVal;
+	
 	pContext->lastSentExistenceFlag = READER_T1_BLOCK_EXISTS_NO;
 	pContext->lastIBlockSentExistenceFlag = READER_T1_BLOCK_EXISTS_NO;
 	pContext->lastRcvdExistenceFlag = READER_T1_BLOCK_EXISTS_NO;
 	pContext->lastIBlockRcvdExistenceFlag = READER_T1_BLOCK_EXISTS_NO;
+	
+	pContext->tickLastBlockFlag = READER_T1_FLAGSTATUS_RESET;
 	
 	return READER_OK;
 }
@@ -1096,5 +1101,28 @@ READER_Status READER_T1_CONTEXT_GetBlockBuff(READER_T1_ContextHandler *pContext,
 	
 	
 	return READER_OK;
+}
+
+
+
+READER_Status READER_T1_CONTEXT_SetTickLastBlock(READER_T1_ContextHandler *pContext){
+	pContext->tickLastBlock = READER_HAL_GetTick();
+	pContext->tickLastBlockFlag = READER_T1_FLAGSTATUS_SET;
+	
+	return READER_OK;
+}
+
+
+READER_Status READER_T1_CONTEXT_GetTickLastBlock(READER_T1_ContextHandler *pContext, uint32_t *tickValue){
+	if(pContext->tickLastBlockFlag == READER_T1_FLAGSTATUS_SET){
+		*tickValue = pContext->tickLastBlock;
+		return READER_OK;
+	}
+	else if(pContext->tickLastBlockFlag == READER_T1_FLAGSTATUS_RESET){
+		return READER_DOESNT_EXIST;
+	}
+	else{
+		return READER_ERR;
+	}
 }
 

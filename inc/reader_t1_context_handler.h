@@ -84,6 +84,13 @@ enum READER_T1_BlockExistence{
 };
 
 
+typedef enum READER_T1_FlagStatus READER_T1_FlagStatus;
+enum READER_T1_FlagStatus{
+	READER_T1_FLAGSTATUS_SET              =       (uint32_t)(0x00000001),
+	READER_T1_FLAGSTATUS_RESET            =       (uint32_t)(0x00000000)
+};
+
+
 typedef struct READER_T1_ContextHandler READER_T1_ContextHandler;
 struct READER_T1_ContextHandler{
 	READER_T1_BlockBuffer blockBuff;
@@ -129,6 +136,8 @@ struct READER_T1_ContextHandler{
 	READER_T1_SBlockType SBlockExpectedType;
 	uint32_t SBlockRequCounter;
 	
+	uint32_t tickLastBlock;
+	READER_T1_FlagStatus tickLastBlockFlag;
 	
 };
 
@@ -175,6 +184,10 @@ READER_Status READER_T1_CONTEXT_SetACKStatus(READER_T1_ContextHandler *pContext,
 
 
 /* Manipulation des derniers blocs envoyes/recus */
+
+READER_Status READER_T1_CONTEXT_SetTickLastBlock(READER_T1_ContextHandler *pContext);
+READER_Status READER_T1_CONTEXT_GetTickLastBlock(READER_T1_ContextHandler *pContext, uint32_t *tickValue);
+
 READER_Status READER_T1_CONTEXT_GetLastSent(READER_T1_ContextHandler *pContext, READER_T1_Block **ppBlockDest);
 READER_Status READER_T1_CONTEXT_GetLastIBlockSent(READER_T1_ContextHandler *pContext, READER_T1_Block **ppBlockDest);
 READER_Status READER_T1_CONTEXT_GetLastIBlockSentSeqSum(READER_T1_ContextHandler *pContext, uint32_t *pSeqNum);

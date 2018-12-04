@@ -210,18 +210,33 @@ READER_Status READER_T1_CONTROL_SendBlock(READER_T1_ContextHandler *pContext, RE
 	READER_Status retVal;
 	READER_T1_Block blockToSend;
 	READER_T1_BlockType bType;
-	uint32_t currentCWT;
+	uint32_t currentCWT, currentBGT;
+	uint32_t tickLastBlock, extraStartDelay;
 	
 	
 	/* On recupere le Block suivant a envoyer dans le Buffer du Contexte        */
 	retVal = READER_T1_BUFFER_Enqueue(pContext, &blockToSend);
 	if(retVal != READER_OK) return retVal; 
+	
+	/* Avant d'envoyer le Block, on calcul le delai a appliquer pour respecter le BGT entre les Blocks */
+	retVal = READER_T1_CONTEXT_GetCurrentBGT(pContext, &currentBGT);
+	if(retVal != READER_OK) return retVal;
+	
+	retVal = READER_T1_CONTEXT_GetTickLastBlock(pContext, &tickLastBlock);
+	if((retVal != READER_OK) && (retVal != READER_DOESNT_EXIST)) return retVal;
+	
+	if(retVal == READER_DOESNT_EXIST){
+		extraStartDelay = 0;
+	}
+	else{
+		extraStartDelay = tickLastBlock + currentBGT - READER_HAL_GetTick();
+	}
 	   
-	/* On envoie le block                                                       */
+	/* On envoie le Block                                                       */
 	retVal = READER_T1_CONTEXT_GetCurrentCWT(pContext, &currentCWT);
 	if(retVal != READER_OK) return retVal;
 	
-	retVal = READER_T1_SendBlock(&blockToSend, currentCWT);
+	retVal = READER_T1_SendBlock(&blockToSend, currentCWT, extraStartDelay);
 	if(retVal != READER_OK) return retVal;
 	
 	
@@ -325,15 +340,31 @@ READER_Status READER_T1_CONTROL_RcvBlock(READER_T1_ContextHandler *pContext, REA
 	READER_T1_BlockType bType;
 	READER_T1_SBlockExpected SBlockExpected;
 	READER_T1_SBlockType SBlockExpectedType, SBlockType;
-	uint32_t currentCWT;
+	uint32_t currentCWT, currentBWT;
+	uint32_t extraTimeout;
+	uint32_t tickLastBlock;
 	
 	
-	/* On recupere les valeurs de timout a appliquer ... */
+	/* On recupere les valeurs de timeout a appliquer ... */
 	retVal = READER_T1_CONTEXT_GetCurrentCWT(pContext, &currentCWT);
 	if(retVal != READER_OK) return retVal;
 	
+	retVal = READER_T1_CONTEXT_GetCurrentBWT(pContext, &currentBWT);
+	if(retVal != READER_OK) return retVal;
+	
+	/* On calcule le extraTimout pour le premeir caractere du Block que l'on va recevoir. Sert a garantir le BWT */
+	retVal = READER_T1_CONTEXT_GetTickLastBlock(pContext, &tickLastBlock);
+	if((retVal != READER_OK) && (retVal != READER_DOESNT_EXIST)) return retVal;
+	
+	if(retVal == READER_DOESNT_EXIST){
+		extraTimeout = currentBWT;
+	}
+	else{
+		extraTimeout = tickLastBlock + currentBWT - READER_HAL_GetTick();
+	}
+	
 	/* On receptionne le Block ... */
-	retVal = READER_T1_RcvBlock(pBlock, currentCWT);
+	retVal = READER_T1_RcvBlock(pBlock, currentCWT, extraTimeout);
 	if((retVal != READER_OK) && (retVal != READER_TIMEOUT)) return retVal;
 	
 	/* On regarde si on a eu un timeout     */
