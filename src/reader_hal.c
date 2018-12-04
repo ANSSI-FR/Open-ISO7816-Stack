@@ -94,26 +94,22 @@ READER_Status READER_HAL_Init(void){
 
 
 
-
-/**
- * \fn READER_Status READER_HAL_SendCharFrame(uint8_t *frame, uint32_t frameSize, uint32_t timeout)
- * \brief Cette fonction permet de placer uen chaine d'octets sur la ligne IO. Cette fonction a un comportement bloquant.
- * \return Valeur de type READER_Status. READER_OK si l'exécution s'est correctement déroulée. Toute autre valeur indique uen erreur.
- * \param *frame Pointeur sur la chaine d'octets à envoyer.
- * \param frameSize Taille de la chaine d'octets à envoyer.
- * \param timeout Valeur du timeout en milisecondes à utiliser. Si cette valeur est READER_HAL_USE_ISO_WT alors le timeout utilisé sera celui spécifié dans la norme ISO.
- */
-READER_Status READER_HAL_SendCharFrame(uint8_t *frame, uint32_t frameSize, uint32_t timeout){
+READER_Status READER_HAL_SendCharFrameTickstart(uint8_t *frame, uint32_t frameSize, uint32_t timeout, uint32_t *pTickstart){
 	READER_Status retVal;
-	uint32_t tickstart;
+	//uint32_t tickstart;
 	uint32_t i;
 	
 	
 	for(i=0; i<frameSize; i++){
-		tickstart = READER_HAL_GetTick();
+		//tickstart = READER_HAL_GetTick();
 		
 		retVal = READER_HAL_SendChar(frame[i], timeout);
 		if(retVal != READER_OK) return retVal;
+		
+		/* On mets a jour la date du debut de l'envoi du premier caractere de la frame. (On soustrait le temps en milisec qu'il faut pour envoyer un carac) */
+		if(i == 0){
+			*pTickstart = READER_HAL_GetTick() - READER_UTILS_ComputeEtuMili(READER_HAL_GetFi(), READER_HAL_GetDi(), READER_HAL_GetFreq());
+		}
 		
 		/* On fait attention a respecter le Guard Time (GT) entre les caracteres */
 		//while((READER_HAL_GetTick()-tickstart) < READER_HAL_GetGTMili()){
@@ -135,22 +131,32 @@ READER_Status READER_HAL_SendCharFrame(uint8_t *frame, uint32_t frameSize, uint3
 }
 
 
-
-
+/* ATTENTION, VERIFIER SI DESCRIPTION TOUJOURS A JOUR ...  */
 /**
- * \fn READER_Status READER_HAL_RcvCharFrameCount(uint8_t *frame, uint32_t frameSize, uint32_t *rcvCount, uint32_t timeout)
- * \brief Cette fonction permet se se mettre à l'écoute d'une chaine d'octets sur la ligne IO. Cette fonction a un comportement bloquant. La fonction indique le nombre de caractères qu'elle a pu lire.
- * \return Valeur de type READER_Status. READER_OK si l'exécution s'est correctement déroulée. Toute autre valeur suggère une erreur.
- * \param *frame Pointeur sur le buffer à utiliser pour stocker les octets reçus.
- * \param frameSize Nombre d'octets à recevoir.
+ * \fn READER_Status READER_HAL_SendCharFrame(uint8_t *frame, uint32_t frameSize, uint32_t timeout)
+ * \brief Cette fonction permet de placer uen chaine d'octets sur la ligne IO. Cette fonction a un comportement bloquant.
+ * \return Valeur de type READER_Status. READER_OK si l'exécution s'est correctement déroulée. Toute autre valeur indique uen erreur.
+ * \param *frame Pointeur sur la chaine d'octets à envoyer.
+ * \param frameSize Taille de la chaine d'octets à envoyer.
  * \param timeout Valeur du timeout en milisecondes à utiliser. Si cette valeur est READER_HAL_USE_ISO_WT alors le timeout utilisé sera celui spécifié dans la norme ISO.
- * \param *rcvCount Pointeur sur une variable de type unit32_t. Elle sera remplie avec le nombre de caractères qui ont pu être lus. Si pas de necessite de recuperer cette valeur alors il est possible d'indoquer NULL.
  */
-READER_Status READER_HAL_RcvCharFrameCount(uint8_t *frame, uint32_t frameSize, uint32_t *rcvCount, uint32_t timeout){
+READER_Status READER_HAL_SendCharFrame(uint8_t *frame, uint32_t frameSize, uint32_t timeout){
+	READER_Status retVal;
+	uint32_t tickstart;
+	
+	
+	retVal = READER_HAL_SendCharFrameTickstart(frame, frameSize, timeout, &tickstart);
+	if(retVal != READER_OK) return retVal;
+	
+	return READER_OK;
+}
+
+
+/* Retourne le timestamp du leading edge de la frame (Tickstart) ...  */
+READER_Status READER_HAL_RcvCharFrameCountTickstart(uint8_t *frame, uint32_t frameSize, uint32_t *rcvCount, uint32_t timeout, uint32_t *tickstart){
 	READER_Status retVal;
 	uint32_t i = 0;
 	uint8_t rcvByte;
-	//uint32_t tickstart;
 	uint32_t timeoutMili;
 	uint32_t rcvCounter = 0;
 	uint32_t dummy;
@@ -180,6 +186,12 @@ READER_Status READER_HAL_RcvCharFrameCount(uint8_t *frame, uint32_t frameSize, u
 		retVal = READER_HAL_RcvChar(&rcvByte, timeoutMili);
 		if(retVal != READER_OK) return retVal;
 		
+		/* Si on vient de recevoir le premier caractere, alors on mets a jour le tickstart du leading edge de la frame ...  */
+		if(i == 0){
+			/* On veut la date du debut de la reception de la frame, donc on retire le temps en milisecondes que dure un caractere ...  */
+			*tickstart = READER_HAL_GetTick() - READER_UTILS_ComputeEtuMili(READER_HAL_GetFi(), READER_HAL_GetDi(), READER_HAL_GetFreq());
+		}
+		
 		rcvCounter++;
 		*rcvCount = rcvCounter;
 		
@@ -197,6 +209,28 @@ READER_Status READER_HAL_RcvCharFrameCount(uint8_t *frame, uint32_t frameSize, u
 		
 		i++;
 	}
+	
+	return READER_OK;
+}
+
+
+/* ATTENTION, VERIFIER SI DESCRIPTION TOUJOURS VALIDE ...  */
+/**
+ * \fn READER_Status READER_HAL_RcvCharFrameCount(uint8_t *frame, uint32_t frameSize, uint32_t *rcvCount, uint32_t timeout)
+ * \brief Cette fonction permet se se mettre à l'écoute d'une chaine d'octets sur la ligne IO. Cette fonction a un comportement bloquant. La fonction indique le nombre de caractères qu'elle a pu lire.
+ * \return Valeur de type READER_Status. READER_OK si l'exécution s'est correctement déroulée. Toute autre valeur suggère une erreur.
+ * \param *frame Pointeur sur le buffer à utiliser pour stocker les octets reçus.
+ * \param frameSize Nombre d'octets à recevoir.
+ * \param timeout Valeur du timeout en milisecondes à utiliser. Si cette valeur est READER_HAL_USE_ISO_WT alors le timeout utilisé sera celui spécifié dans la norme ISO.
+ * \param *rcvCount Pointeur sur une variable de type unit32_t. Elle sera remplie avec le nombre de caractères qui ont pu être lus. Si pas de necessite de recuperer cette valeur alors il est possible d'indoquer NULL.
+ */
+READER_Status READER_HAL_RcvCharFrameCount(uint8_t *frame, uint32_t frameSize, uint32_t *rcvCount, uint32_t timeout){
+	READER_Status retVal;
+	uint32_t tickstart;
+	
+	
+	retVal = READER_HAL_RcvCharFrameCountTickstart(frame, frameSize, rcvCount, timeout, &tickstart);
+	if(retVal != READER_OK) return retVal;
 	
 	return READER_OK;
 }

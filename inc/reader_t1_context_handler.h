@@ -16,10 +16,10 @@
 #define READER_T1_CONTEXT_DEFAULT_IFSD      (uint32_t)(32)        /* Voir ISO7816-3 section 11.4.2 */
 #define READER_T1_CONTEXT_DEFAULT_CWI       (uint32_t)(13)        /* Voir ISO7816-3 section 11.4.3 */
 #define READER_T1_CONTEXT_DEFAULT_BWI       (uint32_t)(4)         /* Voir ISO7816-3 section 11.4.3 */
-#define READER_T1_CONTEXT_DEFAULT_BWT       (uint32_t)(1)
-#define READER_T1_CONTEXT_DEFAULT_BGT       (uint32_t)(1)
-#define READER_T1_CONTEXT_DEFAULT_CWT       (uint32_t)(1)
-#define READER_T1_CONTEXT_DEFAULT_CGT       (uint32_t)(1)
+#define READER_T1_CONTEXT_DEFAULT_BWT       READER_DEFAULT_BWT
+#define READER_T1_CONTEXT_DEFAULT_BGT       READER_DEFAULT_BGT
+//#define READER_T1_CONTEXT_DEFAULT_CWT       READER_DEFAULT_
+#define READER_T1_CONTEXT_DEFAULT_CGT       READER_DEFAULT_GT
 #define READER_T1_CONTEXT_DEFAULT_CORRCODE  READER_T1_LRC         /* Voir ISO7816-3 section 11.4.4 */
 
 
@@ -185,7 +185,7 @@ READER_Status READER_T1_CONTEXT_SetACKStatus(READER_T1_ContextHandler *pContext,
 
 /* Manipulation des derniers blocs envoyes/recus */
 
-READER_Status READER_T1_CONTEXT_SetTickLastBlock(READER_T1_ContextHandler *pContext);
+READER_Status READER_T1_CONTEXT_SetTickLastBlock(READER_T1_ContextHandler *pContext, uint32_t tickLastBlock);
 READER_Status READER_T1_CONTEXT_GetTickLastBlock(READER_T1_ContextHandler *pContext, uint32_t *tickValue);
 
 READER_Status READER_T1_CONTEXT_GetLastSent(READER_T1_ContextHandler *pContext, READER_T1_Block **ppBlockDest);

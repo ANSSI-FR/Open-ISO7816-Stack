@@ -29,7 +29,7 @@ READER_Status READER_T1_CONTEXT_InitCommSettings(READER_T1_ContextHandler *pCont
 	retVal = READER_T1_CONTEXT_SetCurrentCGT(pContext, READER_T1_CONTEXT_DEFAULT_CGT);
 	if(retVal != READER_OK) return retVal;
 	
-	retVal = READER_T1_CONTEXT_SetCurrentCWT(pContext, READER_T1_CONTEXT_DEFAULT_CWT);
+	retVal = READER_T1_CONTEXT_SetCurrentCWT(pContext, READER_HAL_GetWT());
 	if(retVal != READER_OK) return retVal;
 	
 	retVal = READER_T1_CONTEXT_SetCurrentBWI(pContext, READER_T1_CONTEXT_DEFAULT_BWI);
@@ -180,7 +180,7 @@ READER_Status READER_T1_CONTEXT_GetCurrentBWI(READER_T1_ContextHandler *pContext
 
 READER_Status READER_T1_CONTEXT_GetCurrentIFSC(READER_T1_ContextHandler *pContext, uint32_t *pIfsc){
 	/* On verifie que la valeur est valide (Voir ISO7816-3 section 11.4.2) ...  */
-	if((pContext->currentIFSC > 0x00) && (pContext->currentIFSC < 0xFF)){
+	if((pContext->currentIFSC >= READER_T1_MIN_IFSC_ACCEPTED) && (pContext->currentIFSC <= READER_T1_MAX_IFSC_ACCEPTED)){
 		*pIfsc = pContext->currentIFSC;
 		return READER_OK;
 	}
@@ -192,7 +192,7 @@ READER_Status READER_T1_CONTEXT_GetCurrentIFSC(READER_T1_ContextHandler *pContex
 
 READER_Status READER_T1_CONTEXT_GetCurrentIFSD(READER_T1_ContextHandler *pContext, uint32_t *pIfsd){
 	/* On verifie que la valeur est valide (Voir ISO7816-3 section 11.4.2) ...  */
-	if((pContext->currentIFSD > 0x00) && (pContext->currentIFSD < 0xFF)){
+	if((pContext->currentIFSD >= READER_T1_MIN_IFSD_ACCEPTED) && (pContext->currentIFSD <= READER_T1_MAX_IFSD_ACCEPTED)){
 		*pIfsd = pContext->currentIFSD;
 		return READER_OK;
 	}
@@ -255,7 +255,7 @@ READER_Status READER_T1_CONTEXT_SetCurrentBWI(READER_T1_ContextHandler *pContext
 
 
 READER_Status READER_T1_CONTEXT_SetCurrentIFSC(READER_T1_ContextHandler *pContext, uint32_t ifsc){
-	if((ifsc >= 0x01) && (ifsc <= 0xFE)){   /* Voir ISO7816-3 section 11.4.2 */
+	if((ifsc >= READER_T1_MIN_IFSC_ACCEPTED) && (ifsc <= READER_T1_MAX_IFSC_ACCEPTED)){   /* Voir ISO7816-3 section 11.4.2 */
 		pContext->currentIFSC = ifsc;
 	}
 	else{
@@ -267,7 +267,7 @@ READER_Status READER_T1_CONTEXT_SetCurrentIFSC(READER_T1_ContextHandler *pContex
 
 
 READER_Status READER_T1_CONTEXT_SetCurrentIFSD(READER_T1_ContextHandler *pContext, uint32_t ifsd){
-	if((ifsd >= 0x01) && (ifsd <= 0xFE)){   /* Voir ISO7816-3 section 11.4.2 */
+	if((ifsd >= READER_T1_MIN_IFSD_ACCEPTED) && (ifsd <= READER_T1_MAX_IFSD_ACCEPTED)){   /* Voir ISO7816-3 section 11.4.2 */
 		pContext->currentIFSC = ifsd;
 	}
 	else{
@@ -1105,8 +1105,8 @@ READER_Status READER_T1_CONTEXT_GetBlockBuff(READER_T1_ContextHandler *pContext,
 
 
 
-READER_Status READER_T1_CONTEXT_SetTickLastBlock(READER_T1_ContextHandler *pContext){
-	pContext->tickLastBlock = READER_HAL_GetTick();
+READER_Status READER_T1_CONTEXT_SetTickLastBlock(READER_T1_ContextHandler *pContext, uint32_t tickLastBlock){
+	pContext->tickLastBlock = tickLastBlock;
 	pContext->tickLastBlockFlag = READER_T1_FLAGSTATUS_SET;
 	
 	return READER_OK;

@@ -236,9 +236,12 @@ READER_Status READER_T1_CONTROL_SendBlock(READER_T1_ContextHandler *pContext, RE
 	retVal = READER_T1_CONTEXT_GetCurrentCWT(pContext, &currentCWT);
 	if(retVal != READER_OK) return retVal;
 	
-	retVal = READER_T1_SendBlock(&blockToSend, currentCWT, extraStartDelay);
+	retVal = READER_T1_SendBlock(&blockToSend, currentCWT, extraStartDelay, &tickLastBlock);
 	if(retVal != READER_OK) return retVal;
 	
+	/* On mets a jour la date du leading edge du dernier Block envoye ...  */
+	retVal = READER_T1_CONTEXT_SetTickLastBlock(pContext, tickLastBlock);
+	if(retVal != READER_OK) return retVal;
 	
 	/* On set le dernier Block envoye                                */
 	retVal = READER_T1_CONTEXT_SetLastSent(pContext, &blockToSend);
@@ -352,7 +355,7 @@ READER_Status READER_T1_CONTROL_RcvBlock(READER_T1_ContextHandler *pContext, REA
 	retVal = READER_T1_CONTEXT_GetCurrentBWT(pContext, &currentBWT);
 	if(retVal != READER_OK) return retVal;
 	
-	/* On calcule le extraTimout pour le premeir caractere du Block que l'on va recevoir. Sert a garantir le BWT */
+	/* On calcule le extraTimout pour le premeir caractere du Block que l'on va recevoir. Sert a garantir le BWT  */
 	retVal = READER_T1_CONTEXT_GetTickLastBlock(pContext, &tickLastBlock);
 	if((retVal != READER_OK) && (retVal != READER_DOESNT_EXIST)) return retVal;
 	
@@ -364,7 +367,7 @@ READER_Status READER_T1_CONTROL_RcvBlock(READER_T1_ContextHandler *pContext, REA
 	}
 	
 	/* On receptionne le Block ... */
-	retVal = READER_T1_RcvBlock(pBlock, currentCWT, extraTimeout);
+	retVal = READER_T1_RcvBlock(pBlock, currentCWT, extraTimeout, &tickLastBlock);    /* La fonction de reception de Block fait remonter la date du leading Edge du Block recu ...  */
 	if((retVal != READER_OK) && (retVal != READER_TIMEOUT)) return retVal;
 	
 	/* On regarde si on a eu un timeout     */
@@ -372,6 +375,10 @@ READER_Status READER_T1_CONTROL_RcvBlock(READER_T1_ContextHandler *pContext, REA
 		retVal = READER_T1_ERR_DealWithError(pContext, 0);
 		if(retVal != READER_OK) return retVal;
 	}
+	
+	/* On mets a jour le tick du leading edge du dernier Block recu ...  */
+	retVal = READER_T1_CONTEXT_SetTickLastBlock(pContext, tickLastBlock);
+	if(retVal != READER_OK) return retVal;
 	
 	/* On regarde si le Block est corrompu ... */
 	retVal = READER_T1_CheckBlockIntegrity(pBlock);

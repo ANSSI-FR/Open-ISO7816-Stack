@@ -68,8 +68,10 @@ struct READER_HAL_CommSettings{
 
 READER_Status READER_HAL_Init(void);
 READER_Status READER_HAL_SendCharFrame(uint8_t *frame, uint32_t frameSize, uint32_t timeout);
+READER_Status READER_HAL_SendCharFrameTickstart(uint8_t *frame, uint32_t frameSize, uint32_t timeout, uint32_t *pTickstart);
 READER_Status READER_HAL_RcvCharFrame(uint8_t *frame, uint32_t frameSize, uint32_t timeout);
 READER_Status READER_HAL_RcvCharFrameCount(uint8_t *frame, uint32_t frameSize, uint32_t *rcvCount, uint32_t timeout);
+READER_Status READER_HAL_RcvCharFrameCountTickstart(uint8_t *frame, uint32_t frameSize, uint32_t *rcvCount, uint32_t timeout, uint32_t *tickstart);
 READER_Status READER_HAL_RcvChar(uint8_t *character, uint32_t timeout);
 READER_Status READER_HAL_SendChar(uint8_t character, uint32_t timeout);
 
