@@ -573,22 +573,11 @@ READER_Status READER_T1_RcvBlock(READER_T1_Block *pBlock, uint32_t currentCWT, u
 	
 	/* Quoi qu'il arrive on veut recuperer les trois premiers caracteres du Block (Prologue).   */
 	/* Ensuite, en fonction des valeurs recues, on decide ...                                   */
-	
-	/* On recoit le premier caractere separepment (on prend en compte le WT entre deux Blocks)  */
-	/* En l'occurence on ajoute le WT du Block au WT du premier caractere                       */
-	/* Il s'agit du premier caractere du Prologue                                               */
-	retVal = READER_HAL_RcvCharFrameCount(buffPrologue, 1, &count, currentCWT + currentBWT);
+
+	retVal = READER_HAL_RcvCharFrameCount(buffPrologue, READER_T1_BLOCK_PROLOGUE_SIZE, &count, currentCWT);
 	if(retVal != READER_OK) return retVal;
 	
-	if(count != 1){
-		return READER_ERR;
-	}
-	
-	/* On recoit d'abord les deux caracteres qui restent du Prologue du Block.  ...             */
-	retVal = READER_HAL_RcvCharFrameCount(buffPrologue +1, READER_T1_BLOCK_PROLOGUE_SIZE -1, &count, currentCWT);
-	if(retVal != READER_OK) return retVal;
-	
-	if(count != READER_T1_BLOCK_PROLOGUE_SIZE -1){
+	if(count != READER_T1_BLOCK_PROLOGUE_SIZE){
 		return READER_ERR;
 	}
 	
