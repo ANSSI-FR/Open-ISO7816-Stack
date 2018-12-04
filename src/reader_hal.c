@@ -150,7 +150,7 @@ READER_Status READER_HAL_RcvCharFrameCount(uint8_t *frame, uint32_t frameSize, u
 	READER_Status retVal;
 	uint32_t i = 0;
 	uint8_t rcvByte;
-	uint32_t tickstart;
+	//uint32_t tickstart;
 	uint32_t timeoutMili;
 	uint32_t rcvCounter = 0;
 	uint32_t dummy;
@@ -175,7 +175,7 @@ READER_Status READER_HAL_RcvCharFrameCount(uint8_t *frame, uint32_t frameSize, u
 	
 	
 	while(i<frameSize){
-		tickstart = READER_HAL_GetTick();
+		//tickstart = READER_HAL_GetTick();
 		
 		retVal = READER_HAL_RcvChar(&rcvByte, timeoutMili);
 		if(retVal != READER_OK) return retVal;
