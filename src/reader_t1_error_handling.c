@@ -226,3 +226,13 @@ READER_Status READER_T1_ERR_DoReset(READER_T1_ContextHandler *pContext){
 }
 
 
+READER_Status READER_T1_ERR_StackErrorBlock(READER_T1_ContextHandler *pContext, READER_T1_Block *pErrorBlock){
+	READER_Status retVal;
+	
+	
+	retVal = READER_T1_BUFFER_Stack(pContext, pErrorBlock);
+	if(retVal != READER_OK) return retVal;
+	
+	return READER_OK;
+}
+

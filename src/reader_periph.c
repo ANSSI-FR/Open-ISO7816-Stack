@@ -109,6 +109,22 @@ READER_Status READER_PERIPH_Init(void){
 
 
 void READER_PERIPH_ErrHandler(void){
+	GPIO_InitTypeDef gpioInitStruct;
+	
+	gpioInitStruct.Pin = GPIO_PIN_14;
+	gpioInitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+	gpioInitStruct.Pull = GPIO_NOPULL;
+	gpioInitStruct.Speed = GPIO_SPEED_FREQ_MEDIUM;
+	
+	__HAL_RCC_GPIOD_CLK_ENABLE();
+	HAL_GPIO_Init(GPIOD, &gpioInitStruct);
+	
+	
+	
+	//HAL_GPIO_TogglePin(GPIOD, GPIO_PIN_14);
+	//HAL_Delay(100);
+	//HAL_GPIO_TogglePin(GPIOD, GPIO_PIN_14);
+	
 	while(1){
 		HAL_GPIO_TogglePin(GPIOD, GPIO_PIN_14);
 		HAL_Delay(100);

@@ -157,7 +157,7 @@ READER_Status READER_HAL_RcvCharFrameCountTickstart(uint8_t *frame, uint32_t fra
 	READER_Status retVal;
 	uint32_t i = 0;
 	uint8_t rcvByte;
-	uint32_t timeoutMili;
+	//uint32_t timeoutMili;
 	uint32_t rcvCounter = 0;
 	uint32_t dummy;
 	
@@ -171,19 +171,20 @@ READER_Status READER_HAL_RcvCharFrameCountTickstart(uint8_t *frame, uint32_t fra
 	/* Le nombre de caracteres recus est de 0 pour l'instant */
 	*rcvCount = 0;
 	
-	/* Prise en compte du Guard Time (GT). On ajoute simplement le delai de GT au timeout. */
-	if(timeout == READER_HAL_USE_ISO_WT){
-		timeoutMili = READER_HAL_GetWT() + READER_HAL_GetGTMili();
-	}
-	else{
-		timeoutMili = timeout + READER_HAL_GetGTMili();
-	}
+	/* Finalement, on considere que le GT ne concerne que l'envoi. Ici, on suppose que le WT a ete calcule intelligemment de sorte a prendre en compte l'enventuel GT ...  */
+	///* Prise en compte du Guard Time (GT). On ajoute simplement le delai de GT au timeout. */
+	//if(timeout == READER_HAL_USE_ISO_WT){
+	//	timeoutMili = READER_HAL_GetWT() + READER_HAL_GetGTMili();
+	//}
+	//else{
+	//	timeoutMili = timeout + READER_HAL_GetGTMili();
+	//}
 	
 	
 	while(i<frameSize){
 		//tickstart = READER_HAL_GetTick();
 		
-		retVal = READER_HAL_RcvChar(&rcvByte, timeoutMili);
+		retVal = READER_HAL_RcvChar(&rcvByte, timeout);
 		if(retVal != READER_OK) return retVal;
 		
 		/* Si on vient de recevoir le premier caractere, alors on mets a jour le tickstart du leading edge de la frame ...  */

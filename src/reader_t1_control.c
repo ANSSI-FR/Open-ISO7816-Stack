@@ -250,7 +250,6 @@ READER_Status READER_T1_CONTROL_SendBlock(READER_T1_ContextHandler *pContext, RE
 	/* On recupere le type du Block que l'on vient d'envoyer et selon son type, on mets a jour le contexte de communication .... */
 	bType = READER_T1_GetBlockType(&blockToSend);
 	
-	
 	if(bType == READER_T1_IBLOCK){
 		retVal = READER_T1_CONTROL_IBlockSentUpdateContext(pContext, &blockToSend);
 		if(retVal != READER_OK) return retVal;		

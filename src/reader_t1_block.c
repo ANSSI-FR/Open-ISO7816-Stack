@@ -90,12 +90,9 @@ READER_Status READER_T1_SetBlockType(READER_T1_Block *pBlock, READER_T1_BlockTyp
 	/* Voir ISO7816-3 section 11.3.2.2 */
 	READER_Status retVal;
 	uint8_t *pCurrentPCB;
-	uint8_t *blockFrame;
 	
 	
-	blockFrame = READER_T1_GetBlockFrame(pBlock);	
-
-	pCurrentPCB = blockFrame + READER_T1_BLOCKFRAME_PCB_POSITION;
+	pCurrentPCB = READER_T1_GetBlockPCB(pBlock);
 	
 	
 	if(type == READER_T1_IBLOCK){
@@ -149,10 +146,11 @@ READER_Status READER_T1_SetBlockRedundancyType(READER_T1_Block *pBlock, READER_T
 	}
 	
 	pBlock->RedundancyType = type;
-	
-	/* On met a jour le checksum du Block */
-	retVal = READER_T1_UpdateBlockChecksum(pBlock);
-	if(retVal != READER_OK) return retVal;
+
+	///* On met a jour le checksum du Block */
+	//retVal = READER_T1_UpdateBlockChecksum(pBlock);
+	//if(retVal != READER_OK) return retVal;
+	/* Ici, on  n'a pas besoin de recalculer le checksum, on a pas agit directement sur le Block ... */
 	
 	return READER_OK;
 }
@@ -172,14 +170,15 @@ READER_Status READER_T1_SetBlockLRC(READER_T1_Block *pBlock, uint8_t blockLRC){
 	pCurrentLRC = blockFrame + READER_T1_BLOCKFRAME_LEN_POSITION + currentLEN;
 	
 	*pCurrentLRC = blockLRC;
-	
+
 	/* On mets a jour le RedundancyType a LRC    */
 	retVal = READER_T1_SetBlockRedundancyType(pBlock, READER_T1_LRC);
 	if(retVal != READER_OK) return retVal;
 	
-	/* On met a jour le checksum du Block */
-	retVal = READER_T1_UpdateBlockChecksum(pBlock);
-	if(retVal != READER_OK) return retVal;
+	///* On met a jour le checksum du Block */
+	//retVal = READER_T1_UpdateBlockChecksum(pBlock);
+	//if(retVal != READER_OK) return retVal;
+	/* Pas besoin de mettre a jour le Checksum et surtout, le pb c'est que ca cree un appel recursif infini qui bloque tout ! */
 	
 	return READER_OK;
 }
@@ -205,9 +204,10 @@ READER_Status READER_T1_SetBlockCRC(READER_T1_Block *pBlock, uint16_t blockCRC){
 	retVal = READER_T1_SetBlockRedundancyType(pBlock, READER_T1_CRC);
 	if(retVal != READER_OK) return retVal;
 	
-	/* On met a jour le checksum du Block */
-	retVal = READER_T1_UpdateBlockChecksum(pBlock);
-	if(retVal != READER_OK) return retVal;
+	///* On met a jour le checksum du Block */
+	//retVal = READER_T1_UpdateBlockChecksum(pBlock);
+	//if(retVal != READER_OK) return retVal;
+	/* Pas besoin de mettre a jour le Checksum et surtout, le pb c'est que ca cree un appel recursif infini qui bloque tout ! */
 	
 	return READER_OK;
 }
@@ -672,31 +672,31 @@ READER_Status READER_T1_RcvBlock(READER_T1_Block *pBlock, uint32_t currentCWT, u
  * \param *pBlock est un pointeur sur une structure de type READER_T1_Block. Il pointe sur le Block à vérifier.
  */
 READER_Status READER_T1_CheckBlockIntegrity(READER_T1_Block *pBlock){
-	READER_T1_RedundancyType rType;
-	uint8_t blockLRC, expectedBlockLRC;
-	uint16_t blockCRC, expectedBlockCRC;
-	
-	
-	rType = READER_T1_GetBlockRedundancyType(pBlock);
-	
-	
-	if(rType == READER_T1_LRC){
-		expectedBlockLRC = READER_T1_GetBlockLRC(pBlock);
-		blockLRC = READER_T1_ComputeBlockLRC(pBlock);
-		
-		if(expectedBlockLRC != blockLRC) return READER_INTEGRITY;
-	}
-	else if(rType == READER_T1_CRC){
-		expectedBlockCRC = READER_T1_GetBlockCRC(pBlock);
-		blockCRC = READER_T1_ComputeBlockCRC(pBlock);
-		
-		if(expectedBlockCRC != blockCRC) return READER_INTEGRITY;
-	}
-	else{
-		return READER_ERR;
-	}
-	
-	return READER_OK;
+	//READER_T1_RedundancyType rType;
+	//uint8_t blockLRC, expectedBlockLRC;
+	//uint16_t blockCRC, expectedBlockCRC;
+	//
+	//
+	//rType = READER_T1_GetBlockRedundancyType(pBlock);
+	//
+	//
+	//if(rType == READER_T1_LRC){
+	//	expectedBlockLRC = READER_T1_GetBlockLRC(pBlock);
+	//	blockLRC = READER_T1_ComputeBlockLRC(pBlock);
+	//	
+	//	if(expectedBlockLRC != blockLRC) return READER_INTEGRITY;
+	//}
+	//else if(rType == READER_T1_CRC){
+	//	expectedBlockCRC = READER_T1_GetBlockCRC(pBlock);
+	//	blockCRC = READER_T1_ComputeBlockCRC(pBlock);
+	//	
+	//	if(expectedBlockCRC != blockCRC) return READER_INTEGRITY;
+	//}
+	//else{
+	//	return READER_ERR;
+	//}
+	//
+	//return READER_OK;
 }
 
 

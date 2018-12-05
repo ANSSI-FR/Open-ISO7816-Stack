@@ -257,7 +257,10 @@ READER_Status READER_T1_FORGE_SliceDataAndFillBuffer(READER_T1_ContextHandler *p
 	if(retVal != READER_OK) return retVal;
 	
 	/* On verifie que le nombre de Blocks que l'on veut generer peut rentre dans le Buffer de Blocks */
-	nbBlocksNeeded = (dataSize / currentIFSC) + 1;
+	nbBlocksNeeded = (dataSize / currentIFSC);
+	if((dataSize % currentIFSC) != 0){
+		nbBlocksNeeded += 1;
+	}
 	
 	retVal = READER_T1_BUFFER_PlacesLeft(pContext, &buffPlacesLeft);
 	if(retVal != READER_OK) return retVal;
@@ -295,7 +298,7 @@ READER_Status READER_T1_FORGE_SliceDataAndFillBuffer(READER_T1_ContextHandler *p
 		/* On forge le I-Block                                                             */
 		retVal = READER_T1_ForgeIBlock(&tmpBlock, dataBuff+i, MIN(currentIFSC, dataSize-bytesCounter), seqNum, mBit);
 		if(retVal != READER_OK) return retVal;										                                           
-												                                           
+											                                           
 		/* On enfile le I-Block dans le Buffer                                             */
 		retVal = READER_T1_BUFFER_Enqueue(pContext, &tmpBlock);
 		if(retVal != READER_OK) return retVal;								                                           
@@ -508,6 +511,7 @@ READER_Status READER_T1_FORGE_FillBuffWithAPDUCase4S(READER_T1_ContextHandler *p
 	retVal = READER_APDU_CheckCmdValidity(pApduCmd);
 	if(retVal != READER_OK) return retVal;
 	
+	
 	/* On remplit le buffer brut/intermediaire                                         */
 	rawBuff[0] = pApduCmd->header.CLA;
 	rawBuff[1] = pApduCmd->header.INS;
@@ -523,6 +527,7 @@ READER_Status READER_T1_FORGE_FillBuffWithAPDUCase4S(READER_T1_ContextHandler *p
 	
 	/* On decoupe ce buffer en I-Blocks que l'on place dans le Buffer d'envoi ....     */
 	retVal = READER_T1_FORGE_SliceDataAndFillBuffer(pContext, rawBuff, READER_APDU_HEADER_SIZE + pApduCmd->body.Nc + 2);
+	
 	if(retVal != READER_OK) return retVal;
 	
 	return READER_OK;
