@@ -179,7 +179,7 @@ READER_Status READER_T1_BUFFER_Dequeue(READER_T1_ContextHandler *pContext, READE
 	/* On recupere le Block qui est pointe par indexBottom */
 	indexBottom = pBlockBuffer->indexBottom;
 	
-	retVal = READER_T1_CopyBlock(pBlock, &(pBlockTab[indexBottom]));
+	retVal = READER_T1_CopyBlock(pBlock, pBlockTab+indexBottom);
 	if(retVal != READER_OK) return retVal;
 	
 	/* On mets a jour la valeur de indexBottom */
