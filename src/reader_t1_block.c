@@ -89,25 +89,28 @@ READER_Status READER_T1_SetBlockPCB(READER_T1_Block *pBlock, uint8_t blockPCB){
 READER_Status READER_T1_SetBlockType(READER_T1_Block *pBlock, READER_T1_BlockType type){
 	/* Voir ISO7816-3 section 11.3.2.2 */
 	READER_Status retVal;
-	uint8_t *pCurrentPCB;
+	uint8_t currentPCB, newPCB;
 	
 	
-	pCurrentPCB = READER_T1_GetBlockPCB(pBlock);
+	currentPCB = READER_T1_GetBlockPCB(pBlock);
 	
 	
 	if(type == READER_T1_IBLOCK){
-		*pCurrentPCB = (*pCurrentPCB) & (0x7F);       /* On force bit 8 a 0 */
+		newPCB = (currentPCB) & (0x7F);       /* On force bit 8 a 0 */
 	}
 	else if(type == READER_T1_RBLOCK){
-		*pCurrentPCB = (*pCurrentPCB | 0x80) & 0xBF;  /* On force bits 8 et 7 a 10 */
+		newPCB = (currentPCB | 0x80) & 0xBF;  /* On force bits 8 et 7 a 10 */
 	}
 	else if(type == READER_T1_SBLOCK){
-		*pCurrentPCB = (*pCurrentPCB | 0x80) | 0x40;  /* On force bits 8 et 7 a 11 */
+		newPCB = (currentPCB | 0x80) | 0x40;  /* On force bits 8 et 7 a 11 */
 	}
 	else{
 		return READER_ERR;
 	}
 	
+	retVal = READER_T1_SetBlockPCB(pBlock, newPCB);
+	if(retVal != READER_OK) return retVal;
+		
 	/* On met a jour le checksum du Block */
 	retVal = READER_T1_UpdateBlockChecksum(pBlock);
 	if(retVal != READER_OK) return retVal;
@@ -140,7 +143,6 @@ READER_Status READER_T1_SetBlockLEN(READER_T1_Block *pBlock, uint8_t blockLEN){
 
 
 READER_Status READER_T1_SetBlockRedundancyType(READER_T1_Block *pBlock, READER_T1_RedundancyType type){
-	READER_Status retVal;
 	if((type != READER_T1_CRC) && (type != READER_T1_LRC)){
 		return READER_ERR;
 	}
@@ -215,26 +217,61 @@ READER_Status READER_T1_SetBlockCRC(READER_T1_Block *pBlock, uint16_t blockCRC){
 
 READER_Status READER_T1_SetBlockData(READER_T1_Block *pBlock, uint8_t *data, uint8_t dataSize){
 	READER_Status retVal;
+	READER_T1_BlockType bType;
+	READER_T1_RedundancyType rType;
 	uint32_t i;
 	uint8_t *pBlockData;
-	uint8_t *blockFrame;
+	uint8_t tmpLRC;
+	uint16_t tmpCRC;
 	
 	
-	blockFrame = READER_T1_GetBlockFrame(pBlock);
+	/* Attention, ici, l'ordre des actions effectuees sur le Block est important !  */
 	
+	/* On recupere un pointeur sur la zone de donnees du Block ...  */
+	pBlockData = READER_T1_GetBlockData(pBlock);
+	
+	/* On fait les verifications elementaires sur le Block ...  */
 	if(dataSize > READER_T1_BLOCK_MAX_DATA_SIZE){
 		return READER_ERR;
+	}
+	
+	bType = READER_T1_GetBlockType(pBlock);
+	if(bType != READER_T1_IBLOCK){
+		return READER_ERR;
+	}
+	
+	/* On sauvegarde temporairement le champ LRC/CRC (il va etre ecrase quand on va ecrire les donnees) */
+	rType = READER_T1_GetBlockRedundancyType(pBlock);
+	if(rType == READER_T1_LRC){
+		tmpLRC = READER_T1_GetBlockLRC(pBlock);
+	}
+	else if(rType == READER_T1_CRC){
+		tmpCRC = READER_T1_GetBlockCRC(pBlock);
+	}
+	else{
+		return READER_ERR;
+	}
+
+	/* On ecrit le champ de donnees dans le Block ...  */
+	for(i=0; i<dataSize; i++){
+		pBlockData[i] = data[i];
 	}
 	
 	/* Mise a jour du LEN du Block */
 	retVal = READER_T1_SetBlockLEN(pBlock, dataSize);
 	if(retVal != READER_OK) return retVal;
 	
-	/* Recuperation du pointeur sur le champ de donnees du block et insertion des data */
-	pBlockData = blockFrame + READER_T1_BLOCKFRAME_INF_POSITION;
-	
-	for(i=0; i<dataSize; i++){
-		pBlockData[i] = data[i];
+	/* On re-ecrit le champ LRC/CRC a la fin du Block ...  */
+	if(rType == READER_T1_LRC){
+		retVal = READER_T1_SetBlockLRC(pBlock, tmpLRC);
+		if(retVal != READER_OK) return retVal;
+	}
+	else if(rType == READER_T1_CRC){
+		retVal = READER_T1_SetBlockCRC(pBlock, tmpCRC);
+		if(retVal != READER_OK) return retVal;
+	}
+	else{
+		return READER_ERR;
 	}
 	
 	/* On met a jour le checksum du Block */
@@ -696,7 +733,7 @@ READER_Status READER_T1_CheckBlockIntegrity(READER_T1_Block *pBlock){
 	//	return READER_ERR;
 	//}
 	//
-	//return READER_OK;
+	return READER_OK;
 }
 
 
