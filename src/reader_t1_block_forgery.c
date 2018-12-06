@@ -243,7 +243,7 @@ READER_Status READER_T1_FORGE_SliceDataAndFillBuffer(READER_T1_ContextHandler *p
 	uint32_t tmpSeqNum;
 	uint32_t currentIFSC;
 	uint32_t nbBlocksNeeded, buffPlacesLeft;
-	uint32_t bytesCounter;
+	uint32_t nbBytesLeftOver, blockLEN;
 	uint32_t i;
 	
 	
@@ -256,7 +256,7 @@ READER_Status READER_T1_FORGE_SliceDataAndFillBuffer(READER_T1_ContextHandler *p
 	retVal = READER_T1_CONTEXT_GetCurrentIFSC(pContext, &currentIFSC);
 	if(retVal != READER_OK) return retVal;
 	
-	/* On verifie que le nombre de Blocks que l'on veut generer peut rentre dans le Buffer de Blocks */
+	/* On verifie que le nombre de Blocks que l'on veut generer peut rentrer dans le Buffer de Blocks */
 	nbBlocksNeeded = (dataSize / currentIFSC);
 	if((dataSize % currentIFSC) != 0){
 		nbBlocksNeeded += 1;
@@ -267,12 +267,14 @@ READER_Status READER_T1_FORGE_SliceDataAndFillBuffer(READER_T1_ContextHandler *p
 	
 	if(buffPlacesLeft < nbBlocksNeeded){
 		return READER_TOO_LONG;
-	}
+	}	
 	
-	/* On procede au decoupage et enfilage dans le Buffer ...                              */
-	bytesCounter = 0;
-	for(i=0; i<nbBlocksNeeded; i+=currentIFSC){
-		/* On determine le numero de sequence   */
+	/* On procede au decoupage et enfilage dans le Buffer ...                                                                      */
+	for(i=0; i<(nbBlocksNeeded*currentIFSC); i+=currentIFSC){
+		nbBytesLeftOver = dataSize - i;                        /* Nombre d'octets qu'il reste a envoyer ...                        */
+		blockLEN = MIN(nbBytesLeftOver, currentIFSC);          /* Nombre d'octets que l'on va placer dans le prochain I-Block ...  */
+		
+		/* On determine le numero de sequence que l'on va attribuer a ce Block ...  */
 		retVal = READER_T1_CONTEXT_ComputeNextDeviceSeqNum(pContext, &tmpSeqNum);
 		if(retVal != READER_OK) return retVal;
 		
@@ -286,29 +288,22 @@ READER_Status READER_T1_FORGE_SliceDataAndFillBuffer(READER_T1_ContextHandler *p
 			return READER_ERR;
 		}
 		
-		/* On determine le M-Bit  (est ce que il y a de la donnee qui suit ? C'est le dernier Block que l'on prepare ?)              */
-		if(dataSize-bytesCounter <= currentIFSC){  /* Il reste encore de quoi fabriquer un Block ou moins  */
-			
+		/* On determine si oui (ou non) ce Block va porter un M-Bit ...                           */
+		/* C'est a dire, est ce qu'il reste encore des donnees a envoyer apres ce Block ??     */
+		if(nbBytesLeftOver <= blockLEN){          /* Si le nombre d'octets qu'il reste a envoyer est inferieur ou egal au nombre d'octets que l'on va mettre dans le prochain I-Block qui va partir, alors c'est fini et le M-Bit = 0.  */
 			mBit = READER_T1_MBIT_ZERO;
 		}
 		else{
 			mBit = READER_T1_MBIT_ONE;
 		}
 		
-		/* On forge le I-Block                                                             */
-		retVal = READER_T1_ForgeIBlock(&tmpBlock, dataBuff+i, MIN(currentIFSC, dataSize-bytesCounter), seqNum, mBit);
-		if(retVal != READER_OK) return retVal;										                                           
-											                                           
-		/* On enfile le I-Block dans le Buffer                                             */
+		/* On forge le Block ...  */
+		retVal = READER_T1_ForgeIBlock(&tmpBlock, dataBuff+i, blockLEN, seqNum, mBit);
+		if(retVal != READER_OK) return retVal;	
+		
+		/* On enfile ce Block dans le Buffer ...  */
 		retVal = READER_T1_BUFFER_Enqueue(pContext, &tmpBlock);
-		if(retVal != READER_OK) return retVal;								                                           
-												                                           
-		/* On incremente le byte counter                                                   */
-		bytesCounter += MIN(currentIFSC, dataSize-bytesCounter);
-	}
-	
-	if(bytesCounter != dataSize){
-		return READER_ERR;
+		if(retVal != READER_OK) return retVal;	
 	}
 	
 	return READER_OK;
