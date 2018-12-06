@@ -15,7 +15,7 @@ READER_Status READER_T1_SetBlockSeqNumber(READER_T1_Block *pBlock, READER_T1_Seq
 		newPCB = currentPCB & 0xBF ;
 	}
 	else if(seq == READER_T1_SEQNUM_ONE){
-		newPCB = currentPCB | ~0xBF ;
+		newPCB = currentPCB | (~0xBF);
 	}
 	else{
 		return READER_ERR;
@@ -42,7 +42,7 @@ READER_Status READER_T1_SetBlockMBit(READER_T1_Block *pBlock, READER_T1_MBit mBi
 		newPCB = currentPCB & 0xDF ;
 	}
 	else if(mBit == READER_T1_MBIT_ONE){
-		newPCB = currentPCB & ~0xDF ;
+		newPCB = currentPCB | (~0xDF) ;
 	}
 	else{
 		return READER_ERR;
