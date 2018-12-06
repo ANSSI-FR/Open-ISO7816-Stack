@@ -115,7 +115,7 @@ READER_Status READER_T1_BUFFER_Enqueue(READER_T1_ContextHandler *pContext, READE
 	READER_T1_BlockBuffer *pBlockBuffer;
 	READER_T1_Block *pBlockTab;
 	READER_T1_BufferStatus bStatus;
-	uint32_t newTopIndex;
+	uint32_t newTopIndex, topIndex;
 	READER_Status retVal;
 	
 	
@@ -134,13 +134,13 @@ READER_Status READER_T1_BUFFER_Enqueue(READER_T1_ContextHandler *pContext, READE
 	/* Dans la stucture du buffer on recupere un pointeur sur le tableau de Blocks */
 	pBlockTab = pBlockBuffer->blockBuff;
 	
-	/* On calcule le nouveau top index et on place le Block a la position caculee */
-	newTopIndex = (pBlockBuffer->indexTop + 1) % READER_T1_CONTEXT_STATICBUFF_MAXSIZE;
-	
+	topIndex = pBlockBuffer->indexTop;
 	/* Attention, important de faire une copie ici. Le Block que l'on stack existe generalement dans le contexte local d'une fonction. Il faut imperativement le copier dans la memoire du contexte. */
-	retVal = READER_T1_CopyBlock(&(pBlockTab[newTopIndex]), pBlock);
+	retVal = READER_T1_CopyBlock(pBlockTab+topIndex, pBlock);
 	if(retVal != READER_OK) return retVal;
 	
+	/* On calcule le nouveau top index */
+	newTopIndex = (pBlockBuffer->indexTop + 1) % READER_T1_CONTEXT_STATICBUFF_MAXSIZE;
 	pBlockBuffer->indexTop = newTopIndex;
 	
 	/* On mets a jour la length */

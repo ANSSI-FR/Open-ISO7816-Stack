@@ -522,7 +522,6 @@ READER_Status READER_T1_FORGE_FillBuffWithAPDUCase4S(READER_T1_ContextHandler *p
 	
 	/* On decoupe ce buffer en I-Blocks que l'on place dans le Buffer d'envoi ....     */
 	retVal = READER_T1_FORGE_SliceDataAndFillBuffer(pContext, rawBuff, READER_APDU_HEADER_SIZE + pApduCmd->body.Nc + 2);
-	
 	if(retVal != READER_OK) return retVal;
 	
 	return READER_OK;
