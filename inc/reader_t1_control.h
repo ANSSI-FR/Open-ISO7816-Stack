@@ -15,7 +15,7 @@ READER_Status READER_T1_CONTROL_IsIBlockACK(READER_T1_ContextHandler *pContext, 
 
 
 
-READER_Status READER_T1_CONTROL_SendBlock(READER_T1_ContextHandler *pContext, READER_T1_Block *pBlock);
+READER_Status READER_T1_CONTROL_SendBlock(READER_T1_ContextHandler *pContext, READER_T1_Block *pBlockToSend);
 READER_Status READER_T1_CONTROL_RcvBlock(READER_T1_ContextHandler *pContext, READER_T1_Block *pBlock);
 
 

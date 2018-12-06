@@ -206,19 +206,19 @@ READER_Status READER_T1_CONTROL_IsIBlockACK(READER_T1_ContextHandler *pContext, 
 }
 
 
-READER_Status READER_T1_CONTROL_SendBlock(READER_T1_ContextHandler *pContext, READER_T1_Block *pBlock){
+READER_Status READER_T1_CONTROL_SendBlock(READER_T1_ContextHandler *pContext, READER_T1_Block *pBlockToSend){
 	READER_Status retVal;
-	READER_T1_Block blockToSend;
+	//READER_T1_Block blockToSend;
 	READER_T1_BlockType bType;
 	uint32_t currentCWT, currentBGT;
 	uint32_t tickLastBlock, extraStartDelay;
+		
 	
+	///* On recupere le Block suivant a envoyer dans le Buffer du Contexte        */
+	//retVal = READER_T1_BUFFER_Enqueue(pContext, &blockToSend);
+	//if(retVal != READER_OK) return retVal; 
 	
-	/* On recupere le Block suivant a envoyer dans le Buffer du Contexte        */
-	retVal = READER_T1_BUFFER_Enqueue(pContext, &blockToSend);
-	if(retVal != READER_OK) return retVal; 
-	
-	/* Avant d'envoyer le Block, on calcul le delai a appliquer pour respecter le BGT entre les Blocks */
+	/* Avant d'envoyer le Block, on calcule le delai a appliquer pour respecter le BGT entre les Blocks */
 	retVal = READER_T1_CONTEXT_GetCurrentBGT(pContext, &currentBGT);
 	if(retVal != READER_OK) return retVal;
 	
@@ -236,7 +236,7 @@ READER_Status READER_T1_CONTROL_SendBlock(READER_T1_ContextHandler *pContext, RE
 	retVal = READER_T1_CONTEXT_GetCurrentCWT(pContext, &currentCWT);
 	if(retVal != READER_OK) return retVal;
 	
-	retVal = READER_T1_SendBlock(&blockToSend, currentCWT, extraStartDelay, &tickLastBlock);
+	retVal = READER_T1_SendBlock(pBlockToSend, currentCWT, extraStartDelay, &tickLastBlock);
 	if(retVal != READER_OK) return retVal;
 	
 	/* On mets a jour la date du leading edge du dernier Block envoye ...  */
@@ -244,22 +244,22 @@ READER_Status READER_T1_CONTROL_SendBlock(READER_T1_ContextHandler *pContext, RE
 	if(retVal != READER_OK) return retVal;
 	
 	/* On set le dernier Block envoye                                */
-	retVal = READER_T1_CONTEXT_SetLastSent(pContext, &blockToSend);
+	retVal = READER_T1_CONTEXT_SetLastSent(pContext, pBlockToSend);
 	if(retVal != READER_OK) return retVal;
 	
 	/* On recupere le type du Block que l'on vient d'envoyer et selon son type, on mets a jour le contexte de communication .... */
-	bType = READER_T1_GetBlockType(&blockToSend);
+	bType = READER_T1_GetBlockType(pBlockToSend);
 	
 	if(bType == READER_T1_IBLOCK){
-		retVal = READER_T1_CONTROL_IBlockSentUpdateContext(pContext, &blockToSend);
+		retVal = READER_T1_CONTROL_IBlockSentUpdateContext(pContext, pBlockToSend);
 		if(retVal != READER_OK) return retVal;		
 	}
 	else if(bType == READER_T1_RBLOCK){
-		retVal = READER_T1_CONTROL_RBlockSentUpdateContext(pContext, &blockToSend);
+		retVal = READER_T1_CONTROL_RBlockSentUpdateContext(pContext, pBlockToSend);
 		if(retVal != READER_OK) return retVal;	
 	}
 	else if(bType == READER_T1_SBLOCK){
-		retVal = READER_T1_CONTROL_SBlockSentUpdateContext(pContext, &blockToSend);
+		retVal = READER_T1_CONTROL_SBlockSentUpdateContext(pContext, pBlockToSend);
 		if(retVal != READER_OK) return retVal;	
 	}
 	else{

@@ -217,7 +217,7 @@ READER_Status READER_T1_SetBlockCRC(READER_T1_Block *pBlock, uint16_t blockCRC){
 
 READER_Status READER_T1_SetBlockData(READER_T1_Block *pBlock, uint8_t *data, uint8_t dataSize){
 	READER_Status retVal;
-	READER_T1_BlockType bType;
+	//READER_T1_BlockType bType;
 	READER_T1_RedundancyType rType;
 	uint32_t i;
 	uint8_t *pBlockData;
@@ -235,10 +235,10 @@ READER_Status READER_T1_SetBlockData(READER_T1_Block *pBlock, uint8_t *data, uin
 		return READER_ERR;
 	}
 	
-	bType = READER_T1_GetBlockType(pBlock);
-	if(bType != READER_T1_IBLOCK){
-		return READER_ERR;
-	}
+	//bType = READER_T1_GetBlockType(pBlock);
+	//if(bType != READER_T1_IBLOCK){
+	//	return READER_ERR;
+	//}
 	
 	/* On sauvegarde temporairement le champ LRC/CRC (il va etre ecrase quand on va ecrire les donnees) */
 	rType = READER_T1_GetBlockRedundancyType(pBlock);
@@ -251,7 +251,7 @@ READER_Status READER_T1_SetBlockData(READER_T1_Block *pBlock, uint8_t *data, uin
 	else{
 		return READER_ERR;
 	}
-
+	
 	/* On ecrit le champ de donnees dans le Block ...  */
 	for(i=0; i<dataSize; i++){
 		pBlockData[i] = data[i];
@@ -277,7 +277,6 @@ READER_Status READER_T1_SetBlockData(READER_T1_Block *pBlock, uint8_t *data, uin
 	/* On met a jour le checksum du Block */
 	retVal = READER_T1_UpdateBlockChecksum(pBlock);
 	if(retVal != READER_OK) return retVal;
-	
 	
 	return READER_OK;
 }
@@ -647,7 +646,6 @@ READER_Status READER_T1_RcvBlock(READER_T1_Block *pBlock, uint32_t currentCWT, u
 		return READER_ERR;
 	}
 	
-	
 	/* On forge un block vide                                           */
 	rType = READER_HAL_GetRedunancyType();
 	retVal = READER_T1_ForgeBlock(pBlock, rType);
@@ -695,9 +693,9 @@ READER_Status READER_T1_RcvBlock(READER_T1_Block *pBlock, uint32_t currentCWT, u
 	
 	/* A la fin parceque potentiellment traitement long */
 	/* On complete le nv block forge avec les data      */
+	
 	retVal = READER_T1_SetBlockData(pBlock, buff, buffSize); 
 	if(retVal != READER_OK) return retVal;
-	
 	
 	return READER_OK;
 }
