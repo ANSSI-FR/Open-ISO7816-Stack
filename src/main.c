@@ -65,9 +65,9 @@ int main(void){
 	//READER_T0_APDU_Execute(&apduCmd, &apduResp, READER_HAL_USE_ISO_WT);
 	retVal = READER_T1_APDU_Execute(&context, &apduCmd, &apduResp);
 	//READER_PERIPH_ErrHandler();
-	//if(retVal != READER_OK){
-	//	READER_PERIPH_ErrHandler();
-	//}
+	if(retVal != READER_OK){
+		READER_PERIPH_ErrHandler();
+	}
 	
 	
 	//HAL_UART_Transmit(&uartHandleStruct, apduResp.dataBytes, apduResp.dataSize, 1000);
