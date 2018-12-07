@@ -61,7 +61,7 @@ int main(void){
 	
 	//READER_PERIPH_ErrHandler();
 	
-	READER_APDU_Forge(&apduCmd, 0x00, 0xA4, 0x04, 0x00, 0x0A, pSmartcardTxBuff, 0x0A);
+	READER_APDU_Forge(&apduCmd, 0x00, 0xA4, 0x04, 0x00, 0x0D, pSmartcardTxBuff, 0x0D);
 	//READER_T0_APDU_Execute(&apduCmd, &apduResp, READER_HAL_USE_ISO_WT);
 	retVal = READER_T1_APDU_Execute(&context, &apduCmd, &apduResp);
 	//READER_PERIPH_ErrHandler();
