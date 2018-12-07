@@ -94,7 +94,7 @@ READER_Status READER_T1_ForgeIBlock(READER_T1_Block *pBlock, uint8_t *data, uint
 	READER_T1_RedundancyType rType;
 	READER_Status retVal;
 	
-	
+
 	/* On fabrique un Block vierge       */
 	rType = READER_HAL_GetRedunancyType();
 	

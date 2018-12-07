@@ -102,15 +102,15 @@ READER_Status READER_T1_FORGE_NACK71(READER_T1_ContextHandler *pContext, READER_
 	
 	
 	/* On verifie que le dernier Block envoye existe et c'est bien un I-Block                           */
-	retVal = READER_T1_CONTEXT_GetLastSent(pContext, &pLastSent);
+	retVal = READER_T1_CONTEXT_GetLastSentType(pContext, &bType);
 	if(retVal != READER_OK) return retVal;
 	
-	bType = READER_T1_GetBlockType(pLastSent);
-	if(bType != READER_T1_RBLOCK){
+	if(bType != READER_T1_IBLOCK){
 		return READER_ERR;
 	}
 	
-	/*Recuperation a partir du contexte du numero de sequence qu'on attend de la carte ...  */
+	
+	/* Recuperation a partir du contexte du numero de sequence qu'on attend de la carte ...  */
 	retVal = READER_T1_CONTEXT_GetCardSeqNum(pContext, &seq);
 	if(retVal != READER_OK) return retVal;
 	
@@ -152,17 +152,19 @@ READER_Status READER_T1_FORGE_NACK72(READER_T1_ContextHandler *pContext, READER_
 	
 	/* Si on est ici, c'est que le Block precedent envoye est un R-Block. */
 	/* La Rule 7.2 nous dit qu'il faut renvoyer ce meme R-Block           */
-	retVal = READER_T1_CONTEXT_GetLastSent(pContext, &pLastSent);
-	if(retVal != READER_OK) return retVal;
-	
 	
 	/* On verifie que le dernier Block envoye est bien un R-Block ...     */
-	bType = READER_T1_GetBlockType(pLastSent);
+	retVal = READER_T1_CONTEXT_GetLastSentType(pContext, &bType);
+	if(retVal != READER_OK) return retVal;
+	
 	if(bType != READER_T1_RBLOCK){
 		return READER_ERR;
 	}
 	
 	/* On forge un R-Block qui est identique au precedent ...             */
+	retVal = READER_T1_CONTEXT_GetLastSent(pContext, &pLastSent);
+	if(retVal != READER_OK) return retVal;
+	
 	retVal = READER_T1_CopyBlock(pBlockDest, pLastSent);
 	if(retVal != READER_OK) return retVal;
 	
@@ -504,7 +506,7 @@ READER_Status READER_T1_FORGE_FillBuffWithAPDUCase4S(READER_T1_ContextHandler *p
 	uint32_t i;
 	
 	/* Voir ISO7816-3 section 12.3.5                                                   */
-	
+
 	/* On fait des verifications sur l'APDU ...                                        */
 	retVal = READER_APDU_CheckCmdValidity(pApduCmd);
 	if(retVal != READER_OK) return retVal;
@@ -522,7 +524,7 @@ READER_Status READER_T1_FORGE_FillBuffWithAPDUCase4S(READER_T1_ContextHandler *p
 	}
 	
 	rawBuff[pApduCmd->body.Nc + 5] = READER_APDU_NeToLe(pApduCmd->body.Ne);
-	
+
 	/* On decoupe ce buffer en I-Blocks que l'on place dans le Buffer d'envoi ....     */
 	retVal = READER_T1_FORGE_SliceDataAndFillBuffer(pContext, rawBuff, READER_APDU_HEADER_SIZE + pApduCmd->body.Nc + 2);
 	if(retVal != READER_OK) return retVal;

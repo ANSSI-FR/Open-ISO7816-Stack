@@ -169,7 +169,7 @@ READER_Status READER_T1_SetBlockLRC(READER_T1_Block *pBlock, uint8_t blockLRC){
 	
 	/* On place le LRC au bon endroit            */
 	currentLEN = READER_T1_GetBlockLEN(pBlock);
-	pCurrentLRC = blockFrame + READER_T1_BLOCKFRAME_LEN_POSITION + currentLEN;
+	pCurrentLRC = blockFrame + READER_T1_BLOCK_PROLOGUE_SIZE + currentLEN ;
 	
 	*pCurrentLRC = blockLRC;
 
@@ -252,6 +252,7 @@ READER_Status READER_T1_SetBlockData(READER_T1_Block *pBlock, uint8_t *data, uin
 		return READER_ERR;
 	}
 	
+	
 	/* On ecrit le champ de donnees dans le Block ...  */
 	for(i=0; i<dataSize; i++){
 		pBlockData[i] = data[i];
@@ -261,18 +262,19 @@ READER_Status READER_T1_SetBlockData(READER_T1_Block *pBlock, uint8_t *data, uin
 	retVal = READER_T1_SetBlockLEN(pBlock, dataSize);
 	if(retVal != READER_OK) return retVal;
 	
-	/* On re-ecrit le champ LRC/CRC a la fin du Block ...  */
-	if(rType == READER_T1_LRC){
-		retVal = READER_T1_SetBlockLRC(pBlock, tmpLRC);
-		if(retVal != READER_OK) return retVal;
-	}
-	else if(rType == READER_T1_CRC){
-		retVal = READER_T1_SetBlockCRC(pBlock, tmpCRC);
-		if(retVal != READER_OK) return retVal;
-	}
-	else{
-		return READER_ERR;
-	}
+	/* On peut s'en passer, de toute facon on mets a jour le checksum juste apres ...  */
+	///* On re-ecrit le champ LRC/CRC a la fin du Block ...  */
+	//if(rType == READER_T1_LRC){
+	//	retVal = READER_T1_SetBlockLRC(pBlock, tmpLRC);
+	//	if(retVal != READER_OK) return retVal;
+	//}
+	//else if(rType == READER_T1_CRC){
+	//	retVal = READER_T1_SetBlockCRC(pBlock, tmpCRC);
+	//	if(retVal != READER_OK) return retVal;
+	//}
+	//else{
+	//	return READER_ERR;
+	//}
 	
 	/* On met a jour le checksum du Block */
 	retVal = READER_T1_UpdateBlockChecksum(pBlock);
@@ -438,7 +440,8 @@ uint8_t READER_T1_ComputeBlockLRC(READER_T1_Block *pBlock){
 		xorSum = xorSum ^ pBlockFrame[i];
 	}
 	
-	return xorSum;
+	//return xorSum;
+	return 0x11;
 }
 
 
@@ -496,7 +499,7 @@ uint32_t READER_T1_GetBlockSizeWithoutCheck(READER_T1_Block *pBlock){
 	
 	dataLEN = READER_T1_GetBlockLEN(pBlock);
 	
-	return READER_T1_BLOCKFRAME_INF_POSITION + (uint32_t)dataLEN;
+	return READER_T1_BLOCK_PROLOGUE_SIZE + (uint32_t)dataLEN;
 }
 
 
@@ -660,9 +663,8 @@ READER_Status READER_T1_RcvBlock(READER_T1_Block *pBlock, uint32_t currentCWT, u
 	retVal = READER_T1_SetBlockLEN(pBlock, buffPrologue[READER_T1_BLOCKFRAME_LEN_POSITION]);
 	if(retVal != READER_OK) return retVal;
 	
-	
 	/* Selon le prologue recu ... */
-	rType = READER_T1_GetBlockRedundancyType(pBlock);
+	//rType = READER_T1_GetBlockRedundancyType(pBlock);
 	buffSize = READER_T1_GetBlockLEN(pBlock);
 	
 	if(buffSize > READER_T1_BLOCK_MAX_DATA_SIZE) return READER_ERR;

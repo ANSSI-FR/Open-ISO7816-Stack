@@ -344,12 +344,12 @@ READER_Status READER_HAL_RcvChar(uint8_t *character, uint32_t timeout){
 	
 	
 	/* On verifie Parity Error, Frame Error, Overrun Error */
-	if( (USART2->SR & USART_SR_FE) || (USART2->SR & USART_SR_ORE) || (USART2->SR & USART_SR_PE) ){ 
-		//HAL_UART_Transmit_IT(&uartHandleStruct, "FE", 2);
-		*character = USART2->DR;
-		USART2->CR1 &= ~USART_CR1_RE;
-		return READER_ERR;
-	}
+	//if( (USART2->SR & USART_SR_FE) || (USART2->SR & USART_SR_ORE) || (USART2->SR & USART_SR_PE) ){ 
+	//	//HAL_UART_Transmit_IT(&uartHandleStruct, "FE", 2);
+	//	*character = USART2->DR;
+	//	USART2->CR1 &= ~USART_CR1_RE;
+	//	return READER_ERR;
+	//}
 	
 	
 	/* On recupere la donnee recue dans le Data Register */

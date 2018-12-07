@@ -354,7 +354,7 @@ READER_Status READER_T1_CONTROL_RcvBlock(READER_T1_ContextHandler *pContext, REA
 	retVal = READER_T1_CONTEXT_GetCurrentBWT(pContext, &currentBWT);
 	if(retVal != READER_OK) return retVal;
 	
-	/* On calcule le extraTimout pour le premeir caractere du Block que l'on va recevoir. Sert a garantir le BWT  */
+	/* On calcule le extraTimout pour le premier caractere du Block que l'on va recevoir. Sert a garantir le BWT  */
 	retVal = READER_T1_CONTEXT_GetTickLastBlock(pContext, &tickLastBlock);
 	if((retVal != READER_OK) && (retVal != READER_DOESNT_EXIST)) return retVal;
 	
@@ -456,6 +456,9 @@ READER_Status READER_T1_CONTROL_ApplyIBlockRcvd(READER_T1_ContextHandler *pConte
 		return READER_OK;
 	}
 	
+	/* On incremente le numero de sequence du cote carte ...  */
+	retVal = READER_T1_CONTEXT_IncCardCompleteSeqNum(pContext);
+	if(retVal != READER_OK) return retVal;
 	
 	/* On regarde si ce I-Block est un ACK ...                                                                                      */
 	retVal = READER_T1_CONTROL_IsIBlockACK(pContext, pBlock);
@@ -588,10 +591,6 @@ READER_Status READER_T1_CONTROL_ApplyRBlockRcvd(READER_T1_ContextHandler *pConte
 		}
 		
 		retVal = READER_T1_CONTEXT_GetLastIBlockSentSeqNum(pContext, &seqNumIBlock);
-		
-		//if(retVal != READER_OK){
-		//	READER_PERIPH_ErrHandler();
-		//}
 		if(retVal != READER_OK) return retVal;
 		
 		/* On compare les numeros de sequence du R-Block et du dernier I-Block envoye ...   */
