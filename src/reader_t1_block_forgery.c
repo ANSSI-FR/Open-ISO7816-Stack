@@ -269,15 +269,16 @@ READER_Status READER_T1_FORGE_SliceDataAndFillBuffer(READER_T1_ContextHandler *p
 		return READER_TOO_LONG;
 	}	
 	
+	/* On recupere le numero de sequence du premier I-Block a envoyer ...  */
+	retVal = READER_T1_CONTEXT_GetDeviceSeqNum(pContext, &tmpSeqNum);
+	if(retVal != READER_OK) return retVal;
+	
 	/* On procede au decoupage et enfilage dans le Buffer ...                                                                      */
 	for(i=0; i<(nbBlocksNeeded*currentIFSC); i+=currentIFSC){
 		nbBytesLeftOver = dataSize - i;                        /* Nombre d'octets qu'il reste a envoyer ...                        */
 		blockLEN = MIN(nbBytesLeftOver, currentIFSC);          /* Nombre d'octets que l'on va placer dans le prochain I-Block ...  */
 		
-		/* On determine le numero de sequence que l'on va attribuer a ce Block ...  */
-		retVal = READER_T1_CONTEXT_ComputeNextDeviceSeqNum(pContext, &tmpSeqNum);
-		if(retVal != READER_OK) return retVal;
-		
+		/* On determine le numero de sequence que l'on va attribuer au Block ... s */
 		if(tmpSeqNum == 0){
 			seqNum = READER_T1_SEQNUM_ZERO;
 		}
@@ -287,6 +288,8 @@ READER_Status READER_T1_FORGE_SliceDataAndFillBuffer(READER_T1_ContextHandler *p
 		else{
 			return READER_ERR;
 		}
+		/* On  mets a jour le numero de sequence pour le Block suivant ...  */
+		tmpSeqNum = (tmpSeqNum + 1) % 2;
 		
 		/* On determine si oui (ou non) ce Block va porter un M-Bit ...                           */
 		/* C'est a dire, est ce qu'il reste encore des donnees a envoyer apres ce Block ??     */
