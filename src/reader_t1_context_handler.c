@@ -380,18 +380,15 @@ READER_Status READER_T1_CONTEXT_GetLastSent(READER_T1_ContextHandler *pContext, 
 
 READER_Status READER_T1_CONTEXT_GetLastIBlockSent(READER_T1_ContextHandler *pContext, READER_T1_Block **ppBlockDest){
 	READER_T1_BlockType bType;
-	READER_T1_Block *pBlockDest;
 	READER_Status retVal;
 	
-	
-	pBlockDest = *ppBlockDest;
 	
 	/* On verifie qu'il existe effectivement un dernier I-Block envoye ...  */
 	retVal = READER_T1_CONTEXT_LastIBlockSentExists(pContext);
 	if(retVal != READER_OK) return retVal;
 	
 	/* Si ce Block existe, on verifie son type avant de le servir ...  */
-	bType = READER_T1_GetBlockType(pBlockDest);
+	bType = READER_T1_GetBlockType(&(pContext->lastIBlockSent));
 	if(bType != READER_T1_IBLOCK){
 		return READER_ERR;
 	}
@@ -440,7 +437,7 @@ READER_Status READER_T1_CONTEXT_GetLastIBlockRcvd(READER_T1_ContextHandler *pCon
 }
 
 
-READER_Status READER_T1_CONTEXT_GetLastIBlockSentSeqSum(READER_T1_ContextHandler *pContext, uint32_t *pSeqNum){
+READER_Status READER_T1_CONTEXT_GetLastIBlockSentSeqNum(READER_T1_ContextHandler *pContext, uint32_t *pSeqNum){
 	READER_Status retVal;
 	READER_T1_Block *pLastBlock;
 	READER_T1_SeqNumber tmpSeqNum;

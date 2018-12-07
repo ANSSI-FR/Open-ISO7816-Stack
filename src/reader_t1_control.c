@@ -107,7 +107,7 @@ READER_Status READER_T1_CONTROL_IsRBlockACK(READER_T1_ContextHandler *pContext, 
 	}
 	
 	/* On regarde le numero de sequence du prochain I-Block que l'on doit envoyer (ie : negation du dernier I-Block envoye) */
-	retVal = READER_T1_CONTEXT_GetLastIBlockSentSeqSum(pContext, &tmpNextIBlockSeqNum);
+	retVal = READER_T1_CONTEXT_GetLastIBlockSentSeqNum(pContext, &tmpNextIBlockSeqNum);
 	if(retVal != READER_OK) return retVal;
 	
 	if(tmpNextIBlockSeqNum == 0){
@@ -587,7 +587,11 @@ READER_Status READER_T1_CONTROL_ApplyRBlockRcvd(READER_T1_ContextHandler *pConte
 			return READER_ERR;
 		}
 		
-		retVal = READER_T1_CONTEXT_GetLastIBlockSentSeqSum(pContext, &seqNumIBlock);
+		retVal = READER_T1_CONTEXT_GetLastIBlockSentSeqNum(pContext, &seqNumIBlock);
+		
+		//if(retVal != READER_OK){
+		//	READER_PERIPH_ErrHandler();
+		//}
 		if(retVal != READER_OK) return retVal;
 		
 		/* On compare les numeros de sequence du R-Block et du dernier I-Block envoye ...   */
