@@ -423,25 +423,19 @@ uint8_t* READER_T1_GetBlockData(READER_T1_Block *pBlock){
 
 uint8_t READER_T1_ComputeBlockLRC(READER_T1_Block *pBlock){
 	uint8_t xorSum;
-	uint8_t *data;
-	uint8_t dataSize;
+	uint8_t *pBlockFrame;
+	uint8_t dataSize, blockFrameSize;
 	uint32_t i;
 	
 	
 	dataSize = READER_T1_GetBlockLEN(pBlock);
-	data = READER_T1_GetBlockData(pBlock);
+	blockFrameSize = dataSize + READER_T1_BLOCK_PROLOGUE_SIZE;   /* > 3 */
 	
-	if(dataSize == 0){
-		return 0x00;
-	}
+	pBlockFrame = READER_T1_GetBlockFrame(pBlock);
 	
-	if(dataSize == 1){
-		return data[0];
-	}
-	
-	xorSum = data[0];
-	for(i=1; i<dataSize; i++){
-		xorSum = xorSum ^ data[i];
+	xorSum = pBlockFrame[0];
+	for(i=1; i<blockFrameSize; i++){
+		xorSum = xorSum ^ pBlockFrame[i];
 	}
 	
 	return xorSum;
