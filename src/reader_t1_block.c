@@ -392,7 +392,7 @@ uint8_t READER_T1_GetBlockLRC(READER_T1_Block *pBlock){
 	blockFrame = READER_T1_GetBlockFrame(pBlock);
 	
 	currentLEN = READER_T1_GetBlockLEN(pBlock);
-	pCurrentLRC = blockFrame + READER_T1_BLOCKFRAME_LEN_POSITION + currentLEN;
+	pCurrentLRC = blockFrame + READER_T1_BLOCK_PROLOGUE_SIZE + currentLEN;
 	
 	return *pCurrentLRC;
 }
@@ -426,22 +426,24 @@ uint8_t* READER_T1_GetBlockData(READER_T1_Block *pBlock){
 uint8_t READER_T1_ComputeBlockLRC(READER_T1_Block *pBlock){
 	uint8_t xorSum;
 	uint8_t *pBlockFrame;
-	uint8_t dataSize, blockFrameSize;
+	uint8_t dataSize;
+	uint32_t blockFrameSize;
 	uint32_t i;
 	
 	
 	dataSize = READER_T1_GetBlockLEN(pBlock);
-	blockFrameSize = dataSize + READER_T1_BLOCK_PROLOGUE_SIZE;   /* > 3 */
+	blockFrameSize = (uint32_t)dataSize + (uint32_t)READER_T1_BLOCK_PROLOGUE_SIZE;   /* > 3 */
 	
 	pBlockFrame = READER_T1_GetBlockFrame(pBlock);
 	
 	xorSum = pBlockFrame[0];
 	for(i=1; i<blockFrameSize; i++){
-		xorSum = xorSum ^ pBlockFrame[i];
+		xorSum = xorSum ^ (pBlockFrame[i]);
 	}
-	
-	//return xorSum;
-	return 0x11;
+	//if(xorSum == 0xEA){
+	//	READER_PERIPH_ErrHandler();
+	//}
+	return xorSum;
 }
 
 
@@ -663,6 +665,7 @@ READER_Status READER_T1_RcvBlock(READER_T1_Block *pBlock, uint32_t currentCWT, u
 	retVal = READER_T1_SetBlockLEN(pBlock, buffPrologue[READER_T1_BLOCKFRAME_LEN_POSITION]);
 	if(retVal != READER_OK) return retVal;
 	
+	
 	/* Selon le prologue recu ... */
 	//rType = READER_T1_GetBlockRedundancyType(pBlock);
 	buffSize = READER_T1_GetBlockLEN(pBlock);
@@ -678,11 +681,17 @@ READER_Status READER_T1_RcvBlock(READER_T1_Block *pBlock, uint32_t currentCWT, u
 	
 	/* Recuperation du code correcteur d'erreur  */
 	if(rType == READER_T1_LRC){
+		retVal = READER_T1_SetBlockData(pBlock, buff, buffSize -1); 
+		if(retVal != READER_OK) return retVal;
+	
 		blockLRC = buff[buffSize-1];
 		retVal = READER_T1_SetBlockLRC(pBlock, blockLRC);
 		if(retVal != READER_OK) return retVal;
 	}
 	else if(rType == READER_T1_CRC){
+		retVal = READER_T1_SetBlockData(pBlock, buff, buffSize -2); 
+		if(retVal != READER_OK) return retVal;
+	
 		blockCRC = *(uint16_t*)(buff + buffSize - 2);
 		retVal = READER_T1_SetBlockCRC(pBlock, blockCRC);
 		if(retVal != READER_OK) return retVal;
@@ -694,8 +703,8 @@ READER_Status READER_T1_RcvBlock(READER_T1_Block *pBlock, uint32_t currentCWT, u
 	/* A la fin parceque potentiellment traitement long */
 	/* On complete le nv block forge avec les data      */
 	
-	retVal = READER_T1_SetBlockData(pBlock, buff, buffSize); 
-	if(retVal != READER_OK) return retVal;
+	//retVal = READER_T1_SetBlockData(pBlock, buff, buffSize); 
+	//if(retVal != READER_OK) return retVal;
 	
 	return READER_OK;
 }

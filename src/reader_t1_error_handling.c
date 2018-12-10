@@ -78,7 +78,7 @@ READER_Status READER_T1_ERR_IsItFirstReception(READER_T1_ContextHandler *pContex
 	if(retVal != READER_OK) return retVal;
 	
 	/* On regarde si c'est la premiere reception */
-	if((cardCompleteSeqNum == 0) && ((deviceCompleteSeqNum == 0) || (deviceCompleteSeqNum == 1))){
+	if(((cardCompleteSeqNum == 0) || (cardCompleteSeqNum == 1)) && ((deviceCompleteSeqNum == 0) || (deviceCompleteSeqNum == 1))){
 		return READER_OK;
 	}
 	else{
@@ -105,7 +105,7 @@ READER_Status READER_T1_ERR_DealWithError(READER_T1_ContextHandler *pContext, ui
 	READER_Status retVal;
 	READER_T1_Block errorBlock;
 	
-	
+
 	/* On verifie qu'on a pas depasse le compteur de redemande d'informations */
 	retVal = READER_T1_ERR_CheckRepeatCounter(pContext);
 	if(retVal == READER_OK){
@@ -232,7 +232,7 @@ READER_Status READER_T1_ERR_StackErrorBlock(READER_T1_ContextHandler *pContext, 
 	
 	retVal = READER_T1_BUFFER_Stack(pContext, pErrorBlock);
 	if(retVal != READER_OK) return retVal;
-	
+
 	return READER_OK;
 }
 

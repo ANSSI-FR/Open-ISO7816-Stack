@@ -33,6 +33,7 @@ READER_Status READER_T1_APDU_Execute(READER_T1_ContextHandler *pContext, READER_
 	READER_Status retVal;
 	READER_T1_BufferStatus buffStatus;
 	READER_T1_Block blockToSend, rcvdBlock;
+	uint32_t test = 0;
 	
 	
 	/* On initialise partiellement le contexte de communication et on remplit le Buffer d'envoi a partir de la commande APDU ...  */
@@ -50,6 +51,7 @@ READER_Status READER_T1_APDU_Execute(READER_T1_ContextHandler *pContext, READER_
 	/* Tantque le Buffer d'envoi n'est pas vide, on defile et on envoie le Block ...                                              */	
 	retVal = READER_T1_BUFFER_IsEmpty(pContext, &buffStatus);
 	if(retVal != READER_OK) return retVal;
+
 	
 	while(buffStatus == READER_T1_BUFFER_NOTEMPTY){
 		retVal = READER_T1_BUFFER_Dequeue(pContext, &blockToSend);
@@ -63,6 +65,8 @@ READER_Status READER_T1_APDU_Execute(READER_T1_ContextHandler *pContext, READER_
 		
 		retVal = READER_T1_BUFFER_IsEmpty(pContext, &buffStatus);
 		if(retVal != READER_OK) return retVal;
+		
+		test++;
 	}
 	
 	/* Si on est sortit de la boucle pour une autre raison que le Buffer vide, alors ca veut dire qu'on a eu une erreur interne ... */

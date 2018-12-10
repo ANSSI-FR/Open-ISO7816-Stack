@@ -386,6 +386,8 @@ READER_Status READER_T1_CONTROL_RcvBlock(READER_T1_ContextHandler *pContext, REA
 	if(retVal == READER_INTEGRITY){
 		retVal = READER_T1_ERR_DealWithError(pContext, 1);
 		if(retVal != READER_OK) return retVal;
+		
+		return READER_OK;
 	}
 	
 	/* On regarde si on attendait un S-Block ... */

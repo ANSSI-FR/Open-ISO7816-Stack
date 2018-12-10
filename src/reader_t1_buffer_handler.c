@@ -140,7 +140,7 @@ READER_Status READER_T1_BUFFER_Enqueue(READER_T1_ContextHandler *pContext, READE
 	if(retVal != READER_OK) return retVal;
 	
 	/* On calcule le nouveau top index */
-	newTopIndex = (pBlockBuffer->indexTop + 1) % READER_T1_CONTEXT_STATICBUFF_MAXSIZE;
+	newTopIndex = (topIndex + 1) % READER_T1_CONTEXT_STATICBUFF_MAXSIZE;
 	pBlockBuffer->indexTop = newTopIndex;
 	
 	/* On mets a jour la length */
@@ -159,7 +159,7 @@ READER_Status READER_T1_BUFFER_Dequeue(READER_T1_ContextHandler *pContext, READE
 	READER_Status retVal;
 	uint32_t indexBottom, newBottomIndex, length;
 	
-	
+
 	/* On verifie  que le buffer n'est pas vide */
 	retVal = READER_T1_BUFFER_IsEmpty(pContext, &bStatus);
 	if(retVal != READER_OK) return retVal;
@@ -183,14 +183,17 @@ READER_Status READER_T1_BUFFER_Dequeue(READER_T1_ContextHandler *pContext, READE
 	if(retVal != READER_OK) return retVal;
 	
 	/* On mets a jour la valeur de indexBottom */
-	retVal = READER_T1_BUFFER_GetLength(pContext, &length);
-	if(retVal != READER_OK) return retVal;
+	//retVal = READER_T1_BUFFER_GetLength(pContext, &length);
+	//if(retVal != READER_OK) return retVal;
 	
 	/* Si le Block suivant existe, alors on decale l'index de Bottom. */
-	if(length > 1){
-		newBottomIndex = (indexBottom + 1) % READER_T1_CONTEXT_STATICBUFF_MAXSIZE;
-		pBlockBuffer->indexBottom = newBottomIndex;
-	}
+	//if(length > 1){
+	//	newBottomIndex = (indexBottom + 1) % READER_T1_CONTEXT_STATICBUFF_MAXSIZE;
+	//	pBlockBuffer->indexBottom = newBottomIndex;
+	//}
+	
+	newBottomIndex = (indexBottom + 1) % (uint32_t)(READER_T1_CONTEXT_STATICBUFF_MAXSIZE);
+	pBlockBuffer->indexBottom = newBottomIndex;
 	
 	/* On mets a jour la length */
 	pBlockBuffer->length -= 1;
@@ -233,7 +236,10 @@ READER_Status READER_T1_BUFFER_Stack(READER_T1_ContextHandler *pContext, READER_
 	}
 	
 	/* Attention, important de faire une copie ici. Le Block que l'on stack existe generalement dans le contexte local d'une fonction. Il faut imperativement le copier dans la memoire du contexte. */
-	retVal = READER_T1_CopyBlock(&(pBlockTab[newBottomIndex]), pBlock);
+	//if(newBottomIndex == 0){
+	//	READER_PERIPH_ErrHandler();
+	//}
+	retVal = READER_T1_CopyBlock(pBlockTab+newBottomIndex, pBlock);
 	if(retVal != READER_OK) return retVal;
 	
 	pBlockBuffer->indexBottom = newBottomIndex;

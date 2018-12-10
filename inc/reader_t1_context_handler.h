@@ -31,7 +31,7 @@
 #define READER_T1_MIN_IFSC_ACCEPTED 0x10  
 
 
-#define COMPUTE_READER_T1_CONTEXT_STATICBUFF_MAXSIZE(apdu_maxlength, block_data_minlength, tolerence) ((apdu_maxlength / block_data_minlength) + 1) + tolerence
+#define COMPUTE_READER_T1_CONTEXT_STATICBUFF_MAXSIZE(apdu_maxlength, block_data_minlength, tolerence) (((uint32_t)apdu_maxlength / (uint32_t)block_data_minlength) + 1) + (uint32_t)tolerence
 #define APDU_MAXLENGTH READER_APDU_CMD_DATA_MAX_SIZE
 
 #define READER_T1_CONTEXT_STATICBUFF_MAXSIZE COMPUTE_READER_T1_CONTEXT_STATICBUFF_MAXSIZE(APDU_MAXLENGTH, READER_T1_MIN_IFSC_ACCEPTED, 20)
@@ -128,8 +128,8 @@ struct READER_T1_ContextHandler{
 	READER_T1_ChainingStatus cardIsChaining;
 	READER_T1_ChainingStatus deviceIsChaining;
 	
-	uint32_t deviceCompleteSeqNum;
-	uint32_t cardCompleteSeqNum;
+	uint32_t deviceCompleteSeqNum;      /* Numero de sequence attendu pour le prochain I-Block */
+	uint32_t cardCompleteSeqNum;        /* Numero de sequence attendu pour le prochain I-Block */
 	
 	
 	READER_T1_SBlockExpected SBlockExpected;
