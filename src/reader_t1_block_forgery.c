@@ -35,7 +35,6 @@ READER_Status READER_T1_FORGE_ErrorBlock(READER_T1_ContextHandler *pContext, REA
 	
 	/* On regarde si c'est la premiere reception  */
 	retVal = READER_T1_ERR_IsItFirstReception(pContext);
-	
 	if((retVal != READER_OK) && (retVal != READER_NO)){                         /* Si une erreur s'est produit au moment ou on verifie que c'est la 1ere reception ... */
 		return retVal;
 	}
