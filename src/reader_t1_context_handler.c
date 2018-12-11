@@ -268,7 +268,7 @@ READER_Status READER_T1_CONTEXT_SetCurrentIFSC(READER_T1_ContextHandler *pContex
 
 READER_Status READER_T1_CONTEXT_SetCurrentIFSD(READER_T1_ContextHandler *pContext, uint32_t ifsd){
 	if((ifsd >= READER_T1_MIN_IFSD_ACCEPTED) && (ifsd <= READER_T1_MAX_IFSD_ACCEPTED)){   /* Voir ISO7816-3 section 11.4.2 */
-		pContext->currentIFSC = ifsd;
+		pContext->currentIFSD = ifsd;
 	}
 	else{
 		return READER_ERR;
@@ -776,8 +776,9 @@ READER_Status READER_T1_CONTEXT_GetCardExpectedSeqNum(READER_T1_ContextHandler *
 	READER_Status retVal;
 	
 	
-	retVal = READER_T1_CONTEXT_ComputeNextCardSeqNum(pContext, &seqNum);
-	if(retVal != READER_OK) return retVal;
+	retVal = READER_T1_CONTEXT_GetCardSeqNum(pContext, &seqNum);
+	//retVal = READER_T1_CONTEXT_ComputeNextCardSeqNum(pContext, &seqNum);
+	//if(retVal != READER_OK) return retVal;
 	
 	*pSeqNum = seqNum;
 	

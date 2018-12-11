@@ -1,7 +1,7 @@
 #include "reader_t1_control.h"
 
 
-
+//extern UART_HandleTypeDef uartHandleStruct;
 
 /* Permet de faire des verificatios elementaires sur un R-Block ...       */
 /* Retourne  READER_NO si e n'est pas un R-Block valide. READER_OK sinon. */
@@ -369,6 +369,8 @@ READER_Status READER_T1_CONTROL_RcvBlock(READER_T1_ContextHandler *pContext, REA
 	retVal = READER_T1_RcvBlock(pBlock, currentCWT, extraTimeout, &tickLastBlock);    /* La fonction de reception de Block fait remonter la date du leading Edge du Block recu ...  */
 	if((retVal != READER_OK) && (retVal != READER_TIMEOUT)) return retVal;
 	
+	//HAL_UART_Transmit(&uartHandleStruct, READER_T1_GetBlockData(pBlock), READER_T1_GetBlockLEN(pBlock), 1000);
+	
 	/* On regarde si on a eu un timeout     */
 	if(retVal == READER_TIMEOUT){
 		retVal = READER_T1_ERR_DealWithError(pContext, 0);
@@ -458,10 +460,6 @@ READER_Status READER_T1_CONTROL_ApplyIBlockRcvd(READER_T1_ContextHandler *pConte
 		return READER_OK;
 	}
 	
-	/* On incremente le numero de sequence du cote carte ...  */
-	retVal = READER_T1_CONTEXT_IncCardCompleteSeqNum(pContext);
-	if(retVal != READER_OK) return retVal;
-	
 	/* On regarde si ce I-Block est un ACK ...                                                                                      */
 	retVal = READER_T1_CONTROL_IsIBlockACK(pContext, pBlock);
 	if((retVal != READER_OK) && (retVal != READER_NO)) return retVal;
@@ -498,6 +496,10 @@ READER_Status READER_T1_CONTROL_ApplyIBlockRcvd(READER_T1_ContextHandler *pConte
 	else{
 		return READER_ERR;
 	}
+	
+	/* On incremente le numero de sequence du cote carte ...  */
+	retVal = READER_T1_CONTEXT_IncCardCompleteSeqNum(pContext);
+	if(retVal != READER_OK) return retVal;
 	
 	
 	/* On extrait les donnees contenues dans le I-Block                                                        */

@@ -21,7 +21,7 @@ int main(void){
 	READER_T1_ContextHandler context;
 	
 	
-	initUart();
+	//initUart();
 	READER_T1_APDU_Init(&context);
 	//READER_T0_APDU_Init();
 	
@@ -34,34 +34,34 @@ int main(void){
 	//READER_ATR_ApplySettings(&atr);
 	
 	
-	pSmartcardTxBuff[0] = 0x48;
-	pSmartcardTxBuff[1] = 0x65;
-	pSmartcardTxBuff[2] = 0x6C;
-	pSmartcardTxBuff[3] = 0x6C;
-	pSmartcardTxBuff[4] = 0x6F;
-	pSmartcardTxBuff[5] = 0x57;
-	pSmartcardTxBuff[6] = 0x6F;
-	pSmartcardTxBuff[7] = 0x72;
-	pSmartcardTxBuff[8] = 0x6C;
-	pSmartcardTxBuff[9] = 0x64;
-	pSmartcardTxBuff[10] = 0x41;
-	pSmartcardTxBuff[11] = 0x70;
-	pSmartcardTxBuff[12] = 0x70;
+	//pSmartcardTxBuff[0] = 0x48;
+	//pSmartcardTxBuff[1] = 0x65;
+	//pSmartcardTxBuff[2] = 0x6C;
+	//pSmartcardTxBuff[3] = 0x6C;
+	//pSmartcardTxBuff[4] = 0x6F;
+	//pSmartcardTxBuff[5] = 0x57;
+	//pSmartcardTxBuff[6] = 0x6F;
+	//pSmartcardTxBuff[7] = 0x72;
+	//pSmartcardTxBuff[8] = 0x6C;
+	//pSmartcardTxBuff[9] = 0x64;
+	//pSmartcardTxBuff[10] = 0x41;
+	//pSmartcardTxBuff[11] = 0x70;
+	//pSmartcardTxBuff[12] = 0x70;
 	
-	//pSmartcardTxBuff[0] = 0xA0;
-	//pSmartcardTxBuff[1] = 0x00;
-	//pSmartcardTxBuff[2] = 0x00;
-	//pSmartcardTxBuff[3] = 0x00;
-	//pSmartcardTxBuff[4] = 0x62;
-	//pSmartcardTxBuff[5] = 0x03;
-	//pSmartcardTxBuff[6] = 0x01;
-	//pSmartcardTxBuff[7] = 0x0C;
-	//pSmartcardTxBuff[8] = 0x01;
+	pSmartcardTxBuff[0] = 0xA0;
+	pSmartcardTxBuff[1] = 0x00;
+	pSmartcardTxBuff[2] = 0x00;
+	pSmartcardTxBuff[3] = 0x00;
+	pSmartcardTxBuff[4] = 0x62;
+	pSmartcardTxBuff[5] = 0x03;
+	pSmartcardTxBuff[6] = 0x01;
+	pSmartcardTxBuff[7] = 0x0C;
+	pSmartcardTxBuff[8] = 0x01;
 	//pSmartcardTxBuff[9] = 0x01;
 	
 	//READER_PERIPH_ErrHandler();
 	
-	READER_APDU_Forge(&apduCmd, 0x00, 0xA4, 0x04, 0x00, 13, pSmartcardTxBuff, 13);
+	READER_APDU_Forge(&apduCmd, 0x00, 0xA4, 0x04, 0x00, 9, pSmartcardTxBuff, 12);
 	//READER_T0_APDU_Execute(&apduCmd, &apduResp, READER_HAL_USE_ISO_WT);
 	retVal = READER_T1_APDU_Execute(&context, &apduCmd, &apduResp);
 	//READER_PERIPH_ErrHandler();

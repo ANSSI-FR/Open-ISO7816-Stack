@@ -140,7 +140,7 @@ READER_Status READER_T1_BUFFER_Enqueue(READER_T1_ContextHandler *pContext, READE
 	if(retVal != READER_OK) return retVal;
 	
 	/* On calcule le nouveau top index */
-	newTopIndex = (topIndex + 1) % READER_T1_CONTEXT_STATICBUFF_MAXSIZE;
+	newTopIndex = (uint32_t)(topIndex + 1) % (uint32_t)(READER_T1_CONTEXT_STATICBUFF_MAXSIZE);
 	pBlockBuffer->indexTop = newTopIndex;
 	
 	/* On mets a jour la length */

@@ -27,7 +27,6 @@ READER_Status READER_T1_SetBlockACKType(READER_T1_Block *pBlock, READER_T1_ACKTy
 		return READER_ERR;
 	}
 	
-	
 	retVal = READER_T1_SetBlockPCB(pBlock, newPCB);
 	if(retVal != READER_OK) return retVal;
 	
