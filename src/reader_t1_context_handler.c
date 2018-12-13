@@ -799,33 +799,50 @@ READER_Status READER_T1_CONTEXT_GetCardExpectedSeqNum(READER_T1_ContextHandler *
 
 /* Gestion du chainage */
 READER_Status READER_T1_CONTEXT_DeviceIsChainingLastBlock(READER_T1_ContextHandler *pContext, READER_T1_ChainingStatus *pChainingStatus){
-	READER_Status retVal;
-	READER_T1_Block *pBlock;
-	READER_T1_MBit mBit;
+	READER_T1_ChainingStatus status;
 	
 	
-	/* On recupere a partir du context handler un pointeur sur le dernier I-Block qu'on a envoye */
-	retVal = READER_T1_CONTEXT_GetLastIBlockSent(pContext, &pBlock);
-	if((retVal != READER_OK) && (retVal != READER_DOESNT_EXIST)) return retVal;
+	status = pContext->deviceIsChainingLastBlock;
 	
-	if(retVal == READER_DOESNT_EXIST){
-		*pChainingStatus = READER_T1_CHAINING_NO;
+	if(status == READER_T1_CHAINING_YES){
+		*ChainingStatus = READER_T1_CHAINING_YES;
 	}
-	
-	/* On recupere le M-Bit du dernier I-Block ... */
-	mBit = READER_T1_GetBlockMBit(pBlock);
-	
-	if(mBit == READER_T1_MBIT_ZERO){
-		*pChainingStatus = READER_T1_CHAINING_NO;
-	}
-	else if(mBit == READER_T1_MBIT_ONE){
-		*pChainingStatus = READER_T1_CHAINING_YES;
+	else if(status == READER_T1_CHAINING_NO){
+		*ChainingStatus = READER_T1_CHAINING_NO;
 	}
 	else{
-		return READER_ERR;
+		return READER_BAD_VALUE;
 	}
 	
 	return READER_OK;
+	
+	//READER_Status retVal;
+	//READER_T1_Block *pBlock;
+	//READER_T1_MBit mBit;
+	//
+	//
+	///* On recupere a partir du context handler un pointeur sur le dernier I-Block qu'on a envoye */
+	//retVal = READER_T1_CONTEXT_GetLastIBlockSent(pContext, &pBlock);
+	//if((retVal != READER_OK) && (retVal != READER_DOESNT_EXIST)) return retVal;
+	//
+	//if(retVal == READER_DOESNT_EXIST){
+	//	*pChainingStatus = READER_T1_CHAINING_NO;
+	//}
+	//
+	///* On recupere le M-Bit du dernier I-Block ... */
+	//mBit = READER_T1_GetBlockMBit(pBlock);
+	//
+	//if(mBit == READER_T1_MBIT_ZERO){
+	//	*pChainingStatus = READER_T1_CHAINING_NO;
+	//}
+	//else if(mBit == READER_T1_MBIT_ONE){
+	//	*pChainingStatus = READER_T1_CHAINING_YES;
+	//}
+	//else{
+	//	return READER_ERR;
+	//}
+	//
+	//return READER_OK;
 }
 
 
