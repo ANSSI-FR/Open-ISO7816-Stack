@@ -107,7 +107,7 @@ READER_Status READER_HAL_SendCharFrameTickstart(uint8_t *frame, uint32_t frameSi
 		if(retVal != READER_OK) return retVal;
 		
 		/* On mets a jour la date du debut de l'envoi du premier caractere de la frame. (On soustrait le temps en milisec qu'il faut pour envoyer un carac) */
-		if(i == 0){
+		if(i == (frameSize-1)){
 			*pTickstart = READER_HAL_GetTick() - READER_UTILS_ComputeEtuMili(READER_HAL_GetFi(), READER_HAL_GetDi(), READER_HAL_GetFreq());
 		}
 		
@@ -188,7 +188,7 @@ READER_Status READER_HAL_RcvCharFrameCountTickstart(uint8_t *frame, uint32_t fra
 		if(retVal != READER_OK) return retVal;
 		
 		/* Si on vient de recevoir le premier caractere, alors on mets a jour le tickstart du leading edge de la frame ...  */
-		if(i == 0){
+		if(i == (frameSize-1)){
 			/* On veut la date du debut de la reception de la frame, donc on retire le temps en milisecondes que dure un caractere ...  */
 			*tickstart = READER_HAL_GetTick() - READER_UTILS_ComputeEtuMili(READER_HAL_GetFi(), READER_HAL_GetDi(), READER_HAL_GetFreq());
 		}
@@ -415,6 +415,7 @@ READER_Status READER_HAL_SendChar(uint8_t character, uint32_t timeout){
 	else{
 		timeoutMili = timeout;
 	}
+	
 	
 	/* On active le bloc USART */
 	USART2->CR1 |= USART_CR1_UE;

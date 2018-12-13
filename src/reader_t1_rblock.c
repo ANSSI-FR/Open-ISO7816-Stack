@@ -63,10 +63,10 @@ READER_Status READER_T1_SetExpectedBlockSeqNumber(READER_T1_Block *pBlock, READE
 	currentPCB = READER_T1_GetBlockPCB(pBlock);
 	
 	if(seq == READER_T1_EXPSEQNUM_ZERO){
-		newPCB = currentPCB & 0xBF ;
+		newPCB = currentPCB & 0xEF ;
 	}
 	else if(seq == READER_T1_EXPSEQNUM_ONE){
-		newPCB = currentPCB | ~0xBF ;
+		newPCB = currentPCB | 0x10 ;
 	}
 	else{
 		return READER_ERR;

@@ -153,8 +153,22 @@ READER_Status READER_T1_CONTEXT_InitRcptBuff(READER_T1_ContextHandler *pContext)
 
 
 /* Accesseurs sur les parametres actuels de communication */
+
+/* On retourne BGT en milisecondes ...  */
 READER_Status READER_T1_CONTEXT_GetCurrentBGT(READER_T1_ContextHandler *pContext, uint32_t *pBgt){
-	*pBgt = pContext->currentBGT;
+	uint32_t etuMiliInt;
+	float etuMili;
+	
+	
+	etuMili = READER_UTILS_ComputeEtuMiliFloat(READER_HAL_GetFi(), READER_HAL_GetDi(), READER_HAL_GetFreq());
+
+	*pBgt = (uint32_t)((float)(pContext->currentBGT) * etuMili) + 1;
+	
+	//etuMili = READER_UTILS_ComputeEtuMili(READER_HAL_GetFi(), READER_HAL_GetDi(), READER_HAL_GetFreq());
+	//etuMili = MAX(etuMili, 1);
+	//
+	//*pBgt = (pContext->currentBGT) * etuMili;
+	
 	return READER_OK;
 }
 
@@ -222,6 +236,28 @@ READER_Status READER_T1_CONTEXT_GetCurrentRedundancyType(READER_T1_ContextHandle
 	}
 	else{
 		return READER_ERR;
+	}
+	
+	return READER_OK;
+}
+
+
+READER_Status READER_T1_CONTEXT_GetCurrentRedundancyLen(READER_T1_ContextHandler *pContext, uint32_t *pRedLen){
+	READER_Status retVal;
+	READER_T1_RedundancyType rType;
+	
+	
+	retVal = READER_T1_CONTEXT_GetCurrentRedundancyType(pContext, &rType);
+	if(retVal != READER_OK) return retVal;
+	
+	if(rType == READER_T1_LRC){
+		*pRedLen = 1;
+	}
+	else if(rType == READER_T1_CRC){
+		*pRedLen = 2;
+	}
+	else{
+		return READER_BAD_VALUE;
 	}
 	
 	return READER_OK;
@@ -774,7 +810,8 @@ READER_Status READER_T1_CONTEXT_ComputeNextCardSeqNum(READER_T1_ContextHandler *
 	retVal = READER_T1_CONTEXT_GetCardCompleteSeqNum(pContext, &cardSeqNum);
 	if(retVal != READER_OK) return retVal;
 	
-	nextCardSeqNum = (cardSeqNum + 1) & 0x00000001;     /* Numero de sequence modulo 2 ... */
+	//nextCardSeqNum = (cardSeqNum + 1) & 0x00000001;     /* Numero de sequence modulo 2 ... */
+	nextCardSeqNum = (cardSeqNum) & 0x00000001;     /* Numero de sequence modulo 2 ... */
 	
 	*pSeqNum = nextCardSeqNum;
 	
@@ -805,10 +842,10 @@ READER_Status READER_T1_CONTEXT_DeviceIsChainingLastBlock(READER_T1_ContextHandl
 	status = pContext->deviceIsChainingLastBlock;
 	
 	if(status == READER_T1_CHAINING_YES){
-		*ChainingStatus = READER_T1_CHAINING_YES;
+		*pChainingStatus = READER_T1_CHAINING_YES;
 	}
 	else if(status == READER_T1_CHAINING_NO){
-		*ChainingStatus = READER_T1_CHAINING_NO;
+		*pChainingStatus = READER_T1_CHAINING_NO;
 	}
 	else{
 		return READER_BAD_VALUE;

@@ -211,7 +211,7 @@ READER_Status READER_T1_CONTROL_SendBlock(READER_T1_ContextHandler *pContext, RE
 	//READER_T1_Block blockToSend;
 	READER_T1_BlockType bType;
 	uint32_t currentCWT, currentBGT;
-	uint32_t tickLastBlock, extraStartDelay;
+	uint32_t tickLastBlock, extraStartDelay, tick;
 		
 	
 	///* On recupere le Block suivant a envoyer dans le Buffer du Contexte        */
@@ -225,13 +225,17 @@ READER_Status READER_T1_CONTROL_SendBlock(READER_T1_ContextHandler *pContext, RE
 	retVal = READER_T1_CONTEXT_GetTickLastBlock(pContext, &tickLastBlock);
 	if((retVal != READER_OK) && (retVal != READER_DOESNT_EXIST)) return retVal;
 	
+	tick = READER_HAL_GetTick();
 	if(retVal == READER_DOESNT_EXIST){
 		extraStartDelay = 0;
 	}
-	else{
-		extraStartDelay = tickLastBlock + currentBGT - READER_HAL_GetTick();
+	else if((tickLastBlock + currentBGT) < tick){
+		extraStartDelay = 0;
 	}
-	   
+	else{
+		extraStartDelay = tickLastBlock + currentBGT - tick;
+	}
+
 	/* On envoie le Block                                                       */
 	retVal = READER_T1_CONTEXT_GetCurrentCWT(pContext, &currentCWT);
 	if(retVal != READER_OK) return retVal;
@@ -340,11 +344,12 @@ READER_Status READER_T1_CONTROL_SBlockSentUpdateContext(READER_T1_ContextHandler
 READER_Status READER_T1_CONTROL_RcvBlock(READER_T1_ContextHandler *pContext, READER_T1_Block *pBlock){
 	READER_Status retVal;
 	READER_T1_BlockType bType;
+	READER_T1_RedundancyType rType;
 	READER_T1_SBlockExpected SBlockExpected;
 	READER_T1_SBlockType SBlockExpectedType, SBlockType;
 	uint32_t currentCWT, currentBWT;
 	uint32_t extraTimeout;
-	uint32_t tickLastBlock;
+	uint32_t tickLastBlock, tick;
 	
 	
 	/* On recupere les valeurs de timeout a appliquer ... */
@@ -358,15 +363,23 @@ READER_Status READER_T1_CONTROL_RcvBlock(READER_T1_ContextHandler *pContext, REA
 	retVal = READER_T1_CONTEXT_GetTickLastBlock(pContext, &tickLastBlock);
 	if((retVal != READER_OK) && (retVal != READER_DOESNT_EXIST)) return retVal;
 	
+	
+	tick = READER_HAL_GetTick();
 	if(retVal == READER_DOESNT_EXIST){
 		extraTimeout = currentBWT;
 	}
+	else if((tickLastBlock + currentBWT) < tick){
+		extraTimeout = 0;
+	}
 	else{
-		extraTimeout = tickLastBlock + currentBWT - READER_HAL_GetTick();
+		extraTimeout = tickLastBlock + currentBWT - tick;
 	}
 	
 	/* On receptionne le Block ... */
-	retVal = READER_T1_RcvBlock(pBlock, currentCWT, extraTimeout, &tickLastBlock);    /* La fonction de reception de Block fait remonter la date du leading Edge du Block recu ...  */
+	retVal = READER_T1_CONTEXT_GetCurrentRedundancyType(pContext, &rType);
+	if(retVal != READER_OK) return retVal;
+	
+	retVal = READER_T1_RcvBlock(pBlock, rType, currentCWT, extraTimeout, &tickLastBlock);    /* La fonction de reception de Block fait remonter la date du leading Edge du Block recu ...  */
 	if((retVal != READER_OK) && (retVal != READER_TIMEOUT)) return retVal;
 	
 	//HAL_UART_Transmit(&uartHandleStruct, READER_T1_GetBlockData(pBlock), READER_T1_GetBlockLEN(pBlock), 1000);
@@ -550,6 +563,9 @@ READER_Status READER_T1_CONTROL_ApplyIBlockRcvd(READER_T1_ContextHandler *pConte
 			if(retVal != READER_OK) return retVal;
 			
 			retVal = READER_T1_BUFFER_Stack(pContext, &tmpBlock);
+			if(retVal != READER_OK) return retVal;
+			
+			retVal = READER_T1_CONTEXT_SetCardChainingSituationFlag(pContext, READER_T1_CHAINING_NO);
 			if(retVal != READER_OK) return retVal;
 		}
 		else{

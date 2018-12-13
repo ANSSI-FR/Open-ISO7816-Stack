@@ -611,9 +611,8 @@ READER_Status READER_T1_SendBlock(READER_T1_Block *pBlock, uint32_t currentCWT, 
  * \param *pBlock Pointeur sur une structure de type READER_T1_Block. Le contenu du Block reçu sera placé à l'intérieur.
  * \param timeout Il s'agit de la valeur du timeout pour chaque caractère en milisecondes.
  */
-READER_Status READER_T1_RcvBlock(READER_T1_Block *pBlock, uint32_t currentCWT, uint32_t extraTimeout, uint32_t *pTickstart){
+READER_Status READER_T1_RcvBlock(READER_T1_Block *pBlock, READER_T1_RedundancyType rType, uint32_t currentCWT, uint32_t extraTimeout, uint32_t *pTickstart){
 	READER_Status retVal;
-	READER_T1_RedundancyType rType;
 	uint8_t buffPrologue[READER_T1_BLOCK_PROLOGUE_SIZE];
 	uint8_t buff[READER_T1_BLOCK_MAX_DATA_SIZE + 2];  /* MAXDATA + MAX CRC */
 	uint32_t buffSize;
@@ -649,11 +648,36 @@ READER_Status READER_T1_RcvBlock(READER_T1_Block *pBlock, uint32_t currentCWT, u
 		return READER_ERR;
 	}
 	
+	
+	/* Selon le prologue recu ... */
+	//rType = READER_T1_GetBlockRedundancyType(pBlock);
+	buffSize = buffPrologue[READER_T1_BLOCKFRAME_LEN_POSITION];
+	
+	if(buffSize > READER_T1_BLOCK_MAX_DATA_SIZE) return READER_ERR;
+	
+	/* On regarde combien de place il faut prevoir pour recevoir le code correcteur ...  */
+	if(rType == READER_T1_LRC){
+		buffSize += 1;
+	}
+	else if(rType == READER_T1_CRC){
+		buffSize += 2;
+	}
+	else{
+		return READER_ERR;
+	}
+	
+	/* On recoit les data et CRC/LRC d'un seul coups */
+	retVal = READER_HAL_RcvCharFrameCount(buff, buffSize, &count, currentCWT);
+	//if(count == 6){
+	//	READER_PERIPH_ErrHandler();
+	//}
+	if(retVal != READER_OK) return retVal;
+	if(count != buffSize) return READER_ERR;
+	
+	
 	/* On forge un block vide                                           */
-	rType = READER_HAL_GetRedunancyType();
 	retVal = READER_T1_ForgeBlock(pBlock, rType);
 	if(retVal != READER_OK) return retVal;
-	
 	
 	/* On commence a fabriquer le block a partir des donnees recues ... */
 	retVal = READER_T1_SetBlockNAD(pBlock, buffPrologue[READER_T1_BLOCKFRAME_NAD_POSITION]);
@@ -666,18 +690,6 @@ READER_Status READER_T1_RcvBlock(READER_T1_Block *pBlock, uint32_t currentCWT, u
 	if(retVal != READER_OK) return retVal;
 	
 	
-	/* Selon le prologue recu ... */
-	//rType = READER_T1_GetBlockRedundancyType(pBlock);
-	buffSize = READER_T1_GetBlockLEN(pBlock);
-	
-	if(buffSize > READER_T1_BLOCK_MAX_DATA_SIZE) return READER_ERR;
-	
-	buffSize += READER_T1_GetBlockRedundancyLen(pBlock);   /* On prevoit de recevoir les Data et LRC/CRC */
-	
-	/* On recoit les data et CRC/LRC d'un seul coups */
-	retVal = READER_HAL_RcvCharFrameCount(buff, buffSize, &count, currentCWT);
-	if(retVal != READER_OK) return retVal;
-	if(count != buffSize) return READER_ERR;
 	
 	/* Recuperation du code correcteur d'erreur  */
 	if(rType == READER_T1_LRC){

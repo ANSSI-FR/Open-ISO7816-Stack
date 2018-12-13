@@ -160,6 +160,7 @@ READER_Status READER_T1_CONTEXT_GetCurrentBWI(READER_T1_ContextHandler *pContext
 READER_Status READER_T1_CONTEXT_GetCurrentIFSC(READER_T1_ContextHandler *pContext, uint32_t *pIfsc);
 READER_Status READER_T1_CONTEXT_GetCurrentIFSD(READER_T1_ContextHandler *pContext, uint32_t *pIfsd);
 READER_Status READER_T1_CONTEXT_GetCurrentRedundancyType(READER_T1_ContextHandler *pContext, READER_T1_RedundancyType *pRType);
+READER_Status READER_T1_CONTEXT_GetCurrentRedundancyLen(READER_T1_ContextHandler *pContext, uint32_t *pRedLen);
 
 READER_Status READER_T1_CONTEXT_SetCurrentBGT(READER_T1_ContextHandler *pContext, uint32_t bgt);
 READER_Status READER_T1_CONTEXT_SetCurrentBWT(READER_T1_ContextHandler *pContext, uint32_t bwt);

@@ -111,6 +111,12 @@ uint32_t READER_UTILS_ComputeBWTMili(uint32_t BWTEtu, uint32_t F, uint32_t D, ui
 }
 
 
+float READER_UTILS_ComputeEtuMiliFloat(uint32_t F, uint32_t D, uint32_t f){
+	/* Voir ISO7816-3 section 7.1 */
+	return (float)(   (  (float)F / (float)(D)  ) *   (   1000 / (float)(f)   )    ) ; 
+}
+
+
 uint32_t READER_UTILS_ComputeEtuMili(uint32_t F, uint32_t D, uint32_t f){
 	/* Voir ISO7816-3 section 7.1 */
 	return (uint32_t)(   (  F / (float)(D)  ) *   (   1 / (float)(f)   )    ) * 1000;
