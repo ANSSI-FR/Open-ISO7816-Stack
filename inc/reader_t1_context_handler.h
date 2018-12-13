@@ -147,6 +147,7 @@ READER_Status READER_T1_CONTEXT_InitSettings(READER_T1_ContextHandler *pContext)
 READER_Status READER_T1_CONTEXT_InitCommSettings(READER_T1_ContextHandler *pContext);
 READER_Status READER_T1_CONTEXT_InitContextSettings(READER_T1_ContextHandler *pContext);
 READER_Status READER_T1_CONTEXT_InitBuffer(READER_T1_ContextHandler *pContext);
+READER_Status READER_T1_CONTEXT_InitRcptBuff(READER_T1_ContextHandler *pContext);
 
 
 /* Accesseurs sur les parametres actuels de communication */

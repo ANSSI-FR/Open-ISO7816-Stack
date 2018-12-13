@@ -36,6 +36,7 @@ READER_Status READER_T1_RCPTBUFF_ExtractDataFromIBlock(READER_T1_ContextHandler 
 	retVal = READER_T1_CONTEXT_GetCurrentIFSD(pContext, &currentIFSD);
 	if(retVal != READER_OK) return retVal;
 	
+	
 	/* On verifie que le LEN du I-Block est bien inferieur au current IFSD ... */
 	blockLength = READER_T1_GetBlockLEN(pBlock);
 	if((uint32_t)(blockLength) > currentIFSD){
@@ -48,7 +49,7 @@ READER_Status READER_T1_RCPTBUFF_ExtractDataFromIBlock(READER_T1_ContextHandler 
 	pBlockDataBuff = READER_T1_GetBlockData(pBlock);
 	
 	if(rcptBuffDataSize + blockLength > READER_APDU_RESP_MAX_TOTALSIZE){
-		return READER_OK;
+		return READER_FULL;
 	}
 	
 	pRcptBuff = pRcptBuff + rcptBuffDataSize;

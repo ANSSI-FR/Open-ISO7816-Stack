@@ -507,7 +507,7 @@ READER_Status READER_T1_CONTROL_ApplyIBlockRcvd(READER_T1_ContextHandler *pConte
 	if(retVal != READER_OK) return retVal;
 	
 	
-	/* On regarde le M-Bit de la du Block en provenance de la carte et on mets a jour les flags ...            */
+	/* On regarde le M-Bit du Block en provenance de la carte et on mets a jour les flags ...            */
 	mBit = READER_T1_GetBlockMBit(pBlock);
 	if(mBit == READER_T1_MBIT_ZERO){
 		/* On mets a jour la situation de chainage                                                             */
