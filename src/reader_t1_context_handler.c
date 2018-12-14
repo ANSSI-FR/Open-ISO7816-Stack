@@ -9,6 +9,9 @@ READER_Status READER_T1_CONTEXT_Init(READER_T1_ContextHandler *pContext){
 	retVal = READER_T1_CONTEXT_InitSettings(pContext);
 	if(retVal != READER_OK) return retVal;
 	
+	retVal = READER_T1_CONTEXT_InitSeqNums(pContext);
+	if(retVal != READER_OK) return retVal;
+	
 	retVal = READER_T1_CONTEXT_InitBuffer(pContext);
 	if(retVal != READER_OK) return retVal;
 	
@@ -54,12 +57,6 @@ READER_Status READER_T1_CONTEXT_InitCommSettings(READER_T1_ContextHandler *pCont
 READER_Status READER_T1_CONTEXT_InitContextSettings(READER_T1_ContextHandler *pContext){
 	READER_Status retVal;
 	
-	
-	retVal = READER_T1_CONTEXT_SetDeviceCompleteSeqNum(pContext, 0);
-	if(retVal != READER_OK) return retVal;
-	
-	retVal = READER_T1_CONTEXT_SetCardCompleteSeqNum(pContext, 0);
-	if(retVal != READER_OK) return retVal;
 	
 	retVal = READER_T1_CONTEXT_SetRepeatCounter(pContext, 0);
 	if(retVal != READER_OK) return retVal;
@@ -112,6 +109,21 @@ READER_Status READER_T1_CONTEXT_InitContextSettings(READER_T1_ContextHandler *pC
 	
 	retVal = READER_T1_CONTEXT_InitRcptBuff(pContext);
 	if(retVal != READER_OK) return retVal;
+	
+	return READER_OK;
+}
+
+
+READER_Status READER_T1_CONTEXT_InitSeqNums(READER_T1_ContextHandler *pContext){
+	READER_Status retVal;
+	
+	
+	retVal = READER_T1_CONTEXT_SetDeviceCompleteSeqNum(pContext, 0);
+	if(retVal != READER_OK) return retVal;
+	
+	retVal = READER_T1_CONTEXT_SetCardCompleteSeqNum(pContext, 0);
+	if(retVal != READER_OK) return retVal;
+	
 	
 	return READER_OK;
 }

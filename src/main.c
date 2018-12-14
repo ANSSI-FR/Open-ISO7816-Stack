@@ -57,11 +57,11 @@ int main(void){
 	pSmartcardTxBuff[6] = 0x01;
 	pSmartcardTxBuff[7] = 0x0C;
 	pSmartcardTxBuff[8] = 0x01;
-	//pSmartcardTxBuff[9] = 0x01;
+	pSmartcardTxBuff[9] = 0x01;
 	
 	//READER_PERIPH_ErrHandler();
 	
-	READER_APDU_Forge(&apduCmd, 0x00, 0xA4, 0x04, 0x00, 9, pSmartcardTxBuff, 12);
+	READER_APDU_Forge(&apduCmd, 0x00, 0xA4, 0x04, 0x00, 10, pSmartcardTxBuff, 16);
 	//READER_T0_APDU_Execute(&apduCmd, &apduResp, READER_HAL_USE_ISO_WT);
 	retVal = READER_T1_APDU_Execute(&context, &apduCmd, &apduResp);
 	//READER_PERIPH_ErrHandler();
@@ -69,6 +69,66 @@ int main(void){
 	//	READER_PERIPH_ErrHandler();
 	//}
 	//READER_PERIPH_ErrHandler();
+	
+	//READER_HAL_Delay(100);
+	//
+	//pSmartcardTxBuff[0] = 'A';
+	//pSmartcardTxBuff[1] = 'A';
+	//pSmartcardTxBuff[2] = 'A';
+	//pSmartcardTxBuff[3] = 'A';
+	//pSmartcardTxBuff[4] = 'A';
+	//pSmartcardTxBuff[5] = 'A';
+	//pSmartcardTxBuff[6] = 'A';
+	//pSmartcardTxBuff[7] = 'A';
+	//pSmartcardTxBuff[8] = 'A';
+	//pSmartcardTxBuff[9] = 'A';
+	//pSmartcardTxBuff[10] = 'A';
+	//pSmartcardTxBuff[11] = 'A';
+	//pSmartcardTxBuff[12] = 'A';
+	//pSmartcardTxBuff[13] = 'A';
+	//pSmartcardTxBuff[14] = 'A';
+	//pSmartcardTxBuff[15] = 'A';
+	//pSmartcardTxBuff[16] = 'A';
+	//pSmartcardTxBuff[17] = 'A';
+	//pSmartcardTxBuff[18] = 'A';
+	//pSmartcardTxBuff[19] = 'A';
+	//pSmartcardTxBuff[20] = 'B';
+	//pSmartcardTxBuff[21] = 'B';
+	//pSmartcardTxBuff[22] = 'B';
+	//pSmartcardTxBuff[23] = 'B';
+	//pSmartcardTxBuff[24] = 'B';
+	//pSmartcardTxBuff[25] = 'B';
+	//pSmartcardTxBuff[26] = 'B';
+	//pSmartcardTxBuff[27] = 'B';
+	//pSmartcardTxBuff[28] = 'B';
+	//pSmartcardTxBuff[29] = 'B';
+	//pSmartcardTxBuff[30] = 'B';
+	//pSmartcardTxBuff[31] = 'B';
+	//pSmartcardTxBuff[32] = 'B';
+	//pSmartcardTxBuff[33] = 'B';
+	//pSmartcardTxBuff[34] = 'B';
+	//pSmartcardTxBuff[35] = 'B';
+	//pSmartcardTxBuff[36] = 'B';
+	//pSmartcardTxBuff[37] = 'B';
+	//pSmartcardTxBuff[38] = 'B';
+	//
+	//
+	//READER_APDU_Forge(&apduCmd, 0x00, 0xA4, 0x04, 0x00, 38, pSmartcardTxBuff, 38);
+	//retVal = READER_T1_APDU_Execute(&context, &apduCmd, &apduResp);
+	//
+	
+	//if(retVal != READER_OK){
+	//	READER_PERIPH_ErrHandler();
+	//}
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	//HAL_UART_Transmit(&uartHandleStruct, apduResp.dataBytes, apduResp.dataSize, 1000);
 	

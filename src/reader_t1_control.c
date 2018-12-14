@@ -382,8 +382,6 @@ READER_Status READER_T1_CONTROL_RcvBlock(READER_T1_ContextHandler *pContext, REA
 	retVal = READER_T1_RcvBlock(pBlock, rType, currentCWT, extraTimeout, &tickLastBlock);    /* La fonction de reception de Block fait remonter la date du leading Edge du Block recu ...  */
 	if((retVal != READER_OK) && (retVal != READER_TIMEOUT)) return retVal;
 	
-	//HAL_UART_Transmit(&uartHandleStruct, READER_T1_GetBlockData(pBlock), READER_T1_GetBlockLEN(pBlock), 1000);
-	
 	/* On regarde si on a eu un timeout     */
 	if(retVal == READER_TIMEOUT){
 		retVal = READER_T1_ERR_DealWithError(pContext, 0);
@@ -396,7 +394,7 @@ READER_Status READER_T1_CONTROL_RcvBlock(READER_T1_ContextHandler *pContext, REA
 	
 	/* On regarde si le Block est corrompu ... */
 	retVal = READER_T1_CheckBlockIntegrity(pBlock);
-	if((retVal != READER_OK) && (retVal != READER_INTEGRITY)) return retVal;
+	if((retVal != READER_OK) && (retVal != READER_INTEGRITY)) return retVal;	
 	
 	if(retVal == READER_INTEGRITY){
 		retVal = READER_T1_ERR_DealWithError(pContext, 1);
@@ -404,6 +402,10 @@ READER_Status READER_T1_CONTROL_RcvBlock(READER_T1_ContextHandler *pContext, REA
 		
 		return READER_OK;
 	}
+	
+	/* On mets a jour l'existance du dernier Block recu ...  */
+	retVal = READER_T1_CONTEXT_SetLastRcvd(pContext, pBlock);
+	if(retVal != READER_OK) return retVal;
 	
 	/* On regarde si on attendait un S-Block ... */
 	retVal = READER_T1_CONTEXT_IsSblockExpectedNow(pContext, &SBlockExpected);
@@ -559,11 +561,11 @@ READER_Status READER_T1_CONTROL_ApplyIBlockRcvd(READER_T1_ContextHandler *pConte
 		}
 		else if(lastBlockChainingStatus == READER_T1_CHAINING_NO){
 			/* On prepare un I-Block d'ACK       */
-			retVal = READER_T1_FORGE_ACKIBlock(pContext, &tmpBlock);
-			if(retVal != READER_OK) return retVal;
-			
-			retVal = READER_T1_BUFFER_Stack(pContext, &tmpBlock);
-			if(retVal != READER_OK) return retVal;
+			//retVal = READER_T1_FORGE_ACKIBlock(pContext, &tmpBlock);
+			//if(retVal != READER_OK) return retVal;
+			//
+			//retVal = READER_T1_BUFFER_Stack(pContext, &tmpBlock);
+			//if(retVal != READER_OK) return retVal;
 			
 			retVal = READER_T1_CONTEXT_SetCardChainingSituationFlag(pContext, READER_T1_CHAINING_NO);
 			if(retVal != READER_OK) return retVal;

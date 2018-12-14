@@ -184,6 +184,7 @@ READER_Status READER_T1_FORGE_ACKIBlock(READER_T1_ContextHandler *pContext, READ
 	retVal = READER_T1_CONTEXT_GetDeviceSeqNum(pContext, &tmpSeqNum);
 	if(retVal != READER_OK) return retVal;
 	
+	
 	if(tmpSeqNum == 1){
 		seqNum = READER_T1_SEQNUM_ONE;
 	}

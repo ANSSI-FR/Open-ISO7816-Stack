@@ -78,7 +78,6 @@ READER_T1_MBit READER_T1_GetBlockMBit(READER_T1_Block *pBlock){
 	uint8_t currentPCB;
 	
 	
-	
 	currentPCB = READER_T1_GetBlockPCB(pBlock);
 	
 	if((currentPCB & ~0xDF) == 0x00){

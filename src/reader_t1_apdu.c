@@ -30,10 +30,12 @@ READER_Status READER_T1_APDU_Init(READER_T1_ContextHandler *pContext){
 }
 
 READER_Status READER_T1_APDU_Execute(READER_T1_ContextHandler *pContext, READER_APDU_Command *pApduCmd, READER_APDU_Response *pApduResp){
-	READER_Status retVal;
+	READER_Status retVal, retVal2;
+	READER_T1_BlockType bType;
+	READER_T1_MBit mBit;
 	READER_T1_BufferStatus buffStatus;
 	READER_T1_Block blockToSend, rcvdBlock;
-	uint32_t test = 0;
+	READER_T1_Block *pLastRcvd;
 	
 	
 	/* On initialise partiellement le contexte de communication et on remplit le Buffer d'envoi a partir de la commande APDU ...  */
@@ -60,13 +62,25 @@ READER_Status READER_T1_APDU_Execute(READER_T1_ContextHandler *pContext, READER_
 		retVal = READER_T1_CONTROL_SendBlock(pContext, &blockToSend);
 		if(retVal != READER_OK) return retVal;
 		
-		retVal = READER_T1_CONTROL_RcvBlock(pContext, &rcvdBlock);
-		if(retVal != READER_OK) return retVal;
+		/* On regarde si il faut recevoir un Block ...  */
+		retVal = READER_T1_CONTEXT_GetLastRcvd(pContext, &pLastRcvd);
+		if((retVal != READER_OK) && (retVal != READER_DOESNT_EXIST)) return retVal;
+		
+		if(retVal != READER_DOESNT_EXIST){
+			mBit = READER_T1_GetBlockMBit(pLastRcvd);
+		}
+		
+		retVal2 = READER_T1_CONTEXT_GetLastRcvdType(pContext, &bType);
+		if((retVal2 != READER_OK) && (retVal2 != READER_DOESNT_EXIST)) return retVal2;
+		
+		/* On recoit si on a jamais rien recu, ou si, le dernier Block recu n'est pas un "dernier I-Block" ...  */
+		if((retVal == READER_DOESNT_EXIST) || !((bType == READER_T1_IBLOCK) && (mBit == READER_T1_MBIT_ZERO))){
+			retVal = READER_T1_CONTROL_RcvBlock(pContext, &rcvdBlock);
+			if(retVal != READER_OK) return retVal;
+		}
 		
 		retVal = READER_T1_BUFFER_IsEmpty(pContext, &buffStatus);
 		if(retVal != READER_OK) return retVal;
-		
-		test++;
 	}
 	
 	/* Si on est sortit de la boucle pour une autre raison que le Buffer vide, alors ca veut dire qu'on a eu une erreur interne ... */
