@@ -629,15 +629,12 @@ READER_Status READER_T1_RcvBlock(READER_T1_Block *pBlock, READER_T1_RedundancyTy
 	/* En l'occurence on ajoute le WT du Block au WT du premier caractere                       */
 	/* Il s'agit du premier caractere du Prologue                                               */
 	/* Le extraTimeout est calcule a plus haut niveau ...                                       */
-	retVal = READER_HAL_RcvCharFrameCountTickstart(buffPrologue, 1, &count, currentCWT + extraTimeout, &tickstart);
+	retVal = READER_HAL_RcvCharFrameCount(buffPrologue, 1, &count, currentCWT + extraTimeout);
 	if(retVal != READER_OK) return retVal;
 	
 	if(count != 1){
 		return READER_ERR;
 	}
-	
-	/* On mets a jour la date du leading edge du Block ...  */
-	*pTickstart = tickstart;
 	
 	/* Ensuite on recupere les deux suivants du prologue ...                                    */
 
@@ -667,12 +664,15 @@ READER_Status READER_T1_RcvBlock(READER_T1_Block *pBlock, READER_T1_RedundancyTy
 	}
 	
 	/* On recoit les data et CRC/LRC d'un seul coups */
-	retVal = READER_HAL_RcvCharFrameCount(buff, buffSize, &count, currentCWT);
+	retVal = READER_HAL_RcvCharFrameCountTickstart(buff, buffSize, &count, currentCWT, &tickstart);
 	//if(count == 6){
 	//	READER_PERIPH_ErrHandler();
 	//}
 	if(retVal != READER_OK) return retVal;
 	if(count != buffSize) return READER_ERR;
+	
+	/* On mets a jour la date du leading edge du dernier caractere du Block ...  */
+	*pTickstart = tickstart;
 	
 	
 	/* On forge un block vide                                           */

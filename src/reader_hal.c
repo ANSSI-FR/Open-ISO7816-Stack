@@ -108,7 +108,7 @@ READER_Status READER_HAL_SendCharFrameTickstart(uint8_t *frame, uint32_t frameSi
 		
 		/* On mets a jour la date du debut de l'envoi du premier caractere de la frame. (On soustrait le temps en milisec qu'il faut pour envoyer un carac) */
 		if(i == (frameSize-1)){
-			*pTickstart = READER_HAL_GetTick() - READER_UTILS_ComputeEtuMili(READER_HAL_GetFi(), READER_HAL_GetDi(), READER_HAL_GetFreq());
+			*pTickstart = READER_HAL_GetTick() - (uint32_t)(READER_UTILS_ComputeEtuMiliFloat(READER_HAL_GetFi(), READER_HAL_GetDi(), READER_HAL_GetFreq()) *10 +1);
 		}
 		
 		/* On fait attention a respecter le Guard Time (GT) entre les caracteres */
@@ -190,7 +190,7 @@ READER_Status READER_HAL_RcvCharFrameCountTickstart(uint8_t *frame, uint32_t fra
 		/* Si on vient de recevoir le premier caractere, alors on mets a jour le tickstart du leading edge de la frame ...  */
 		if(i == (frameSize-1)){
 			/* On veut la date du debut de la reception de la frame, donc on retire le temps en milisecondes que dure un caractere ...  */
-			*tickstart = READER_HAL_GetTick() - READER_UTILS_ComputeEtuMili(READER_HAL_GetFi(), READER_HAL_GetDi(), READER_HAL_GetFreq());
+			*tickstart = READER_HAL_GetTick() - (uint32_t)(READER_UTILS_ComputeEtuMili(READER_HAL_GetFi(), READER_HAL_GetDi(), READER_HAL_GetFreq()) *10);
 		}
 		
 		rcvCounter++;
@@ -302,6 +302,8 @@ READER_Status READER_HAL_RcvChar(uint8_t *character, uint32_t timeout){
 }
 
 #else
+
+
 
 /* Fonction "from scratch" pour recevoir un caractere */
 READER_Status READER_HAL_RcvChar(uint8_t *character, uint32_t timeout){
