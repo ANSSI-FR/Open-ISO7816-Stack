@@ -58,6 +58,9 @@ READER_Status READER_T1_RCPTBUFF_ExtractDataFromIBlock(READER_T1_ContextHandler 
 		pRcptBuff[i] = pBlockDataBuff[i];
 	}
 	
+	/* On mets a jour la taille totale des donnees recues dans le buffer du reception ...  */
+	pContext->receptionBuff.dataSize = (pContext->receptionBuff.dataSize) + blockLength;
+	
 	
 	return READER_OK;
 }
@@ -92,6 +95,9 @@ READER_Status READER_T1_RCPTBUFF_CreateAPDUResp(READER_T1_ContextHandler *pConte
 	/* On indique SW1 et SW2                            */
 	pApduResp->SW1 = pRcptBuff[rcptBuffDataSize - 2];
 	pApduResp->SW2 = pRcptBuff[rcptBuffDataSize - 1];
+	
+	/* On indique la taille des donnees ...  */
+	pApduResp->dataSize = rcptBuffDataSize-2;
 	
 	return READER_OK;
 }
