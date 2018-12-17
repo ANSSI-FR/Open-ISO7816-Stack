@@ -31,6 +31,9 @@ uint8_t READER_T1_GetBlockSPayload(READER_T1_Block *pBlock);
 
 READER_Status READER_T1_ForgeSBlock(READER_T1_Block *pBlock, READER_T1_SBlockType type);
 
+READER_Status READER_T1_IsBlockSRequest(READER_T1_Block *pBlock);
+READER_Status READER_T1_IsBlockSResponse(READER_T1_Block *pBlock);
+
 
 //READER_Status READER_T1_SendBlockRESYNCHRequ(uint32_t timeout);
 //READER_Status READER_T1_RcvBlockRESYNCHResp(uint32_t timeout);

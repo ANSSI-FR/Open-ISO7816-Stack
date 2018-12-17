@@ -135,6 +135,70 @@ uint8_t READER_T1_GetBlockSPayload(READER_T1_Block *pBlock){
 }
 
 
+/* Retourne READER_OK si c'est une S-Block Request, READER_NO si ca n'en n'est pas une. Retounre toute autre valeur en cas d'erreru interne. */
+READER_Status READER_T1_IsBlockSRequest(READER_T1_Block *pBlock){
+	READER_T1_BlockType bType;
+	READER_T1_SBlockType sBlockType;
+	
+	
+	/* Si le Block n'est pas meme un S-Block, alors on en deduit directement que ce n'est pas une S-Block Request ...  */
+	bType = READER_T1_GetBlockType(pBlock);
+	if(bType != READER_T1_SBLOCK){
+		return READER_NO;
+	}
+	
+	
+	/* On regarde le type du S-Block ...  */
+	SBlockType = READER_T1_GetBlockSType(pBlock);
+	if(SBlockType == READER_T1_STYPE_ABORT_REQU){
+		return READER_OK;
+	}
+	else if(SBlockType == READER_T1_STYPE_IFS_REQU){
+		return READER_OK;
+	}
+	else if(SBlockType == READER_T1_STYPE_RESYNCH_REQU){
+		return READER_OK;
+	}
+	else if(SBlockType == READER_T1_STYPE_WTX_REQU){
+		return READER_OK;
+	}
+	else{
+		return READER_NO;
+	}
+}
+
+
+/* Retourne READER_OK si c'est une S-Block Response, READER_NO si ca n'en n'est pas une. Retounre toute autre valeur en cas d'erreru interne. */
+READER_Status READER_T1_IsBlockSResponse(READER_T1_Block *pBlock){
+	READER_T1_BlockType bType;
+	READER_T1_SBlockType sBlockType;
+	
+	
+	/* Si le Block n'est pas meme un S-Block, alors on en deduit directement que ce n'est pas une S-Block Request ...  */
+	bType = READER_T1_GetBlockType(pBlock);
+	if(bType != READER_T1_SBLOCK){
+		return READER_NO;
+	}
+	
+	
+	/* On regarde le type du S-Block ...  */
+	SBlockType = READER_T1_GetBlockSType(pBlock);
+	if(SBlockType == READER_T1_STYPE_ABORT_RESP){
+		return READER_OK;
+	}
+	else if(SBlockType == READER_T1_STYPE_IFS_RESP){
+		return READER_OK;
+	}
+	else if(SBlockType == READER_T1_STYPE_RESYNCH_RESP){
+		return READER_OK;
+	}
+	else if(SBlockType == READER_T1_STYPE_WTX_RESP){
+		return READER_OK;
+	}
+	else{
+		return READER_NO;
+	}
+}
 
 
 
