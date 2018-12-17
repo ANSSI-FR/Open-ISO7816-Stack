@@ -34,6 +34,8 @@ READER_Status READER_T1_ForgeSBlock(READER_T1_Block *pBlock, READER_T1_SBlockTyp
 READER_Status READER_T1_IsSBlockRequest(READER_T1_Block *pBlock);
 READER_Status READER_T1_IsSBlockResponse(READER_T1_Block *pBlock);
 
+READER_Status READER_T1_CheckSBlock(READER_T1_Block *pBlock);
+
 READER_Status READER_T1_ForgeSBlockResynchRequest(READER_T1_Block *pBlock);
 READER_Status READER_T1_ForgeSBlockResynchResponse(READER_T1_Block *pBlock);
 READER_Status READER_T1_ForgeSBlockIfsRequest(READER_T1_Block *pBlock, uint8_t newIfs);

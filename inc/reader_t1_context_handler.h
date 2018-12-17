@@ -132,7 +132,7 @@ struct READER_T1_ContextHandler{
 	uint32_t cardCompleteSeqNum;        /* Numero de sequence attendu pour le prochain I-Block */
 	
 	
-	READER_T1_SBlockExpected SBlockExpected;
+	READER_T1_FlagStatus isSBlockExpectedFlag;
 	READER_T1_SBlockType SBlockExpectedType;
 	uint32_t SBlockRequCounter;
 	
@@ -243,10 +243,10 @@ READER_Status READER_T1_CONTEXT_SetCardChainingLastBlockFlag(READER_T1_ContextHa
 
 
 /* Manipuation des S-Blocks */
-READER_Status READER_T1_CONTEXT_IsSblockExpectedNow(READER_T1_ContextHandler *pContext, READER_T1_SBlockExpected *pExp);
-READER_Status READER_T1_CONTEXT_GetSBlockExpectedType(READER_T1_ContextHandler *pContext, READER_T1_SBlockType *pType);
-READER_Status READER_T1_CONTEXT_SetSBlockExpected(READER_T1_ContextHandler *pContext, READER_T1_SBlockType type);
-READER_Status READER_T1_CONTEXT_SetNoSBlockExpected(READER_T1_ContextHandler *pContext);
+READER_Status READER_T1_CONTEXT_IsSblockResponseExpectedNow(READER_T1_ContextHandler *pContext, READER_T1_FlagStatus *pFlag);
+READER_Status READER_T1_CONTEXT_GetSBlockExpectedResponseType(READER_T1_ContextHandler *pContext, READER_T1_SBlockType *pType);
+READER_Status READER_T1_CONTEXT_SetSBlockExpectedResponse(READER_T1_ContextHandler *pContext, READER_T1_SBlockType type);
+READER_Status READER_T1_CONTEXT_SetNoSBlockExpectedResponse(READER_T1_ContextHandler *pContext);
 
 READER_Status READER_T1_CONTEXT_GetSBlockRequCounter(READER_T1_ContextHandler *pContext, uint32_t *pCounter);
 READER_Status READER_T1_CONTEXT_SetSBlockRequCounter(READER_T1_ContextHandler *pContext, uint32_t counter);

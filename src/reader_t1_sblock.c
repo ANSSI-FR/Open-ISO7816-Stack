@@ -201,6 +201,19 @@ READER_Status READER_T1_IsSBlockResponse(READER_T1_Block *pBlock){
 }
 
 
+READER_Status READER_T1_CheckSBlock(READER_T1_Block *pBlock){
+	READER_T1_BlockType bType;
+	
+	
+	bType = READER_T1_GetBlockType(pBlock);
+	if(bType != READER_T1_SBLOCK){
+		return READER_INVALID_BLOCK;
+	}
+	
+	return READER_OK;
+}
+
+
 READER_Status READER_T1_ForgeSBlockResynchRequest(READER_T1_Block *pBlock){
 	READER_Status retVal;
 	

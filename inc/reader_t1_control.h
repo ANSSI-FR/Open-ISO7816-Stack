@@ -23,9 +23,22 @@ READER_Status READER_T1_CONTROL_IBlockSentUpdateContext(READER_T1_ContextHandler
 READER_Status READER_T1_CONTROL_RBlockSentUpdateContext(READER_T1_ContextHandler *pContext, READER_T1_Block *pBlock);
 READER_Status READER_T1_CONTROL_SBlockSentUpdateContext(READER_T1_ContextHandler *pContext, READER_T1_Block *pBlock);
 
+READER_Status READER_T1_CONTROL_SBlockRequestSentUpdateContext(READER_T1_ContextHandler *pContext, READER_T1_Block *pBlock);
+READER_Status READER_T1_CONTROL_SBlockResponseSentUpdateContext(READER_T1_ContextHandler *pContext, READER_T1_Block *pBlock);
+
 READER_Status READER_T1_CONTROL_ApplyIBlockRcvd(READER_T1_ContextHandler *pContext, READER_T1_Block *pBlock);
 READER_Status READER_T1_CONTROL_ApplyRBlockRcvd(READER_T1_ContextHandler *pContext, READER_T1_Block *pBlock);
 READER_Status READER_T1_CONTROL_ApplySBlockRcvd(READER_T1_ContextHandler *pContext, READER_T1_Block *pBlock);
+
+READER_Status READER_T1_CONTROL_ApplySBlockRequestRcvd(READER_T1_ContextHandler *pContext, READER_T1_Block *pBlock);
+READER_Status READER_T1_CONTROL_ApplySBlockResponseRcvd(READER_T1_ContextHandler *pContext, READER_T1_Block *pBlock);
+
+
+READER_Status READER_T1_CONTROL_ApplySBlockResynch(READER_T1_ContextHandler *pContext, READER_T1_Block *pBlock);
+READER_Status READER_T1_CONTROL_ApplySBlockIfsc(READER_T1_ContextHandler *pContext, READER_T1_Block *pBlock);
+READER_Status READER_T1_CONTROL_ApplySBlockIfsd(READER_T1_ContextHandler *pContext, READER_T1_Block *pBlock);
+READER_Status READER_T1_CONTROL_ApplySBlockAbort(READER_T1_ContextHandler *pContext, READER_T1_Block *pBlock);
+READER_Status READER_T1_CONTROL_ApplySBlockWtx(READER_T1_ContextHandler *pContext, READER_T1_Block *pBlock);
 
 
 #endif

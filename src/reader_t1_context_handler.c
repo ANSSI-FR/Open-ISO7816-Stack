@@ -318,7 +318,7 @@ READER_Status READER_T1_CONTEXT_SetCurrentIFSC(READER_T1_ContextHandler *pContex
 		pContext->currentIFSC = ifsc;
 	}
 	else{
-		return READER_ERR;
+		return READER_BAD_VALUE;
 	}
 	
 	return READER_OK;
@@ -330,7 +330,7 @@ READER_Status READER_T1_CONTEXT_SetCurrentIFSD(READER_T1_ContextHandler *pContex
 		pContext->currentIFSD = ifsd;
 	}
 	else{
-		return READER_ERR;
+		return READER_BAD_VALUE;
 	}
 	
 	return READER_OK;
@@ -1045,12 +1045,12 @@ READER_Status READER_T1_CONTEXT_SetCardChainingLastBlockFlag(READER_T1_ContextHa
 
 
 /* Manipuation des S-Blocks */
-READER_Status READER_T1_CONTEXT_IsSblockExpectedNow(READER_T1_ContextHandler *pContext, READER_T1_SBlockExpected *pExp){
-	if(pContext->SBlockExpected == READER_T1_SBLOCK_EXPECTED_YES){
-		*pExp = READER_T1_SBLOCK_EXPECTED_YES;
+READER_Status READER_T1_CONTEXT_IsSblockResponseExpectedNow(READER_T1_ContextHandler *pContext, READER_T1_FlagStatus *pFlag){
+	if(pContext->isSBlockExpected == READER_T1_SBLOCK_EXPECTED_YES){
+		*pFlag = READER_T1_FLAGSTATUS_SET;
 	}
-	else if(pContext->SBlockExpected == READER_T1_SBLOCK_EXPECTED_NO){
-		*pExp = READER_T1_SBLOCK_EXPECTED_NO;
+	else if(pContext->isSBlockExpected == READER_T1_SBLOCK_EXPECTED_NO){
+		*pFlag = READER_T1_FLAGSTATUS_RESET;
 	}
 	else{
 		return READER_ERR;
@@ -1060,7 +1060,7 @@ READER_Status READER_T1_CONTEXT_IsSblockExpectedNow(READER_T1_ContextHandler *pC
 }
 
 
-READER_Status READER_T1_CONTEXT_GetSBlockExpectedType(READER_T1_ContextHandler *pContext, READER_T1_SBlockType *pType){
+READER_Status READER_T1_CONTEXT_GetSBlockExpectedResponseType(READER_T1_ContextHandler *pContext, READER_T1_SBlockType *pType){
 	READER_Status retVal;
 	READER_T1_SBlockExpected isExp;
 	READER_T1_SBlockType tmpType;
@@ -1107,7 +1107,7 @@ READER_Status READER_T1_CONTEXT_GetSBlockExpectedType(READER_T1_ContextHandler *
 }
 
 
-READER_Status READER_T1_CONTEXT_SetSBlockExpected(READER_T1_ContextHandler *pContext, READER_T1_SBlockType type){
+READER_Status READER_T1_CONTEXT_SetSBlockExpectedResponse(READER_T1_ContextHandler *pContext, READER_T1_SBlockType type){
 	/* On verifie que le type passe en parametre est valide                      */
 	switch(type){
 		case READER_T1_STYPE_RESYNCH_RESP:
@@ -1140,7 +1140,7 @@ READER_Status READER_T1_CONTEXT_SetSBlockExpected(READER_T1_ContextHandler *pCon
 }
 
 
-READER_Status READER_T1_CONTEXT_SetNoSBlockExpected(READER_T1_ContextHandler *pContext){
+READER_Status READER_T1_CONTEXT_SetNoSBlockExpectedResponse(READER_T1_ContextHandler *pContext){
 	pContext->SBlockExpected = READER_T1_SBLOCK_EXPECTED_NO;
 	
 	return READER_OK;
