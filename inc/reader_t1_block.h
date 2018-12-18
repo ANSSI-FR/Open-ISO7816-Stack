@@ -99,6 +99,7 @@ READER_Status READER_T1_RcvBlock(READER_T1_Block *pBlock, READER_T1_RedundancyTy
 
 
 READER_Status READER_T1_CopyBlock(READER_T1_Block *pBlockDest, READER_T1_Block *pBlockSource);
+READER_Status READER_T1_CopyBlockData(READER_T1_Block *pBlock, uint8_t *destBuffer, uint32_t destBufferSize);
 
 
 #endif

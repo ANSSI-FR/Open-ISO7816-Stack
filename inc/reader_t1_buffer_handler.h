@@ -37,5 +37,8 @@ READER_Status READER_T1_BUFFER_Stack(READER_T1_ContextHandler *pContext, READER_
 
 READER_Status READER_T1_BUFFER_StrapControlBlocks(READER_T1_ContextHandler *pContext);
 
+READER_Status READER_T1_BUFFER_UpdateIfsc(READER_T1_ContextHandler *pContext, uint32_t newIFSC);
+READER_Status READER_T1_BUFFER_ExtractRawDataFromBuffer(READER_T1_ContextHandler *pContext, uint8_t *buffer, uint32_t bufferSize, uint32_t *pSizeExtracted);
+
 
 #endif

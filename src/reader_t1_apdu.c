@@ -54,6 +54,7 @@ READER_Status READER_T1_APDU_Execute(READER_T1_ContextHandler *pContext, READER_
 	retVal = READER_T1_BUFFER_IsEmpty(pContext, &buffStatus);
 	if(retVal != READER_OK) return retVal;
 
+
 	
 	while(buffStatus == READER_T1_BUFFER_NOTEMPTY){
 		retVal = READER_T1_BUFFER_Dequeue(pContext, &blockToSend);

@@ -495,6 +495,8 @@ READER_Status READER_T1_CONTROL_RcvBlock(READER_T1_ContextHandler *pContext, REA
 		if(SBlockExpected == READER_T1_FLAGSTATUS_SET){
 			retVal = READER_T1_CONTROL_SBlockResponseNotReceived(pContext);
 			if(retVal != READER_OK) return retVal;
+			
+			return READER_OK;
 		}
 		
 		retVal = READER_T1_CONTROL_ApplyIBlockRcvd(pContext, pBlock);
@@ -505,6 +507,8 @@ READER_Status READER_T1_CONTROL_RcvBlock(READER_T1_ContextHandler *pContext, REA
 			/* Action a decider et coder plus tard (en gros routine de reenvoi de S-Block Request ...) */
 			retVal = READER_T1_CONTROL_SBlockResponseNotReceived(pContext);
 			if(retVal != READER_OK) return retVal;
+			
+			return READER_OK;
 		}
 		
 		retVal = READER_T1_CONTROL_ApplyRBlockRcvd(pContext, pBlock);
@@ -521,6 +525,8 @@ READER_Status READER_T1_CONTROL_RcvBlock(READER_T1_ContextHandler *pContext, REA
 			/* Action a decider et coder plus tard (en gros routine de reenvoi de S-Block Request ...) */
 			retVal = READER_T1_CONTROL_SBlockResponseNotReceived(pContext);
 			if(retVal != READER_OK) return retVal;
+			
+			return READER_OK;
 		}
 		
 		/* Sinon, si tout va bien ... */

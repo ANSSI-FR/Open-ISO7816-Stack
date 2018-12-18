@@ -319,3 +319,99 @@ READER_Status READER_T1_BUFFER_StrapControlBlocks(READER_T1_ContextHandler *pCon
 	return READER_OK;
 }
 
+
+/* Il s'agit isi de modifier la taille des data dans les I-Blocks qui se trouvent dans le Buffer ...  */
+READER_Status READER_T1_BUFFER_UpdateIfsc(READER_T1_ContextHandler *pContext, uint32_t newIFSC){
+	READER_Status retVal;
+	uint32_t currentIFSC;
+	uint32_t sizeExtracted;
+	uint8_t tmpBuff[READER_APDU_CMD_MAX_TOTALSIZE];
+	
+	
+	retVal = READER_T1_CONTEXT_GetCurrentIFSC(pContext, &currentIFSC);
+	if(retVal != READER_OK) return retVal;
+	
+	/* Si on peut s'eviter du travail ...  */
+	if(newIfsc >= currentIFSC){
+		return READER_OK;
+	}
+	
+	/* On extrait les donnees de tous les I-Blocks qui sont dans le Buffer ...  */
+	retVal = READER_T1_BUFFER_ExtractRawDataFromBuffer(pContext, tmpBuff, READER_APDU_CMD_MAX_TOTALSIZE, &sizeExtracted);
+	if(retVal != READER_OK) return retVal;
+	
+	/* On redecoupe a nouveau ce buffer temporraire et on remplit a nouveau le Buffer de Blocks ...  */
+	retVal = READER_T1_FORGE_SliceDataAndFillBuffer(pContext, tmpBuff, sizeExtracted);
+	if(retVal != READER_OK) return retVal;
+	
+	return READER_OK;
+}
+
+
+/* Retourne une erreur si il y a trop de donnes dans le Buffer de Blocks par rapport au buffer fourni en parametres ...  */
+READER_Status READER_T1_BUFFER_ExtractRawDataFromBuffer(READER_T1_ContextHandler *pContext, uint8_t *destBuffer, uint32_t destBufferSize, , uint32_t *pSizeExtracted){
+	uint32_t length;
+	uint32_t topIndex, bottomIndex, virtualTopIndex, virtualBottomIndex;
+	uint32_t virtualIndex, realIndex;
+	uint32_t copiedBytesCounter;
+	uint32_t i;
+	uint8_t *currentDestBufferPtr;
+	uint8_t blockLEN;
+	READER_Status retVal;
+	READER_T1_BlockType bType;
+	READER_T1_BlockBuffer *pBlockBuffer;
+	READER_T1_Block *pBlockTab;
+	READER_T1_Block *pCurrentBlock;
+	
+	
+	/* On recupere un pointeur sur la structure du buffer dans le contexte */
+	retVal = READER_T1_CONTEXT_GetBlockBuff(pContext, &pBlockBuffer);
+	if(retVal != READER_OK) return retVal;
+	
+	/* Dans la stucture du buffer on recupere un pointeur sur le tableau de Blocks */
+	pBlockTab = pBlockBuffer->blockBuff;
+	
+	/* Recuperation des informations sur le contenu du Buffer ...  */
+	retVal = READER_T1_BUFFER_GetLength(pContext, &length);
+	if(retVal != READER_OK) return retVal;
+	
+	topIndex = pContext->blockBuff.indexTop;
+	bottomIndex = pContext->blockBuff.indexBottom;
+	
+	
+	/* On calcule les indices reels pour parcourir le buffer de Blocks ...  */
+	if(bottomIndex <= topIndex){
+		virtualBottomIndex = bottomIndex;
+		virtualTopIndex = topIndex;
+	}
+	else{
+		virtualBottomIndex = bottomIndex;
+		virtualTopIndex = topIndex + READER_T1_CONTEXT_STATICBUFF_MAXSIZE;
+	}
+	
+	currentDestBufferPtr = destBuffer;
+	copiedBytesCounter = 0;
+	
+	/* On parcours tous les Blocks du Buffer de Blocks ...  */
+	/* topIndex pointe sur un espace libre (il n'y a pas de Block a cette adresse) (pointe sur l'endroit ou il faut ecrire le prochain Block ...)  */
+	for(virtualIndex=virtualBottomIndex; virtualIndex<virtualTopIndex; virtualIndex++){
+		realIndex = virtualIndex % READER_T1_CONTEXT_STATICBUFF_MAXSIZE;
+		pCurrentBlock = pBlockTab + realIndex;
+		
+		bType = READER_T1_GetBlockType(pCurrentBlock);
+		if(bType == READER_T1_IBLOCK){
+			blockLEN = READER_T1_GetBlockLEN(pCurrentBlock);
+			
+			retVal = READER_T1_CopyBlockData(pCurrentBlock, currentDestBufferPtr, destBufferSize-copiedBytesCounter);
+			if(retVal != READER_OK) return retVal;
+			
+			copiedBytesCounter += blockLEN;
+			currentDestBufferPtr += blockLEN;
+		}
+	}
+	
+	*pSizeExtracted = copiedBytesCounter;
+	
+	return READER_OK;
+}
+

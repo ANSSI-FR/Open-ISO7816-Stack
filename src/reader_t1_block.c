@@ -804,3 +804,25 @@ READER_Status READER_T1_CopyBlock(READER_T1_Block *pBlockDest, READER_T1_Block *
 //	
 //	return READER_OK;
 //}
+
+
+READER_Status READER_T1_CopyBlockData(READER_T1_Block *pBlock, uint8_t *destBuffer, uint32_t destBufferSize){
+	READER_Status retVal;
+	uint8_t *pBlockData;
+	uint8_t blockLEN;
+	uint32_t i;
+	
+	
+	pBlockData = READER_T1_GetBlockData(pBlock);
+	blockLEN = READER_T1_GetBlockLEN(pBlock);
+	
+	if(blockLEN > destBufferSize){
+		return READER_ERR;
+	}
+	
+	for(i=0; i<blockLEN; i++){
+		destBuffer[i] = pBlockData[i];
+	}
+	
+	return READER_OK;
+}
