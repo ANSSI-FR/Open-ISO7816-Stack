@@ -41,4 +41,13 @@ READER_Status READER_T1_CONTROL_ApplySBlockAbort(READER_T1_ContextHandler *pCont
 READER_Status READER_T1_CONTROL_ApplySBlockWtx(READER_T1_ContextHandler *pContext, READER_T1_Block *pBlock);
 
 
+READER_Status READER_T1_CONTROL_SendAbortRequest(READER_T1_ContextHandler *pContext);
+READER_Status READER_T1_CONTROL_SendResynchRequest(READER_T1_ContextHandler *pContext);
+READER_Status READER_T1_CONTROL_SendIfsdRequest(READER_T1_ContextHandler *pContext, uint8_t newIfsd);
+READER_Status READER_T1_CONTROL_SendWtxRequest(READER_T1_ContextHandler *pContext, uint8_t wtMultiplier);
+
+READER_Status READER_T1_CONTROL_ResendRequest(READER_T1_ContextHandler *pContext);
+READER_Status READER_T1_CONTROL_SBlockResponseNotReceived(READER_T1_ContextHandler *pContext);
+
+
 #endif

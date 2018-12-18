@@ -1161,6 +1161,17 @@ READER_Status READER_T1_CONTEXT_SetSBlockRequCounter(READER_T1_ContextHandler *p
 }
 
 
+READER_Status READER_T1_CONTEXT_ClearSBlockRequestCounter(READER_T1_ContextHandler *pContext){
+	READER_Status retVal;
+	
+	
+	retVal = READER_T1_CONTEXT_SetSBlockRequCounter(pContext, 0);
+	if(retVal != READER_OK) return retVal;
+	
+	return READER_OK;
+}
+
+
 READER_Status READER_T1_CONTEXT_IncSBlockRequCounter(READER_T1_ContextHandler *pContext){
 	uint32_t counter, newCounter;
 	READER_Status retVal;
@@ -1180,6 +1191,24 @@ READER_Status READER_T1_CONTEXT_IncSBlockRequCounter(READER_T1_ContextHandler *p
 	if(retVal != READER_OK) return retVal;
 	
 	return READER_OK;
+}
+
+
+/* Retourne READER_OK si il est possible d'envoyer maintenant encore une S-Block Request. Retourne READER_NO si on a depasse le compteur. Retourne toute autre vaeur en vas d'erreur. */
+READER_Status READER_T1_CONTEXT_CheckSBlockRequestCounter(READER_T1_ContextHandler *pContext){
+	READER_Status retVal;
+	uint32_t reqCounter;
+	
+	
+	retVal = READER_T1_CONTEXT_GetSBlockRequCounter(pContext, &reqCounter);
+	if(retVal != READER_OK) return retVal;
+	
+	if(reqCounter >= READER_T1_MAX_SREQUESTS){
+		return READER_NO;
+	}
+	else{
+		return READER_OK;
+	}
 }
 
 

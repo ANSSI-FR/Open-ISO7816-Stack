@@ -8,6 +8,9 @@
 
 
 
+#define READER_T1_MAX_SREQUESTS 2;
+
+
 #define READER_T1_MAX_REAPEAT 0x03
 #define READER_T1_MAX_RESYNCH 0x03
 
@@ -251,6 +254,8 @@ READER_Status READER_T1_CONTEXT_SetNoSBlockExpectedResponse(READER_T1_ContextHan
 READER_Status READER_T1_CONTEXT_GetSBlockRequCounter(READER_T1_ContextHandler *pContext, uint32_t *pCounter);
 READER_Status READER_T1_CONTEXT_SetSBlockRequCounter(READER_T1_ContextHandler *pContext, uint32_t counter);
 READER_Status READER_T1_CONTEXT_IncSBlockRequCounter(READER_T1_ContextHandler *pContext);
+READER_Status READER_T1_CONTEXT_CheckSBlockRequestCounter(READER_T1_ContextHandler *pContext);
+READER_Status READER_T1_CONTEXT_ClearSBlockRequestCounter(READER_T1_ContextHandler *pContext);
 
 
 READER_Status READER_T1_CONTEXT_GetBlockBuff(READER_T1_ContextHandler *pContext, READER_T1_BlockBuffer **ppBlockBuff);
