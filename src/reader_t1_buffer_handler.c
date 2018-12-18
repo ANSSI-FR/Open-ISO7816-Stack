@@ -157,7 +157,7 @@ READER_Status READER_T1_BUFFER_Dequeue(READER_T1_ContextHandler *pContext, READE
 	READER_T1_Block *pBlockTab;
 	READER_T1_BufferStatus bStatus;
 	READER_Status retVal;
-	uint32_t indexBottom, newBottomIndex, length;
+	uint32_t indexBottom, newBottomIndex;
 	
 
 	/* On verifie  que le buffer n'est pas vide */

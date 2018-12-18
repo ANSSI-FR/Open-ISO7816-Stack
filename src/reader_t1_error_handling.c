@@ -167,7 +167,7 @@ READER_Status READER_T1_ERR_PrepareResynchRequ(READER_T1_ContextHandler *pContex
 	if(retVal != READER_OK) return retVal;
 	
 	/* On positionne les flags qui indiquent qu'on attend un S-Block en retour ...          */
-	retVal = READER_T1_CONTEXT_SetSBlockExpected(pContext, READER_T1_STYPE_RESYNCH_RESP);	
+	retVal = READER_T1_CONTEXT_SetSBlockExpectedResponse(pContext, READER_T1_STYPE_RESYNCH_RESP);	
 	if(retVal != READER_OK) return retVal;
 		
 	/* On incremente le compteur de demandes de Resynchro                                   */

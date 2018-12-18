@@ -91,7 +91,7 @@ READER_Status READER_T1_CONTEXT_InitContextSettings(READER_T1_ContextHandler *pC
 	retVal = READER_T1_CONTEXT_SetCardChainingSituationFlag(pContext, READER_T1_CHAINING_NO);
 	if(retVal != READER_OK) return retVal;
 	
-	retVal = READER_T1_CONTEXT_SetNoSBlockExpected(pContext);
+	retVal = READER_T1_CONTEXT_SetNoSBlockExpectedResponse(pContext);
 	if(retVal != READER_OK) return retVal;
 	
 	retVal = READER_T1_CONTEXT_SetSBlockRequCounter(pContext, 0);
@@ -168,7 +168,6 @@ READER_Status READER_T1_CONTEXT_InitRcptBuff(READER_T1_ContextHandler *pContext)
 
 /* On retourne BGT en milisecondes ...  */
 READER_Status READER_T1_CONTEXT_GetCurrentBGT(READER_T1_ContextHandler *pContext, uint32_t *pBgt){
-	uint32_t etuMiliInt;
 	float etuMili;
 	
 	
@@ -838,7 +837,7 @@ READER_Status READER_T1_CONTEXT_GetCardExpectedSeqNum(READER_T1_ContextHandler *
 	
 	retVal = READER_T1_CONTEXT_GetCardSeqNum(pContext, &seqNum);
 	//retVal = READER_T1_CONTEXT_ComputeNextCardSeqNum(pContext, &seqNum);
-	//if(retVal != READER_OK) return retVal;
+	if(retVal != READER_OK) return retVal;
 	
 	*pSeqNum = seqNum;
 	
@@ -1045,11 +1044,11 @@ READER_Status READER_T1_CONTEXT_SetCardChainingLastBlockFlag(READER_T1_ContextHa
 
 
 /* Manipuation des S-Blocks */
-READER_Status READER_T1_CONTEXT_IsSblockResponseExpectedNow(READER_T1_ContextHandler *pContext, READER_T1_FlagStatus *pFlag){
-	if(pContext->isSBlockExpected == READER_T1_SBLOCK_EXPECTED_YES){
+READER_Status READER_T1_CONTEXT_IsSBlockResponseExpectedNow(READER_T1_ContextHandler *pContext, READER_T1_FlagStatus *pFlag){
+	if(pContext->isSBlockExpectedFlag == READER_T1_FLAGSTATUS_SET){
 		*pFlag = READER_T1_FLAGSTATUS_SET;
 	}
-	else if(pContext->isSBlockExpected == READER_T1_SBLOCK_EXPECTED_NO){
+	else if(pContext->isSBlockExpectedFlag == READER_T1_FLAGSTATUS_RESET){
 		*pFlag = READER_T1_FLAGSTATUS_RESET;
 	}
 	else{
@@ -1062,14 +1061,14 @@ READER_Status READER_T1_CONTEXT_IsSblockResponseExpectedNow(READER_T1_ContextHan
 
 READER_Status READER_T1_CONTEXT_GetSBlockExpectedResponseType(READER_T1_ContextHandler *pContext, READER_T1_SBlockType *pType){
 	READER_Status retVal;
-	READER_T1_SBlockExpected isExp;
+	READER_T1_FlagStatus isExp;
 	READER_T1_SBlockType tmpType;
 	
 	
 	/* On verifie qu'il y a effectivement un S-Block qui est attendu ... */
-	retVal = READER_T1_CONTEXT_IsSblockExpectedNow(pContext, &isExp);
+	retVal = READER_T1_CONTEXT_IsSBlockResponseExpectedNow(pContext, &isExp);
 	if(retVal != READER_OK) return retVal;
-	if(isExp != READER_T1_SBLOCK_EXPECTED_YES) return READER_ERR;
+	if(isExp != READER_T1_FLAGSTATUS_SET) return READER_ERR;
 	
 	/* On verifie le type de S-Block attendu, on regare aussi si ce type est valide ... */
 	tmpType = pContext->SBlockExpectedType;
@@ -1134,14 +1133,14 @@ READER_Status READER_T1_CONTEXT_SetSBlockExpectedResponse(READER_T1_ContextHandl
 	pContext->SBlockExpectedType = type;
 	
 	/* On positionne le flag qui indique qu'un S-Block est attendu               */
-	pContext->SBlockExpected = READER_T1_SBLOCK_EXPECTED_YES;
+	pContext->isSBlockExpectedFlag = READER_T1_FLAGSTATUS_SET;
 	
 	return READER_OK;
 }
 
 
 READER_Status READER_T1_CONTEXT_SetNoSBlockExpectedResponse(READER_T1_ContextHandler *pContext){
-	pContext->SBlockExpected = READER_T1_SBLOCK_EXPECTED_NO;
+	pContext->isSBlockExpectedFlag = READER_T1_FLAGSTATUS_RESET;
 	
 	return READER_OK;
 }

@@ -8,7 +8,7 @@
 
 
 
-#define READER_T1_MAX_SREQUESTS 2;
+#define READER_T1_MAX_SREQUESTS 2
 
 
 #define READER_T1_MAX_REAPEAT 0x03
@@ -246,7 +246,7 @@ READER_Status READER_T1_CONTEXT_SetCardChainingLastBlockFlag(READER_T1_ContextHa
 
 
 /* Manipuation des S-Blocks */
-READER_Status READER_T1_CONTEXT_IsSblockResponseExpectedNow(READER_T1_ContextHandler *pContext, READER_T1_FlagStatus *pFlag);
+READER_Status READER_T1_CONTEXT_IsSBlockResponseExpectedNow(READER_T1_ContextHandler *pContext, READER_T1_FlagStatus *pFlag);
 READER_Status READER_T1_CONTEXT_GetSBlockExpectedResponseType(READER_T1_ContextHandler *pContext, READER_T1_SBlockType *pType);
 READER_Status READER_T1_CONTEXT_SetSBlockExpectedResponse(READER_T1_ContextHandler *pContext, READER_T1_SBlockType type);
 READER_Status READER_T1_CONTEXT_SetNoSBlockExpectedResponse(READER_T1_ContextHandler *pContext);

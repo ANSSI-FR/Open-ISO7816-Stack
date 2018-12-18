@@ -95,7 +95,6 @@ READER_Status READER_T1_FORGE_NACK71(READER_T1_ContextHandler *pContext, READER_
 	READER_Status retVal;
 	READER_T1_SeqNumber seqNum;
 	READER_T1_ACKType ACKType;
-	READER_T1_Block *pLastSent;
 	READER_T1_BlockType bType;
 	uint32_t seq;
 	

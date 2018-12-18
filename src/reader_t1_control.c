@@ -334,7 +334,6 @@ READER_Status READER_T1_CONTROL_RBlockSentUpdateContext(READER_T1_ContextHandler
 
 READER_Status READER_T1_CONTROL_SBlockSentUpdateContext(READER_T1_ContextHandler *pContext, READER_T1_Block *pBlock){
 	READER_Status retVal;
-	READER_T1_BlockType bType;
 	
 	
 	/* On fait des verifications elementaires sur le Block ...  */
@@ -424,7 +423,7 @@ READER_Status READER_T1_CONTROL_RcvBlock(READER_T1_ContextHandler *pContext, REA
 	READER_Status retVal;
 	READER_T1_BlockType bType;
 	READER_T1_RedundancyType rType;
-	READER_T1_SBlockExpected SBlockExpected;
+	READER_T1_FlagStatus SBlockExpected;
 	READER_T1_SBlockType SBlockExpectedType, SBlockType;
 	uint32_t currentCWT, currentBWT;
 	uint32_t extraTimeout;
@@ -487,13 +486,13 @@ READER_Status READER_T1_CONTROL_RcvBlock(READER_T1_ContextHandler *pContext, REA
 	if(retVal != READER_OK) return retVal;
 	
 	/* On regarde si on attendait un S-Block ... */
-	retVal = READER_T1_CONTEXT_IsSblockExpectedNow(pContext, &SBlockExpected);
+	retVal = READER_T1_CONTEXT_IsSBlockResponseExpectedNow(pContext, &SBlockExpected);
 	if(retVal != READER_OK) return retVal;
 	
 	/* On regarde le type du Block recu ... */
 	bType = READER_T1_GetBlockType(pBlock);
 	if(bType == READER_T1_IBLOCK){
-		if(SBlockExpected == READER_T1_SBLOCK_EXPECTED_YES){
+		if(SBlockExpected == READER_T1_FLAGSTATUS_SET){
 			retVal = READER_T1_CONTROL_SBlockResponseNotReceived(pContext);
 			if(retVal != READER_OK) return retVal;
 		}
@@ -502,7 +501,7 @@ READER_Status READER_T1_CONTROL_RcvBlock(READER_T1_ContextHandler *pContext, REA
 		if(retVal != READER_OK) return retVal;
 	}
 	else if(bType == READER_T1_RBLOCK){
-		if(SBlockExpected == READER_T1_SBLOCK_EXPECTED_YES){
+		if(SBlockExpected == READER_T1_FLAGSTATUS_SET){
 			/* Action a decider et coder plus tard (en gros routine de reenvoi de S-Block Request ...) */
 			retVal = READER_T1_CONTROL_SBlockResponseNotReceived(pContext);
 			if(retVal != READER_OK) return retVal;
@@ -513,7 +512,7 @@ READER_Status READER_T1_CONTROL_RcvBlock(READER_T1_ContextHandler *pContext, REA
 	}
 	else if(bType == READER_T1_SBLOCK){
 		/* Le type du S-Block recu correspond au type de S-Block que l'ona attendait ? */
-		retVal = READER_T1_CONTEXT_GetSBlockExpectedType(pContext, &SBlockExpectedType);
+		retVal = READER_T1_CONTEXT_GetSBlockExpectedResponseType(pContext, &SBlockExpectedType);
 		if(retVal != READER_OK) return retVal;
 		
 		SBlockType = READER_T1_GetBlockSType(pBlock);
@@ -724,7 +723,6 @@ READER_Status READER_T1_CONTROL_ApplyRBlockRcvd(READER_T1_ContextHandler *pConte
 
 READER_Status READER_T1_CONTROL_ApplySBlockRcvd(READER_T1_ContextHandler *pContext, READER_T1_Block *pBlock){
 	READER_Status retVal;
-	READER_T1_BlockType bType;
 	
 	
 	/* On fait des verifications elementaires sur le Block ...  */
@@ -764,7 +762,7 @@ READER_Status READER_T1_CONTROL_ApplySBlockRequestRcvd(READER_T1_ContextHandler 
 	if(retVal != READER_OK) return retVal;
 	
 	/* On a recu un Request, mais on verifie si S-Block Resp n'etait pas attendu  */
-	retVal = READER_T1_CONTEXT_IsSblockResponseExpectedNow(pContext, &flag);
+	retVal = READER_T1_CONTEXT_IsSBlockResponseExpectedNow(pContext, &flag);
 	if(retVal != READER_OK) return retVal;
 	
 	if(flag == READER_T1_FLAGSTATUS_SET){
@@ -806,7 +804,7 @@ READER_Status READER_T1_CONTROL_ApplySBlockRequestRcvd(READER_T1_ContextHandler 
 			
 			blockINF = READER_T1_GetBlockSPayload(pBlock);
 			
-			retVal = READER_T1_ForgeSBlockWtxResponse(&responseBlock, blokINF);
+			retVal = READER_T1_ForgeSBlockWtxResponse(&responseBlock, blockINF);
 			if(retVal != READER_OK) return retVal;
 		}
 		else{
@@ -838,7 +836,7 @@ READER_Status READER_T1_CONTROL_ApplySBlockResponseRcvd(READER_T1_ContextHandler
 	if(retVal != READER_OK) return retVal;
 	
 	/* On verifie q'une S-Block Response etait bien attendue ...  */
-	retVal = READER_T1_CONTEXT_IsSblockResponseExpectedNow(pContext, &flag);
+	retVal = READER_T1_CONTEXT_IsSBlockResponseExpectedNow(pContext, &flag);
 	if(retVal != READER_OK) return retVal;
 	
 	if(flag == READER_T1_FLAGSTATUS_RESET){
@@ -863,19 +861,19 @@ READER_Status READER_T1_CONTROL_ApplySBlockResponseRcvd(READER_T1_ContextHandler
 	}
 	
 	/* On applique la demande du S-Block ...  */
-	if(rcvdBlockType == READER_T1_STYPE_ABORT_RESP){
+	if(rcvdSBlockType == READER_T1_STYPE_ABORT_RESP){
 		retVal = READER_T1_CONTROL_ApplySBlockAbort(pContext, pBlock);
 		if(retVal != READER_OK) return retVal;
 	}
-	else if(rcvdBlockType == READER_T1_STYPE_IFS_RESP){
+	else if(rcvdSBlockType == READER_T1_STYPE_IFS_RESP){
 		retVal = READER_T1_CONTROL_ApplySBlockIfsd(pContext, pBlock);
 		if(retVal != READER_OK) return retVal;		
 	}
-	else if(rcvdBlockType == READER_T1_STYPE_RESYNCH_RESP){
+	else if(rcvdSBlockType == READER_T1_STYPE_RESYNCH_RESP){
 		retVal = READER_T1_CONTROL_ApplySBlockResynch(pContext, pBlock);
 		if(retVal != READER_OK) return retVal;
 	}
-	else if(rcvdBlockType == READER_T1_STYPE_WTX_RESP){
+	else if(rcvdSBlockType == READER_T1_STYPE_WTX_RESP){
 		retVal = READER_T1_CONTROL_ApplySBlockWtx(pContext, pBlock);
 		if(retVal != READER_OK) return retVal;
 	}
@@ -891,7 +889,6 @@ READER_Status READER_T1_CONTROL_ApplySBlockResponseRcvd(READER_T1_ContextHandler
 
 READER_Status READER_T1_CONTROL_ApplySBlockResynch(READER_T1_ContextHandler *pContext, READER_T1_Block *pBlock){
 	READER_Status retVal;
-	READER_T1_BlockType bType;
 	READER_T1_SBlockType SBlockType;
 	
 	
@@ -929,6 +926,7 @@ READER_Status READER_T1_CONTROL_ApplySBlockResynch(READER_T1_ContextHandler *pCo
 
 READER_Status READER_T1_CONTROL_ApplySBlockIfsc(READER_T1_ContextHandler *pContext, READER_T1_Block *pBlock){
 	READER_Status retVal;
+	READER_T1_SBlockType SBlockType;
 	uint32_t ifsc;
 	
 	
@@ -937,7 +935,7 @@ READER_Status READER_T1_CONTROL_ApplySBlockIfsc(READER_T1_ContextHandler *pConte
 	if(retVal != READER_OK) return retVal;
 	
 	SBlockType = READER_T1_GetBlockSType(pBlock);
-	if((SBlockType != READER_T1_STYPE_IFS_REQU) && (SBlockType != READER_T1_STYPE_IFS_RESP){
+	if((SBlockType != READER_T1_STYPE_IFS_REQU) && (SBlockType != READER_T1_STYPE_IFS_RESP)){
 		return READER_ERR;
 	}
 	
@@ -955,6 +953,7 @@ READER_Status READER_T1_CONTROL_ApplySBlockIfsc(READER_T1_ContextHandler *pConte
 
 READER_Status READER_T1_CONTROL_ApplySBlockIfsd(READER_T1_ContextHandler *pContext, READER_T1_Block *pBlock){
 	READER_Status retVal;
+	READER_T1_SBlockType SBlockType;
 	uint32_t ifsd;
 	
 	
@@ -963,7 +962,7 @@ READER_Status READER_T1_CONTROL_ApplySBlockIfsd(READER_T1_ContextHandler *pConte
 	if(retVal != READER_OK) return retVal;
 	
 	SBlockType = READER_T1_GetBlockSType(pBlock);
-	if((SBlockType != READER_T1_STYPE_IFS_REQU) && (SBlockType != READER_T1_STYPE_IFS_RESP){
+	if((SBlockType != READER_T1_STYPE_IFS_REQU) && (SBlockType != READER_T1_STYPE_IFS_RESP)){
 		return READER_ERR;
 	}
 	
@@ -988,6 +987,7 @@ READER_Status READER_T1_CONTROL_ApplySBlockAbort(READER_T1_ContextHandler *pCont
 
 READER_Status READER_T1_CONTROL_ApplySBlockWtx(READER_T1_ContextHandler *pContext, READER_T1_Block *pBlock){
 	READER_Status retVal;
+	READER_T1_SBlockType SBlockType;
 	uint32_t multiplier;
 	uint32_t currentBWT, newBWT;
 	
@@ -997,7 +997,7 @@ READER_Status READER_T1_CONTROL_ApplySBlockWtx(READER_T1_ContextHandler *pContex
 	if(retVal != READER_OK) return retVal;
 	
 	SBlockType = READER_T1_GetBlockSType(pBlock);
-	if((SBlockType != READER_T1_STYPE_WTX_REQU) && (SBlockType != READER_T1_STYPE_WTX_RESP){
+	if((SBlockType != READER_T1_STYPE_WTX_REQU) && (SBlockType != READER_T1_STYPE_WTX_RESP)){
 		return READER_ERR;
 	}
 	
@@ -1009,7 +1009,7 @@ READER_Status READER_T1_CONTROL_ApplySBlockWtx(READER_T1_ContextHandler *pContex
 	if(retVal != READER_OK) return retVal;
 	
 	/* On calcule le nouveau BWT */
-	newBWT = currentBWT * multiplier;
+	newBWT = currentBWT * ((uint32_t)(multiplier));
 	
 	/* On mets a jour le BWT dans le contexte de communication ...  */
 	retVal = READER_T1_CONTEXT_SetCurrentBWT(pContext, newBWT);
@@ -1096,7 +1096,6 @@ READER_Status READER_T1_CONTROL_ResendRequest(READER_T1_ContextHandler *pContext
 	READER_Status retVal;
 	READER_T1_Block *pLastBlockSent;
 	READER_T1_BlockType bType;
-	READER_T1_SBlockType SBlockType;
 	
 	
 	/* On verifie le compteur d'envoi de S-Block Requests successives ... */
@@ -1112,12 +1111,11 @@ READER_Status READER_T1_CONTROL_ResendRequest(READER_T1_ContextHandler *pContext
 	retVal = READER_T1_CONTEXT_GetLastSent(pContext, &pLastBlockSent);
 	if(retVal != READER_OK) return retVal;
 	
-	bType = READER_T1_GetBlockType(pLAstBlockSent);
+	bType = READER_T1_GetBlockType(pLastBlockSent);
 	if(bType != READER_T1_SBLOCK){
 		return READER_ERR;
 	}
 	
-	SBlockType = READER_T1_GetBlockSType(pLastBlockSent);
 	retVal = READER_T1_IsSBlockRequest(pLastBlockSent);
 	if((retVal != READER_OK) && (retVal != READER_NO)) return retVal;
 	
