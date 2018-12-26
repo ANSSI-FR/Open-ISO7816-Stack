@@ -313,7 +313,13 @@ READER_Status READER_T1_CONTEXT_SetCurrentBWI(READER_T1_ContextHandler *pContext
 
 
 READER_Status READER_T1_CONTEXT_SetCurrentIFSC(READER_T1_ContextHandler *pContext, uint32_t ifsc){
+	READER_Status retVal;
+	
+	
 	if((ifsc >= READER_T1_MIN_IFSC_ACCEPTED) && (ifsc <= READER_T1_MAX_IFSC_ACCEPTED)){   /* Voir ISO7816-3 section 11.4.2 */
+		retVal = READER_T1_BUFFER_UpdateIfsc(pContext, ifsc);
+		if(retVal != READER_OK) return retVal;
+		
 		pContext->currentIFSC = ifsc;
 	}
 	else{
@@ -1209,6 +1215,68 @@ READER_Status READER_T1_CONTEXT_CheckSBlockRequestCounter(READER_T1_ContextHandl
 		return READER_OK;
 	}
 }
+
+
+
+
+READER_Status READER_T1_CONTEXT_SetSBlockExpectedINF(READER_T1_ContextHandler *pContext, uint8_t expectedINF){
+	pContext->SBlockExpectedINF = expectedINF;
+	
+	
+	return READER_OK;
+}
+
+
+READER_Status READER_T1_CONTEXT_GetSBlockExpectedINF(READER_T1_ContextHandler *pContext, uint8_t *pExpectedINF){
+	*pExpectedINF = pContext->SBlockExpectedINF;
+	
+	
+	return READER_OK;
+}
+
+
+
+/* On prends un S-Block Response et on verifie que le champ INF correspond a celui qui etait attendu ...  */
+/* Retourne READER_ERR en cas d'erreur interne, READER_NO si le champ INF ne correspond pas, READER_OK si le champ INF correspond. Retourne toutte autre valeur si erreur interne. */
+READER_Status READER_T1_CONTEXT_CheckSBlockExpectedINF(READER_T1_ContextHandler *pContext, READER_T1_Block *pBlock){
+	READER_Status retVal;
+	READER_T1_SBlockType SBlockType;
+	uint8_t blockLEN;
+	uint8_t blockINF, expectedBlockINF;
+	
+	
+	/* On verifie que c'est bien un S-Block ...  */
+	retVal = READER_T1_CheckSBlock(pBlock);
+	if(retVal != READER_OK) return retVal;
+	
+	/* On regarde si ce S-Block possede un champ INF (on regarde le type de S-Block et le LEN du Block) ...  */
+	SBlockType = READER_T1_GetBlockSType(pBlock);
+	if((SBlockType != READER_T1_STYPE_IFS_RESP) && (SBlockType != READER_T1_STYPE_WTX_RESP)){
+		return READER_ERR;
+	}
+	
+	blockLEN = READER_T1_GetBlockLEN(pBlock);
+	if(blockLEN != 1){
+		return READER_ERR;
+	}
+	
+	/* On recupere le champ INF du S-Block ...  */
+	blockINF = READER_T1_GetBlockSPayload(pBlock);
+	
+	/* On recupere le champ INF qui est attendu dans la reponse ...  */
+	retVal = READER_T1_CONTEXT_GetSBlockExpectedINF(pContext, &expectedBlockINF);
+	if(retVal != READER_OK) return retVal;
+	
+	/* On verifie que les deux correspondent ...  */
+	if(blockINF == expectedBlockINF){
+		return READER_OK;
+	}
+	else{
+		return READER_NO;
+	}
+}
+
+
 
 
 READER_Status READER_T1_CONTEXT_GetBlockBuff(READER_T1_ContextHandler *pContext, READER_T1_BlockBuffer **ppBlockBuff){

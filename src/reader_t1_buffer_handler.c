@@ -323,6 +323,7 @@ READER_Status READER_T1_BUFFER_StrapControlBlocks(READER_T1_ContextHandler *pCon
 /* Il s'agit isi de modifier la taille des data dans les I-Blocks qui se trouvent dans le Buffer ...  */
 READER_Status READER_T1_BUFFER_UpdateIfsc(READER_T1_ContextHandler *pContext, uint32_t newIFSC){
 	READER_Status retVal;
+	READER_T1_BufferStatus bufferStatus;
 	uint32_t currentIFSC;
 	uint32_t sizeExtracted;
 	uint8_t tmpBuff[READER_APDU_CMD_MAX_TOTALSIZE];
@@ -331,8 +332,16 @@ READER_Status READER_T1_BUFFER_UpdateIfsc(READER_T1_ContextHandler *pContext, ui
 	retVal = READER_T1_CONTEXT_GetCurrentIFSC(pContext, &currentIFSC);
 	if(retVal != READER_OK) return retVal;
 	
-	/* Si on peut s'eviter du travail ...  */
-	if(newIfsc >= currentIFSC){
+	/* On ne peut pas forcement faire ce test, la valeur de currentIFSC n'est pas forcement initialisee au moment de l'appel de cette fonction ...  */
+	///* Si on peut s'eviter du travail ...  */
+	//if(newIFSC >= currentIFSC){
+	//	return READER_OK;
+	//}
+	
+	retVal = READER_T1_BUFFER_IsEmpty(pContext, &bufferStatus);
+	if(retVal != READER_OK) return retVal;
+	
+	if(bufferStatus == READER_T1_BUFFER_EMPTY){
 		return READER_OK;
 	}
 	
@@ -349,7 +358,7 @@ READER_Status READER_T1_BUFFER_UpdateIfsc(READER_T1_ContextHandler *pContext, ui
 
 
 /* Retourne une erreur si il y a trop de donnes dans le Buffer de Blocks par rapport au buffer fourni en parametres ...  */
-READER_Status READER_T1_BUFFER_ExtractRawDataFromBuffer(READER_T1_ContextHandler *pContext, uint8_t *destBuffer, uint32_t destBufferSize, , uint32_t *pSizeExtracted){
+READER_Status READER_T1_BUFFER_ExtractRawDataFromBuffer(READER_T1_ContextHandler *pContext, uint8_t *destBuffer, uint32_t destBufferSize, uint32_t *pSizeExtracted){
 	uint32_t length;
 	uint32_t topIndex, bottomIndex, virtualTopIndex, virtualBottomIndex;
 	uint32_t virtualIndex, realIndex;

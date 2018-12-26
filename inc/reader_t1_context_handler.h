@@ -137,6 +137,7 @@ struct READER_T1_ContextHandler{
 	
 	READER_T1_FlagStatus isSBlockExpectedFlag;
 	READER_T1_SBlockType SBlockExpectedType;
+	uint8_t SBlockExpectedINF;
 	uint32_t SBlockRequCounter;
 	
 	uint32_t tickLastBlock;
@@ -256,6 +257,11 @@ READER_Status READER_T1_CONTEXT_SetSBlockRequCounter(READER_T1_ContextHandler *p
 READER_Status READER_T1_CONTEXT_IncSBlockRequCounter(READER_T1_ContextHandler *pContext);
 READER_Status READER_T1_CONTEXT_CheckSBlockRequestCounter(READER_T1_ContextHandler *pContext);
 READER_Status READER_T1_CONTEXT_ClearSBlockRequestCounter(READER_T1_ContextHandler *pContext);
+
+READER_Status READER_T1_CONTEXT_SetSBlockExpectedINF(READER_T1_ContextHandler *pContext, uint8_t expectedINF);
+READER_Status READER_T1_CONTEXT_GetSBlockExpectedINF(READER_T1_ContextHandler *pContext, uint8_t *pExpectedINF);
+READER_Status READER_T1_CONTEXT_CheckSBlockExpectedINF(READER_T1_ContextHandler *pContext, READER_T1_Block *pBlock);
+
 
 
 READER_Status READER_T1_CONTEXT_GetBlockBuff(READER_T1_ContextHandler *pContext, READER_T1_BlockBuffer **ppBlockBuff);

@@ -362,6 +362,7 @@ READER_Status READER_T1_CONTROL_SBlockSentUpdateContext(READER_T1_ContextHandler
 READER_Status READER_T1_CONTROL_SBlockRequestSentUpdateContext(READER_T1_ContextHandler *pContext, READER_T1_Block *pBlock){
 	READER_Status retVal;
 	READER_T1_SBlockType SBlockType, expectedSBlockType;
+	uint8_t expectedINF;
 	
 	
 	/* On fait des verifications elementaires sur le Block ...  */
@@ -383,12 +384,14 @@ READER_Status READER_T1_CONTROL_SBlockRequestSentUpdateContext(READER_T1_Context
 	}
 	else if(SBlockType == READER_T1_STYPE_IFS_REQU){
 		expectedSBlockType = READER_T1_STYPE_IFS_RESP;
+		expectedINF = READER_T1_GetBlockSPayload(pBlock);
 	}
 	else if(SBlockType == READER_T1_STYPE_RESYNCH_REQU){
 		expectedSBlockType = READER_T1_STYPE_RESYNCH_RESP;
 	}
 	else if(SBlockType == READER_T1_STYPE_WTX_REQU){
 		expectedSBlockType = READER_T1_STYPE_WTX_RESP;
+		expectedINF = READER_T1_GetBlockSPayload(pBlock);
 	}
 	else{
 		return READER_ERR;
@@ -397,6 +400,9 @@ READER_Status READER_T1_CONTROL_SBlockRequestSentUpdateContext(READER_T1_Context
 	/* On mets a jour le Flag qui indique que l'on attend desormais une S-Block Response et son type ...  */
 	retVal = READER_T1_CONTEXT_SetSBlockExpectedResponse(pContext, expectedSBlockType);
 	if(retVal != READER_OK) return retVal;
+	
+	/* On mets a jour la valeur du champs INF qu'on attend en reponse pour l'acquittement de ce S-Block */
+	pContext->SBlockExpectedINF = expectedINF;
 	
 	/* On remets a zero le compteur de S-Block Requests successives ...  */
 	retVal = READER_T1_CONTEXT_ClearSBlockRequestCounter(pContext);
@@ -861,7 +867,6 @@ READER_Status READER_T1_CONTROL_ApplySBlockResponseRcvd(READER_T1_ContextHandler
 	rcvdSBlockType = READER_T1_GetBlockSType(pBlock);
 	
 	if(rcvdSBlockType != expectedSBlockType){
-		/* finir ... */
 		retVal = READER_T1_CONTROL_SBlockResponseNotReceived(pContext);
 		if(retVal != READER_OK) return retVal;
 	}

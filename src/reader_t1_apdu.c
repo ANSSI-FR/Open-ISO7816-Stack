@@ -43,8 +43,8 @@ READER_Status READER_T1_APDU_Execute(READER_T1_ContextHandler *pContext, READER_
 	retVal = READER_T1_CONTEXT_InitContextSettings(pContext);
 	if(retVal != READER_OK) return retVal;
 	
-	retVal = READER_T1_CONTEXT_InitBuffer(pContext);
-	if(retVal != READER_OK) return retVal;
+	//retVal = READER_T1_CONTEXT_InitBuffer(pContext);
+	//if(retVal != READER_OK) return retVal;
 	
 	/* On remplit le Buffer d'envoi a partir du contenu de la commande APDU ...                                                   */
 	retVal = READER_T1_FORGE_FillBuffWithAPDU(pContext, pApduCmd);
