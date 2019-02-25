@@ -116,3 +116,17 @@ READER_Status READER_T1_ForgeIBlock(READER_T1_Block *pBlock, uint8_t *data, uint
 	
 	return READER_OK;
 }
+
+
+
+READER_Status READER_T1_CheckIBlock(READER_T1_Block *pBlock){
+	READER_T1_BlockType bType;
+	
+	
+	bType = READER_T1_GetBlockType(pBlock);
+	if(bType != READER_T1_IBLOCK){
+		return READER_INVALID_BLOCK;
+	}
+	
+	return READER_OK;
+}

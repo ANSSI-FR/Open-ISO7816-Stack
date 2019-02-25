@@ -631,6 +631,13 @@ READER_Status READER_T1_CONTEXT_SetLastSent(READER_T1_ContextHandler *pContext, 
 }
 
 
+/**
+ * \fn READER_Status READER_T1_CONTEXT_SetLastIBlockSent(READER_T1_ContextHandler *pContext, READER_T1_Block *pBlock)
+ * \brief Cette fonction permet de mettre à jour le contexte de communication avec le dernier I-Block envoyé.
+ * \param *pContext est un pointeur sur une structure de type READER_T1_ContextHandler. La structure pointée stocke le contexte actuel de communication (celui qu'il faut mettre à jour).
+ * \param *pBlock est un pointeur sur uen structure de type READER_T1_Block. Il s'agit du dernier Block qui vient d'être envoyé (à priori un I-Block).
+ * \return La fonction retourne un code d'erreur de type READER_Status. READER_OK indique le bon déroulement de la fonction.
+ */
 READER_Status READER_T1_CONTEXT_SetLastIBlockSent(READER_T1_ContextHandler *pContext, READER_T1_Block *pBlock){
 	READER_Status retVal;
 	
@@ -988,6 +995,15 @@ READER_Status READER_T1_CONTEXT_CardIsChaining(READER_T1_ContextHandler *pContex
 }
 
 
+
+/**
+ * \fn READER_Status READER_T1_CONTEXT_SetDeviceChainingSituationFlag(READER_T1_ContextHandler *pContext, READER_T1_ChainingStatus chainingStatus)
+ * \brief Cette fonction mets à jour le contexte de communication avec la situation de chainage coté DEVICE.
+ * La situation de chainage indique si e Block maniulé s'inscrit dans une chaine (ca peut etre le dernier de la chaine avec un M-Bit nul).
+ * \param *pContext est un pointeur sur une structure de type READER_T1_ContextHandler. La structure pointée contient tout le contexte de communication courant.
+ * \param chainingStatus est une valeur de type READER_T1_ChainingStatus. Elle indique si oui ou non il y a une SITUATION chainage.
+ * \return La fonction retourne un code d'erreur de type READER_Status. READER_OK indique que le contexte a correctement été mis à jour.
+ */
 READER_Status READER_T1_CONTEXT_SetDeviceChainingSituationFlag(READER_T1_ContextHandler *pContext, READER_T1_ChainingStatus chainingStatus){
 	if(chainingStatus == READER_T1_CHAINING_YES){
 		pContext->deviceIsChaining = READER_T1_CHAINING_YES;
@@ -1003,6 +1019,14 @@ READER_Status READER_T1_CONTEXT_SetDeviceChainingSituationFlag(READER_T1_Context
 }
 
 
+
+/**
+ * \fn READER_Status READER_T1_CONTEXT_SetDeviceChainingLastBlockFlag(READER_T1_ContextHandler *pContext, READER_T1_ChainingStatus chainingStatus)
+ * \brief Cette fonction mets à jour le contexte de communication avec la valeur du M-Bit du dernier I-Block envoyé par le DEVICE. C'est à dire, on indique si le DEVICE à l'intention de chainer le Block qu'il vient probablement d'envoyer.
+ * \param *pContext est un pointeur sur une structure de type READER_T1_ContextHandler. La structure pointée contient tout le contexte de communication courant.
+ * \param chainingStatus est une valeir de type READER_T1_ChainingStatus. Elle indique si oui ou non il y a chainage.
+ * \return La fonction retourne un code d'erreur de type READER_Status. READER_OK indique que le contexte a correctement été mis à jour.
+ */
 READER_Status READER_T1_CONTEXT_SetDeviceChainingLastBlockFlag(READER_T1_ContextHandler *pContext, READER_T1_ChainingStatus chainingStatus){
 	if(chainingStatus == READER_T1_CHAINING_YES){
 		pContext->deviceIsChainingLastBlock = READER_T1_CHAINING_YES;
@@ -1018,6 +1042,15 @@ READER_Status READER_T1_CONTEXT_SetDeviceChainingLastBlockFlag(READER_T1_Context
 }
 
 
+
+/**
+ * \fn READER_Status READER_T1_CONTEXT_SetCardChainingSituationFlag(READER_T1_ContextHandler *pContext, READER_T1_ChainingStatus chainingStatus)
+ * \brief Cette fonction mets à jour le contexte de communication avec la situation de chainage coté CARTE.
+ * La situation de chainage indique si e Block maniulé s'inscrit dans une chaine (ca peut etre le dernier de la chaine avec un M-Bit nul).
+ * \param *pContext est un pointeur sur une structure de type READER_T1_ContextHandler. La structure pointée contient tout le contexte de communication courant.
+ * \param chainingStatus est une valeur de type READER_T1_ChainingStatus. Elle indique si oui ou non il y a une SITUATION chainage.
+ * \return La fonction retourne un code d'erreur de type READER_Status. READER_OK indique que le contexte a correctement été mis à jour.
+ */
 READER_Status READER_T1_CONTEXT_SetCardChainingSituationFlag(READER_T1_ContextHandler *pContext, READER_T1_ChainingStatus chainingStatus){
 	if(chainingStatus == READER_T1_CHAINING_YES){
 		pContext->cardIsChaining = READER_T1_CHAINING_YES;
@@ -1033,6 +1066,13 @@ READER_Status READER_T1_CONTEXT_SetCardChainingSituationFlag(READER_T1_ContextHa
 }
 
 
+/**
+ * \fn READER_Status READER_T1_CONTEXT_SetCardChainingLastBlockFlag(READER_T1_ContextHandler *pContext, READER_T1_ChainingStatus chainingStatus)
+ * \brief Cette fonction mets à jour le contexte de communication avec la valeur du M-Bit du dernier I-Block envoyé par la CARTE. C'est à dire, on indique si la CARTE à l'intention de chainer le Block qu'elle vient probablement d'envoyer au Device.
+ * \param *pContext est un pointeur sur une structure de type READER_T1_ContextHandler. La structure pointée contient tout le contexte de communication courant.
+ * \param chainingStatus est une valeir de type READER_T1_ChainingStatus. Elle indique si oui ou non il y a chainage.
+ * \return La fonction retourne un code d'erreur de type READER_Status. READER_OK indique que le contexte a correctement été mis à jour.
+ */
 READER_Status READER_T1_CONTEXT_SetCardChainingLastBlockFlag(READER_T1_ContextHandler *pContext, READER_T1_ChainingStatus chainingStatus){
 	if(chainingStatus == READER_T1_CHAINING_YES){
 		pContext->cardIsChainingLastBlock = READER_T1_CHAINING_YES;
@@ -1050,6 +1090,13 @@ READER_Status READER_T1_CONTEXT_SetCardChainingLastBlockFlag(READER_T1_ContextHa
 
 
 /* Manipuation des S-Blocks */
+/**
+ * \fn READER_Status READER_T1_CONTEXT_IsSBlockResponseExpectedNow(READER_T1_ContextHandler *pContext, READER_T1_FlagStatus *pFlag)
+ * \brief Cette fonction permet de savoir (à partir du contexte de communication) si un S-Block Response est attendu maintenant.
+ * \param *pContext est un pointeur sur une structure de type READER_T1_ContextHandler. La structure pointée contient tout le contexte de communication courant.
+ * \param *pFlag est un pointeur sur une structure de type READER_T1_FlagStatus. La fonction utilise ce pointeur pour indiquer si un S-Block Response est attendu maintenant ou pas.
+ * \return La fonction retourne un code d'erreur de type READER_Status. READER_OK indique le bon déroulement.
+ */
 READER_Status READER_T1_CONTEXT_IsSBlockResponseExpectedNow(READER_T1_ContextHandler *pContext, READER_T1_FlagStatus *pFlag){
 	if(pContext->isSBlockExpectedFlag == READER_T1_FLAGSTATUS_SET){
 		*pFlag = READER_T1_FLAGSTATUS_SET;
@@ -1065,6 +1112,14 @@ READER_Status READER_T1_CONTEXT_IsSBlockResponseExpectedNow(READER_T1_ContextHan
 }
 
 
+
+/**
+ * \fn READER_Status READER_T1_CONTEXT_GetSBlockExpectedResponseType(READER_T1_ContextHandler *pContext, READER_T1_SBlockType *pType)
+ * \brief Cette fonction permet de savoir (à partir du contexte de communication) le type de S-Block Response qui est attendu en provenance de la carte (si toutefois un S-Block Response est attendu).
+ * \param *pContext est un pointeur sur une structure de type READER_T1_ContextHandler. La structure pointée contient tout le contexte de communication courant.
+ * \param *pType est un pointeur sur uen structure de type READER_T1_SBlockType. La fonction utilise ce pointeur pour y stocker le resultat, ie la type de S-Block Response attendu en provenance de la carte.
+ * \return La fonction retourne un code d'erreur de type READER_Status. READER_OK indique le bon déroulement.
+ */
 READER_Status READER_T1_CONTEXT_GetSBlockExpectedResponseType(READER_T1_ContextHandler *pContext, READER_T1_SBlockType *pType){
 	READER_Status retVal;
 	READER_T1_FlagStatus isExp;
@@ -1076,7 +1131,7 @@ READER_Status READER_T1_CONTEXT_GetSBlockExpectedResponseType(READER_T1_ContextH
 	if(retVal != READER_OK) return retVal;
 	if(isExp != READER_T1_FLAGSTATUS_SET) return READER_ERR;
 	
-	/* On verifie le type de S-Block attendu, on regare aussi si ce type est valide ... */
+	/* On verifie le type de S-Block attendu, on regarde aussi si ce type est valide ... */
 	tmpType = pContext->SBlockExpectedType;
 	
 	switch(tmpType){

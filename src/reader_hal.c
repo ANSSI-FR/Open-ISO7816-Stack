@@ -106,7 +106,7 @@ READER_Status READER_HAL_SendCharFrameTickstart(uint8_t *frame, uint32_t frameSi
 		retVal = READER_HAL_SendChar(frame[i], timeout);
 		if(retVal != READER_OK) return retVal;
 		
-		/* On mets a jour la date du debut de l'envoi du premier caractere de la frame. (On soustrait le temps en milisec qu'il faut pour envoyer un carac) */
+		/* On mets a jour la date du debut de l'envoi du dernier caractere de la frame. (On soustrait le temps en milisec qu'il faut pour envoyer un carac) */
 		if(i == (frameSize-1)){
 			*pTickstart = READER_HAL_GetTick() - (uint32_t)(READER_UTILS_ComputeEtuMiliFloat(READER_HAL_GetFi(), READER_HAL_GetDi(), READER_HAL_GetFreq()) *10 +1);
 		}
