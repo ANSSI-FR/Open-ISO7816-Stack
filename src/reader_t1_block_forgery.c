@@ -236,6 +236,15 @@ READER_Status READER_T1_FORGE_DataIBlock(READER_T1_ContextHandler *pContext, REA
 
 
 
+/**
+ * \fn READER_Status READER_T1_FORGE_SliceDataAndFillBuffer(READER_T1_ContextHandler *pContext, uint8_t *dataBuff, uint32_t dataSize)
+ * \brief Cette fonction décompose un buffer de données à envoyer en en ensemble de I-Blocks. Ces Blocks sont enfilés dans le Buffer d'envoi qui se trouve dans le contexte de communication.
+ * Attention, c'est à cette étape que le M-Bit et le numéro de séquence de chaque I-Block à envoyer sont calculés.
+ * \param *pContext est un pointeur sur une structure de type READER_T1_ContextHandler. La structure pointée stocke le contexte actuel de communication.
+ * \param *dataBuff est un pointeur sur uint8_t. Il s'agit d'un tableau d'octets qui constitue les données à découper en I-Blocks et à placer dans le Buffer d'envoi.
+ * \param dataSize est un entier de type uint32_t. Il indique le nombre d'octets qui se trouvent dans *dataBuff.
+ * \return La fonction retourne un code d'erreur de type READER_Status. READER_Ok indique le bo déroulement de la fonction.
+ */
 READER_Status READER_T1_FORGE_SliceDataAndFillBuffer(READER_T1_ContextHandler *pContext, uint8_t *dataBuff, uint32_t dataSize){
 	READER_Status retVal;
 	READER_T1_Block tmpBlock;

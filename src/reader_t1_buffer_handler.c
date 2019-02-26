@@ -30,13 +30,21 @@ READER_Status READER_T1_BUFFER_Clear(READER_T1_ContextHandler *pContext){
 }
 
 
-READER_Status READER_T1_BUFFER_GetLength(READER_T1_ContextHandler *pContext, uint32_t *length){
+/**
+ * \fn READER_Status READER_T1_BUFFER_GetLength(READER_T1_ContextHandler *pContext, uint32_t *length)
+ * \brief Cette fonction permet de connaitre le nombre de Blocks actuellement stockés dans le Buffer d'envoi qui se trouve dans le contexte de communication.
+ * \param *pContext est un pointeur sur une structure de type READER_T1_ContextHandler. La structure pointée stocke le contexte actuel de communication.
+ * \param *pLength est un pointeur sur un entier de type uint32_t. Il permet à la fonction de retourner le résultat du nombre de Blocks stockés dans le Buffer d'envoi.
+ * \return La fonction retourne un code d'erreur de type READER_Status. READER_OK indique le bon déroulement de la fonction. 
+ */
+READER_Status READER_T1_BUFFER_GetLength(READER_T1_ContextHandler *pContext, uint32_t *pLength){
 	READER_T1_BlockBuffer *pBlockBuff;
 	READER_Status retVal;
 	//uint32_t indexBottom, indexTop;
 	//uint32_t placesUsed;
 	
 	
+	/* On recupere un pointeir sur la structure de Buffer d'envoi qui se trouve dans le contexte de communication...  */
 	retVal = READER_T1_CONTEXT_GetBlockBuff(pContext, &pBlockBuff);
 	if(retVal != READER_OK) return retVal;
 	
@@ -53,13 +61,20 @@ READER_Status READER_T1_BUFFER_GetLength(READER_T1_ContextHandler *pContext, uin
 	//
 	//*length = placesUsed;
 	
-	*length = pBlockBuff->length;
+	*pLength = pBlockBuff->length;
 	
 	return READER_OK;
 }
 
 
-READER_Status READER_T1_BUFFER_PlacesLeft(READER_T1_ContextHandler *pContext, uint32_t *places){
+/**
+ * \fn READER_Status READER_T1_BUFFER_PlacesLeft(READER_T1_ContextHandler *pContext, uint32_t *pPlaces)
+ * \brief Cette fonction permet de connaitre le nombre de slots de Blocks disponibles (non utilisés) dans le Buffer d'envoi.
+ * \param *pContext est un pointeur sur une structure de type READER_T1_ContextHandler. La structure pointée stocke le contexte actuel de communication.
+ * \param *pPlaces est un pointeur sur un entier de type uint32_t. Il permet à la fonction de retourner le résultat du nombre de places disponibles dans le Buffer d'envoi.
+ * \return La fonction retourne un code d'erreur de type READER_Status. READER_OK indique le bon déroulement de la fonction. 
+ */
+READER_Status READER_T1_BUFFER_PlacesLeft(READER_T1_ContextHandler *pContext, uint32_t *pPlaces){
 	READER_Status retVal;
 	uint32_t placesUsed;
 	
@@ -67,7 +82,7 @@ READER_Status READER_T1_BUFFER_PlacesLeft(READER_T1_ContextHandler *pContext, ui
 	retVal = READER_T1_BUFFER_GetLength(pContext, &placesUsed);
 	if(retVal != READER_OK) return retVal;
 	
-	*places = READER_T1_CONTEXT_STATICBUFF_MAXSIZE - placesUsed;
+	*pPlaces = READER_T1_CONTEXT_STATICBUFF_MAXSIZE - placesUsed;
 	
 	return READER_OK;
 }
@@ -291,7 +306,7 @@ READER_Status READER_T1_BUFFER_Stack(READER_T1_ContextHandler *pContext, READER_
 
 
 /* On enleve les R-Blocks et S-BLocks qui se trouvent dans le Buffer */
-READER_Status READER_T1_BUFFER_StrapControlBlocks(READER_T1_ContextHandler *pContext){
+READER_Status READER_T1_BUFFER_StripControlBlocks(READER_T1_ContextHandler *pContext){
 	READER_Status retVal, retVal2;
 	READER_T1_Block tmpBlock;
 	READER_T1_BlockType bType;
@@ -323,7 +338,7 @@ READER_Status READER_T1_BUFFER_StrapControlBlocks(READER_T1_ContextHandler *pCon
 /* Il s'agit ici de modifier la taille des data dans les I-Blocks qui se trouvent dans le Buffer ...  */
 /**
  * \fn READER_Status READER_T1_BUFFER_UpdateIfsc(READER_T1_ContextHandler *pContext, uint32_t newIFSC)
- * \brief Cette fonction permet de reformatter le buffer d'envoi lorsque IFSC est modifié. On extrait tous les Blocks, on les redecoupe avec une taille IFS différente, puis on rempli à noiveau le buffer d'envoi.
+ * \brief Cette fonction permet de reformatter le buffer d'envoi lorsque IFSC est modifié.
  * \param *pContext est un pointeur sur une structure de type READER_T1_ContextHandler. La structure pointée stocke le contexte actuel de communication.
  * \param newIFSC est un uint32_t. Il contient la noivelle valeur de IFSC à appliquer.
  * \return La fonction retourne un code d'erreur de type READER_Status. READER_OK indique le bon déroulement de la fonction.
@@ -336,8 +351,8 @@ READER_Status READER_T1_BUFFER_UpdateIfsc(READER_T1_ContextHandler *pContext, ui
 	uint8_t tmpBuff[READER_T1_BUFFER_MAXBYTES];
 	
 	
-	retVal = READER_T1_CONTEXT_GetCurrentIFSC(pContext, &currentIFSC);
-	if(retVal != READER_OK) return retVal;
+	//retVal = READER_T1_CONTEXT_GetCurrentIFSC(pContext, &currentIFSC);
+	//if(retVal != READER_OK) return retVal;
 	
 	/* On ne peut pas forcement faire ce test, la valeur de currentIFSC n'est pas forcement initialisee au moment de l'appel de cette fonction ...  */
 	///* Si on peut s'eviter du travail ...  */
@@ -345,22 +360,23 @@ READER_Status READER_T1_BUFFER_UpdateIfsc(READER_T1_ContextHandler *pContext, ui
 	//	return READER_OK;
 	//}
 	
+	/* Si le Buffer est vide, il n'y a rien a faire, on a termine...  */
 	retVal = READER_T1_BUFFER_IsEmpty(pContext, &bufferStatus);
 	if(retVal != READER_OK) return retVal;
 	
 	if(bufferStatus == READER_T1_BUFFER_EMPTY){
 		return READER_OK;
 	}
-	
-	/* Avant d'extraire le contenu du buffer, on verifie que on a la place pour tout stocker dans notre buff statique temporaire. */
-	/* En principe on ne devrait pas avoir plus d'un APDU Command entier dans le buffer d'envoi et quelques R-Block/S-Blocks. (READER_T1_BUFFER_MAXBYTES est calcule de cette maniere) ...  */
-	
+
 	
 	/* On extrait les donnees de tous les I-Blocks qui sont dans le Buffer ...  */
 	retVal = READER_T1_BUFFER_ExtractRawDataFromBuffer(pContext, tmpBuff, READER_APDU_CMD_MAX_TOTALSIZE, &sizeExtracted);
 	if(retVal != READER_OK) return retVal;
 	
-	/* On redecoupe a nouveau ce buffer temporraire et on remplit a nouveau le Buffer de Blocks ...  */
+	/* On enleve tous les I-Blocks qui se trouvent dans le Buffer d'envoi ...  */
+	
+	
+	/* On redecoupe a nouveau ce buffer temporaire et on remplit a nouveau le Buffer de Blocks ...  */
 	retVal = READER_T1_FORGE_SliceDataAndFillBuffer(pContext, tmpBuff, sizeExtracted);
 	if(retVal != READER_OK) return retVal;
 	
@@ -369,6 +385,15 @@ READER_Status READER_T1_BUFFER_UpdateIfsc(READER_T1_ContextHandler *pContext, ui
 
 
 /* Retourne une erreur si il y a trop de donnes dans le Buffer de Blocks par rapport au buffer fourni en parametres ...  */
+/**
+ * \fn READER_Status READER_T1_BUFFER_ExtractRawDataFromBuffer(READER_T1_ContextHandler *pContext, uint8_t *destBuffer, uint32_t destBufferSize, uint32_t *pSizeExtracted)
+ * \brief Cette fonction parcoure tous les I-Blocks du Buffer d'envoi, elle extrait les champs de données de ces I-Blocks et les réassemble dans un buffer de destination.
+ * \param *pContext est un pointeur sur une structure de type READER_T1_ContextHandler. La structure pointée stocke le contexte actuel de communication.
+ * \param *destBuffer est un pointeur sur un uint8_t. Il s'agit du buffer de destination qui va accueillir les données réassemblés des I-Blocks du Buffer d'envoi.
+ * \param destBufferSize est un entier de type uint32_t. Il permet d'indiquer la taille du buffer de destination. La fonction n'ira as écrire plus de destBufferSize octets dans le buffer de destination *destBuffer. Le fonction finit sur une erreur et retounre READER_OVERFLOW si l'espace n'est pas suffisant dans le buffer de destination.
+ * \param *pSizeExtracted est un pointeur sur un uint32_t. Il permet à la fonction de retourner le nombre d'octets qu'elle a parvenu à extraire. C'est pratique si on est sortit de la fonction sur une erreur.
+ * \return La fonction retourne un code d'erreur de type READER_Status. READER_OK indique le bon déroulement de la fonction. READER_OVERFLOW indique que la fonction n'a pas trouvé suffisement de place dans le buffer de destination pour y extraire tout le contenu du Buffer d'envoi.
+ */
 READER_Status READER_T1_BUFFER_ExtractRawDataFromBuffer(READER_T1_ContextHandler *pContext, uint8_t *destBuffer, uint32_t destBufferSize, uint32_t *pSizeExtracted){
 	uint32_t length;
 	uint32_t topIndex, bottomIndex, virtualTopIndex, virtualBottomIndex;
@@ -423,6 +448,7 @@ READER_Status READER_T1_BUFFER_ExtractRawDataFromBuffer(READER_T1_ContextHandler
 			blockLEN = READER_T1_GetBlockLEN(pCurrentBlock);
 			
 			retVal = READER_T1_CopyBlockData(pCurrentBlock, currentDestBufferPtr, destBufferSize-copiedBytesCounter);  /* La verif overflow se fait a l'interieur de la fonction  */
+			if(retVal == READER_OVERFLOW) return READER_OVERFLOW;
 			if(retVal != READER_OK) return retVal;
 			
 			copiedBytesCounter += blockLEN;

@@ -867,7 +867,7 @@ READER_Status READER_T1_CopyBlockData(READER_T1_Block *pBlock, uint8_t *destBuff
 	blockLEN = READER_T1_GetBlockLEN(pBlock);
 	
 	if(blockLEN > destBufferSize){
-		return READER_ERR;
+		return READER_OVERFLOW;
 	}
 	
 	for(i=0; i<blockLEN; i++){

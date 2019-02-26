@@ -38,7 +38,8 @@ enum READER_Status{
 	READER_INTEGRITY            = (uint32_t)(0x0000000C),
 	READER_BLOCK_TIMEOUT        = (uint32_t)(0x0000000D),
 	READER_BAD_VALUE            = (uint32_t)(0x0000000E),
-	READER_INVALID_BLOCK        = (uint32_t)(0x0000000F)
+	READER_INVALID_BLOCK        = (uint32_t)(0x0000000F),
+	READER_OVERFLOW             = (uint32_t)(0x00000010)
 };
 
 

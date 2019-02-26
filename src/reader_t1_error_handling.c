@@ -198,7 +198,7 @@ READER_Status READER_T1_ERR_DoResynch(READER_T1_ContextHandler *pContext){
 	if(retVal != READER_OK) return retVal;
 	
 	/* On enleve les S-Blocks et R-Blocks en sortie du Buffer d'envoi ?                    */
-	retVal = READER_T1_BUFFER_StrapControlBlocks(pContext);
+	retVal = READER_T1_BUFFER_StripControlBlocks(pContext);
 	if(retVal != READER_OK) return retVal;
 	
 	/* On Stack le dernier I-Block qu'on avait envoye sur la pile d'envoi (Rule 6.5) (pour le re-envoyer)  */

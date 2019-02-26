@@ -1451,7 +1451,13 @@ READER_Status READER_T1_CONTEXT_CheckSBlockExpectedINF(READER_T1_ContextHandler 
 
 
 
-
+/**
+ * \fn READER_Status READER_T1_CONTEXT_GetBlockBuff(READER_T1_ContextHandler *pContext, READER_T1_BlockBuffer **ppBlockBuff)
+ * \brief Cette fonction permet de récupérer un pointeur sur la structure du Buffer d'envoi (READER_T1_BlockBuffer) qui se trouve à l'intérieur du contexte de communication (READER_T1_ContextHandler).
+ * \param *pContext est un pointeur sur une structure de type READER_T1_ContextHandler. La structure pointée stocke le contexte actuel de communication.
+ * \param **ppBlockBuff est un pointeur sur un pointeur (qui pointe lui-même sur une structure de type READER_T1_BlockBuffer). Ce pointeur permet à la fonction d'aller modifier un pointeur de sorte a ce qu'il pointe désormais sur la structure READER_T1_BlockBuffer qui se trouve dans le contexte de communication.
+ * \return La fonction retourne un code d'erreur de type READER_Status. READER_OK indique le bon déroulement de la fonction.
+ */
 READER_Status READER_T1_CONTEXT_GetBlockBuff(READER_T1_ContextHandler *pContext, READER_T1_BlockBuffer **ppBlockBuff){
 	/* On recupere un pointeur qui pointe sur le pointeur de blockBuff                                              */
 	/* On veut que ce pointeur pointe desormais sur le blockBuff qui se trouve dans le contexte   de communication  */
@@ -1469,6 +1475,13 @@ READER_Status READER_T1_CONTEXT_GetBlockBuff(READER_T1_ContextHandler *pContext,
 
 
 
+/**
+ * \fn READER_Status READER_T1_CONTEXT_SetTickLastBlock(READER_T1_ContextHandler *pContext, uint32_t tickLastBlock)
+ * \brief Cette fonction permet d'enregistrer dans le contexte de communication le tick (la date en millisecondes) du leading edge du dernier caractère du dernier Block.
+ * \param *pContext est un pointeur sur une structure de type READER_T1_ContextHandler. La structure pointée stocke le contexte actuel de communication.
+ * \param tickLastBlock est un entier de type uint32_t. C'est la valeur du tick en millisecondes que le veut enregistrer dans le contexte.
+ * \return La fonction retourne un code d'erreur de type READER_Status. READER_OK indique le bon déroulement de la fonction.
+ */
 READER_Status READER_T1_CONTEXT_SetTickLastBlock(READER_T1_ContextHandler *pContext, uint32_t tickLastBlock){
 	pContext->tickLastBlock = tickLastBlock;
 	pContext->tickLastBlockFlag = READER_T1_FLAGSTATUS_SET;
