@@ -32,15 +32,18 @@ READER_Status READER_T1_BUFFER_IsFull(READER_T1_ContextHandler *pContext, READER
 READER_Status READER_T1_BUFFER_Enqueue(READER_T1_ContextHandler *pContext, READER_T1_Block *pBlock);
 READER_Status READER_T1_BUFFER_Dequeue(READER_T1_ContextHandler *pContext, READER_T1_Block *pBlock);
 READER_Status READER_T1_BUFFER_Stack(READER_T1_ContextHandler *pContext, READER_T1_Block *pBlock);
-//READER_Status READER_T1_BUFFER_Delete(READER_T1_ContextHandler *pContext, uint32_t index);
+//READER_Status READER_T1_BUFFER_DeleteBlock(READER_T1_ContextHandler *pContext, uint32_t index);
 //READER_Status READER_T1_BUFFER_ShiftInBottomDirection(READER_T1_ContextHandler *pContext);
 //READER_Status READER_T1_BUFFER_ShiftInTopDirection(READER_T1_ContextHandler *pContext);
 
 
 READER_Status READER_T1_BUFFER_StripControlBlocks(READER_T1_ContextHandler *pContext);
+READER_Status READER_T1_BUFFER_StripIBlocks(READER_T1_ContextHandler *pContext);
 
 READER_Status READER_T1_BUFFER_UpdateIfsc(READER_T1_ContextHandler *pContext, uint32_t newIFSC);
 READER_Status READER_T1_BUFFER_ExtractRawDataFromBuffer(READER_T1_ContextHandler *pContext, uint8_t *buffer, uint32_t bufferSize, uint32_t *pSizeExtracted);
+
+
 
 
 #endif

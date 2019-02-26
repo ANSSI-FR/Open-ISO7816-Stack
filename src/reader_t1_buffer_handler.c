@@ -335,6 +335,17 @@ READER_Status READER_T1_BUFFER_StripControlBlocks(READER_T1_ContextHandler *pCon
 }
 
 
+READER_Status READER_T1_BUFFER_StripIBlocks(READER_T1_ContextHandler *pContext){
+	READER_T1_Block tmpBlock;
+	READER_Status retVal;
+	
+	
+	
+	
+	return READER_OK;
+}
+
+
 /* Il s'agit ici de modifier la taille des data dans les I-Blocks qui se trouvent dans le Buffer ...  */
 /**
  * \fn READER_Status READER_T1_BUFFER_UpdateIfsc(READER_T1_ContextHandler *pContext, uint32_t newIFSC)
