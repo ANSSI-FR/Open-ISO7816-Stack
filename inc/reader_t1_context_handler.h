@@ -48,6 +48,7 @@ struct READER_T1_BlockBuffer{
 	uint32_t indexBottom;
 	uint32_t indexTop;
 	uint32_t length;
+	uint32_t IBlockCount;
 };
 
 
