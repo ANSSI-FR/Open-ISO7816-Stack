@@ -12,6 +12,7 @@
 
 #define READER_T1_BLOCK_MAX_DATA_SIZE     254     /* Voir ISO7816-3 section 11.3.2.3 */
 #define READER_T1_BLOCK_PROLOGUE_SIZE     3
+#define READER_T1_BLOCK_EPILOGUE_MAXSIZE  2
 #define READER_T1_BLOCKFRAME_NAD_POSITION 0       /* Voir ISO7816-3 section 11.3.1   */
 #define READER_T1_BLOCKFRAME_PCB_POSITION 1       /* Voir ISO7816-3 section 11.3.1   */
 #define READER_T1_BLOCKFRAME_LEN_POSITION 2       /* Voir ISO7816-3 section 11.3.1   */

@@ -320,13 +320,20 @@ READER_Status READER_T1_BUFFER_StrapControlBlocks(READER_T1_ContextHandler *pCon
 }
 
 
-/* Il s'agit isi de modifier la taille des data dans les I-Blocks qui se trouvent dans le Buffer ...  */
+/* Il s'agit ici de modifier la taille des data dans les I-Blocks qui se trouvent dans le Buffer ...  */
+/**
+ * \fn READER_Status READER_T1_BUFFER_UpdateIfsc(READER_T1_ContextHandler *pContext, uint32_t newIFSC)
+ * \brief Cette fonction permet de reformatter le buffer d'envoi lorsque IFSC est modifié. On extrait tous les Blocks, on les redecoupe avec une taille IFS différente, puis on rempli à noiveau le buffer d'envoi.
+ * \param *pContext est un pointeur sur une structure de type READER_T1_ContextHandler. La structure pointée stocke le contexte actuel de communication.
+ * \param newIFSC est un uint32_t. Il contient la noivelle valeur de IFSC à appliquer.
+ * \return La fonction retourne un code d'erreur de type READER_Status. READER_OK indique le bon déroulement de la fonction.
+ */
 READER_Status READER_T1_BUFFER_UpdateIfsc(READER_T1_ContextHandler *pContext, uint32_t newIFSC){
 	READER_Status retVal;
 	READER_T1_BufferStatus bufferStatus;
 	uint32_t currentIFSC;
 	uint32_t sizeExtracted;
-	uint8_t tmpBuff[READER_APDU_CMD_MAX_TOTALSIZE];
+	uint8_t tmpBuff[READER_T1_BUFFER_MAXBYTES];
 	
 	
 	retVal = READER_T1_CONTEXT_GetCurrentIFSC(pContext, &currentIFSC);
@@ -344,6 +351,10 @@ READER_Status READER_T1_BUFFER_UpdateIfsc(READER_T1_ContextHandler *pContext, ui
 	if(bufferStatus == READER_T1_BUFFER_EMPTY){
 		return READER_OK;
 	}
+	
+	/* Avant d'extraire le contenu du buffer, on verifie que on a la place pour tout stocker dans notre buff statique temporaire. */
+	/* En principe on ne devrait pas avoir plus d'un APDU Command entier dans le buffer d'envoi et quelques R-Block/S-Blocks. (READER_T1_BUFFER_MAXBYTES est calcule de cette maniere) ...  */
+	
 	
 	/* On extrait les donnees de tous les I-Blocks qui sont dans le Buffer ...  */
 	retVal = READER_T1_BUFFER_ExtractRawDataFromBuffer(pContext, tmpBuff, READER_APDU_CMD_MAX_TOTALSIZE, &sizeExtracted);
@@ -411,7 +422,7 @@ READER_Status READER_T1_BUFFER_ExtractRawDataFromBuffer(READER_T1_ContextHandler
 		if(bType == READER_T1_IBLOCK){
 			blockLEN = READER_T1_GetBlockLEN(pCurrentBlock);
 			
-			retVal = READER_T1_CopyBlockData(pCurrentBlock, currentDestBufferPtr, destBufferSize-copiedBytesCounter);
+			retVal = READER_T1_CopyBlockData(pCurrentBlock, currentDestBufferPtr, destBufferSize-copiedBytesCounter);  /* La verif overflow se fait a l'interieur de la fonction  */
 			if(retVal != READER_OK) return retVal;
 			
 			copiedBytesCounter += blockLEN;

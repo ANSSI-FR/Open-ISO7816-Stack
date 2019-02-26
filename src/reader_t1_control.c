@@ -984,6 +984,14 @@ READER_Status READER_T1_CONTROL_ApplySBlockResynch(READER_T1_ContextHandler *pCo
 }
 
 
+
+/**
+ * \fn READER_Status READER_T1_CONTROL_ApplySBlockIfsc(READER_T1_ContextHandler *pContext, READER_T1_Block *pBlock)
+ * \brief Cette fonction sert à appliquer au contexte une requette IFS en provenance de la CARTE.
+ * \param *pContext est un pointeur sur une structure de type READER_T1_ContextHandler. La structure pointée stocke le contexte actuel de communication.
+ * \param *pBlock est un pointeur sur une structure de type READER_T1_Block. Il s'agit du S-Block IFS Request recu en provenance de la CARTE.
+ * \return La fonction retourne un code d'erreur de type READER_Status. READER_OK indique le bon déroulement de la fonction.
+ */
 READER_Status READER_T1_CONTROL_ApplySBlockIfsc(READER_T1_ContextHandler *pContext, READER_T1_Block *pBlock){
 	READER_Status retVal;
 	READER_T1_SBlockType SBlockType;

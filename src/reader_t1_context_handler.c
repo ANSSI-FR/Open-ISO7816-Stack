@@ -316,6 +316,7 @@ READER_Status READER_T1_CONTEXT_SetCurrentIFSC(READER_T1_ContextHandler *pContex
 	READER_Status retVal;
 	
 	
+	/* On verifie la validite de la valeur de IFSC que l'on veut appliquer ...  */
 	if((ifsc >= READER_T1_MIN_IFSC_ACCEPTED) && (ifsc <= READER_T1_MAX_IFSC_ACCEPTED)){   /* Voir ISO7816-3 section 11.4.2 */
 		retVal = READER_T1_BUFFER_UpdateIfsc(pContext, ifsc);
 		if(retVal != READER_OK) return retVal;
@@ -331,6 +332,7 @@ READER_Status READER_T1_CONTEXT_SetCurrentIFSC(READER_T1_ContextHandler *pContex
 
 
 READER_Status READER_T1_CONTEXT_SetCurrentIFSD(READER_T1_ContextHandler *pContext, uint32_t ifsd){
+	/* On verifie la validite de la valeur de IFSD que l'on veut appliquer ...  */
 	if((ifsd >= READER_T1_MIN_IFSD_ACCEPTED) && (ifsd <= READER_T1_MAX_IFSD_ACCEPTED)){   /* Voir ISO7816-3 section 11.4.2 */
 		pContext->currentIFSD = ifsd;
 	}
@@ -501,6 +503,13 @@ READER_Status READER_T1_CONTEXT_GetLastIBlockRcvd(READER_T1_ContextHandler *pCon
 }
 
 
+/**
+ * \fn READER_Status READER_T1_CONTEXT_GetLastIBlockSentSeqNum(READER_T1_ContextHandler *pContext, uint32_t *pSeqNum)
+ * \brief Cette fonction permet de connaitre (à partir du contexte de communication) le numéro de séquence du dernier I-Block envoyé.
+ * \param *pContext est un pointeur sur une structure de type READER_T1_ContextHandler. La structure pointée stocke le contexte actuel de communication.
+ * \param *pSeqNum est un pointeur sur un uint32_t. Ce pointeur permet à la fonction de retouner le résultat (0 ou 1).
+ * \return La fonction retourne un code d'erreur du type READER_Status. READER_OK indique le bon déroulement. READER_DOESNT_EXIST indique que le dernier I-Block envoyé n'existe pas.
+ */
 READER_Status READER_T1_CONTEXT_GetLastIBlockSentSeqNum(READER_T1_ContextHandler *pContext, uint32_t *pSeqNum){
 	READER_Status retVal;
 	READER_T1_Block *pLastBlock;
@@ -527,6 +536,14 @@ READER_Status READER_T1_CONTEXT_GetLastIBlockSentSeqNum(READER_T1_ContextHandler
 }
 
 
+
+/**
+ * \fn READER_Status READER_T1_CONTEXT_GetLastIBlockRcvdSeqSum(READER_T1_ContextHandler *pContext, uint32_t *pSeqNum)
+ * \brief Cette fonction permet de connaitre (à partir du contexte de communication) le numéro de séquence du dernier I-Block reçu.
+ * \param *pContext est un pointeur sur une structure de type READER_T1_ContextHandler. La structure pointée stocke le contexte actuel de communication.
+ * \param *pSeqNum est un pointeur sur un uint32_t. Ce pointeur permet à la fonction de retouner le résultat (0 ou 1).
+ * \return La fonction retourne un code d'erreur du type READER_Status. READER_OK indique le bon déroulement. READER_DOESNT_EXIST indique que le dernier I-Block recu n'existe pas.
+ */
 READER_Status READER_T1_CONTEXT_GetLastIBlockRcvdSeqSum(READER_T1_ContextHandler *pContext, uint32_t *pSeqNum){
 	READER_Status retVal;
 	READER_T1_Block *pLastBlock;
@@ -556,6 +573,12 @@ READER_Status READER_T1_CONTEXT_GetLastIBlockRcvdSeqSum(READER_T1_ContextHandler
 
 
 /* On retourne READER_OK si existe, READER_DOESNT_EXIST so n'existe pas et READER_ERR en cas d'erreur interne ...  */
+/**
+ * \fn READER_Status READER_T1_CONTEXT_LastSentExists(READER_T1_ContextHandler *pContext)
+ * \brief Cette fonction permet de savoir (à partir du contexte de communication) si il existe un dernier Block envoyé (est ce que on a deja envoyé un Block).
+ * \param *pContext est un pointeur sur une structure de type READER_T1_ContextHandler. La structure pointée stocke le contexte actuel de communication.
+ * \return La fonction retourne un code d'erreur du type READER_Status. READER_OK indique le bon déroulement. READER_DOESNT_EXIST indique que le dernier Block envoyé n'existe pas.
+ */
 READER_Status READER_T1_CONTEXT_LastSentExists(READER_T1_ContextHandler *pContext){
 	if(pContext->lastSentExistenceFlag == READER_T1_BLOCK_EXISTS_YES){
 		return READER_OK;
@@ -569,6 +592,12 @@ READER_Status READER_T1_CONTEXT_LastSentExists(READER_T1_ContextHandler *pContex
 }
 
 
+/**
+ * \fn READER_Status READER_T1_CONTEXT_LastIBlockSentExists(READER_T1_ContextHandler *pContext)
+ * \brief Cette fonction permet de savoir (à partir du contexte de communication) si il existe un dernier I-Block envoyé (est ce que on a deja envoyé un I-Block).
+ * \param *pContext est un pointeur sur une structure de type READER_T1_ContextHandler. La structure pointée stocke le contexte actuel de communication.
+ * \return La fonction retourne un code d'erreur du type READER_Status. READER_OK indique le bon déroulement. READER_DOESNT_EXIST indique que le dernier I-Block envoyé n'existe pas.
+ */
 /* On retourne READER_OK si existe, READER_DOESNT_EXIST so n'existe pas et READER_ERR en cas d'erreur interne ...  */
 READER_Status READER_T1_CONTEXT_LastIBlockSentExists(READER_T1_ContextHandler *pContext){
 	if(pContext->lastIBlockSentExistenceFlag == READER_T1_BLOCK_EXISTS_YES){
@@ -583,7 +612,13 @@ READER_Status READER_T1_CONTEXT_LastIBlockSentExists(READER_T1_ContextHandler *p
 }
 
 
-/* On retourne READER_OK si existe, READER_DOESNT_EXIST so n'existe pas et READER_ERR en cas d'erreur interne ...  */
+/* On retourne READER_OK si existe, READER_DOESNT_EXIST si n'existe pas et READER_ERR en cas d'erreur interne ...  */
+/**
+ * \fn READER_Status READER_T1_CONTEXT_LastRcvdExists(READER_T1_ContextHandler *pContext)
+ * \brief Cette fonction permet de savoir (à partir du contexte de communication) si il existe un dernier Block recu (est ce que on a deja recu un Block).
+ * \param *pContext est un pointeur sur une structure de type READER_T1_ContextHandler. La structure pointée stocke le contexte actuel de communication.
+ * \return La fonction retourne un code d'erreur du type READER_Status. READER_OK indique le bon déroulement. READER_DOESNT_EXIST indique que le dernier Block recu n'existe pas.
+ */
 READER_Status READER_T1_CONTEXT_LastRcvdExists(READER_T1_ContextHandler *pContext){
 	if(pContext->lastRcvdExistenceFlag == READER_T1_BLOCK_EXISTS_YES){
 		return READER_OK;
@@ -598,6 +633,12 @@ READER_Status READER_T1_CONTEXT_LastRcvdExists(READER_T1_ContextHandler *pContex
 
 
 /* On retourne READER_OK si existe, READER_DOESNT_EXIST so n'existe pas et READER_ERR en cas d'erreur interne ...  */
+/**
+ * \fn READER_Status READER_T1_CONTEXT_LastIBlockRcvdExists(READER_T1_ContextHandler *pContext)
+ * \brief Cette fonction permet de savoir (à partir du contexte de communication) si il existe un dernier I-Block recu (est ce que on a deja recu un I-Block).
+ * \param *pContext est un pointeur sur une structure de type READER_T1_ContextHandler. La structure pointée stocke le contexte actuel de communication.
+ * \return La fonction retourne un code d'erreur du type READER_Status. READER_OK indique le bon déroulement. READER_DOESNT_EXIST indique que le dernier I-Block recu n'existe pas.
+ */
 READER_Status READER_T1_CONTEXT_LastIBlockRcvdExists(READER_T1_ContextHandler *pContext){
 	if(pContext->lastIBlockRcvdExistenceFlag == READER_T1_BLOCK_EXISTS_YES){
 		return READER_OK;
@@ -612,6 +653,13 @@ READER_Status READER_T1_CONTEXT_LastIBlockRcvdExists(READER_T1_ContextHandler *p
 
 
 
+/**
+ * \fn READER_Status READER_T1_CONTEXT_SetLastSent(READER_T1_ContextHandler *pContext, READER_T1_Block *pBlock)
+ * \brief Cette fonction permet de mettre à jour le contexte de communication avec le dernier Block envoyé par le DEVICE.
+ * \param *pContext est un pointeur sur une structure de type READER_T1_ContextHandler. La structure pointée stocke le contexte actuel de communication (celui qu'il faut mettre à jour).
+ * \param *pBlock est un pointeur sur une structure de type READER_T1_Block. Il s'agit du dernier Block qui vient d'être envoyé. Ce Block sera recopié dans le contexte.
+ * \return La fonction retourne un code d'erreur de type READER_Status. READER_OK indique le bon déroulement de la fonction.
+ */
 READER_Status READER_T1_CONTEXT_SetLastSent(READER_T1_ContextHandler *pContext, READER_T1_Block *pBlock){
 	READER_Status retVal;
 	
@@ -633,9 +681,9 @@ READER_Status READER_T1_CONTEXT_SetLastSent(READER_T1_ContextHandler *pContext, 
 
 /**
  * \fn READER_Status READER_T1_CONTEXT_SetLastIBlockSent(READER_T1_ContextHandler *pContext, READER_T1_Block *pBlock)
- * \brief Cette fonction permet de mettre à jour le contexte de communication avec le dernier I-Block envoyé.
+ * \brief Cette fonction permet de mettre à jour le contexte de communication avec le dernier I-Block envoyé par le DEVICE.
  * \param *pContext est un pointeur sur une structure de type READER_T1_ContextHandler. La structure pointée stocke le contexte actuel de communication (celui qu'il faut mettre à jour).
- * \param *pBlock est un pointeur sur uen structure de type READER_T1_Block. Il s'agit du dernier Block qui vient d'être envoyé (à priori un I-Block).
+ * \param *pBlock est un pointeur sur une structure de type READER_T1_Block. Il s'agit du dernier Block qui vient d'être envoyé (à priori un I-Block). Ce Block sera recopié dans le contexte.
  * \return La fonction retourne un code d'erreur de type READER_Status. READER_OK indique le bon déroulement de la fonction.
  */
 READER_Status READER_T1_CONTEXT_SetLastIBlockSent(READER_T1_ContextHandler *pContext, READER_T1_Block *pBlock){
@@ -658,6 +706,13 @@ READER_Status READER_T1_CONTEXT_SetLastIBlockSent(READER_T1_ContextHandler *pCon
 }
 
 
+/**
+ * \fn READER_Status READER_T1_CONTEXT_SetLastIBlockRcvd(READER_T1_ContextHandler *pContext, READER_T1_Block *pBlock)
+ * \brief Cette fonction permet d'indiquer dans le contexte de communication le dernier I-Block qui a été recu pr le DEVICE. Ce Block sera recopié dans le contexte de communication.
+ * \param *pContext est un pointeur sur une structure de type READER_T1_ContextHandler. La structure pointée contient tout le contexte de communication courant.
+ * \param *pBlock est un pointeur sur une structure de type READER_T1_Block. Il pointe sur le dernier I-Block recu par le DEVICE. Ce Bloc sera recopié dans le contexte de communication.
+ * \return La fonction retourne un code d'erreur du type READER_Status. READER_OK indique le bon déroulement. 
+ */
 READER_Status READER_T1_CONTEXT_SetLastIBlockRcvd(READER_T1_ContextHandler *pContext, READER_T1_Block *pBlock){
 	READER_Status retVal;
 	
@@ -678,6 +733,13 @@ READER_Status READER_T1_CONTEXT_SetLastIBlockRcvd(READER_T1_ContextHandler *pCon
 }
 
 
+/**
+ * \fn READER_Status READER_T1_CONTEXT_SetLastRcvd(READER_T1_ContextHandler *pContext, READER_T1_Block *pBlock)
+ * \brief Cette fonction permet d'indiquer dans le contexte de communication le dernier Block qui a été recu pr le DEVICE. Ce Block sera recopié dans le contexte de communication.
+ * \param *pContext est un pointeur sur une structure de type READER_T1_ContextHandler. La structure pointée contient tout le contexte de communication courant.
+ * \param *pBlock est un pointeur sur une structure de type READER_T1_Block. Il pointe sur le dernier Block recu par le DEVICE. Ce Bloc sera recopié dans le contexte de communication.
+ * \return La fonction retourne un code d'erreur du type READER_Status. READER_OK indique le bon déroulement. 
+ */
 READER_Status READER_T1_CONTEXT_SetLastRcvd(READER_T1_ContextHandler *pContext, READER_T1_Block *pBlock){
 	READER_Status retVal;
 	
@@ -699,6 +761,13 @@ READER_Status READER_T1_CONTEXT_SetLastRcvd(READER_T1_ContextHandler *pContext, 
 
 
 /* retourne une valeur autre que READER_OK si le dernier Block envoye n'existe pas ou si la fontion a rencontre une erreur */
+/**
+ * \fn READER_Status READER_T1_CONTEXT_GetLastSentType(READER_T1_ContextHandler *pContext, READER_T1_BlockType *pType)
+ * \brief Cete fonction permet de déterminer (à partir du contexte de communication) le type du dernier Block qui à été envoyé par le DEVICE.
+ * \param *pContext est un pointeur sur une structure de type READER_T1_ContextHandler. La structure pointée contient tout le contexte de communication courant.
+ * \param *pType est un pointeur sur une structure du type READER_T1_BlockType. Il permet à la fonction de retourner le type du Block.
+ * \return La fonction retourne un code d'erreur du type READER_Status. READER_OK indique le bon déroulement. READER_DOESNT_EXIST indique que le dernier Block envoyé n'existe pas.
+ */
 READER_Status READER_T1_CONTEXT_GetLastSentType(READER_T1_ContextHandler *pContext, READER_T1_BlockType *pType){
 	READER_T1_BlockType bType;
 	READER_T1_Block *pLastBlock;
@@ -723,6 +792,13 @@ READER_Status READER_T1_CONTEXT_GetLastSentType(READER_T1_ContextHandler *pConte
 
 
 /* retourne une valeur autre que READER_OK si le dernier Block recu n'existe pas ou si la fontion a rencontre une erreur */
+/**
+ * \fn READER_Status READER_T1_CONTEXT_GetLastRcvdType(READER_T1_ContextHandler *pContext, READER_T1_BlockType *pType)
+ * \brief Cete fonction permet de déterminer (à partir du contexte de communication) le type du dernier Block qui à été recu par le DEVICE.
+ * \param *pContext est un pointeur sur une structure de type READER_T1_ContextHandler. La structure pointée contient tout le contexte de communication courant.
+ * \param *pType est un pointeur sur une structure du type READER_T1_BlockType. Il permet à la fonction de retourner le type du Block.
+ * \return La fonction retourne un code d'erreur du type READER_Status. READER_OK indique le bon déroulement. READER_DOESNT_EXIST indique que le dernier Block recu n'existe pas.
+ */
 READER_Status READER_T1_CONTEXT_GetLastRcvdType(READER_T1_ContextHandler *pContext, READER_T1_BlockType *pType){
 	READER_T1_BlockType bType;
 	READER_T1_Block *pLastBlock;
@@ -843,6 +919,14 @@ READER_Status READER_T1_CONTEXT_ComputeNextCardSeqNum(READER_T1_ContextHandler *
 }
 
 
+
+/**
+ * \fn READER_Status READER_T1_CONTEXT_GetCardExpectedSeqNum(READER_T1_ContextHandler *pContext, uint32_t *pSeqNum)
+ * \brief Cette fonction permet de calculer (à partir du contexte de communication) le numero de sequence attendu par le DEVICE pour le prochain I-Block en provenance de la CARTE.
+ * \param *pContext est un pointeur sur une structure de type READER_T1_ContextHandler. La structure pointée contient tout le contexte de communication courant.
+ * \param *pSeqNum est un pointeur sur un uint32_t. Il permet à la fonction de retourner le numero de sequence (0 ou 1).
+ * \return La fonction retourne un code d'erreur de type READER_Status. READER_OK indique que la fonction s'est correctement déroulée.
+ */
 READER_Status READER_T1_CONTEXT_GetCardExpectedSeqNum(READER_T1_ContextHandler *pContext, uint32_t *pSeqNum){
 	uint32_t seqNum;
 	READER_Status retVal;
@@ -859,6 +943,15 @@ READER_Status READER_T1_CONTEXT_GetCardExpectedSeqNum(READER_T1_ContextHandler *
 
 
 /* Gestion du chainage */
+
+
+/**
+ * \fn READER_Status READER_T1_CONTEXT_CardIsChainingLastBlock(READER_T1_ContextHandler *pContext, READER_T1_ChainingStatus *pChainingStatus)
+ * \brief Cette fonction permet de savoir si le dernier I-Block envoye par le DEVICE indique un chainage ou non.
+ * \param *pContext est un pointeur sur une structure de type READER_T1_ContextHandler. La structure pointée contient tout le contexte de communication courant.
+ * \param *pChainingStatus est un pointeur sur une struture de type READER_T1_ChainingStatus. La fonction utilise ce pointeur pour retourner l'état de chainage.
+ * \return La fonction retourne un code d'erreur de type READER_Status. READER_OK indique que la fonction s'est correctement déroulée.
+ */
 READER_Status READER_T1_CONTEXT_DeviceIsChainingLastBlock(READER_T1_ContextHandler *pContext, READER_T1_ChainingStatus *pChainingStatus){
 	READER_T1_ChainingStatus status;
 	
@@ -907,6 +1000,14 @@ READER_Status READER_T1_CONTEXT_DeviceIsChainingLastBlock(READER_T1_ContextHandl
 }
 
 
+
+/**
+ * \fn READER_Status READER_T1_CONTEXT_CardIsChainingLastBlock(READER_T1_ContextHandler *pContext, READER_T1_ChainingStatus *pChainingStatus)
+ * \brief Cette fonction permet de savoir si le dernier I-Block recu en provenance de la CARTE indique un chainage ou non.
+ * \param *pContext est un pointeur sur une structure de type READER_T1_ContextHandler. La structure pointée contient tout le contexte de communication courant.
+ * \param *pChainingStatus est un pointeur sur une struture de type READER_T1_ChainingStatus. La fonction utilise ce pointeur pour retourner l'état de chainage.
+ * \return La fonction retourne un code d'erreur de type READER_Status. READER_OK indique que la fonction s'est correctement déroulée.
+ */
 READER_Status READER_T1_CONTEXT_CardIsChainingLastBlock(READER_T1_ContextHandler *pContext, READER_T1_ChainingStatus *pChainingStatus){
 	//READER_Status retVal;
 	READER_T1_ChainingStatus status;
@@ -955,6 +1056,14 @@ READER_Status READER_T1_CONTEXT_CardIsChainingLastBlock(READER_T1_ContextHandler
 }
 
 
+/**
+ * \fn READER_Status READER_T1_CONTEXT_DeviceIsChaining(READER_T1_ContextHandler *pContext, READER_T1_ChainingStatus *pChainingStatus)
+ * \brief Cette fonction permet de déterminer (a partir du contexte de communication) si le DEVICE est dans une situation de chainage.
+ * Il s'agit là de la "situation globale de chainage". C'est plus large que le M-Bit du dernier I-Block recu.
+ * \param *pContext est un pointeur sur une structure de type READER_T1_ContextHandler. La structure pointée contient tout le contexte de communication courant.
+ * \param *pChainingStatus est un pointeur sur une struture de type READER_T1_ChainingStatus. La fonction utilise ce pointeur pour retourner l'état de chainage.
+ * \return La fonction retourne un code d'erreur de type READER_Status. READER_OK indique que la fonction s'est correctement déroulée.
+ */
 READER_Status READER_T1_CONTEXT_DeviceIsChaining(READER_T1_ContextHandler *pContext, READER_T1_ChainingStatus *pChainingStatus){
 	READER_T1_ChainingStatus status;
 	
@@ -975,6 +1084,15 @@ READER_Status READER_T1_CONTEXT_DeviceIsChaining(READER_T1_ContextHandler *pCont
 }
 
 
+
+/**
+ * \fn READER_Status READER_T1_CONTEXT_CardIsChaining(READER_T1_ContextHandler *pContext, READER_T1_ChainingStatus *pChainingStatus)
+ * \brief Cette fonction permet de déterminer (a partir du contexte de communication) si la CARTE est dans une situation de chainage.
+ * Il s'agit là de la "situation globale de chainage". C'est plus large que le M-Bit du dernier I-Block recu.
+ * \param *pContext est un pointeur sur une structure de type READER_T1_ContextHandler. La structure pointée contient tout le contexte de communication courant.
+ * \param *pChainingStatus est un pointeur sur une struture de type READER_T1_ChainingStatus. La fonction utilise ce pointeur pour retourner l'état de chainage.
+ * \return La fonction retourne un code d'erreur de type READER_Status. READER_OK indique que la fonction s'est correctement déroulée.
+ */
 READER_Status READER_T1_CONTEXT_CardIsChaining(READER_T1_ContextHandler *pContext, READER_T1_ChainingStatus *pChainingStatus){
 	READER_T1_ChainingStatus status;
 	
