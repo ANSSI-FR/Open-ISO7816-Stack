@@ -6,14 +6,17 @@
 READER_Status READER_T1_CONTEXT_Init(READER_T1_ContextHandler *pContext){
 	READER_Status retVal;
 	
+	
+	
+	retVal = READER_T1_CONTEXT_InitBuffer(pContext); /* Attention, il faut que Buffer soit initialise avant les Settings (nottament a cause de SetIFSC()/UpdateIFSC()) */
+	if(retVal != READER_OK) return retVal;
+	
 	retVal = READER_T1_CONTEXT_InitSettings(pContext);
 	if(retVal != READER_OK) return retVal;
 	
 	retVal = READER_T1_CONTEXT_InitSeqNums(pContext);
 	if(retVal != READER_OK) return retVal;
-	
-	retVal = READER_T1_CONTEXT_InitBuffer(pContext);
-	if(retVal != READER_OK) return retVal;
+		
 	
 	return READER_OK;
 }
@@ -451,6 +454,7 @@ READER_Status READER_T1_CONTEXT_GetLastIBlockSent(READER_T1_ContextHandler *pCon
 	
 	/* On verifie qu'il existe effectivement un dernier I-Block envoye ...  */
 	retVal = READER_T1_CONTEXT_LastIBlockSentExists(pContext);
+	if(retVal == READER_DOESNT_EXIST) return READER_DOESNT_EXIST;
 	if(retVal != READER_OK) return retVal;
 	
 	/* Si ce Block existe, on verifie son type avant de le servir ...  */
@@ -518,6 +522,7 @@ READER_Status READER_T1_CONTEXT_GetLastIBlockSentSeqNum(READER_T1_ContextHandler
 	
 	/* On recupere le dernier I-Block envoye                                 */
 	retVal = READER_T1_CONTEXT_GetLastIBlockSent(pContext, &pLastBlock);
+	if(retVal == READER_DOESNT_EXIST) return READER_DOESNT_EXIST;
 	if(retVal != READER_OK) return retVal;
 	
 	/* On recupere le numero de sequence                                     */

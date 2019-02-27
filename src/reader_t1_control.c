@@ -76,10 +76,10 @@ READER_Status READER_T1_CONTROL_IsRBlockACK(READER_T1_ContextHandler *pContext, 
 	uint32_t tmpNextIBlockSeqNum, tmpBlockSeqNum;
 	
 	/* On procede de la maniere suivante (non detaille dans la spec) :                                            */
-	/* Du cote du Device, un R-Block recu est considere comme un ACK si et seulement si :                         */
-	/*      1) Le Device est en train de chainer le dernier I-Block  (M-Bit du dernier == 1)                      */
-	/*      2) Le numero de sequence contenu dans le R-Block correspond au I-Block suivant que l'on veut envoyer  */
-	/*      ?) Le I-Block suivant existe                                                                          */
+	/* Du cote du Device, un R-Block recu est considere comme un ACK si et seulement si (1) et (2) :              */
+	/*      (1) Le Device est en train de chainer le dernier I-Block  (M-Bit du dernier == 1)                      */
+	/*      (2) Le numero de sequence contenu dans le R-Block correspond au I-Block suivant que l'on veut envoyer  */
+	/*      (?) Le I-Block suivant existe                                                                          */
 	
 	
 	/* On verifie qu'on a bien un R-Block                                                                         */
@@ -108,6 +108,7 @@ READER_Status READER_T1_CONTROL_IsRBlockACK(READER_T1_ContextHandler *pContext, 
 	
 	/* On regarde le numero de sequence du prochain I-Block que l'on doit envoyer (ie : negation du dernier I-Block envoye) */
 	retVal = READER_T1_CONTEXT_GetLastIBlockSentSeqNum(pContext, &tmpNextIBlockSeqNum);
+	if(retVal == READER_DOESNT_EXIST) return READER_NO;            /* Si le dernier I-Block envoye par le device n'existe pas pas, alors un R-Block recu depuis la carte ne peut pas etre un ACK */
 	if(retVal != READER_OK) return retVal;
 	
 	if(tmpNextIBlockSeqNum == 0){
@@ -480,7 +481,6 @@ READER_Status READER_T1_CONTROL_RcvBlock(READER_T1_ContextHandler *pContext, REA
 	READER_T1_BlockType bType;
 	READER_T1_RedundancyType rType;
 	READER_T1_FlagStatus SBlockExpected;
-	READER_T1_SBlockType SBlockExpectedType, SBlockType;
 	uint32_t currentCWT, currentBWT;
 	uint32_t extraTimeout;
 	uint32_t tickLastBlock, tick;
@@ -829,12 +829,15 @@ READER_Status READER_T1_CONTROL_ApplySBlockRequestRcvd(READER_T1_ContextHandler 
 		}
 		else if(rcvdSBlockType == READER_T1_STYPE_IFS_REQU){
 			retVal = READER_T1_CONTROL_ApplySBlockIfsc(pContext, pBlock);
-			if(retVal != READER_OK) return retVal;
+			if((retVal != READER_OK) && (retVal != READER_BAD_VALUE)) return retVal;
 			
-			blockINF = READER_T1_GetBlockSPayload(pBlock);
+			/* Si on accepte pas la valeur suggeree par la carte, on ne fait rien (ie : on ne fait pas d'acquittement via S-Block Response) */
+			if(retVal != READER_BAD_VALUE){
+				blockINF = READER_T1_GetBlockSPayload(pBlock);
 			
-			retVal = READER_T1_ForgeSBlockIfsResponse(&responseBlock, blockINF);
-			if(retVal != READER_OK) return retVal;
+				retVal = READER_T1_ForgeSBlockIfsResponse(&responseBlock, blockINF);
+				if(retVal != READER_OK) return retVal;
+			}			
 		}
 		else if(rcvdSBlockType == READER_T1_STYPE_RESYNCH_REQU){
 			retVal = READER_T1_CONTROL_ApplySBlockResynch(pContext, pBlock);
@@ -1045,6 +1048,7 @@ READER_Status READER_T1_CONTROL_ApplySBlockIfsd(READER_T1_ContextHandler *pConte
 	
 	/* On applique cette valeur au contexte de communication ...  */
 	retVal = READER_T1_CONTEXT_SetCurrentIFSD(pContext, ifsd);
+	if(retVal == READER_BAD_VALUE) return READER_BAD_VALUE;
 	if(retVal != READER_OK) return retVal;
 	
 	

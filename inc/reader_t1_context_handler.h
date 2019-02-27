@@ -31,7 +31,7 @@
 #define READER_T1_MAX_IFSD_ACCEPTED 0xFE
 #define READER_T1_MIN_IFSD_ACCEPTED 0x10
 #define READER_T1_MAX_IFSC_ACCEPTED 0xFE
-#define READER_T1_MIN_IFSC_ACCEPTED 0x10  
+#define READER_T1_MIN_IFSC_ACCEPTED 0x05  
 
 
 #define COMPUTE_READER_T1_CONTEXT_STATICBUFF_MAXSIZE(apdu_maxlength, block_data_minlength, tolerence) (((uint32_t)apdu_maxlength / (uint32_t)block_data_minlength) + 1) + (uint32_t)tolerence

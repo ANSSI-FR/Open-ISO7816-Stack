@@ -180,6 +180,7 @@ READER_Status READER_T1_BUFFER_Dequeue(READER_T1_ContextHandler *pContext, READE
 	READER_T1_BlockBuffer *pBlockBuffer;
 	READER_T1_Block *pBlockTab;
 	READER_T1_BufferStatus bStatus;
+	READER_T1_BlockType bType;
 	READER_Status retVal;
 	uint32_t indexBottom, newBottomIndex;
 	
@@ -238,6 +239,7 @@ READER_Status READER_T1_BUFFER_Stack(READER_T1_ContextHandler *pContext, READER_
 	READER_T1_BlockBuffer *pBlockBuffer;
 	READER_T1_Block *pBlockTab;
 	READER_T1_BufferStatus bStatus;
+	READER_T1_BlockType bType;
 	uint32_t newBottomIndex;
 	READER_Status retVal;
 	
@@ -343,8 +345,9 @@ READER_Status READER_T1_BUFFER_GetBottomBlockType(READER_T1_ContextHandler *pCon
 
 READER_Status READER_T1_BUFFER_DequeueAndDiscard(READER_T1_ContextHandler *pContext){
 	READER_T1_BlockBuffer *pBlockBuffer;
-	READER_T1_Block *pBlockTab;
+	READER_T1_Block *pBlockTab, *pBlockBottom;
 	READER_T1_BufferStatus bStatus;
+	READER_T1_BlockType bType;
 	READER_Status retVal;
 	uint32_t indexBottom, newBottomIndex;
 	
@@ -367,6 +370,7 @@ READER_Status READER_T1_BUFFER_DequeueAndDiscard(READER_T1_ContextHandler *pCont
 	
 	/* On recupere le Block qui est pointe par indexBottom */
 	indexBottom = pBlockBuffer->indexBottom;
+	pBlockBottom = pBlockTab + indexBottom;
 
 	
 	newBottomIndex = (indexBottom + 1) % (uint32_t)(READER_T1_CONTEXT_STATICBUFF_MAXSIZE);
@@ -376,7 +380,7 @@ READER_Status READER_T1_BUFFER_DequeueAndDiscard(READER_T1_ContextHandler *pCont
 	pBlockBuffer->length -= 1;
 	
 	/* On mets a jour le nombre de I-Blocks dans le Buffer d'envoi ...  */
-	bType = READER_T1_GetBlockType(pBlock);
+	bType = READER_T1_GetBlockType(pBlockBottom);
 	if(bType == READER_T1_IBLOCK){
 		retVal = READER_T1_BUFFER_DecIBlockCount(pContext);
 		if(retVal != READER_OK) return retVal;
@@ -540,8 +544,9 @@ READER_Status READER_T1_BUFFER_StripIBlocks(READER_T1_ContextHandler *pContext){
 READER_Status READER_T1_BUFFER_UpdateIfsc(READER_T1_ContextHandler *pContext, uint32_t newIFSC){
 	READER_Status retVal;
 	READER_T1_BufferStatus bufferStatus;
-	uint32_t currentIFSC;
+	//uint32_t currentIFSC;
 	uint32_t sizeExtracted;
+	uint32_t IBlocksCount;
 	uint8_t tmpBuff[READER_T1_BUFFER_MAXBYTES];
 	
 	
@@ -559,6 +564,13 @@ READER_Status READER_T1_BUFFER_UpdateIfsc(READER_T1_ContextHandler *pContext, ui
 	if(retVal != READER_OK) return retVal;
 	
 	if(bufferStatus == READER_T1_BUFFER_EMPTY){
+		return READER_OK;
+	}
+	
+	retVal = READER_T1_BUFFER_GetIBlockCount(pContext, &IBlocksCount);
+	if(retVal != READER_OK) return retVal;
+	
+	if(IBlocksCount == 0){
 		return READER_OK;
 	}
 
@@ -594,7 +606,6 @@ READER_Status READER_T1_BUFFER_ExtractRawDataFromBuffer(READER_T1_ContextHandler
 	uint32_t topIndex, bottomIndex, virtualTopIndex, virtualBottomIndex;
 	uint32_t virtualIndex, realIndex;
 	uint32_t copiedBytesCounter;
-	uint32_t i;
 	uint8_t *currentDestBufferPtr;
 	uint8_t blockLEN;
 	READER_Status retVal;
@@ -695,7 +706,7 @@ READER_Status READER_T1_BUFFER_SetIBlockCount(READER_T1_ContextHandler *pContext
 READER_Status READER_T1_BUFFER_IncIBlockCount(READER_T1_ContextHandler *pContext){
 	READER_Status retVal;
 	READER_T1_BlockBuffer *pBlockBuffer;
-	uint32_t IBblocksCount;
+	uint32_t IBlocksCount;
 	
 	
 	/* On recupere un pointeur sur la structure du buffer dans le contexte */
@@ -725,7 +736,7 @@ READER_Status READER_T1_BUFFER_IncIBlockCount(READER_T1_ContextHandler *pContext
 READER_Status READER_T1_BUFFER_DecIBlockCount(READER_T1_ContextHandler *pContext){
 	READER_Status retVal;
 	READER_T1_BlockBuffer *pBlockBuffer;
-	uint32_t IBblocksCount;
+	uint32_t IBlocksCount;
 	
 	
 	/* On recupere un pointeur sur la structure du buffer dans le contexte */

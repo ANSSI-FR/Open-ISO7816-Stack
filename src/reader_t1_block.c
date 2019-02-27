@@ -857,7 +857,6 @@ READER_Status READER_T1_CopyBlock(READER_T1_Block *pBlockDest, READER_T1_Block *
 
 
 READER_Status READER_T1_CopyBlockData(READER_T1_Block *pBlock, uint8_t *destBuffer, uint32_t destBufferSize){
-	READER_Status retVal;
 	uint8_t *pBlockData;
 	uint8_t blockLEN;
 	uint32_t i;

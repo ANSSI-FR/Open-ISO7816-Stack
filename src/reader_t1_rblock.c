@@ -88,7 +88,7 @@ READER_T1_ExpSeqNumber READER_T1_GetExpectedBlockSeqNumber(READER_T1_Block *pBlo
 	
 	currentPCB = READER_T1_GetBlockPCB(pBlock);
 	
-	if((currentPCB & ~0xBF) == 0x00){
+	if((currentPCB & 0x10) == 0x00){
 		return READER_T1_EXPSEQNUM_ZERO;
 	}
 	else{
