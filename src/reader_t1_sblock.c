@@ -39,31 +39,31 @@ READER_Status READER_T1_SetBlockSType(READER_T1_Block *pBlock, READER_T1_SBlockT
 			newPCB = currentPCB & 0xC0 ;
 			break;
 		case READER_T1_STYPE_RESYNCH_RESP :
-			newPCB = currentPCB & 0xC0 ;
+			newPCB = currentPCB & 0xD0 ;
 			newPCB = newPCB | 0x20;
 			break;
 		case READER_T1_STYPE_IFS_REQU :
-			newPCB = currentPCB & 0xC0 ;
+			newPCB = currentPCB & 0xC1 ;
 			newPCB = newPCB | 0x01 ;
 			break;
 		case READER_T1_STYPE_IFS_RESP :
-			newPCB = currentPCB & 0xC0 ;
+			newPCB = currentPCB & 0xE1 ;
 			newPCB = newPCB | 0x21 ;
 			break;
 		case READER_T1_STYPE_ABORT_REQU :
-			newPCB = currentPCB & 0xC0 ;
+			newPCB = currentPCB & 0xC2 ;
 			newPCB = newPCB | 0x02 ;
 			break;
 		case READER_T1_STYPE_ABORT_RESP :
-			newPCB = currentPCB & 0xC0 ;
+			newPCB = currentPCB & 0xE2 ;
 			newPCB = newPCB | 0x22 ;
 			break;
 		case READER_T1_STYPE_WTX_REQU :
-			newPCB = currentPCB & 0xC0 ;
+			newPCB = currentPCB & 0xC3 ;
 			newPCB = newPCB | 0x03 ;
 			break;
 		case READER_T1_STYPE_WTX_RESP :
-			newPCB = currentPCB & 0xC0 ;
+			newPCB = currentPCB & 0xE3 ;
 			newPCB = newPCB | 0x23;
 			break;
 		default :
