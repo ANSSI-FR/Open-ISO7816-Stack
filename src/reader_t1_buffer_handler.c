@@ -564,11 +564,12 @@ READER_Status READER_T1_BUFFER_UpdateIfsc(READER_T1_ContextHandler *pContext, ui
 
 	
 	/* On extrait les donnees de tous les I-Blocks qui sont dans le Buffer ...  */
-	retVal = READER_T1_BUFFER_ExtractRawDataFromBuffer(pContext, tmpBuff, READER_APDU_CMD_MAX_TOTALSIZE, &sizeExtracted);
+	retVal = READER_T1_BUFFER_ExtractRawDataFromBuffer(pContext, tmpBuff, READER_T1_BUFFER_MAXBYTES, &sizeExtracted);
 	if(retVal != READER_OK) return retVal;
 	
 	/* On enleve tous les I-Blocks qui se trouvent dans le Buffer d'envoi ...  */
-	
+	retVal = READER_T1_BUFFER_StripIBlocks(pContext);
+	if(retVal != READER_OK) return retVal;
 	
 	/* On redecoupe a nouveau ce buffer temporaire et on remplit a nouveau le Buffer de Blocks ...  */
 	retVal = READER_T1_FORGE_SliceDataAndFillBuffer(pContext, tmpBuff, sizeExtracted);
