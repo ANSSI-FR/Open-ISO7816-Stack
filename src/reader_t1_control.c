@@ -570,7 +570,7 @@ READER_Status READER_T1_CONTROL_RcvBlock(READER_T1_ContextHandler *pContext, REA
 		if(retVal != READER_OK) return retVal;
 	}
 	else if(bType == READER_T1_SBLOCK){
-		/* Le type du S-Block recu correspond au type de S-Block que l'ona attendait ? */
+		/* Le type du S-Block recu correspond au type de S-Block que l'on attendait ? */
 		retVal = READER_T1_CONTEXT_GetSBlockExpectedResponseType(pContext, &SBlockExpectedType);
 		if(retVal != READER_OK) return retVal;
 		
@@ -1008,7 +1008,7 @@ READER_Status READER_T1_CONTROL_ApplySBlockResynch(READER_T1_ContextHandler *pCo
  * \brief Cette fonction sert à appliquer au contexte une requette IFS en provenance de la CARTE.
  * \param *pContext est un pointeur sur une structure de type READER_T1_ContextHandler. La structure pointée stocke le contexte actuel de communication.
  * \param *pBlock est un pointeur sur une structure de type READER_T1_Block. Il s'agit du S-Block IFS Request recu en provenance de la CARTE.
- * \return La fonction retourne un code d'erreur de type READER_Status. READER_OK indique le bon déroulement de la fonction.
+ * \return La fonction retourne un code d'erreur de type READER_Status. READER_OK indique le bon déroulement de la fonction. READER_BAD_VALUE indique que le IFSC demandé par la CARTE n'est pas supporté par le DEVICE.
  */
 READER_Status READER_T1_CONTROL_ApplySBlockIfsc(READER_T1_ContextHandler *pContext, READER_T1_Block *pBlock){
 	READER_Status retVal;
@@ -1030,7 +1030,11 @@ READER_Status READER_T1_CONTROL_ApplySBlockIfsc(READER_T1_ContextHandler *pConte
 	
 	/* On applique cette valeur au contexte de communication ...  */
 	retVal = READER_T1_CONTEXT_SetCurrentIFSC(pContext, ifsc);
-	if(retVal != READER_OK) return retVal;
+	if((retVal != READER_OK) && (retVal != READER_BAD_VALUE)) return retVal;
+	
+	if(retVal == READER_BAD_VALUE){
+		return READER_BAD_VALUE;
+	}
 	
 	
 	return READER_OK;
@@ -1228,7 +1232,7 @@ READER_Status READER_T1_CONTROL_SBlockResponseNotReceived(READER_T1_ContextHandl
 	
 	
 	retVal = READER_T1_CONTROL_ResendRequest(pContext);
-	if((retVal != READER_OK) && (retVal != READER_NO)) return retVal;
+	if((retVal != READER_OK) && (retVal != READER_TOO_MUCH_TRIES)) return retVal;
 	
 	if(retVal == READER_TOO_MUCH_TRIES){
 		retVal = READER_T1_ERR_DoReset(pContext);
