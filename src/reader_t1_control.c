@@ -1218,7 +1218,7 @@ READER_Status READER_T1_CONTROL_SBlockResponseNotReceived(READER_T1_ContextHandl
 	retVal = READER_T1_CONTROL_ResendRequest(pContext);
 	if((retVal != READER_OK) && (retVal != READER_NO)) return retVal;
 	
-	if(retVal == READER_NO){
+	if(retVal == READER_TOO_MUCH_TRIES){
 		retVal = READER_T1_ERR_DoReset(pContext);
 		if(retVal != READER_OK) return retVal;
 	}
