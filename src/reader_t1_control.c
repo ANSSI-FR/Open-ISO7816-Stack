@@ -569,22 +569,7 @@ READER_Status READER_T1_CONTROL_RcvBlock(READER_T1_ContextHandler *pContext, REA
 		retVal = READER_T1_CONTROL_ApplyRBlockRcvd(pContext, pBlock);
 		if(retVal != READER_OK) return retVal;
 	}
-	else if(bType == READER_T1_SBLOCK){
-		/* Le type du S-Block recu correspond au type de S-Block que l'on attendait ? */
-		retVal = READER_T1_CONTEXT_GetSBlockExpectedResponseType(pContext, &SBlockExpectedType);
-		if(retVal != READER_OK) return retVal;
-		
-		SBlockType = READER_T1_GetBlockSType(pBlock);
-		
-		if(SBlockType != SBlockExpectedType){
-			/* Action a decider et coder plus tard (en gros routine de reenvoi de S-Block Request ...) */
-			retVal = READER_T1_CONTROL_SBlockResponseNotReceived(pContext);
-			if(retVal != READER_OK) return retVal;
-			
-			return READER_OK;
-		}
-		
-		/* Sinon, si tout va bien ... */
+	else if(bType == READER_T1_SBLOCK){		
 		retVal = READER_T1_CONTROL_ApplySBlockRcvd(pContext, pBlock);
 		if(retVal != READER_OK) return retVal;
 	}
@@ -828,7 +813,6 @@ READER_Status READER_T1_CONTROL_ApplySBlockRequestRcvd(READER_T1_ContextHandler 
 	
 	if(flag == READER_T1_FLAGSTATUS_SET){
 		/* On a recu une S-Block Request alors que on etait en train d'attendre un S-Bloc Response ...  */
-		/* finir ... */
 		retVal = READER_T1_CONTROL_SBlockResponseNotReceived(pContext);
 		if(retVal != READER_OK) return retVal;
 	}
