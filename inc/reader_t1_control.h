@@ -52,6 +52,7 @@ READER_Status READER_T1_CONTROL_SendWtxRequest(READER_T1_ContextHandler *pContex
 /* Gestion des problemes S-Blocks ...  */
 READER_Status READER_T1_CONTROL_ResendRequest(READER_T1_ContextHandler *pContext);
 READER_Status READER_T1_CONTROL_SBlockResponseNotReceived(READER_T1_ContextHandler *pContext);
+READER_Status READER_T1_CONTROL_CheckExpectedINF(READER_T1_ContextHandler *pContext, READER_T1_Block *pRcvdSBlockResp);
 
 
 #endif

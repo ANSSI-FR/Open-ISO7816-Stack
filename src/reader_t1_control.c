@@ -920,7 +920,7 @@ READER_Status READER_T1_CONTROL_ApplySBlockResponseRcvd(READER_T1_ContextHandler
 		if(retVal != READER_OK) return retVal;
 	}
 	
-	/* On applique la demande du S-Block ...  */
+	/* On applique la demande du S-Block ... Pour certains cas on verifie aussi l'exactitude du champs INF ... Voir ISO7816-3 Rule 4 */
 	if(rcvdSBlockType == READER_T1_STYPE_ABORT_RESP){
 		retVal = READER_T1_CONTROL_ApplySBlockAbort(pContext, pBlock);
 		if(retVal != READER_OK) return retVal;
@@ -1216,6 +1216,48 @@ READER_Status READER_T1_CONTROL_SBlockResponseNotReceived(READER_T1_ContextHandl
 		retVal = READER_T1_ERR_DoReset(pContext);
 		if(retVal != READER_OK) return retVal;
 	}
+	
+	return READER_OK;
+}
+
+
+/**
+ * \fn READER_Status READER_T1_CONTROL_CheckExpectedINF(READER_T1_ContextHandler *pContext, READER_T1_Block *pRcvdSBlockResp)
+ * \brief Lors de la reception d'un S-Block Response, cette fonction permet de vérifier que le champs INF contenu dans la réponse est bien celui qui est attendu par le contexte de communication (voir ISO7816-3 section 11.6.2.3, Rules 3 et 4).
+ * \param *pContext est un pointeur sur une structure de type READER_T1_ContextHandler. La structure pointée stocke le contexte actuel de communication.
+ * \param *pRcvdSBlockResp est un pointeur sur uns structure de type READER_T1_Block. Il doit pointer sur le S-Block Response à vérifier.
+ * \return La fonction retourne un code d'erreur de type READER_Status. READER_OK indique que le champs INF contenu dans le S-Block Response correspond bien à celui qui est attendu. READER_NO indique que le champs INF de ce Block ne correspond pas. Toute autre valeur indique une erreur interne à la fonction.
+ */
+READER_Status READER_T1_CONTROL_CheckExpectedINF(READER_T1_ContextHandler *pContext, READER_T1_Block *pRcvdSBlockResp){
+	READER_Status retVal;
+	uint8_t expectedINF, inBlockINF;
+	uint8_t blockLEN;
+	
+	
+	/* On recupere dans le contexte la valeur de INF qui est attendu pour le S-Block Response ...  */
+	retVal = READER_T1_CONTEXT_GetSBlockExpectedINF(pContext, &expectedINF);
+	if(retVal != READER_OK) return retVal;
+	
+	/* On fait des verifications sur le S-Block Response que l'on manipule ...  */
+	retVal = READER_T1_CheckSBlock(pRcvdSBlockResp);
+	if(retVal != READER_OK) return retVal;
+	
+	retVal = READER_T1_IsSBlockResponse(pRcvdSBlockResp);
+	if(retVal != READER_OK) return retVal;
+	
+	blockLEN = READER_T1_GetBlockLEN(pRcvdSBlockResp);
+	if(blockLEN != 1){
+		return READER_NO;
+	}
+	
+	/* On recupere la valeur INF qui se trouve dans le S-Block Response recu ...  */
+	inBlockINF = READER_T1_GetBlockSPayload(pRcvdSBlockResp);
+	
+	/* On compare les valeurs ...  */
+	if(inBlockINF != expectedINF){
+		return READER_NO;
+	}
+	
 	
 	return READER_OK;
 }
