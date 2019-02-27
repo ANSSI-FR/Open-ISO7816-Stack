@@ -926,6 +926,9 @@ READER_Status READER_T1_CONTROL_ApplySBlockResponseRcvd(READER_T1_ContextHandler
 		if(retVal != READER_OK) return retVal;
 	}
 	else if(rcvdSBlockType == READER_T1_STYPE_IFS_RESP){
+		retVal = READER_T1_CONTROL_CheckExpectedINFAndApplyRules(pContext, pBlock);
+		if(retVal != READER_OK) return retVal;
+		
 		retVal = READER_T1_CONTROL_ApplySBlockIfsd(pContext, pBlock);
 		if(retVal != READER_OK) return retVal;		
 	}
@@ -934,6 +937,9 @@ READER_Status READER_T1_CONTROL_ApplySBlockResponseRcvd(READER_T1_ContextHandler
 		if(retVal != READER_OK) return retVal;
 	}
 	else if(rcvdSBlockType == READER_T1_STYPE_WTX_RESP){
+		retVal = READER_T1_CONTROL_CheckExpectedINFAndApplyRules(pContext, pBlock);
+		if(retVal != READER_OK) return retVal;
+		
 		retVal = READER_T1_CONTROL_ApplySBlockWtx(pContext, pBlock);
 		if(retVal != READER_OK) return retVal;
 	}
