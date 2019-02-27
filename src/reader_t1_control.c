@@ -1261,3 +1261,19 @@ READER_Status READER_T1_CONTROL_CheckExpectedINF(READER_T1_ContextHandler *pCont
 	
 	return READER_OK;
 }
+
+
+READER_Status READER_T1_CONTROL_CheckExpectedINFAndApplyRules(READER_T1_ContextHandler *pContext, READER_T1_Block *pRcvdSBlockResp){
+	READER_Status retVal;
+	
+	
+	retVal = READER_T1_CONTROL_CheckExpectedINF(pContext, pRcvdSBlockResp);
+	if((retVal != READER_OK) && (retVal != READER_NO)) return retVal;
+	
+	if(retVal == READER_NO){
+		retVal = READER_T1_CONTROL_SBlockResponseNotReceived(pContext);
+		if(retVal != READER_OK) return retVal;
+	}
+	
+	return READER_OK;
+}
