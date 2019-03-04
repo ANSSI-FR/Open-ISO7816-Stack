@@ -460,74 +460,44 @@ READER_Status READER_T1_BUFFER_StripControlBlocks(READER_T1_ContextHandler *pCon
 
 READER_Status READER_T1_BUFFER_StripIBlocks(READER_T1_ContextHandler *pContext){
 	READER_Status retVal;
+	READER_T1_BufferStatus buffStatus;
+	READER_T1_Block tmpBlock;
 	READER_T1_BlockType bType;
-	READER_T1_BlockBuffer *pBlockBuffer;
-	READER_T1_Block *pBlockTab;
-	READER_T1_Block *pCurrentBlock;
-	uint32_t controlBlocksCount = 0;
-	uint32_t controlBlocksCount2;
-	uint32_t length;
-	uint32_t topIndex, bottomIndex, virtualTopIndex, virtualBottomIndex;
-	uint32_t virtualIndex, realIndex;
+	uint32_t buffBlocks;
+	uint32_t buffProcessedBlocks = 0;
 	
 	
-	/* On recupere un pointeur sur la structure du buffer dans le contexte */
-	retVal = READER_T1_CONTEXT_GetBlockBuff(pContext, &pBlockBuffer);
+	retVal = READER_T1_BUFFER_IsEmpty(pContext, &buffStatus);
 	if(retVal != READER_OK) return retVal;
 	
-	/* Dans la stucture du buffer on recupere un pointeur sur le tableau de Blocks */
-	pBlockTab = pBlockBuffer->blockBuff;
-	
-	/* Recuperation des informations sur le contenu du Buffer ...  */
-	retVal = READER_T1_BUFFER_GetLength(pContext, &length);
+	retVal = READER_T1_BUFFER_GetLength(pContext, &buffBlocks);
 	if(retVal != READER_OK) return retVal;
 	
-	topIndex = pContext->blockBuff.indexTop;
-	bottomIndex = pContext->blockBuff.indexBottom;
 	
-	
-	/* On calcule les indices reels pour parcourir le buffer de Blocks ...  */
-	if(bottomIndex <= topIndex){
-		virtualBottomIndex = bottomIndex;
-		virtualTopIndex = topIndex;
-	}
-	else{
-		virtualBottomIndex = bottomIndex;
-		virtualTopIndex = topIndex + READER_T1_CONTEXT_STATICBUFF_MAXSIZE;
-	}
-	
-	virtualIndex=virtualBottomIndex;
-	
-	
-	retVal = READER_T1_BUFFER_GetBottomBlockType(pContext, &bType);
-	if(retVal != READER_OK) return retVal;
-	
-	/* topIndex pointe sur un espace libre (il n'y a pas de Block a cette adresse) (pointe sur l'endroit ou il faut ecrire le prochain Block ...)  */
-	while((bType != READER_T1_IBLOCK) && (virtualIndex<virtualTopIndex)){
-		controlBlocksCount++;
+	while((buffStatus != READER_T1_BUFFER_EMPTY) && (buffProcessedBlocks < buffBlocks)){
+		retVal = READER_T1_BUFFER_GetBottomBlockType(pContext, &bType);
+		if(retVal != READER_OK) return retVal;
 		
-		virtualIndex++;
-		realIndex = virtualIndex % READER_T1_CONTEXT_STATICBUFF_MAXSIZE;
-		pCurrentBlock = pBlockTab + realIndex;
-		bType = READER_T1_GetBlockType(pCurrentBlock);
+		if((bType == READER_T1_RBLOCK) || (bType == READER_T1_SBLOCK)){
+			retVal = READER_T1_BUFFER_Dequeue(pContext, &tmpBlock);
+			if(retVal != READER_OK) return retVal;
+			
+			retVal = READER_T1_BUFFER_Enqueue(pContext, &tmpBlock);
+			if(retVal != READER_OK) return retVal;
+		}
+		else if(bType == READER_T1_IBLOCK){
+			retVal = READER_T1_BUFFER_DequeueAndDiscard(pContext);
+			if(retVal != READER_OK) return retVal;
+		}
+		else{
+			return READER_INVALID_BLOCK;
+		}
+		
+		buffProcessedBlocks++;
+		
+		retVal = READER_T1_BUFFER_IsEmpty(pContext, &buffStatus);
+		if(retVal != READER_OK) return retVal;
 	}
-	
-	/* Si on est sortit sans parcourir tous les Blocks du Buffer d'envoi, ca veur dire qu'on est tombé sur un I-Block ...  */
-	if(virtualIndex < virtualTopIndex){
-		realIndex = virtualIndex % READER_T1_CONTEXT_STATICBUFF_MAXSIZE;
-		pContext->blockBuff.indexTop = realIndex;
-	}
-	/* Sinon ca veut dire qu'on a parcouru tout le Buffer d'envoi sans trouver de I-Block, donc il n'y a rien a faire ...  */
-	
-	
-	/* Petites verifications ...  */
-	retVal = READER_T1_BUFFER_GetRBlockAndSBlockCount(pContext, &controlBlocksCount2);
-	if(retVal != READER_OK) return retVal;
-	
-	if(controlBlocksCount != controlBlocksCount2){
-		return READER_ERR;
-	}
-	
 	
 	return READER_OK;
 }
