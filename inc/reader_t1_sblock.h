@@ -21,7 +21,8 @@ enum READER_T1_SBlockType{
 	READER_T1_STYPE_ABORT_RESP          =       (uint32_t)(0x00000005),
 	READER_T1_STYPE_WTX_REQU            =       (uint32_t)(0x00000006),
 	READER_T1_STYPE_WTX_RESP            =       (uint32_t)(0x00000007),
-	READER_T1_STYPE_DEPRECATED          =       (uint32_t)(0x00000008)
+	READER_T1_STYPE_DEPRECATED          =       (uint32_t)(0x00000008),
+	READER_T1_STYPE_ERROR               =       (uint32_t)(0x00000009)
 };
 
 

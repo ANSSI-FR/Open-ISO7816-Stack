@@ -36,17 +36,16 @@ int main(void){
 	
 	
 	READER_APDU_Forge(&cmd1, 0x00, 0xA4, 0x04, 0x00, 10, buff1, 0);
-	//READER_APDU_Forge(&cmd2, 0x00, 0x0A, 0x00, 0x00, 64, buff2, 0);
-	//READER_APDU_Forge(&cmd3, 0x00, 0x00, 0x00, 0x00, 324, buff3, 400);
+	READER_APDU_Forge(&cmd2, 0x00, 0x0A, 0x00, 0x00, 64, buff2, 0);
+	READER_APDU_Forge(&cmd3, 0x00, 0x00, 0x00, 0x00, 324, buff3, 400);
 	
 	
 	
 	READER_T1_APDU_Execute(&context, &cmd1, &apduResp);
 	READER_HAL_Delay(50);
-	//retVal = READER_T1_APDU_Execute(&context, &cmd2, &apduResp);
-	//if(retVal == READER_OK) READER_PERIPH_ErrHandler();
-	//READER_HAL_Delay(50);
-	//READER_T1_APDU_Execute(&context, &cmd3, &apduResp);
+	READER_T1_APDU_Execute(&context, &cmd2, &apduResp);
+	READER_HAL_Delay(50);
+	READER_T1_APDU_Execute(&context, &cmd3, &apduResp);
 
 	
 	//READER_HAL_DoColdReset();

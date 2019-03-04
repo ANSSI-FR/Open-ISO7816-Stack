@@ -82,7 +82,14 @@ READER_Status READER_T1_SetBlockSType(READER_T1_Block *pBlock, READER_T1_SBlockT
 READER_T1_SBlockType READER_T1_GetBlockSType(READER_T1_Block *pBlock){
 	/* Voir ISO7816-3 section 11.3.2.2 */
 	uint8_t currentPCB;
+	READER_Status retVal;
 	
+	
+	/* Verifications elementaires sur le Block ...  */
+	retVal = READER_T1_CheckSBlock(pBlock);
+	if(retVal != READER_OK) return READER_T1_STYPE_ERROR;
+	
+	/* On regatde le champ PCB du Block ...  */
 	currentPCB = READER_T1_GetBlockPCB(pBlock);
 	
 	if((currentPCB & 0x3F) == 0x00){
