@@ -29,7 +29,7 @@
 
 /* Choix de ces valeurs en fonction de ISO7816-3 section 11.4.2 et contraintes cible dev */
 #define READER_T1_MAX_IFSD_ACCEPTED 0xFE
-#define READER_T1_MIN_IFSD_ACCEPTED 0x10
+#define READER_T1_MIN_IFSD_ACCEPTED 0x05
 #define READER_T1_MAX_IFSC_ACCEPTED 0xFE
 #define READER_T1_MIN_IFSC_ACCEPTED 0x05  
 

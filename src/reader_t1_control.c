@@ -535,7 +535,7 @@ READER_Status READER_T1_CONTROL_RcvBlock(READER_T1_ContextHandler *pContext, REA
 	
 	/* On regarde si le Block est corrompu ... */
 	retVal = READER_T1_CheckBlockIntegrity(pBlock);
-	if((retVal != READER_OK) && (retVal != READER_INTEGRITY)) return retVal;	
+	if((retVal != READER_OK) && (retVal != READER_INTEGRITY)) return retVal;		
 	
 	if(retVal == READER_INTEGRITY){
 		retVal = READER_T1_ERR_DealWithError(pContext, 1);

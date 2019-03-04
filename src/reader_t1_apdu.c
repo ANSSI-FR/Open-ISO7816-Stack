@@ -50,9 +50,6 @@ READER_Status READER_T1_APDU_Execute(READER_T1_ContextHandler *pContext, READER_
 	retVal = READER_T1_FORGE_FillBuffWithAPDU(pContext, pApduCmd);
 	if(retVal != READER_OK) return retVal;
 	
-	retVal = READER_T1_CONTEXT_SetCurrentIFSC(pContext, 33);
-
-	
 	/* Tantque le Buffer d'envoi n'est pas vide, on defile et on envoie le Block ...                                              */	
 	retVal = READER_T1_BUFFER_IsEmpty(pContext, &buffStatus);
 	if(retVal != READER_OK) return retVal;

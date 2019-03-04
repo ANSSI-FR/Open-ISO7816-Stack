@@ -78,7 +78,8 @@ READER_Status READER_T1_ERR_IsItFirstReception(READER_T1_ContextHandler *pContex
 	if(retVal != READER_OK) return retVal;
 	
 	/* On regarde si c'est la premiere reception */
-	if(((cardCompleteSeqNum == 0) || (cardCompleteSeqNum == 1)) && ((deviceCompleteSeqNum == 0) || (deviceCompleteSeqNum == 1))){
+	//if(((cardCompleteSeqNum == 0) || (cardCompleteSeqNum == 1)) && ((deviceCompleteSeqNum == 0) || (deviceCompleteSeqNum == 1))){
+	if(cardCompleteSeqNum == 0){
 		return READER_OK;
 	}
 	else{

@@ -16,7 +16,7 @@ uint8_t pSmartcardRxBuff[100];
 int main(void){
 	READER_Status retVal;
 	//READER_ATR_Atr atr;
-	//READER_APDU_Command apduCmd;
+	READER_APDU_Command apduCmd;
 	READER_APDU_Command cmd1, cmd2, cmd3;
 	READER_APDU_Response apduResp;
 	READER_T1_ContextHandler context;
@@ -35,17 +35,17 @@ int main(void){
 	READER_HAL_Delay(100);
 	
 	
-	READER_APDU_Forge(&cmd1, 0x00, 0xA4, 0x04, 0x00, 10, buff1, 0);
-	READER_APDU_Forge(&cmd2, 0x00, 0x0A, 0x00, 0x00, 64, buff2, 0);
-	READER_APDU_Forge(&cmd3, 0x00, 0x00, 0x00, 0x00, 324, buff3, 400);
-	
-	
-	
-	READER_T1_APDU_Execute(&context, &cmd1, &apduResp);
-	READER_HAL_Delay(50);
-	READER_T1_APDU_Execute(&context, &cmd2, &apduResp);
-	READER_HAL_Delay(50);
-	READER_T1_APDU_Execute(&context, &cmd3, &apduResp);
+	//READER_APDU_Forge(&cmd1, 0x00, 0xA4, 0x04, 0x00, 10, buff1, 0);
+	//READER_APDU_Forge(&cmd2, 0x00, 0x0A, 0x00, 0x00, 64, buff2, 0);
+	//READER_APDU_Forge(&cmd3, 0x00, 0x00, 0x00, 0x00, 324, buff3, 400);
+	//
+	//
+	//
+	//READER_T1_APDU_Execute(&context, &cmd1, &apduResp);
+	//READER_HAL_Delay(50);
+	//READER_T1_APDU_Execute(&context, &cmd2, &apduResp);
+	//READER_HAL_Delay(50);
+	//READER_T1_APDU_Execute(&context, &cmd3, &apduResp);
 
 	
 	//READER_HAL_DoColdReset();
@@ -67,22 +67,22 @@ int main(void){
 	//pSmartcardTxBuff[11] = 0x70;
 	//pSmartcardTxBuff[12] = 0x70;
 	
-	//pSmartcardTxBuff[0] = 0xA0;
-	//pSmartcardTxBuff[1] = 0x00;
-	//pSmartcardTxBuff[2] = 0x00;
-	//pSmartcardTxBuff[3] = 0x00;
-	//pSmartcardTxBuff[4] = 0x62;
-	//pSmartcardTxBuff[5] = 0x03;
-	//pSmartcardTxBuff[6] = 0x01;
-	//pSmartcardTxBuff[7] = 0x0C;
-	//pSmartcardTxBuff[8] = 0x01;
-	//pSmartcardTxBuff[9] = 0x01;
+	pSmartcardTxBuff[0] = 0xA0;
+	pSmartcardTxBuff[1] = 0x00;
+	pSmartcardTxBuff[2] = 0x00;
+	pSmartcardTxBuff[3] = 0x00;
+	pSmartcardTxBuff[4] = 0x62;
+	pSmartcardTxBuff[5] = 0x03;
+	pSmartcardTxBuff[6] = 0x01;
+	pSmartcardTxBuff[7] = 0x0C;
+	pSmartcardTxBuff[8] = 0x01;
+	pSmartcardTxBuff[9] = 0x01;
 	
 	//READER_PERIPH_ErrHandler();
 	
-	//READER_APDU_Forge(&apduCmd, 0x00, 0xA4, 0x04, 0x00, 10, pSmartcardTxBuff, 16);
+	READER_APDU_Forge(&apduCmd, 0x00, 0xA4, 0x04, 0x00, 10, pSmartcardTxBuff, 16);
 	//READER_T0_APDU_Execute(&apduCmd, &apduResp, READER_HAL_USE_ISO_WT);
-	//retVal = READER_T1_APDU_Execute(&context, &apduCmd, &apduResp);
+	retVal = READER_T1_APDU_Execute(&context, &apduCmd, &apduResp);
 	//READER_PERIPH_ErrHandler();
 	//if(retVal != READER_OK){
 	//	READER_PERIPH_ErrHandler();

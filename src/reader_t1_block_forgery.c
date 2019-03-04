@@ -35,15 +35,15 @@ READER_Status READER_T1_FORGE_ErrorBlock(READER_T1_ContextHandler *pContext, REA
 	
 	/* On regarde si c'est la premiere reception  */
 	retVal = READER_T1_ERR_IsItFirstReception(pContext);
-	if((retVal != READER_OK) && (retVal != READER_NO)){                         /* Si une erreur s'est produit au moment ou on verifie que c'est la 1ere reception ... */
-		return retVal;
-	}
-	else if(retVal == READER_OK){    /* Rules 7.5 and 7.6 ... */                /* Si pas d'erreur et que c'est la premiere reception ...     */
+	if((retVal != READER_OK) && (retVal != READER_NO)) return retVal;                         /* Si une erreur s'est produit au moment ou on verifie que c'est la 1ere reception ... */
+
+	if(retVal == READER_OK){    /* Rules 7.5 and 7.6 ... */                /* Si pas d'erreur et que c'est la premiere reception ...     */
 		retVal = READER_T1_FORGE_NACKR0(pContext, pBlockDest, integrityFlag);
 		if(retVal != READER_OK) return retVal;
 	}
 	/* Il y a deja eu au moins un echange (1 emission et 1 reception) */
 	else{
+		
 		/* On recupere le type du dernier Block envoye ...            */
 		retVal = READER_T1_CONTEXT_GetLastSentType(pContext, &bType);
 		if(retVal != READER_OK) return retVal;
