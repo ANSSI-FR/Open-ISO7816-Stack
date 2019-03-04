@@ -35,15 +35,22 @@ READER_Status READER_T1_SetBlockACKType(READER_T1_Block *pBlock, READER_T1_ACKTy
 
 
 READER_T1_ACKType READER_T1_GetBlockACKType(READER_T1_Block *pBlock){
+	READER_Status retVal;
 	uint8_t currentPCB;
 	
 	
+	/* Verifications elementaires sur le Block que l'on manipule (sensé etre un R-Block) ...  */
+	retVal = READER_T1_CheckRBlock(pBlock);
+	if(retVal != READER_OK) return retVal;
+	
+	/* Recuperation du PCB Byte du R-Block ...  */
 	currentPCB = READER_T1_GetBlockPCB(pBlock);
 	
-	if(((currentPCB & 0x20) == 0x00) && ((currentPCB & 0x0F) == 0x00)){
+	/* Check du type d'ACK ...  */
+	if((currentPCB & 0x0F) == 0x00){
 		return READER_T1_ACKTYPE_ACK;
 	}
-	else if(((currentPCB & 0x20) == 0x00) && ((currentPCB & 0x0F) == 0x01)){
+	else if(((currentPCB & 0x0E) == 0x00) && ((currentPCB & 0xFE) == 0x01)){
 		return READER_T1_ACKTYPE_NACK_CRCLRC;
 	}
 	else{
@@ -117,6 +124,18 @@ READER_Status READER_T1_ForgeRBlock(READER_T1_Block *pBlock, READER_T1_ACKType a
 	
 	retVal = READER_T1_SetExpectedBlockSeqNumber(pBlock, expctdBlockSeq);
 	if(retVal != READER_OK) return retVal;
+	
+	return READER_OK;
+}
+
+READER_Status READER_T1_CheckRBlock(READER_T1_Block *pBlock){
+	READER_T1_BlockType bType;
+	
+	
+	bType = READER_T1_GetBlockType(pBlock);
+	if(bType != READER_T1_RBLOCK){
+		return READER_INVALID_BLOCK;
+	}
 	
 	return READER_OK;
 }

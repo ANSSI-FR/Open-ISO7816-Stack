@@ -73,12 +73,14 @@ READER_Status READER_T1_CONTROL_IsRBlockACK(READER_T1_ContextHandler *pContext, 
 	READER_Status retVal;
 	READER_T1_ChainingStatus chainingStatus;
 	READER_T1_ExpSeqNumber blockSeqNum;
+	READER_T1_ACKType ACKType;
 	uint32_t tmpNextIBlockSeqNum, tmpBlockSeqNum;
 	
 	/* On procede de la maniere suivante (non detaille dans la spec) :                                            */
 	/* Du cote du Device, un R-Block recu est considere comme un ACK si et seulement si (1) et (2) :              */
 	/*      (1) Le Device est en train de chainer le dernier I-Block  (M-Bit du dernier == 1)                      */
 	/*      (2) Le numero de sequence contenu dans le R-Block correspond au I-Block suivant que l'on veut envoyer  */
+	/*      (3) Le R-Block n'indique pas une erreur voir ISO7816-3 section 11.3.2.2                                */
 	/*      (?) Le I-Block suivant existe                                                                          */
 	
 	
@@ -123,12 +125,17 @@ READER_Status READER_T1_CONTROL_IsRBlockACK(READER_T1_ContextHandler *pContext, 
 	
 	
 	/* On verifie que le numero de sequence contenu dans le R-Block correspond au numero de sequence du prochain I-Block que l'on veut envoyer/chainer */
-	if(tmpBlockSeqNum == tmpNextIBlockSeqNum){
-		return READER_OK;
-	}
-	else{
+	if(tmpBlockSeqNum != tmpNextIBlockSeqNum){
 		return READER_NO;
 	}
+	
+	/* On verifie que le R-Block n'indique pas d'erreur (NACK) ...  */
+	ACKType = READER_T1_GetBlockACKType(pBlock);
+	if(ACKType != READER_T1_ACKTYPE_ACK){
+		return READER_NO;
+	}
+	
+	return READER_OK;
 }
 
 
