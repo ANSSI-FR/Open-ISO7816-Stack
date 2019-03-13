@@ -80,11 +80,11 @@ READER_Status READER_HAL_Init(void){
 	retVal = READER_HAL_SetEtu(READER_DEFAULT_FI, READER_DEFAULT_DI); if(retVal != READER_OK) return retVal;
 	retVal = READER_HAL_SetFreq(READER_DEFAULT_FREQ);                 if(retVal != READER_OK) return retVal;
 	retVal = READER_HAL_SetWI(READER_DEFAULT_WI);                     if(retVal != READER_OK) return retVal;
-	retVal = READER_HAL_SetBWI(READER_DEFAULT_BWI);                   if(retVal != READER_OK) return retVal;
-	retVal = READER_HAL_SetBWT(READER_DEFAULT_BWT);                   if(retVal != READER_OK) return retVal;
-	retVal = READER_HAL_SetBGT(READER_DEFAULT_BGT);                   if(retVal != READER_OK) return retVal;
-	retVal = READER_HAL_SetIFSC(READER_DEFAULT_IFSC);                 if(retVal != READER_OK) return retVal;
-	retVal = READER_HAL_SetIFSD(READER_DEFAULT_IFSD);                 if(retVal != READER_OK) return retVal;
+	//retVal = READER_HAL_SetBWI(READER_DEFAULT_BWI);                   if(retVal != READER_OK) return retVal;
+	//retVal = READER_HAL_SetBWT(READER_DEFAULT_BWT);                   if(retVal != READER_OK) return retVal;
+	//retVal = READER_HAL_SetBGT(READER_DEFAULT_BGT);                   if(retVal != READER_OK) return retVal;
+	//retVal = READER_HAL_SetIFSC(READER_DEFAULT_IFSC);                 if(retVal != READER_OK) return retVal;
+	//retVal = READER_HAL_SetIFSD(READER_DEFAULT_IFSD);                 if(retVal != READER_OK) return retVal;
 	retVal = READER_HAL_SetRedundancyType(READER_DEFAULT_REDUNDANCY_TYPE); if(retVal != READER_OK) return retVal;
 	
 	
@@ -498,10 +498,10 @@ READER_Status READER_HAL_SetFreq(uint32_t newFreq){
 	if(retVal != READER_OK) return retVal;
 	
 	/* On modifie en consequence la valeur du BWT Voir ISO7816-3 section 11.4.3 */
-	BWI = READER_HAL_GetBWI();
-	newBlockWaitTimeEtu = READER_UTILS_ComputeBWTEtu(BWI, newFreq);
-	newBlockWaitTimeMili = READER_UTILS_ComputeBWTMili(newBlockWaitTimeEtu, READER_HAL_GetFi(), READER_HAL_GetDi(), newFreq);
-	READER_HAL_SetBWT(newBlockWaitTimeMili);
+	//BWI = READER_HAL_GetBWI();
+	//newBlockWaitTimeEtu = READER_UTILS_ComputeBWTEtu(BWI, newFreq);
+	//newBlockWaitTimeMili = READER_UTILS_ComputeBWTMili(newBlockWaitTimeEtu, READER_HAL_GetFi(), READER_HAL_GetDi(), newFreq);
+	//READER_HAL_SetBWT(newBlockWaitTimeMili);
 	
 	/* Mise a jour des informations dans la structure qui contient les parametres de communication */
 	globalCurrentSettings.f = newFreq;
@@ -735,56 +735,56 @@ READER_Status READER_HAL_SetWI(uint32_t WI){
 }
 
 
-READER_Status READER_HAL_SetIFSC(uint32_t IFSC){
-	globalCurrentSettings.IFSC = IFSC;
-	
-	return READER_OK;
-}
+//READER_Status READER_HAL_SetIFSC(uint32_t IFSC){
+//	globalCurrentSettings.IFSC = IFSC;
+//	
+//	return READER_OK;
+//}
 
 
-READER_Status READER_HAL_SetIFSD(uint32_t IFSD){
-	globalCurrentSettings.IFSD = IFSD;
-	
-	return READER_OK;
-}
+//READER_Status READER_HAL_SetIFSD(uint32_t IFSD){
+//	globalCurrentSettings.IFSD = IFSD;
+//	
+//	return READER_OK;
+//}
 
 
-READER_Status READER_HAL_SetBWT(uint32_t BWT){
-	globalCurrentSettings.BWT = BWT;
-	
-	return READER_OK;
-}
+//READER_Status READER_HAL_SetBWT(uint32_t BWT){
+//	globalCurrentSettings.BWT = BWT;
+//	
+//	return READER_OK;
+//}
 
 
-READER_Status READER_HAL_SetBWI(uint32_t BWI){
-	READER_Status retVal;
-	uint32_t BWTEtu, BWTMili;
-	uint32_t currentFreq, currentF, currentD;
-	
-	currentFreq = READER_HAL_GetFreq();
-	currentF = READER_HAL_GetFi();
-	currentD = READER_HAL_GetDi();
-	
-	BWTEtu = READER_UTILS_ComputeBWTEtu(BWI, currentFreq);
-	BWTMili = READER_UTILS_ComputeBWTMili(BWTEtu, currentF, currentD, currentFreq);
-	
-	/* On modifie le BWT en consequence  */
-	retVal = READER_HAL_SetBWT(BWTMili);
-	if(retVal != READER_OK) return retVal;
-	
-	
-	globalCurrentSettings.BWI = BWI;
-	
-	
-	return READER_OK;
-}
+//READER_Status READER_HAL_SetBWI(uint32_t BWI){
+//	READER_Status retVal;
+//	uint32_t BWTEtu, BWTMili;
+//	uint32_t currentFreq, currentF, currentD;
+//	
+//	currentFreq = READER_HAL_GetFreq();
+//	currentF = READER_HAL_GetFi();
+//	currentD = READER_HAL_GetDi();
+//	
+//	BWTEtu = READER_UTILS_ComputeBWTEtu(BWI, currentFreq);
+//	BWTMili = READER_UTILS_ComputeBWTMili(BWTEtu, currentF, currentD, currentFreq);
+//	
+//	/* On modifie le BWT en consequence  */
+//	retVal = READER_HAL_SetBWT(BWTMili);
+//	if(retVal != READER_OK) return retVal;
+//	
+//	
+//	globalCurrentSettings.BWI = BWI;
+//	
+//	
+//	return READER_OK;
+//}
 
 
-READER_Status READER_HAL_SetBGT(uint32_t BGT){
-	globalCurrentSettings.BGT = BGT;
-	
-	return READER_OK;
-}
+//READER_Status READER_HAL_SetBGT(uint32_t BGT){
+//	globalCurrentSettings.BGT = BGT;
+//	
+//	return READER_OK;
+//}
 
 
 READER_Status READER_HAL_SetRedundancyType(uint32_t rType){
@@ -812,17 +812,17 @@ uint32_t READER_HAL_GetWI(void){
 }
 
 
-uint32_t READER_HAL_GetBWT(void){
-	return globalCurrentSettings.BWT;
-}
+//uint32_t READER_HAL_GetBWT(void){
+//	return globalCurrentSettings.BWT;
+//}
 
-uint32_t READER_HAL_GetBWI(void){
-	return globalCurrentSettings.BWI;
-}
+//uint32_t READER_HAL_GetBWI(void){
+//	return globalCurrentSettings.BWI;
+//}
 
-uint32_t READER_HAL_GetBGT(void){
-	return globalCurrentSettings.BGT;
-}
+//uint32_t READER_HAL_GetBGT(void){
+//	return globalCurrentSettings.BGT;
+//}
 
 
 /**

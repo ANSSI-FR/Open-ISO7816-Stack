@@ -154,11 +154,11 @@ READER_Status READER_ATR_ApplySettings(READER_ATR_Atr *atr){
 	BWTMili = READER_UTILS_ComputeBWTMili(BWTEtu, Fi, Di, f);
 	rType = READER_ATR_GetRedundancyType(atr);
 	
-	retVal = READER_HAL_SetIFSC(IFSC);
-	if(retVal != READER_OK) return retVal;
+	//retVal = READER_HAL_SetIFSC(IFSC);
+	//if(retVal != READER_OK) return retVal;
 	
-	retVal = READER_HAL_SetBWT(BWTMili);
-	if(retVal != READER_OK) return retVal;
+	//retVal = READER_HAL_SetBWT(BWTMili);
+	//if(retVal != READER_OK) return retVal;
 	
 	retVal = READER_HAL_SetRedundancyType(rType);
 	if(retVal != READER_OK) return retVal;
