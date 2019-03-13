@@ -335,8 +335,8 @@ READER_Status READER_T1_CONTROL_IBlockSentUpdateContext(READER_T1_ContextHandler
 		retVal = READER_T1_CONTEXT_SetDeviceChainingLastBlockFlag(pContext, READER_T1_CHAINING_NO);
 		if(retVal != READER_OK) return retVal;
 		
-		retVal = READER_T1_CONTEXT_SetDeviceChainingSituationFlag(pContext, READER_T1_CHAINING_NO);
-		if(retVal != READER_OK) return retVal;
+		//retVal = READER_T1_CONTEXT_SetDeviceChainingSituationFlag(pContext, READER_T1_CHAINING_NO);
+		//if(retVal != READER_OK) return retVal;
 	}
 	else{
 		return READER_ERR;
