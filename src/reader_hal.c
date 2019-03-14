@@ -94,7 +94,7 @@ READER_Status READER_HAL_Init(READER_HAL_CommSettings *pSettings){
 
 
 
-READER_Status READER_HAL_SendCharFrameTickstart(READER_HAL_CommSettings *pSettings, uint8_t *frame, uint32_t frameSize, uint32_t timeout, uint32_t *pTickstart){
+READER_Status READER_HAL_SendCharFrameTickstart(READER_HAL_CommSettings *pSettings, READER_HAL_Protocol protocol, uint8_t *frame, uint32_t frameSize, uint32_t timeout, uint32_t *pTickstart){
 	READER_Status retVal;
 	//uint32_t tickstart;
 	uint32_t i;
@@ -103,7 +103,7 @@ READER_Status READER_HAL_SendCharFrameTickstart(READER_HAL_CommSettings *pSettin
 	for(i=0; i<frameSize; i++){
 		//tickstart = READER_HAL_GetTick();
 		
-		retVal = READER_HAL_SendChar(pSettings, frame[i], timeout);
+		retVal = READER_HAL_SendChar(pSettings, protocol, frame[i], timeout);
 		if(retVal != READER_OK) return retVal;
 		
 		/* On mets a jour la date du debut de l'envoi du dernier caractere de la frame. (On soustrait le temps en milisec qu'il faut pour envoyer un carac) */
@@ -140,12 +140,12 @@ READER_Status READER_HAL_SendCharFrameTickstart(READER_HAL_CommSettings *pSettin
  * \param frameSize Taille de la chaine d'octets à envoyer.
  * \param timeout Valeur du timeout en milisecondes à utiliser. Si cette valeur est READER_HAL_USE_ISO_WT alors le timeout utilisé sera celui spécifié dans la norme ISO.
  */
-READER_Status READER_HAL_SendCharFrame(READER_HAL_CommSettings *pSettings, uint8_t *frame, uint32_t frameSize, uint32_t timeout){
+READER_Status READER_HAL_SendCharFrame(READER_HAL_CommSettings *pSettings, READER_HAL_Protocol protocol, uint8_t *frame, uint32_t frameSize, uint32_t timeout){
 	READER_Status retVal;
 	uint32_t tickstart;
 	
 	
-	retVal = READER_HAL_SendCharFrameTickstart(pSettings, frame, frameSize, timeout, &tickstart);
+	retVal = READER_HAL_SendCharFrameTickstart(pSettings, protocol, frame, frameSize, timeout, &tickstart);
 	if(retVal != READER_OK) return retVal;
 	
 	return READER_OK;
@@ -153,7 +153,7 @@ READER_Status READER_HAL_SendCharFrame(READER_HAL_CommSettings *pSettings, uint8
 
 
 /* Retourne le timestamp du leading edge de la frame (Tickstart) ...  */
-READER_Status READER_HAL_RcvCharFrameCountTickstart(READER_HAL_CommSettings *pSettings, uint8_t *frame, uint32_t frameSize, uint32_t *rcvCount, uint32_t timeout, uint32_t *tickstart){
+READER_Status READER_HAL_RcvCharFrameCountTickstart(READER_HAL_CommSettings *pSettings, READER_HAL_Protocol protocol, uint8_t *frame, uint32_t frameSize, uint32_t *rcvCount, uint32_t timeout, uint32_t *tickstart){
 	READER_Status retVal;
 	uint32_t i = 0;
 	uint8_t rcvByte;
@@ -184,7 +184,7 @@ READER_Status READER_HAL_RcvCharFrameCountTickstart(READER_HAL_CommSettings *pSe
 	while(i<frameSize){
 		//tickstart = READER_HAL_GetTick();
 		
-		retVal = READER_HAL_RcvChar(pSettings, &rcvByte, timeout);
+		retVal = READER_HAL_RcvChar(pSettings, protocol, &rcvByte, timeout);
 		if(retVal != READER_OK) return retVal;
 		
 		/* Si on vient de recevoir le premier caractere, alors on mets a jour le tickstart du leading edge de la frame ...  */
@@ -225,12 +225,12 @@ READER_Status READER_HAL_RcvCharFrameCountTickstart(READER_HAL_CommSettings *pSe
  * \param timeout Valeur du timeout en milisecondes à utiliser. Si cette valeur est READER_HAL_USE_ISO_WT alors le timeout utilisé sera celui spécifié dans la norme ISO.
  * \param *rcvCount Pointeur sur une variable de type unit32_t. Elle sera remplie avec le nombre de caractères qui ont pu être lus. Si pas de necessite de recuperer cette valeur alors il est possible d'indoquer NULL.
  */
-READER_Status READER_HAL_RcvCharFrameCount(READER_HAL_CommSettings *pSettings, uint8_t *frame, uint32_t frameSize, uint32_t *rcvCount, uint32_t timeout){
+READER_Status READER_HAL_RcvCharFrameCount(READER_HAL_CommSettings *pSettings, READER_HAL_Protocol protocol, uint8_t *frame, uint32_t frameSize, uint32_t *rcvCount, uint32_t timeout){
 	READER_Status retVal;
 	uint32_t tickstart;
 	
 	
-	retVal = READER_HAL_RcvCharFrameCountTickstart(pSettings, frame, frameSize, rcvCount, timeout, &tickstart);
+	retVal = READER_HAL_RcvCharFrameCountTickstart(pSettings, protocol, frame, frameSize, rcvCount, timeout, &tickstart);
 	if(retVal != READER_OK) return retVal;
 	
 	return READER_OK;
@@ -255,11 +255,11 @@ READER_Status READER_HAL_RcvCharFrameCount(READER_HAL_CommSettings *pSettings, u
   * Cette fonction est conservee pour des resos de compatibilite avec du code plus ancien.
   * Elle peret egalement de ne pas s'embeter avec des parametres supplementaires lorsque il n'y a pas besoin de compter le nombre de caracteres recus.
   */
-READER_Status READER_HAL_RcvCharFrame(READER_HAL_CommSettings *pSettings, uint8_t *frame, uint32_t frameSize, uint32_t timeout){
+READER_Status READER_HAL_RcvCharFrame(READER_HAL_CommSettings *pSettings, READER_HAL_Protocol protocol, uint8_t *frame, uint32_t frameSize, uint32_t timeout){
 	READER_Status retVal;
 	uint32_t rcvCount;
 	
-	retVal = READER_HAL_RcvCharFrameCount(pSetting, frame, frameSize, &rcvCount, timeout);
+	retVal = READER_HAL_RcvCharFrameCount(pSetting, protocol, frame, frameSize, &rcvCount, timeout);
 	if(retVal != READER_OK) return retVal;
 	
 	return READER_OK;
@@ -306,7 +306,7 @@ READER_Status READER_HAL_RcvChar(uint8_t *character, uint32_t timeout){
 
 
 /* Fonction "from scratch" pour recevoir un caractere */
-READER_Status READER_HAL_RcvChar(READER_HAL_CommSettings *pSettings, uint8_t *character, uint32_t timeout){
+READER_Status READER_HAL_RcvChar(READER_HAL_CommSettings *pSettings, READER_HAL_Protocol protocol, uint8_t *character, uint32_t timeout){
 	uint32_t timeoutMili, tickstart;
 	
 	
@@ -404,7 +404,7 @@ READER_Status READER_HAL_SendChar(uint8_t character, uint32_t timeout){
 
 #else
 
-READER_Status READER_HAL_SendChar(READER_HAL_CommSettings *pSettings, uint8_t character, uint32_t timeout){
+READER_Status READER_HAL_SendChar(READER_HAL_CommSettings *pSettings, READER_HAL_Protocol protocol, uint8_t character, uint32_t timeout){
 	uint32_t timeoutMili;
 	uint32_t tickstart;
 	uint32_t guardTime;

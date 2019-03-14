@@ -19,6 +19,8 @@
 #include "reader_utils.h"
 #include "stm32f4xx_hal.h"
 
+#include "reader_hal_comm_settings.h"
+
 #include <stdint.h>
 
 
@@ -47,18 +49,24 @@ enum READER_HAL_State{
 };
 
 
+typedef enum READER_HAL_Protocol READER_HAL_Protocol;
+enum READER_HAL_Protocol{
+	READER_HAL_PROTOCOL_T0 = (uint32_t)(0x00000000),     
+	READER_HAL_PROTOCOL_T1 = (uint32_t)(0x00000001)
+};
+
 
 
 
 
 READER_Status READER_HAL_Init(READER_HAL_CommSettings *pSettings);
-READER_Status READER_HAL_SendCharFrame(READER_HAL_CommSettings *pSettings, uint8_t *frame, uint32_t frameSize, uint32_t timeout);
-READER_Status READER_HAL_SendCharFrameTickstart(READER_HAL_CommSettings *pSettings, uint8_t *frame, uint32_t frameSize, uint32_t timeout, uint32_t *pTickstart);
-READER_Status READER_HAL_RcvCharFrame(READER_HAL_CommSettings *pSettings, uint8_t *frame, uint32_t frameSize, uint32_t timeout);
-READER_Status READER_HAL_RcvCharFrameCount(READER_HAL_CommSettings *pSettings, uint8_t *frame, uint32_t frameSize, uint32_t *rcvCount, uint32_t timeout);
-READER_Status READER_HAL_RcvCharFrameCountTickstart(READER_HAL_CommSettings *pSettings, uint8_t *frame, uint32_t frameSize, uint32_t *rcvCount, uint32_t timeout, uint32_t *tickstart);
-READER_Status READER_HAL_RcvChar(READER_HAL_CommSettings *pSettings, uint8_t *character, uint32_t timeout);
-READER_Status READER_HAL_SendChar(READER_HAL_CommSettings *pSettings, uint8_t character, uint32_t timeout);
+READER_Status READER_HAL_SendCharFrame(READER_HAL_CommSettings *pSettings, READER_HAL_Protocol protocol, uint8_t *frame, uint32_t frameSize, uint32_t timeout);
+READER_Status READER_HAL_SendCharFrameTickstart(READER_HAL_CommSettings *pSettings, READER_HAL_Protocol protocol, uint8_t *frame, uint32_t frameSize, uint32_t timeout, uint32_t *pTickstart);
+READER_Status READER_HAL_RcvCharFrame(READER_HAL_CommSettings *pSettings, READER_HAL_Protocol protocol, uint8_t *frame, uint32_t frameSize, uint32_t timeout);
+READER_Status READER_HAL_RcvCharFrameCount(READER_HAL_CommSettings *pSettings, READER_HAL_Protocol protocol, uint8_t *frame, uint32_t frameSize, uint32_t *rcvCount, uint32_t timeout);
+READER_Status READER_HAL_RcvCharFrameCountTickstart(READER_HAL_CommSettings *pSettings, READER_HAL_Protocol protocol, uint8_t *frame, uint32_t frameSize, uint32_t *rcvCount, uint32_t timeout, uint32_t *tickstart);
+READER_Status READER_HAL_RcvChar(READER_HAL_CommSettings *pSettings, READER_HAL_Protocol protocol, uint8_t *character, uint32_t timeout);
+READER_Status READER_HAL_SendChar(READER_HAL_CommSettings *pSettings, READER_HAL_Protocol protocol, uint8_t character, uint32_t timeout);
 
 
 
