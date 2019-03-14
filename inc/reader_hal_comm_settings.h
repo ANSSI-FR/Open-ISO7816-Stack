@@ -1,5 +1,5 @@
-#ifndef __READER_HAL_H__
-#define __READER_HAL_H__
+#ifndef __READER_HAL_COMM_SETTINGS_H__
+#define __READER_HAL_COMM_SETTINGS_H__
 
 
 
