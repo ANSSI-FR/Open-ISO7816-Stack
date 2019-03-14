@@ -8,8 +8,6 @@ struct READER_HAL_CommSettings{
 	uint32_t f;
 	uint32_t Fi;
 	uint32_t Di;
-	uint32_t WI;
-	uint32_t WT;
 	uint32_t GT;
 	uint32_t redundancyType;
 };
@@ -21,7 +19,7 @@ struct READER_HAL_CommSettings{
 READER_Status READER_HAL_SetFreq(READER_HAL_CommSettings *pSettings, uint32_t newFreq);
 READER_Status READER_HAL_SetEtu(READER_HAL_CommSettings *pSettings, uint32_t Fi, uint32_t Di);
 READER_Status READER_HAL_SetGT(READER_HAL_CommSettings *pSettings, uint32_t newGT);
-READER_Status READER_HAL_SetWT(READER_HAL_CommSettings *pSettings, uint32_t newWT);
+//READER_Status READER_HAL_SetWT(READER_HAL_CommSettings *pSettings, uint32_t newWT);
 READER_Status READER_HAL_SetFi(READER_HAL_CommSettings *pSettings, uint32_t Fi);
 READER_Status READER_HAL_SetDi(READER_HAL_CommSettings *pSettings, uint32_t Di);
 //READER_Status READER_HAL_SetIFSC(uint32_t IFSC);
@@ -30,8 +28,8 @@ READER_Status READER_HAL_SetDi(READER_HAL_CommSettings *pSettings, uint32_t Di);
 //READER_Status READER_HAL_SetBWI(uint32_t BWI);
 //READER_Status READER_HAL_SetBGT(uint32_t BGT);
 READER_Status READER_HAL_SetRedundancyType(READER_HAL_CommSettings *pSettings, uint32_t rType);
-READER_Status READER_HAL_SetWI(READER_HAL_CommSettings *pSettings, uint32_t WI);
-uint32_t READER_HAL_GetWT(READER_HAL_CommSettings *pSettings);
+//READER_Status READER_HAL_SetWI(READER_HAL_CommSettings *pSettings, uint32_t WI);
+//uint32_t READER_HAL_GetWT(READER_HAL_CommSettings *pSettings);
 uint32_t READER_HAL_GetGT(READER_HAL_CommSettings *pSettings);
 uint32_t READER_HAL_GetGTMili(READER_HAL_CommSettings *pSettings);
 uint32_t READER_HAL_GetFreq(READER_HAL_CommSettings *pSettings);
@@ -41,6 +39,6 @@ uint32_t READER_HAL_GetDi(READER_HAL_CommSettings *pSettings);
 //uint32_t READER_HAL_GetBWI(void);
 //uint32_t READER_HAL_GetBGT(void);
 uint32_t READER_HAL_GetRedunancyType(READER_HAL_CommSettings *pSettings);
-uint32_t READER_HAL_GetWI(READER_HAL_CommSettings *pSettings);
+//uint32_t READER_HAL_GetWI(READER_HAL_CommSettings *pSettings);
 
 #endif

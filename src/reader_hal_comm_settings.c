@@ -137,31 +137,31 @@ READER_Status READER_HAL_SetGT(READER_HAL_CommSettings *pSettings, uint32_t newG
  * \param uint32_t newGT uint32_t indiquant la nouvelle valeur de WT qu'il faut désormais utiliser. Cette valeur est un nombre entier d'ETU.
  
  */
-READER_Status READER_HAL_SetWT(READER_HAL_CommSettings *pSettings, uint32_t newWT){
-	//globalWaitTimeMili = newWT;
-	pSettings->WT = newWT;
-	return READER_OK;
-}
+//READER_Status READER_HAL_SetWT(READER_HAL_CommSettings *pSettings, uint32_t newWT){
+//	//globalWaitTimeMili = newWT;
+//	pSettings->WT = newWT;
+//	return READER_OK;
+//}
 
-READER_Status READER_HAL_SetWI(READER_HAL_CommSettings *pSettings, uint32_t WI){
-	READER_Status retVal;
-	uint32_t WTMili;
-	uint32_t f;
-	uint32_t Fi;
-	
-	pSettings->WI = WI;
-	
-	/* Modification de WT en consequence. Voir ISO7816-3 section 10.2 */
-	f = READER_HAL_GetFreq(pSettings);
-	Fi = READER_HAL_GetFi(pSettings);
-	
-	WTMili = READER_UTILS_ComputeWT1(f, Fi, WI);
-	retVal = READER_HAL_SetWT(pSettings, WTMili);
-	if(retVal != READER_OK) return retVal;
-	
-	
-	return READER_OK;
-}
+//READER_Status READER_HAL_SetWI(READER_HAL_CommSettings *pSettings, uint32_t WI){
+//	READER_Status retVal;
+//	uint32_t WTMili;
+//	uint32_t f;
+//	uint32_t Fi;
+//	
+//	pSettings->WI = WI;
+//	
+//	/* Modification de WT en consequence. Voir ISO7816-3 section 10.2 */
+//	f = READER_HAL_GetFreq(pSettings);
+//	Fi = READER_HAL_GetFi(pSettings);
+//	
+//	WTMili = READER_UTILS_ComputeWT1(f, Fi, WI);
+//	retVal = READER_HAL_SetWT(pSettings, WTMili);
+//	if(retVal != READER_OK) return retVal;
+//	
+//	
+//	return READER_OK;
+//}
 
 
 //READER_Status READER_HAL_SetIFSC(uint32_t IFSC){
@@ -231,14 +231,14 @@ READER_Status READER_HAL_SetRedundancyType(READER_HAL_CommSettings *pSettings, u
  * \brief Cette fonction permet d'obtenir le Wait Time (WT) selon les parametres de communication actuels. Attention cette fonction dépend de la variable globale : globalCurrentSettings. Cette variable est locale au fichier "reader_hal.c".
  * \return Retourne la valeur du WT (tel que defini dans la norme ISO) en milisecondes.
  */
-uint32_t READER_HAL_GetWT(READER_HAL_CommSettings *pSettings){
-	pSettings->WT;
-}
+//uint32_t READER_HAL_GetWT(READER_HAL_CommSettings *pSettings){
+//	pSettings->WT;
+//}
 
 
-uint32_t READER_HAL_GetWI(READER_HAL_CommSettings *pSettings){
-	pSettings->WI;
-}
+//uint32_t READER_HAL_GetWI(READER_HAL_CommSettings *pSettings){
+//	pSettings->WI;
+//}
 
 
 //uint32_t READER_HAL_GetBWT(void){
