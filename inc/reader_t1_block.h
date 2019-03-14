@@ -10,14 +10,14 @@
 
 
 
-#define READER_T1_BLOCK_MAX_DATA_SIZE     254     /* Attention, doit etre superieur a current IFSC, max=254 (Voir ISO7816-3 section 11.3.2.3), peut etre reduit pour reduire significativement l'emprunte memeoir edu programme.  */
-#define READER_T1_BLOCK_PROLOGUE_SIZE     3
-#define READER_T1_BLOCK_EPILOGUE_MAXSIZE  2
-#define READER_T1_BLOCKFRAME_NAD_POSITION 0       /* Voir ISO7816-3 section 11.3.1   */
-#define READER_T1_BLOCKFRAME_PCB_POSITION 1       /* Voir ISO7816-3 section 11.3.1   */
-#define READER_T1_BLOCKFRAME_LEN_POSITION 2       /* Voir ISO7816-3 section 11.3.1   */
-#define READER_T1_BLOCKFRAME_INF_POSITION 3       /* Voir ISO7816-3 section 11.3.1   */
-#define READER_T1_CRC_POLY                0x91
+#define READER_T1_BLOCK_MAX_DATA_SIZE          (uint32_t)(254)     /* Attention, doit etre superieur a current IFSC, max=254 (Voir ISO7816-3 section 11.3.2.3), peut etre reduit pour reduire significativement l'emprunte memeoir edu programme.  */
+#define READER_T1_BLOCK_PROLOGUE_SIZE          (uint32_t)(3)
+#define READER_T1_BLOCK_EPILOGUE_MAXSIZE       (uint32_t)(2)
+#define READER_T1_BLOCKFRAME_NAD_POSITION      (uint32_t)(0)       /* Voir ISO7816-3 section 11.3.1   */
+#define READER_T1_BLOCKFRAME_PCB_POSITION      (uint32_t)(1)       /* Voir ISO7816-3 section 11.3.1   */
+#define READER_T1_BLOCKFRAME_LEN_POSITION      (uint32_t)(2)       /* Voir ISO7816-3 section 11.3.1   */
+#define READER_T1_BLOCKFRAME_INF_POSITION      (uint32_t)(3)       /* Voir ISO7816-3 section 11.3.1   */
+#define READER_T1_CRC_POLY                     (uint32_t)(0x91)
 
 
 
