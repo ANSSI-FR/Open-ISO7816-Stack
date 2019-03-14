@@ -2,6 +2,8 @@
 #include "reader_hal.h"
 #include "reader_t1.h"
 
+#include "reader_t1_hal_comm_settings.h"
+
 
 
 #ifndef __READER_T1_BLOCK_H__
@@ -95,8 +97,8 @@ uint8_t* READER_T1_GetBlockFrame(READER_T1_Block *pBlock);
 READER_Status READER_T1_CheckBlockIntegrity(READER_T1_Block *pBlock);
 
 READER_Status READER_T1_ForgeBlock(READER_T1_Block *pBlock, READER_T1_RedundancyType rType);
-READER_Status READER_T1_SendBlock(READER_T1_Block *pBlock, uint32_t currentCWT, uint32_t extraStartDelay, uint32_t *pTickstart);
-READER_Status READER_T1_RcvBlock(READER_T1_Block *pBlock, READER_T1_RedundancyType rType, uint32_t currentCWT, uint32_t extraTimeout, uint32_t *pTickstart);
+READER_Status READER_T1_SendBlock(READER_T1_Block *pBlock, uint32_t currentCWT, uint32_t extraStartDelay, uint32_t *pTickstart, READER_HAL_CommSettings *pSettings);
+READER_Status READER_T1_RcvBlock(READER_T1_Block *pBlock, READER_T1_RedundancyType rType, uint32_t currentCWT, uint32_t extraTimeout, uint32_t *pTickstart, READER_HAL_CommSettings *pSettings);
 
 
 READER_Status READER_T1_CopyBlock(READER_T1_Block *pBlockDest, READER_T1_Block *pBlockSource);
