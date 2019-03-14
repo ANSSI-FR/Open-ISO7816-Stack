@@ -66,39 +66,39 @@ struct READER_HAL_CommSettings{
 
 
 
-READER_Status READER_HAL_Init(void);
-READER_Status READER_HAL_SendCharFrame(uint8_t *frame, uint32_t frameSize, uint32_t timeout);
-READER_Status READER_HAL_SendCharFrameTickstart(uint8_t *frame, uint32_t frameSize, uint32_t timeout, uint32_t *pTickstart);
-READER_Status READER_HAL_RcvCharFrame(uint8_t *frame, uint32_t frameSize, uint32_t timeout);
-READER_Status READER_HAL_RcvCharFrameCount(uint8_t *frame, uint32_t frameSize, uint32_t *rcvCount, uint32_t timeout);
-READER_Status READER_HAL_RcvCharFrameCountTickstart(uint8_t *frame, uint32_t frameSize, uint32_t *rcvCount, uint32_t timeout, uint32_t *tickstart);
-READER_Status READER_HAL_RcvChar(uint8_t *character, uint32_t timeout);
-READER_Status READER_HAL_SendChar(uint8_t character, uint32_t timeout);
+READER_Status READER_HAL_Init(READER_HAL_CommSettings *pSettings);
+READER_Status READER_HAL_SendCharFrame(READER_HAL_CommSettings *pSettings, uint8_t *frame, uint32_t frameSize, uint32_t timeout);
+READER_Status READER_HAL_SendCharFrameTickstart(READER_HAL_CommSettings *pSettings, uint8_t *frame, uint32_t frameSize, uint32_t timeout, uint32_t *pTickstart);
+READER_Status READER_HAL_RcvCharFrame(READER_HAL_CommSettings *pSettings, uint8_t *frame, uint32_t frameSize, uint32_t timeout);
+READER_Status READER_HAL_RcvCharFrameCount(READER_HAL_CommSettings *pSettings, uint8_t *frame, uint32_t frameSize, uint32_t *rcvCount, uint32_t timeout);
+READER_Status READER_HAL_RcvCharFrameCountTickstart(READER_HAL_CommSettings *pSettings, uint8_t *frame, uint32_t frameSize, uint32_t *rcvCount, uint32_t timeout, uint32_t *tickstart);
+READER_Status READER_HAL_RcvChar(READER_HAL_CommSettings *pSettings, uint8_t *character, uint32_t timeout);
+READER_Status READER_HAL_SendChar(READER_HAL_CommSettings *pSettings, uint8_t character, uint32_t timeout);
 
-READER_Status READER_HAL_SetFreq(uint32_t newFreq);
-READER_Status READER_HAL_SetEtu(uint32_t Fi, uint32_t Di);
-READER_Status READER_HAL_SetGT(uint32_t newGT);
-READER_Status READER_HAL_SetWT(uint32_t newWT);
-READER_Status READER_HAL_SetFi(uint32_t Fi);
-READER_Status READER_HAL_SetDi(uint32_t Di);
+READER_Status READER_HAL_SetFreq(READER_HAL_CommSettings *pSettings, uint32_t newFreq);
+READER_Status READER_HAL_SetEtu(READER_HAL_CommSettings *pSettings, uint32_t Fi, uint32_t Di);
+READER_Status READER_HAL_SetGT(READER_HAL_CommSettings *pSettings, uint32_t newGT);
+READER_Status READER_HAL_SetWT(READER_HAL_CommSettings *pSettings, uint32_t newWT);
+READER_Status READER_HAL_SetFi(READER_HAL_CommSettings *pSettings, uint32_t Fi);
+READER_Status READER_HAL_SetDi(READER_HAL_CommSettings *pSettings, uint32_t Di);
 //READER_Status READER_HAL_SetIFSC(uint32_t IFSC);
 //READER_Status READER_HAL_SetIFSD(uint32_t IFSD);
 //READER_Status READER_HAL_SetBWT(uint32_t BWT);
 //READER_Status READER_HAL_SetBWI(uint32_t BWI);
 //READER_Status READER_HAL_SetBGT(uint32_t BGT);
-READER_Status READER_HAL_SetRedundancyType(uint32_t rType);
-READER_Status READER_HAL_SetWI(uint32_t WI);
-uint32_t READER_HAL_GetWT(void);
-uint32_t READER_HAL_GetGT(void);
-uint32_t READER_HAL_GetGTMili(void);
-uint32_t READER_HAL_GetFreq(void);
-uint32_t READER_HAL_GetFi(void);
-uint32_t READER_HAL_GetDi(void);
+READER_Status READER_HAL_SetRedundancyType(READER_HAL_CommSettings *pSettings, uint32_t rType);
+READER_Status READER_HAL_SetWI(READER_HAL_CommSettings *pSettings, uint32_t WI);
+uint32_t READER_HAL_GetWT(READER_HAL_CommSettings *pSettings);
+uint32_t READER_HAL_GetGT(READER_HAL_CommSettings *pSettings);
+uint32_t READER_HAL_GetGTMili(READER_HAL_CommSettings *pSettings);
+uint32_t READER_HAL_GetFreq(READER_HAL_CommSettings *pSettings);
+uint32_t READER_HAL_GetFi(READER_HAL_CommSettings *pSettings);
+uint32_t READER_HAL_GetDi(READER_HAL_CommSettings *pSettings);
 //uint32_t READER_HAL_GetBWT(void);
 //uint32_t READER_HAL_GetBWI(void);
 //uint32_t READER_HAL_GetBGT(void);
-uint32_t READER_HAL_GetRedunancyType(void);
-uint32_t READER_HAL_GetWI(void);
+uint32_t READER_HAL_GetRedunancyType(READER_HAL_CommSettings *pSettings);
+uint32_t READER_HAL_GetWI(READER_HAL_CommSettings *pSettings);
 
 READER_Status READER_HAL_SetPwrLine(READER_HAL_State state);
 READER_Status READER_HAL_SetRstLine(READER_HAL_State state);
