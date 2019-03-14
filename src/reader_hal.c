@@ -276,18 +276,15 @@ READER_Status READER_HAL_RcvCharFrame(READER_HAL_CommSettings *pSettings, READER
  * \param timeout Valeur du timeout en milisecondes à utiliser. Si cette valeur est READER_HAL_USE_ISO_WT alors le timeout utilisé sera celui spécifié dans la norme ISO.
  */
 READER_Status READER_HAL_RcvChar(uint8_t *character, uint32_t timeout){
-	uint32_t timeoutMili;
 	HAL_StatusTypeDef retVal;
 	
-	if(timeout == READER_HAL_USE_ISO_WT){
-		timeoutMili = READER_HAL_GetWT(pSettings);
-	}
-	else{
-		timeoutMili = timeout;
+	
+	if(timeout==0){
+		return READER_BAD_ARG;
 	}
 	
 	
-	retVal = HAL_SMARTCARD_Receive(&smartcardHandleStruct, character, 1, timeoutMili);
+	retVal = HAL_SMARTCARD_Receive(&smartcardHandleStruct, character, 1, timeout);
 	
 	switch(retVal){
 		case HAL_TIMEOUT:
@@ -307,17 +304,12 @@ READER_Status READER_HAL_RcvChar(uint8_t *character, uint32_t timeout){
 
 /* Fonction "from scratch" pour recevoir un caractere */
 READER_Status READER_HAL_RcvChar(READER_HAL_CommSettings *pSettings, READER_HAL_Protocol protocol, uint8_t *character, uint32_t timeout){
-	uint32_t timeoutMili, tickstart;
+	uint32_t tickstart;
 	
 	
-	/* Calcul du timeout effectif en milisecondes */
-	if(timeout == READER_HAL_USE_ISO_WT){
-		timeoutMili = READER_HAL_GetWT(pSettings);
+	if(timeout==0){
+		return READER_BAD_ARG;
 	}
-	else{
-		timeoutMili = timeout;
-	}
-	
 	
 	/* Reception d'un caractere */
 	/* On suppose ici que le bloc USART2 a deja ete configure en mode smartcard et qu'il est active et correctement initailise avec les bon parametres de communication */
@@ -333,13 +325,13 @@ READER_Status READER_HAL_RcvChar(READER_HAL_CommSettings *pSettings, READER_HAL_
 	USART2->CR1 |= USART_CR1_RE;
 	//USART2->SR &= ~USART_SR_RXNE;
 	
-	while(!(USART2->SR & USART_SR_RXNE) && !(READER_HAL_GetTick()-tickstart >= timeoutMili)){
+	while(!(USART2->SR & USART_SR_RXNE) && !(READER_HAL_GetTick()-tickstart >= timeout)){
 			
 	}
 	
 	
 	/* Quand on sort de la boucle d'attente, on verifie si on est sorti a cause d'un timeout */
-	if(READER_HAL_GetTick()-tickstart >= timeoutMili){
+	if(READER_HAL_GetTick()-tickstart >= timeout){
 		USART2->CR1 &= ~USART_CR1_RE;
 		return READER_TIMEOUT;
 	}
@@ -377,18 +369,15 @@ READER_Status READER_HAL_RcvChar(READER_HAL_CommSettings *pSettings, READER_HAL_
  * \param timeout Valeur du timeout en milisecondes à utiliser. Si cette valeur est READER_HAL_USE_ISO_WT alors le timeout utilisé sera celui spécifié dans la norme ISO.
  */
 READER_Status READER_HAL_SendChar(uint8_t character, uint32_t timeout){
-	uint32_t timeoutMili;
 	HAL_StatusTypeDef retVal;
 	
-	if(timeout == READER_HAL_USE_ISO_WT){
-		timeoutMili = READER_HAL_GetWT(pSettings);
-	}
-	else{
-		timeoutMili = timeout;
+	
+	if(timeout==0){
+		return READER_BAD_ARG;
 	}
 	
 	
-	retVal = HAL_SMARTCARD_Transmit(&smartcardHandleStruct, &character, 1, timeoutMili);
+	retVal = HAL_SMARTCARD_Transmit(&smartcardHandleStruct, &character, 1, timeout);
 	
 	switch(retVal){
 		case HAL_TIMEOUT:
@@ -405,19 +394,13 @@ READER_Status READER_HAL_SendChar(uint8_t character, uint32_t timeout){
 #else
 
 READER_Status READER_HAL_SendChar(READER_HAL_CommSettings *pSettings, READER_HAL_Protocol protocol, uint8_t character, uint32_t timeout){
-	uint32_t timeoutMili;
 	uint32_t tickstart;
 	uint32_t guardTime;
 	
 	
-	/* On calcule le timeout effectif (Celui fourni en parametre ou celui defini dans la norme ISO) */
-	if(timeout == READER_HAL_USE_ISO_WT){
-		timeoutMili = READER_HAL_GetWT(pSettings);
+	if(timeout==0){
+		return READER_BAD_ARG;
 	}
-	else{
-		timeoutMili = timeout;
-	}
-	
 	
 	/* On active le bloc USART */
 	USART2->CR1 |= USART_CR1_UE;
@@ -437,7 +420,7 @@ READER_Status READER_HAL_SendChar(READER_HAL_CommSettings *pSettings, READER_HAL
 	tickstart = READER_HAL_GetTick();
 	
 	/* On attend que le buffer d'envoi soit empty. On verifie aussi qu'on depasse pas timeout. */
-	while(!(USART2->SR & USART_SR_TXE) && ((READER_HAL_GetTick()-tickstart < timeoutMili))){
+	while(!(USART2->SR & USART_SR_TXE) && ((READER_HAL_GetTick()-tickstart < timeout))){
 		
 	}
 	
@@ -448,7 +431,7 @@ READER_Status READER_HAL_SendChar(READER_HAL_CommSettings *pSettings, READER_HAL
 		
 	}
 	
-	if((READER_HAL_GetTick()-tickstart) >= timeoutMili){
+	if((READER_HAL_GetTick()-tickstart) >= timeout){
 		return READER_TIMEOUT;
 	}
 	
