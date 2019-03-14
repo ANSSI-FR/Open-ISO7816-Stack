@@ -9,7 +9,6 @@ struct READER_HAL_CommSettings{
 	uint32_t Fi;
 	uint32_t Di;
 	uint32_t GT;
-	uint32_t redundancyType;
 };
 
 

@@ -2,6 +2,9 @@
 #include "reader_t1.h"
 
 
+#include "reader_hal_comm_settings.h"
+
+
 #ifndef __READER_T1_CONTEXT_HANDLER_H__
 #define __READER_T1_CONTEXT_HANDLER_H__
 
@@ -97,6 +100,8 @@ enum READER_T1_FlagStatus{
 
 typedef struct READER_T1_ContextHandler READER_T1_ContextHandler;
 struct READER_T1_ContextHandler{
+	READER_HAL_CommSettings halCommSettings;
+	
 	READER_T1_BlockBuffer blockBuff;
 	READER_T1_ReceptionBuff receptionBuff;
 	
@@ -266,5 +271,23 @@ READER_Status READER_T1_CONTEXT_CheckSBlockExpectedINF(READER_T1_ContextHandler 
 
 
 READER_Status READER_T1_CONTEXT_GetBlockBuff(READER_T1_ContextHandler *pContext, READER_T1_BlockBuffer **ppBlockBuff);
+
+
+/* Manipulation des commSettings ...  */
+READER_Status READER_T1_CONTEXT_GetHalCommSettingsPtr(READER_T1_ContextHandler *pContext, READER_HAL_CommSettings **ppCommSettings);
+
+READER_Status READER_T1_CONTEXT_GetHalCommSettingsFreq(READER_T1_ContextHandler *pContext, uint32_t *pFreq);
+READER_Status READER_T1_CONTEXT_GetHalCommSettingsFi(READER_T1_ContextHandler *pContext, uint32_t *pFi);
+READER_Status READER_T1_CONTEXT_GetHalCommSettingsDi(READER_T1_ContextHandler *pContext, uint32_t *pDi);
+READER_Status READER_T1_CONTEXT_GetHalCommSettingsGT(READER_T1_ContextHandler *pContext, uint32_t *pGT);
+
+READER_Status READER_T1_CONTEXT_SetHalCommSettingsFreq(READER_T1_ContextHandler *pContext, uint32_t freq);
+READER_Status READER_T1_CONTEXT_SetHalCommSettingsFi(READER_T1_ContextHandler *pContext, uint32_t Fi);
+READER_Status READER_T1_CONTEXT_SetHalCommSettingsDi(READER_T1_ContextHandler *pContext, uint32_t Di);
+READER_Status READER_T1_CONTEXT_SetHalCommSettingsGT(READER_T1_ContextHandler *pContext, uint32_t GT);
+
+
+READER_Status READER_T1_CONTEXT_ImportHalCommSettingsToContext(READER_T1_ContextHandler *pContext, READER_HAL_CommSettings *pSettings);
+READER_Status READER_T1_CONTEXT_ExportHalCommSettingsFromContext(READER_T1_ContextHandler *pContext, READER_HAL_CommSettings *pSettings);
 
 #endif
