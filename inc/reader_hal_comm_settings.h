@@ -3,6 +3,14 @@
 
 
 
+#define READER_HAL_DEFAULT_FI         (uint32_t)(372)
+#define READER_HAL_DEFAULT_DI         (uint32_t)(1)
+#define READER_HAL_DEFAULT_FREQ       (uint32_t)(4200000)
+#define READER_HAL_DEFAULT_GT         (uint32_t)(12)
+
+
+
+
 typedef struct READER_HAL_CommSettings READER_HAL_CommSettings;
 struct READER_HAL_CommSettings{
 	uint32_t f;

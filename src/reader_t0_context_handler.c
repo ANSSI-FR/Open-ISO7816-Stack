@@ -3,6 +3,21 @@
 
 
 
+
+
+READER_Status READER_T0_CONTEXT_Init(READER_T0_ContextHandler *pContext, READER_HAL_CommSettings *pSettings){
+	READER_Status retVal;
+	
+	
+	retVal = READER_T0_CONTEXT_ImportHalCommSettingsToContext(pContext, pSettings);
+	if(retVal != READER_OK) return retVal;
+	
+	return READER_OK;
+}
+
+
+
+
 /* Manipulation des commSettings ...  */
 READER_Status READER_T0_CONTEXT_GetHalCommSettingsPtr(READER_T0_ContextHandler *pContext, READER_HAL_CommSettings **ppCommSettings){
 	READER_HAL_CommSettings *pCommSettings;

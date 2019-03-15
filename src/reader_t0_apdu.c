@@ -2,25 +2,18 @@
 
 
 
+#include "reader_t0_context_handler.h"
 
 
 
-READER_Status READER_T0_APDU_Init(void){
+
+READER_Status READER_T0_APDU_Init(READER_T0_ContextHandler *pContext, READER_HAL_CommSettings *pSettings){
 	READER_Status retVal;
-	READER_ATR_Atr atr;
 	
 	
-	/* Initialisation de la HAL ...  */
-	retVal = READER_HAL_Init();
+	retVal = READER_T0_CONTEXT_Init(pContext, pSettings);
 	if(retVal != READER_OK) return retVal;
 	
-	/* Activation de la Carte ...    */
-	retVal = READER_HAL_DoColdReset();
-	if(retVal != READER_OK) return retVal;
-	
-	/* Reception de l'ATR            */
-	retVal = READER_ATR_Receive(&atr);
-	if(retVal != READER_OK) return retVal;
 	
 	return READER_OK;
 }
@@ -33,38 +26,38 @@ READER_Status READER_T0_APDU_Init(void){
  * \return Valeur de type READER_Status. READER_OK si l'exécution s'est correctement déroulée. Toute autre valeur suggère une erreur.
  * \param *pApduCmd Un pointeur sur un structure de type READER_APDU_Command.
  */
-READER_Status READER_T0_APDU_Execute(READER_APDU_Command *pApduCmd, READER_APDU_Response *pApduResp, uint32_t timeout){
+READER_Status READER_T0_APDU_Execute(READER_T0_ContextHandler *pContext, READER_APDU_Command *pApduCmd, READER_APDU_Response *pApduResp, uint32_t timeout){
 	READER_APDU_ProtocolCase protocolCase;
 	
 	protocolCase = READER_APDU_GetProtocolCase(pApduCmd);
 	
 	switch(protocolCase){
 		case READER_APDU_CASE_1:
-			return READER_T0_APDU_ExecuteCase1(pApduCmd, pApduResp, timeout);
+			return READER_T0_APDU_ExecuteCase1(pContext, pApduCmd, pApduResp, timeout);
 			break;
 			
 		case READER_APDU_CASE_2E:
-			return READER_T0_APDU_ExecuteCase2E(pApduCmd, pApduResp, timeout);
+			return READER_T0_APDU_ExecuteCase2E(pContext, pApduCmd, pApduResp, timeout);
 			break;
 			
 		case READER_APDU_CASE_2S:
-			return READER_T0_APDU_ExecuteCase2S(pApduCmd, pApduResp, timeout);
+			return READER_T0_APDU_ExecuteCase2S(pContext, pApduCmd, pApduResp, timeout);
 			break;
 			
 		case READER_APDU_CASE_3E:
-			return READER_T0_APDU_ExecuteCase3E(pApduCmd, pApduResp, timeout);
+			return READER_T0_APDU_ExecuteCase3E(pContext, pApduCmd, pApduResp, timeout);
 			break;
 			
 		case READER_APDU_CASE_3S:
-			return READER_T0_APDU_ExecuteCase3S(pApduCmd, pApduResp, timeout);
+			return READER_T0_APDU_ExecuteCase3S(pContext, pApduCmd, pApduResp, timeout);
 			break;
 			
 		case READER_APDU_CASE_4E:
-			return READER_T0_APDU_ExecuteCase4E(pApduCmd, pApduResp, timeout);
+			return READER_T0_APDU_ExecuteCase4E(pContext, pApduCmd, pApduResp, timeout);
 			break;
 			
 		case READER_APDU_CASE_4S:
-			return READER_T0_APDU_ExecuteCase4S(pApduCmd, pApduResp, timeout);
+			return READER_T0_APDU_ExecuteCase4S(pContext, pApduCmd, pApduResp, timeout);
 			break;
 			
 		case READER_APDU_CASE_ERR:
@@ -78,7 +71,7 @@ READER_Status READER_T0_APDU_Execute(READER_APDU_Command *pApduCmd, READER_APDU_
 
 
 
-READER_Status READER_T0_APDU_ExecuteCase1(READER_APDU_Command *pApduCmd, READER_APDU_Response *pApduResp, uint32_t timeout){
+READER_Status READER_T0_APDU_ExecuteCase1(READER_T0_ContextHandler *pContext, READER_APDU_Command *pApduCmd, READER_APDU_Response *pApduResp, uint32_t timeout){
 	/* Voir ISO7816-3 section 12.2.2 */
 	READER_TPDU_Command tpduCmd;
 	READER_TPDU_Response tpduResp;
@@ -106,14 +99,14 @@ READER_Status READER_T0_APDU_ExecuteCase1(READER_APDU_Command *pApduCmd, READER_
 	if(retVal != READER_OK) return retVal;	
 	
 	/* On map la reponse TPDU sur la reponse APDU */
-	retVal = READER_T0_APDU_MapTpduRespToApdu(&tpduResp, pApduResp);
+	retVal = READER_T0_APDU_MapTpduRespToApdu(pContext, &tpduResp, pApduResp);
 	if(retVal != READER_OK) return READER_ERR;
 	
 	return READER_OK;
 }
 
 
-READER_Status READER_T0_APDU_ExecuteCase2S(READER_APDU_Command *pApduCmd, READER_APDU_Response *pApduResp, uint32_t timeout){
+READER_Status READER_T0_APDU_ExecuteCase2S(READER_T0_ContextHandler *pContext, READER_APDU_Command *pApduCmd, READER_APDU_Response *pApduResp, uint32_t timeout){
 	/* Voir ISO7816-3 section 12.2.3 */
 	READER_TPDU_Command tpduCmd;
 	READER_TPDU_Response tpduResp;
@@ -145,7 +138,7 @@ READER_Status READER_T0_APDU_ExecuteCase2S(READER_APDU_Command *pApduCmd, READER
 	
 	/* Case 2S.2 Process Aborted, Ne definitely not accepted        */
 	if((tpduResp.SW1 == 0x67) && (tpduResp.SW2 == 0x00)){
-		retVal = READER_T0_APDU_MapTpduRespToApdu(&tpduResp, pApduResp);
+		retVal = READER_T0_APDU_MapTpduRespToApdu(pContext, &tpduResp, pApduResp);
 		if(retVal != READER_OK) return READER_ERR;
 	}	
 	/* Case 2S.3 Process Aborted, Ne not accepted, Na indicated     */
@@ -170,13 +163,13 @@ READER_Status READER_T0_APDU_ExecuteCase2S(READER_APDU_Command *pApduCmd, READER
 		retVal = READER_TPDU_RcvResponse(&tpduResp, (Ne<Na)?Ne:Na, timeout);    /* Voir ISO7816-3 section 12.2.3 case 2S.3 */
 		if(retVal != READER_OK) return retVal;
 		
-		retVal = READER_T0_APDU_MapTpduRespToApdu(&tpduResp, pApduResp);
+		retVal = READER_T0_APDU_MapTpduRespToApdu(pContext, &tpduResp, pApduResp);
 		if(retVal != READER_OK) return READER_ERR;
 	}
 	/* Case 2S.1 Process Completed, Ne accepted                     */
 	/* Case 2S.4 SW1SW2 = 8XYZ et SW1SW2 != 9000                    */
 	else{
-		retVal = READER_T0_APDU_MapTpduRespToApdu(&tpduResp, pApduResp);
+		retVal = READER_T0_APDU_MapTpduRespToApdu(pContext, &tpduResp, pApduResp);
 		if(retVal != READER_OK) return READER_ERR;
 	}
 	
@@ -184,7 +177,7 @@ READER_Status READER_T0_APDU_ExecuteCase2S(READER_APDU_Command *pApduCmd, READER
 }
 
 
-READER_Status READER_T0_APDU_ExecuteCase3S(READER_APDU_Command *pApduCmd, READER_APDU_Response *pApduResp, uint32_t timeout){
+READER_Status READER_T0_APDU_ExecuteCase3S(READER_T0_ContextHandler *pContext, READER_APDU_Command *pApduCmd, READER_APDU_Response *pApduResp, uint32_t timeout){
 	/* Voir ISO7816-3 section 12.2.4 */
 	READER_TPDU_Command tpduCmd;
 	READER_TPDU_Response tpduResp;
@@ -217,7 +210,7 @@ READER_Status READER_T0_APDU_ExecuteCase3S(READER_APDU_Command *pApduCmd, READER
 	if(retVal != READER_OK) return retVal;
 	
 	/* On mape la reponse APDU sur la reponse TPDU */
-	retVal = READER_T0_APDU_MapTpduRespToApdu(&tpduResp, pApduResp);
+	retVal = READER_T0_APDU_MapTpduRespToApdu(pContext, &tpduResp, pApduResp);
 	if(retVal != READER_OK) return READER_ERR;
 	
 	return READER_OK;
@@ -225,7 +218,7 @@ READER_Status READER_T0_APDU_ExecuteCase3S(READER_APDU_Command *pApduCmd, READER
 
 
 
-READER_Status READER_T0_APDU_ExecuteCase3E(READER_APDU_Command *pApduCmd, READER_APDU_Response *pApduResp, uint32_t timeout){
+READER_Status READER_T0_APDU_ExecuteCase3E(READER_T0_ContextHandler *pContext, READER_APDU_Command *pApduCmd, READER_APDU_Response *pApduResp, uint32_t timeout){
 	/* Voir ISO7816-3 section 12.2.7 */
 	READER_TPDU_Command tpduCmd;
 	READER_TPDU_Response tpduResp;
@@ -271,7 +264,7 @@ READER_Status READER_T0_APDU_ExecuteCase3E(READER_APDU_Command *pApduCmd, READER
 	/* On regarde le SW de la reponse et on en déduit si la carte supporte ou non l'instruction ENVELOPE                 */
 	/* Si la carte ne supporte pas ENVELOPE                                                                              */
 	if((tpduResp.SW1 == 0x6D) && (tpduResp.SW2 == 0x00)){
-		retVal = READER_T0_APDU_MapTpduRespToApdu(&tpduResp, pApduResp);    /* On mape la reponse APDU sur la reponse TPDU  */
+		retVal = READER_T0_APDU_MapTpduRespToApdu(pContext, &tpduResp, pApduResp);    /* On mape la reponse APDU sur la reponse TPDU  */
 		if(retVal != READER_OK) return READER_ERR;
 		
 		return READER_OK;                                                /* On termine la et on ne renvoie pas d'erreur. L'exec s'est correctement deroulee, simplement la carte ne supporte pas */
@@ -335,7 +328,7 @@ READER_Status READER_T0_APDU_ExecuteCase3E(READER_APDU_Command *pApduCmd, READER
 		
 		/* Le SW de la derniere commande ENVELOPE vide est la SW de la commande globale */
 		/* Donc on mape le dernier TPDU response sur le APDU response          */
-		retVal = READER_T0_APDU_MapTpduRespToApdu(&tpduResp, pApduResp);
+		retVal = READER_T0_APDU_MapTpduRespToApdu(pContext, &tpduResp, pApduResp);
 		if(retVal != READER_OK) return READER_ERR;
 	}                                                                                                                   
 	/* Si on a recu un SW qui correspond pas a la sequence prevue par le protocole                                       */
@@ -349,7 +342,7 @@ READER_Status READER_T0_APDU_ExecuteCase3E(READER_APDU_Command *pApduCmd, READER
 
 
 
-READER_Status READER_T0_APDU_ExecuteCase2E(READER_APDU_Command *pApduCmd, READER_APDU_Response *pApduResp, uint32_t timeout){
+READER_Status READER_T0_APDU_ExecuteCase2E(READER_T0_ContextHandler *pContext, READER_APDU_Command *pApduCmd, READER_APDU_Response *pApduResp, uint32_t timeout){
 	/* Voir ISO7816-3 section 12.2.6 */
 	READER_TPDU_Command tpduCmd;
 	READER_TPDU_Response tpduResp;
@@ -377,7 +370,7 @@ READER_Status READER_T0_APDU_ExecuteCase2E(READER_APDU_Command *pApduCmd, READER
 	
 	/* On verifie la reponse de la carte */
 	if((tpduResp.SW1 == 0x67) && (tpduResp.SW2 == 0x00)){                   /* La carte a abort total a cause de wrong length */
-		retVal = READER_T0_APDU_MapTpduRespToApdu(&tpduResp, pApduResp);
+		retVal = READER_T0_APDU_MapTpduRespToApdu(pContext, &tpduResp, pApduResp);
 		if(retVal != READER_OK) return READER_ERR;
 		return READER_OK;
 	}
@@ -393,12 +386,12 @@ READER_Status READER_T0_APDU_ExecuteCase2E(READER_APDU_Command *pApduCmd, READER
 		retVal = READER_TPDU_RcvResponse(&tpduResp, (Ne<Na)?Ne:Na, timeout);    /* Voir ISO7816-3 section 12.2.3 case 2S.3 */
 		if(retVal != READER_OK) return retVal;
 		
-		retVal = READER_T0_APDU_MapTpduRespToApdu(&tpduResp, pApduResp);
+		retVal = READER_T0_APDU_MapTpduRespToApdu(pContext, &tpduResp, pApduResp);
 		if(retVal != READER_OK) return READER_ERR;
 	}
 	else if((tpduResp.SW1 == 0x90) && (tpduResp.SW2 == 0x00)){
 		if(tpduResp.dataSize == 256){
-			retVal = READER_T0_APDU_MapTpduRespToApdu(&tpduResp, pApduResp);
+			retVal = READER_T0_APDU_MapTpduRespToApdu(pContext, &tpduResp, pApduResp);
 			if(retVal != READER_OK) return READER_ERR;
 		}
 		else{
@@ -457,7 +450,7 @@ READER_Status READER_T0_APDU_ExecuteCase2E(READER_APDU_Command *pApduCmd, READER
 
 
 
-READER_Status READER_T0_APDU_ExecuteCase4S(READER_APDU_Command *pApduCmd, READER_APDU_Response *pApduResp, uint32_t timeout){
+READER_Status READER_T0_APDU_ExecuteCase4S(READER_T0_ContextHandler *pContext, READER_APDU_Command *pApduCmd, READER_APDU_Response *pApduResp, uint32_t timeout){
 	READER_TPDU_Command tpduCmd;
 	READER_TPDU_Response tpduResp;
 	READER_APDU_Command newApduCmd;
@@ -485,7 +478,7 @@ READER_Status READER_T0_APDU_ExecuteCase4S(READER_APDU_Command *pApduCmd, READER
 	/* Selon le SW du premier TPDU response */
 	/* Cas 4S.1 */
 	if((tpduResp.SW1 == 0x60) || (tpduResp.SW1 == 0x64) || (tpduResp.SW1 == 0x65) || (tpduResp.SW1 == 0x66) || (tpduResp.SW1 == 0x67) || (tpduResp.SW1 == 0x68) || (tpduResp.SW1 == 0x69) || (tpduResp.SW1 == 0x6A) || (tpduResp.SW1 == 0x6B) || (tpduResp.SW1 == 0x6C) || (tpduResp.SW1 == 0x6D)  || (tpduResp.SW1 == 0x6E) || (tpduResp.SW1 == 0x6F)){
-		retVal = READER_T0_APDU_MapTpduRespToApdu(&tpduResp, pApduResp);
+		retVal = READER_T0_APDU_MapTpduRespToApdu(pContext, &tpduResp, pApduResp);
 		if(retVal != READER_OK) return READER_ERR;
 		return READER_OK;
 	}
@@ -495,7 +488,7 @@ READER_Status READER_T0_APDU_ExecuteCase4S(READER_APDU_Command *pApduCmd, READER
 		retVal = READER_APDU_Forge(&newApduCmd, pApduCmd->header.CLA, READER_APDU_INS_GETRESPONSE, 0x00, 0x00, 0, NULL, pApduCmd->body.Ne);
 		if(retVal != READER_OK) return retVal;
 		
-		retVal = READER_T0_APDU_ExecuteCase2S(&newApduCmd, pApduResp, timeout);
+		retVal = READER_T0_APDU_ExecuteCase2S(pContext, &newApduCmd, pApduResp, timeout);
 		if(retVal != READER_OK) return retVal;
 		
 		//retVal = READER_APDU_CopyResponse(&newApduResp, pApduResp);
@@ -507,14 +500,14 @@ READER_Status READER_T0_APDU_ExecuteCase4S(READER_APDU_Command *pApduCmd, READER
 		retVal = READER_APDU_Forge(&newApduCmd, pApduCmd->header.CLA, READER_APDU_INS_GETRESPONSE, 0x00, 0x00, 0, NULL, (Ne<Na)?Na:Ne);
 		if(retVal != READER_OK) return retVal;
 		
-		retVal = READER_T0_APDU_ExecuteCase2S(&newApduCmd, pApduResp, timeout);
+		retVal = READER_T0_APDU_ExecuteCase2S(pContext, &newApduCmd, pApduResp, timeout);
 		if(retVal != READER_OK) return retVal;
 		
 		return READER_OK;
 	}
 	/* Cas 4S.4 */
 	else if((tpduResp.SW1 == 0x62) || (tpduResp.SW1 == 0x63) || (((tpduResp.SW1 & 0xF0) == 0x90) && (tpduResp.SW2 != 0x00)) ){
-		retVal = READER_T0_APDU_MapTpduRespToApdu(&tpduResp, pApduResp);
+		retVal = READER_T0_APDU_MapTpduRespToApdu(pContext, &tpduResp, pApduResp);
 		if(retVal != READER_OK) return READER_ERR;
 		return READER_OK;
 	}
@@ -526,7 +519,7 @@ READER_Status READER_T0_APDU_ExecuteCase4S(READER_APDU_Command *pApduCmd, READER
 }
 
 
-READER_Status READER_T0_APDU_ExecuteCase4E(READER_APDU_Command *pApduCmd, READER_APDU_Response *pApduResp, uint32_t timeout){
+READER_Status READER_T0_APDU_ExecuteCase4E(READER_T0_ContextHandler *pContext, READER_APDU_Command *pApduCmd, READER_APDU_Response *pApduResp, uint32_t timeout){
 	
 	return READER_OK;
 }
@@ -536,7 +529,7 @@ READER_Status READER_T0_APDU_ExecuteCase4E(READER_APDU_Command *pApduCmd, READER
  * \fn READER_Status READER_T0_APDU_MapTpduRespToApdu(READER_TPDU_Response *pTpduResp, READER_APDU_Response *pApduResp)
  * \brief Cette fonction pemret de mapper un object de type "TPDU Response" sur un objet de type "APDU Response". Attention cette fonction n'est pas prévue pour le cas où la taille des données du "APDU Response" est strictement supérieure à 256 octets (cas 2E et 4E).
  */
-READER_Status READER_T0_APDU_MapTpduRespToApdu(READER_TPDU_Response *pTpduResp, READER_APDU_Response *pApduResp){
+READER_Status READER_T0_APDU_MapTpduRespToApdu(READER_T0_ContextHandler *pContext, READER_TPDU_Response *pTpduResp, READER_APDU_Response *pApduResp){
 	uint32_t i;
 	
 	if(pTpduResp->dataSize > 256) return READER_ERR;

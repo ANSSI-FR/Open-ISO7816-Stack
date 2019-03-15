@@ -20,6 +20,7 @@
 #include "stm32f4xx_hal.h"
 
 #include "reader_hal_comm_settings.h"
+#include "reader_atr.h"
 
 #include <stdint.h>
 
@@ -59,7 +60,9 @@ enum READER_HAL_Protocol{
 
 
 
-READER_Status READER_HAL_Init(READER_HAL_CommSettings *pSettings);
+READER_Status READER_HAL_InitWithDefaults(READER_HAL_CommSettings *pSettings);
+READER_Status READER_HAL_InitWithATRAndDefaults(READER_HAL_CommSettings *pSettings, READER_ATR_Atr *pAtr);
+READER_Status READER_HAL_InitHardware(void);
 READER_Status READER_HAL_SendCharFrame(READER_HAL_CommSettings *pSettings, READER_HAL_Protocol protocol, uint8_t *frame, uint32_t frameSize, uint32_t timeout);
 READER_Status READER_HAL_SendCharFrameTickstart(READER_HAL_CommSettings *pSettings, READER_HAL_Protocol protocol, uint8_t *frame, uint32_t frameSize, uint32_t timeout, uint32_t *pTickstart);
 READER_Status READER_HAL_RcvCharFrame(READER_HAL_CommSettings *pSettings, READER_HAL_Protocol protocol, uint8_t *frame, uint32_t frameSize, uint32_t timeout);

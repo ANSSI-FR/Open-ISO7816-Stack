@@ -82,7 +82,7 @@ READER_Status READER_PERIPH_Init(void){
 	if(READER_PERIPH_InitPwrLine() != READER_OK) return READER_ERR;
 	
 	smartcardHandleStruct.Instance = USART2;
-	smartcardHandleStruct.Init.BaudRate = READER_UTILS_ComputeBaudRate(READER_DEFAULT_FREQ, READER_DEFAULT_FI, READER_DEFAULT_DI); 
+	smartcardHandleStruct.Init.BaudRate = READER_UTILS_ComputeBaudRate(READER_HAL_DEFAULT_FREQ, READER_HAL_DEFAULT_FI, READER_HAL_DEFAULT_DI); 
 	smartcardHandleStruct.Init.WordLength = SMARTCARD_WORDLENGTH_9B;
 	smartcardHandleStruct.Init.StopBits = SMARTCARD_STOPBITS_1_5;
 	smartcardHandleStruct.Init.Parity = SMARTCARD_PARITY_EVEN;
@@ -90,10 +90,10 @@ READER_Status READER_PERIPH_Init(void){
 	smartcardHandleStruct.Init.CLKPolarity = SMARTCARD_POLARITY_LOW;
 	smartcardHandleStruct.Init.CLKPhase = SMARTCARD_PHASE_1EDGE;
 	smartcardHandleStruct.Init.CLKLastBit = SMARTCARD_LASTBIT_ENABLE;
-	smartcardHandleStruct.Init.GuardTime = 0; //READER_DEFAULT_GT;
+	smartcardHandleStruct.Init.GuardTime = 0; //READER_HAL_DEFAULT_GT;
 	smartcardHandleStruct.Init.NACKState = SMARTCARD_NACK_ENABLE;
 	
-	smartcardHandleStruct.Init.Prescaler = READER_UTILS_ComputePrescFromFreq(READER_DEFAULT_FREQ);
+	smartcardHandleStruct.Init.Prescaler = READER_UTILS_ComputePrescFromFreq(READER_HAL_DEFAULT_FREQ);
 	
 	
 	__HAL_RCC_USART2_CLK_ENABLE();

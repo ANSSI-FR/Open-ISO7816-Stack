@@ -21,12 +21,7 @@
 
 
 
-/**
- * \fn READER_Status READER_HAL_Init(void)
- * \brief Fonction pour initialiser la couche d'abstraction.
- * \return Valeur de type READER_Status. READER_OK si l'exécution s'est correctement déroulée. Toute autre valeur suggère une erreur.
- */ 
-READER_Status READER_HAL_Init(READER_HAL_CommSettings *pSettings){
+READER_Status READER_HAL_InitHardware(void){
 	READER_Status retVal;
 	
 	RCC_ClkInitTypeDef RCC_ClkInitStruct;
@@ -70,22 +65,42 @@ READER_Status READER_HAL_Init(READER_HAL_CommSettings *pSettings){
 	if(READER_HAL_SetRstLine(READER_HAL_STATE_OFF) != READER_OK)      return READER_ERR;
 	if(READER_HAL_SetClkLine(READER_HAL_STATE_OFF) != READER_OK)      return READER_ERR;
 	
+	
+	return READER_OK;
+}
+
+
+
+
+/**
+ * \fn READER_Status READER_HAL_Init(void)
+ * \brief Fonction pour initialiser la couche d'abstraction.
+ * \return Valeur de type READER_Status. READER_OK si l'exécution s'est correctement déroulée. Toute autre valeur indique une erreur.
+ */ 
+READER_Status READER_HAL_InitWithDefaults(READER_HAL_CommSettings *pSettings){
+	READER_Status retVal;
+	
+	
+	retVal = READER_HAL_InitHardware();
+	if(retVal != READER_OK) return retVal;
+	
+	
 	/* Initialisation du WT, du GT, du Etu (Fi, Di) et de f                                    */
 	/* Attention, important que pour la toute premiere init, F et D soint init en premier      */
 	//retVal = READER_HAL_SetWT(READER_DEFAULT_WT_MILI);                if(retVal != READER_OK) return retVal;
 	/* Attention l'ordre peut etre important, certaines valeurs dependant des autres           */
-	retVal = READER_HAL_SetGT(pSettings, READER_DEFAULT_GT);                     if(retVal != READER_OK) return retVal;
-	retVal = READER_HAL_SetFi(pSettings, READER_DEFAULT_FI);                     if(retVal != READER_OK) return retVal;
-	retVal = READER_HAL_SetDi(pSettings, READER_DEFAULT_DI);                     if(retVal != READER_OK) return retVal;
-	retVal = READER_HAL_SetEtu(pSettings, READER_DEFAULT_FI, READER_DEFAULT_DI); if(retVal != READER_OK) return retVal;
-	retVal = READER_HAL_SetFreq(pSettings, READER_DEFAULT_FREQ);                 if(retVal != READER_OK) return retVal;
+	retVal = READER_HAL_SetGT(pSettings, READER_HAL_DEFAULT_GT);                     if(retVal != READER_OK) return retVal;
+	retVal = READER_HAL_SetFi(pSettings, READER_HAL_DEFAULT_FI);                     if(retVal != READER_OK) return retVal;
+	retVal = READER_HAL_SetDi(pSettings, READER_HAL_DEFAULT_DI);                     if(retVal != READER_OK) return retVal;
+	retVal = READER_HAL_SetEtu(pSettings, READER_HAL_DEFAULT_FI, READER_HAL_DEFAULT_DI); if(retVal != READER_OK) return retVal;
+	retVal = READER_HAL_SetFreq(pSettings, READER_HAL_DEFAULT_FREQ);                 if(retVal != READER_OK) return retVal;
 	//retVal = READER_HAL_SetWI(pSettings, READER_DEFAULT_WI);                     if(retVal != READER_OK) return retVal;
 	//retVal = READER_HAL_SetBWI(READER_DEFAULT_BWI);                   if(retVal != READER_OK) return retVal;
 	//retVal = READER_HAL_SetBWT(READER_DEFAULT_BWT);                   if(retVal != READER_OK) return retVal;
 	//retVal = READER_HAL_SetBGT(READER_DEFAULT_BGT);                   if(retVal != READER_OK) return retVal;
 	//retVal = READER_HAL_SetIFSC(READER_DEFAULT_IFSC);                 if(retVal != READER_OK) return retVal;
 	//retVal = READER_HAL_SetIFSD(READER_DEFAULT_IFSD);                 if(retVal != READER_OK) return retVal;
-	retVal = READER_HAL_SetRedundancyType(pSettings, READER_DEFAULT_REDUNDANCY_TYPE); if(retVal != READER_OK) return retVal;
+	//retVal = READER_HAL_SetRedundancyType(pSettings, READER_DEFAULT_REDUNDANCY_TYPE); if(retVal != READER_OK) return retVal;
 	
 	
 	return READER_OK;
@@ -415,7 +430,7 @@ READER_Status READER_HAL_SendChar(READER_HAL_CommSettings *pSettings, READER_HAL
 	/* Dans la norme ISO il s'agit du nombre d'etu entre les starts bits de deux caracteres consecutifs                                                              */
 	/* Dans le STM32 il s'agit du delai (en nombre d'etu) a ajouter apres le stop bit du premier caractere avant d'envoyer le start bit du second                    */
 	guardTime = READER_HAL_GetGT(pSettings);
-	MODIFY_REG(USART2->GTPR, USART_GTPR_GT, ((guardTime-READER_DEFAULT_GT)<<8U));
+	MODIFY_REG(USART2->GTPR, USART_GTPR_GT, ((guardTime-READER_HAL_DEFAULT_GT)<<8U));
 	
 	tickstart = READER_HAL_GetTick();
 	

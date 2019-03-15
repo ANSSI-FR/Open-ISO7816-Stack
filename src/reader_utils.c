@@ -93,7 +93,7 @@ uint32_t READER_UTILS_ComputeWT2(uint32_t baudRate, uint32_t Di, uint32_t WI){
 uint32_t READER_UTILS_ComputeBWTEtu(uint32_t BWI, uint32_t f){
 	/* Voir ISO7816-3 section 11.4.3 */
 	uint32_t i;
-	uint32_t Fd = READER_DEFAULT_FI;
+	uint32_t Fd = READER_HAL_DEFAULT_FI;
 	float power = 1;
 	
 	for(i=0; i<BWI; i++){

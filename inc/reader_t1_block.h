@@ -26,7 +26,7 @@
 typedef enum READER_T1_RedundancyType READER_T1_RedundancyType;
 enum READER_T1_RedundancyType{
 	READER_T1_CRC                      = (uint32_t)(0x00000000),
-	READER_T1_LRC                      = (uint32_t)(0x00000001)      /* Attention READER_DEFAULT_REDUNDANCY_TYPE dans reader.h depend de cette valeur */
+	READER_T1_LRC                      = (uint32_t)(0x00000001)      
 };
 
 
