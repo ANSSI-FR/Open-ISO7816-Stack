@@ -29,6 +29,20 @@ int main(void){
 	
 	
 	
+	/* Initialisation de la HAL ...  */
+	retVal = READER_HAL_Init();
+	if(retVal != READER_OK) return retVal;
+	
+	/* Activation de la Carte ...    */
+	retVal = READER_HAL_DoColdReset();
+	if(retVal != READER_OK) return retVal;
+	
+	/* Reception de l'ATR            */
+	retVal = READER_ATR_Receive(&atr);
+	if(retVal != READER_OK) return retVal;
+	
+	
+	
 	//initUart();
 	READER_T1_APDU_Init(&context);
 	//READER_T0_APDU_Init();

@@ -5,25 +5,12 @@
 
 
 
-READER_Status READER_T1_APDU_Init(READER_T1_ContextHandler *pContext){
+READER_Status READER_T1_APDU_Init(READER_T1_ContextHandler *pContext, READER_HAL_CommSettings *pSettings){
 	READER_Status retVal;
-	READER_ATR_Atr atr;
-	
-	
-	/* Initialisation de la HAL ...  */
-	retVal = READER_HAL_Init();
-	if(retVal != READER_OK) return retVal;
-	
-	/* Activation de la Carte ...    */
-	retVal = READER_HAL_DoColdReset();
-	if(retVal != READER_OK) return retVal;
-	
-	/* Reception de l'ATR            */
-	retVal = READER_ATR_Receive(&atr);
-	if(retVal != READER_OK) return retVal;
+
 	
 	/* Reinitialisation complete des parametres de communication */
-	retVal = READER_T1_CONTEXT_Init(pContext);
+	retVal = READER_T1_CONTEXT_Init(pContext, pSettings);
 	if(retVal != READER_OK) return retVal;
 	
 	return READER_OK;

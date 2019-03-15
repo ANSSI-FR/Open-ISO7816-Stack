@@ -79,7 +79,7 @@ READER_Status READER_HAL_Init(READER_HAL_CommSettings *pSettings){
 	retVal = READER_HAL_SetDi(pSettings, READER_DEFAULT_DI);                     if(retVal != READER_OK) return retVal;
 	retVal = READER_HAL_SetEtu(pSettings, READER_DEFAULT_FI, READER_DEFAULT_DI); if(retVal != READER_OK) return retVal;
 	retVal = READER_HAL_SetFreq(pSettings, READER_DEFAULT_FREQ);                 if(retVal != READER_OK) return retVal;
-	retVal = READER_HAL_SetWI(pSettings, READER_DEFAULT_WI);                     if(retVal != READER_OK) return retVal;
+	//retVal = READER_HAL_SetWI(pSettings, READER_DEFAULT_WI);                     if(retVal != READER_OK) return retVal;
 	//retVal = READER_HAL_SetBWI(READER_DEFAULT_BWI);                   if(retVal != READER_OK) return retVal;
 	//retVal = READER_HAL_SetBWT(READER_DEFAULT_BWT);                   if(retVal != READER_OK) return retVal;
 	//retVal = READER_HAL_SetBGT(READER_DEFAULT_BGT);                   if(retVal != READER_OK) return retVal;

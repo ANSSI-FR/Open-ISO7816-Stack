@@ -24,7 +24,7 @@
 #define READER_T1_CONTEXT_DEFAULT_BWI       (uint32_t)(4)         /* Voir ISO7816-3 section 11.4.3 */
 #define READER_T1_CONTEXT_DEFAULT_BWT       READER_DEFAULT_BWT
 #define READER_T1_CONTEXT_DEFAULT_BGT       READER_DEFAULT_BGT
-//#define READER_T1_CONTEXT_DEFAULT_CWT       READER_DEFAULT_
+#define READER_T1_CONTEXT_DEFAULT_CWT       READER_DEFAULT_
 #define READER_T1_CONTEXT_DEFAULT_CGT       READER_DEFAULT_GT
 #define READER_T1_CONTEXT_DEFAULT_CORRCODE  READER_T1_LRC         /* Voir ISO7816-3 section 11.4.4 */
 
@@ -152,9 +152,9 @@ struct READER_T1_ContextHandler{
 };
 
 /* Initialisation de la structure */
-READER_Status READER_T1_CONTEXT_Init(READER_T1_ContextHandler *pContext);
-READER_Status READER_T1_CONTEXT_InitSettings(READER_T1_ContextHandler *pContext);
-READER_Status READER_T1_CONTEXT_InitCommSettings(READER_T1_ContextHandler *pContext);
+READER_Status READER_T1_CONTEXT_Init(READER_T1_ContextHandler *pContext, READER_HAL_CommSettings *pSettings);
+READER_Status READER_T1_CONTEXT_InitSettings(READER_T1_ContextHandler *pContext, READER_HAL_CommSettings *pSettings);
+READER_Status READER_T1_CONTEXT_InitCommSettings(READER_T1_ContextHandler *pContext, READER_HAL_CommSettings *pSettings);
 READER_Status READER_T1_CONTEXT_InitContextSettings(READER_T1_ContextHandler *pContext);
 READER_Status READER_T1_CONTEXT_InitSeqNums(READER_T1_ContextHandler *pContext);
 READER_Status READER_T1_CONTEXT_InitBuffer(READER_T1_ContextHandler *pContext);
