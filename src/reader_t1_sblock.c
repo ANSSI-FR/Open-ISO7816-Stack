@@ -3,13 +3,11 @@
 
 
 
-READER_Status READER_T1_ForgeSBlock(READER_T1_Block *pBlock, READER_T1_SBlockType type){
-	READER_T1_RedundancyType rType;
+READER_Status READER_T1_ForgeSBlock(READER_T1_Block *pBlock, READER_T1_SBlockType type, READER_T1_RedundancyType rType){
 	READER_Status retVal;
 	
 	
 	/* On fabrique un Block vierge     */
-	rType = READER_HAL_GetRedunancyType();
 	retVal = READER_T1_ForgeBlock(pBlock, rType);
 	if(retVal != READER_OK) return retVal;
 	

@@ -33,7 +33,7 @@ READER_Status READER_T1_SetBlockSPayload(READER_T1_Block *pBlock, uint8_t payloa
 READER_T1_SBlockType READER_T1_GetBlockSType(READER_T1_Block *pBlock);
 uint8_t READER_T1_GetBlockSPayload(READER_T1_Block *pBlock);
 
-READER_Status READER_T1_ForgeSBlock(READER_T1_Block *pBlock, READER_T1_SBlockType type);
+READER_Status READER_T1_ForgeSBlock(READER_T1_Block *pBlock, READER_T1_SBlockType type, READER_T1_RedundancyType rType);
 
 READER_Status READER_T1_IsSBlockRequest(READER_T1_Block *pBlock);
 READER_Status READER_T1_IsSBlockResponse(READER_T1_Block *pBlock);
