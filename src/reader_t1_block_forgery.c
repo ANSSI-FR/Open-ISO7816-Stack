@@ -195,7 +195,7 @@ READER_Status READER_T1_FORGE_ACKIBlock(READER_T1_ContextHandler *pContext, READ
 	}
 	
 	/* On forge le I-Block                             */
-	retVal = READER_T1_ForgeIBlock(pBlockDest, NULL, 0, seqNum, READER_T1_MBIT_ZERO);
+	retVal = READER_T1_FORGE_IBlock(pContext, pBlockDest, NULL, 0, seqNum, READER_T1_MBIT_ZERO);
 	if(retVal != READER_OK) return retVal;
 	
 	return READER_OK;
@@ -228,7 +228,7 @@ READER_Status READER_T1_FORGE_DataIBlock(READER_T1_ContextHandler *pContext, REA
 	
 	/* On fabrique un I-Block avec le bon numero de sequence ...                                                                    */
 	/* Pas besoin de faire de verifications sur la Size etc... (elles sont deja faites dans la fonction qui forge les I-Blocks ...) */
-	retVal = READER_T1_ForgeIBlock(pBlockDest, dataBuff, dataSize, nextDeviceSeqNum, tmpMBit);
+	retVal = READER_T1_FORGE_IBlock(pContext, pBlockDest, dataBuff, dataSize, nextDeviceSeqNum, tmpMBit);
 	if(retVal != READER_OK) return retVal;
 	
 	return READER_OK;
@@ -311,7 +311,7 @@ READER_Status READER_T1_FORGE_SliceDataAndFillBuffer(READER_T1_ContextHandler *p
 		}
 		
 		/* On forge le Block ...  */
-		retVal = READER_T1_ForgeIBlock(&tmpBlock, dataBuff+i, blockLEN, seqNum, mBit);
+		retVal = READER_T1_FORGE_IBlock(pContext, &tmpBlock, dataBuff+i, blockLEN, seqNum, mBit);
 		if(retVal != READER_OK) return retVal;	
 		
 		/* On enfile ce Block dans le Buffer ...  */
