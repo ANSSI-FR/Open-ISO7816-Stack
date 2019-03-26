@@ -574,3 +574,18 @@ READER_Status READER_T1_FORGE_FillBuffWithAPDUCase4E(READER_T1_ContextHandler *p
 	
 	return READER_OK;
 }
+
+
+READER_Status READER_T1_FORGE_IBlock(READER_T1_ContextHandler *pContext, READER_T1_Block *pBlock, uint8_t *data, uint32_t dataSize, READER_T1_SeqNumber seq, READER_T1_MBit mBit){
+	READER_Status retVal;
+	READER_T1_RedundancyType rType;
+	
+	
+	retVal = READER_T1_CONTEXT_GetCurrentRedundancyType(pContext, &rType);
+	if(retVal != READER_OK) return retVal;
+	
+	retVal = READER_T1_ForgeIBlock(pBlock, data, dataSize, seq, mBit, rType);
+	if(retVal != READER_OK) return retVal;
+	
+	return READER_OK;
+}
