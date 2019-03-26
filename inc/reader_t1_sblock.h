@@ -33,21 +33,13 @@ READER_Status READER_T1_SetBlockSPayload(READER_T1_Block *pBlock, uint8_t payloa
 READER_T1_SBlockType READER_T1_GetBlockSType(READER_T1_Block *pBlock);
 uint8_t READER_T1_GetBlockSPayload(READER_T1_Block *pBlock);
 
-READER_Status READER_T1_ForgeSBlock(READER_T1_Block *pBlock, READER_T1_SBlockType type);
+READER_Status READER_T1_ForgeSBlock(READER_T1_Block *pBlock, READER_T1_SBlockType type, READER_T1_RedundancyType rType);
 
 READER_Status READER_T1_IsSBlockRequest(READER_T1_Block *pBlock);
 READER_Status READER_T1_IsSBlockResponse(READER_T1_Block *pBlock);
 
 READER_Status READER_T1_CheckSBlock(READER_T1_Block *pBlock);
 
-READER_Status READER_T1_ForgeSBlockResynchRequest(READER_T1_Block *pBlock);
-READER_Status READER_T1_ForgeSBlockResynchResponse(READER_T1_Block *pBlock);
-READER_Status READER_T1_ForgeSBlockIfsRequest(READER_T1_Block *pBlock, uint8_t newIfs);
-READER_Status READER_T1_ForgeSBlockIfsResponse(READER_T1_Block *pBlock, uint8_t newIfs);
-READER_Status READER_T1_ForgeSBlockAbortRequest(READER_T1_Block *pBlock);
-READER_Status READER_T1_ForgeSBlockAbortResponse(READER_T1_Block *pBlock);
-READER_Status READER_T1_ForgeSBlockWtxRequest(READER_T1_Block *pBlock, uint8_t wtMultiplier);
-READER_Status READER_T1_ForgeSBlockWtxResponse(READER_T1_Block *pBlock, uint8_t wtMultiplier);
 
 
 //READER_Status READER_T1_SendBlockRESYNCHRequ(uint32_t timeout);

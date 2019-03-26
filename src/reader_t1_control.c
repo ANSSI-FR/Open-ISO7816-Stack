@@ -831,7 +831,7 @@ READER_Status READER_T1_CONTROL_ApplySBlockRequestRcvd(READER_T1_ContextHandler 
 			retVal = READER_T1_CONTROL_ApplySBlockAbort(pContext, pBlock);
 			if(retVal != READER_OK) return retVal;
 			
-			retVal = READER_T1_ForgeSBlockAbortResponse(&responseBlock);
+			retVal = READER_T1_FORGE_SBlockAbortResponse(pContext, &responseBlock);
 			if(retVal != READER_OK) return retVal;
 		}
 		else if(rcvdSBlockType == READER_T1_STYPE_IFS_REQU){
@@ -842,7 +842,7 @@ READER_Status READER_T1_CONTROL_ApplySBlockRequestRcvd(READER_T1_ContextHandler 
 			if(retVal != READER_BAD_VALUE){
 				blockINF = READER_T1_GetBlockSPayload(pBlock);
 			
-				retVal = READER_T1_ForgeSBlockIfsResponse(&responseBlock, blockINF);
+				retVal = READER_T1_FORGE_SBlockIfsResponse(pContext, &responseBlock, blockINF);
 				if(retVal != READER_OK) return retVal;
 			}			
 		}
@@ -850,7 +850,7 @@ READER_Status READER_T1_CONTROL_ApplySBlockRequestRcvd(READER_T1_ContextHandler 
 			retVal = READER_T1_CONTROL_ApplySBlockResynch(pContext, pBlock);
 			if(retVal != READER_OK) return retVal;
 			
-			retVal = READER_T1_ForgeSBlockResynchResponse(&responseBlock);
+			retVal = READER_T1_FORGE_SBlockResynchResponse(&responseBlock);
 			if(retVal != READER_OK) return retVal;
 		}
 		else if(rcvdSBlockType == READER_T1_STYPE_WTX_REQU){
@@ -859,7 +859,7 @@ READER_Status READER_T1_CONTROL_ApplySBlockRequestRcvd(READER_T1_ContextHandler 
 			
 			blockINF = READER_T1_GetBlockSPayload(pBlock);
 			
-			retVal = READER_T1_ForgeSBlockWtxResponse(&responseBlock, blockINF);
+			retVal = READER_T1_FORGE_SBlockWtxResponse(pContext, &responseBlock, blockINF);
 			if(retVal != READER_OK) return retVal;
 		}
 		else{
@@ -1110,7 +1110,7 @@ READER_Status READER_T1_CONTROL_SendAbortRequest(READER_T1_ContextHandler *pCont
 	
 	
 	/* On forge le S-Block correspondant ...  */
-	retVal = READER_T1_ForgeSBlockAbortRequest(&tmpBlock);
+	retVal = READER_T1_FORGE_SBlockAbortRequest(pContext, &tmpBlock);
 	if(retVal != READER_OK) return retVal;
 	
 	/* On stack le nouveau S-Block dans le Buffer d'envoi ...  */
@@ -1128,7 +1128,7 @@ READER_Status READER_T1_CONTROL_SendResynchRequest(READER_T1_ContextHandler *pCo
 	
 	
 	/* On forge le S-Block correspondant ...  */
-	retVal = READER_T1_ForgeSBlockResynchRequest(&tmpBlock);
+	retVal = READER_T1_FORGE_SBlockResynchRequest(pContext, &tmpBlock);
 	if(retVal != READER_OK) return retVal;
 	
 	/* On stack le nouveau S-Block dans le Buffer d'envoi ...  */
@@ -1146,7 +1146,7 @@ READER_Status READER_T1_CONTROL_SendIfsdRequest(READER_T1_ContextHandler *pConte
 	
 	
 	/* On forge le S-Block correspondant ...  */
-	retVal = READER_T1_ForgeSBlockIfsRequest(&tmpBlock, newIfsd);
+	retVal = READER_T1_FORGE_SBlockIfsRequest(pContext, &tmpBlock, newIfsd);
 	if(retVal != READER_OK) return retVal;
 	
 	/* On stack ce Block dans le Buffer d'envoi ...  */
@@ -1164,7 +1164,7 @@ READER_Status READER_T1_CONTROL_SendWtxRequest(READER_T1_ContextHandler *pContex
 	
 	
 	/* On forge le S-Block correspondant ...  */
-	retVal = READER_T1_ForgeSBlockWtxRequest(&tmpBlock, wtMultiplier);
+	retVal = READER_T1_FORGE_SBlockWtxRequest(pContext, &tmpBlock, wtMultiplier);
 	if(retVal != READER_OK) return retVal;
 	
 	/* On stack ce Block dans le Buffer d'envoi ...  */

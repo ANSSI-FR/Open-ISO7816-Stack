@@ -3,13 +3,11 @@
 
 
 
-READER_Status READER_T1_ForgeSBlock(READER_T1_Block *pBlock, READER_T1_SBlockType type){
-	READER_T1_RedundancyType rType;
+READER_Status READER_T1_ForgeSBlock(READER_T1_Block *pBlock, READER_T1_SBlockType type, READER_T1_RedundancyType rType){
 	READER_Status retVal;
 	
 	
 	/* On fabrique un Block vierge     */
-	rType = READER_HAL_GetRedunancyType();
 	retVal = READER_T1_ForgeBlock(pBlock, rType);
 	if(retVal != READER_OK) return retVal;
 	
@@ -216,114 +214,6 @@ READER_Status READER_T1_CheckSBlock(READER_T1_Block *pBlock){
 	if(bType != READER_T1_SBLOCK){
 		return READER_INVALID_BLOCK;
 	}
-	
-	return READER_OK;
-}
-
-
-READER_Status READER_T1_ForgeSBlockResynchRequest(READER_T1_Block *pBlock){
-	READER_Status retVal;
-	
-	
-	retVal = READER_T1_ForgeSBlock(pBlock, READER_T1_STYPE_RESYNCH_REQU);
-	if(retVal != READER_OK) return retVal;
-	
-	
-	return READER_OK;
-}
-
-
-READER_Status READER_T1_ForgeSBlockResynchResponse(READER_T1_Block *pBlock){
-	READER_Status retVal;
-	
-	
-	retVal = READER_T1_ForgeSBlock(pBlock, READER_T1_STYPE_RESYNCH_RESP);
-	if(retVal != READER_OK) return retVal;
-	
-	
-	return READER_OK;
-}
-
-
-READER_Status READER_T1_ForgeSBlockIfsRequest(READER_T1_Block *pBlock, uint8_t newIfs){
-	READER_Status retVal;
-	
-	
-	retVal = READER_T1_ForgeSBlock(pBlock, READER_T1_STYPE_IFS_REQU);
-	if(retVal != READER_OK) return retVal;
-	
-	retVal = READER_T1_SetBlockSPayload(pBlock, newIfs);
-	if(retVal != READER_OK) return retVal;
-	
-	
-	return READER_OK;
-}
-
-
-READER_Status READER_T1_ForgeSBlockIfsResponse(READER_T1_Block *pBlock, uint8_t newIfs){
-	READER_Status retVal;
-	
-	
-	retVal = READER_T1_ForgeSBlock(pBlock, READER_T1_STYPE_IFS_RESP);
-	if(retVal != READER_OK) return retVal;
-	
-	retVal = READER_T1_SetBlockSPayload(pBlock, newIfs);
-	if(retVal != READER_OK) return retVal;
-	
-	
-	return READER_OK;
-}
-
-
-READER_Status READER_T1_ForgeSBlockAbortRequest(READER_T1_Block *pBlock){
-	READER_Status retVal;
-	
-	
-	retVal = READER_T1_ForgeSBlock(pBlock, READER_T1_STYPE_ABORT_REQU);
-	if(retVal != READER_OK) return retVal;
-	
-	
-	return READER_OK;
-}
-
-
-READER_Status READER_T1_ForgeSBlockAbortResponse(READER_T1_Block *pBlock){
-	READER_Status retVal;
-	
-	
-	retVal = READER_T1_ForgeSBlock(pBlock, READER_T1_STYPE_ABORT_RESP);
-	if(retVal != READER_OK) return retVal;
-	
-	
-	return READER_OK;
-}
-
-
-READER_Status READER_T1_ForgeSBlockWtxRequest(READER_T1_Block *pBlock, uint8_t wtMultiplier){
-	READER_Status retVal;
-	
-	
-	retVal = READER_T1_ForgeSBlock(pBlock, READER_T1_STYPE_WTX_REQU);
-	if(retVal != READER_OK) return retVal;
-	
-	retVal = READER_T1_SetBlockSPayload(pBlock, wtMultiplier);
-	if(retVal != READER_OK) return retVal;
-	
-	
-	return READER_OK;
-}
-
-
-READER_Status READER_T1_ForgeSBlockWtxResponse(READER_T1_Block *pBlock, uint8_t wtMultiplier){
-	READER_Status retVal;
-	
-	
-	retVal = READER_T1_ForgeSBlock(pBlock, READER_T1_STYPE_WTX_RESP);
-	if(retVal != READER_OK) return retVal;
-	
-	retVal = READER_T1_SetBlockSPayload(pBlock, wtMultiplier);
-	if(retVal != READER_OK) return retVal;
-	
 	
 	return READER_OK;
 }

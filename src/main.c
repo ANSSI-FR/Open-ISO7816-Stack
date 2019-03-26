@@ -48,8 +48,8 @@ int main(void){
 	//READER_T0_APDU_Init();
 	
 	
-	READER_T1_ForgeSBlockIfsRequest(&block, 0x05);
-	READER_T1_BUFFER_Stack(&context, &block);
+	//READER_T1_ForgeSBlockIfsRequest(&block, 0x05);
+	//READER_T1_BUFFER_Stack(&context, &block);
 	
 	READER_HAL_Delay(100);
 	
