@@ -619,3 +619,113 @@ READER_Status READER_T1_FORGE_SBlock(READER_T1_ContextHandler *pContext, READER_
 	
 	return READER_OK;
 }
+
+
+
+
+READER_Status READER_T1_FORGE_SBlockResynchRequest(READER_T1_ContextHandler *pContext, READER_T1_Block *pBlock){
+	READER_Status retVal;
+	
+	
+	retVal = READER_T1_FORGE_SBlock(pContext, pBlock, READER_T1_STYPE_RESYNCH_REQU);
+	if(retVal != READER_OK) return retVal;
+	
+	
+	return READER_OK;
+}
+
+
+READER_Status READER_T1_FORGE_SBlockResynchResponse(READER_T1_ContextHandler *pContext, READER_T1_Block *pBlock){
+	READER_Status retVal;
+	
+	
+	retVal = READER_T1_FORGE_SBlock(pContext, pBlock, READER_T1_STYPE_RESYNCH_RESP);
+	if(retVal != READER_OK) return retVal;
+	
+	
+	return READER_OK;
+}
+
+
+READER_Status READER_T1_FORGE_SBlockIfsRequest(READER_T1_ContextHandler *pContext, READER_T1_Block *pBlock, uint8_t newIfs){
+	READER_Status retVal;
+	
+	
+	retVal = READER_T1_FORGE_SBlock(pContext, pBlock, READER_T1_STYPE_IFS_REQU);
+	if(retVal != READER_OK) return retVal;
+	
+	retVal = READER_T1_SetBlockSPayload(pBlock, newIfs);
+	if(retVal != READER_OK) return retVal;
+	
+	
+	return READER_OK;
+}
+
+
+READER_Status READER_T1_FORGE_SBlockIfsResponse(READER_T1_ContextHandler *pContext, READER_T1_Block *pBlock, uint8_t newIfs){
+	READER_Status retVal;
+	
+	
+	retVal = READER_T1_FORGE_SBlock(pContext, pBlock, READER_T1_STYPE_IFS_RESP);
+	if(retVal != READER_OK) return retVal;
+	
+	retVal = READER_T1_SetBlockSPayload(pBlock, newIfs);
+	if(retVal != READER_OK) return retVal;
+	
+	
+	return READER_OK;
+}
+
+
+READER_Status READER_T1_FORGE_SBlockAbortRequest(READER_T1_ContextHandler *pContext, READER_T1_Block *pBlock){
+	READER_Status retVal;
+	
+	
+	retVal = READER_T1_FORGE_SBlock(pContext, pBlock, READER_T1_STYPE_ABORT_REQU);
+	if(retVal != READER_OK) return retVal;
+	
+	
+	return READER_OK;
+}
+
+
+READER_Status READER_T1_FORGE_SBlockAbortResponse(READER_T1_ContextHandler *pContext, READER_T1_Block *pBlock){
+	READER_Status retVal;
+	
+	
+	retVal = READER_T1_FORGE_SBlock(pContext, pBlock, READER_T1_STYPE_ABORT_RESP);
+	if(retVal != READER_OK) return retVal;
+	
+	
+	return READER_OK;
+}
+
+
+READER_Status READER_T1_FORGE_SBlockWtxRequest(READER_T1_ContextHandler *pContext, READER_T1_Block *pBlock, uint8_t wtMultiplier){
+	READER_Status retVal;
+	
+	
+	retVal = READER_T1_FORGE_SBlock(pContext, pBlock, READER_T1_STYPE_WTX_REQU);
+	if(retVal != READER_OK) return retVal;
+	
+	retVal = READER_T1_SetBlockSPayload(pBlock, wtMultiplier);
+	if(retVal != READER_OK) return retVal;
+	
+	
+	return READER_OK;
+}
+
+
+READER_Status READER_T1_FORGE_SBlockWtxResponse(READER_T1_ContextHandler *pContext, READER_T1_Block *pBlock, uint8_t wtMultiplier){
+	READER_Status retVal;
+	
+	
+	retVal = READER_T1_FORGE_SBlock(pContext, pBlock, READER_T1_STYPE_WTX_RESP);
+	if(retVal != READER_OK) return retVal;
+	
+	retVal = READER_T1_SetBlockSPayload(pBlock, wtMultiplier);
+	if(retVal != READER_OK) return retVal;
+	
+	
+	return READER_OK;
+}
