@@ -604,3 +604,18 @@ READER_Status READER_T1_FORGE_RBlock(READER_T1_ContextHandler *pContext, READER_
 	
 	return READER_OK;
 }
+
+
+READER_Status READER_T1_FORGE_SBlock(READER_T1_ContextHandler *pContext, READER_T1_Block *pBlock, READER_T1_SBlockType type){
+	READER_Status retVal;
+	READER_T1_RedundancyType rType;
+	
+	
+	retVal = READER_T1_CONTEXT_GetCurrentRedundancyType(pContext, &rType);
+	if(retVal != READER_OK) return retVal;
+	
+	retVal = READER_T1_ForgeSBlock(pBlock, type, rType);
+	if(retVal != READER_OK) return retVal;
+	
+	return READER_OK;
+}
