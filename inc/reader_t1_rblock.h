@@ -35,7 +35,7 @@ READER_Status READER_T1_SetExpectedBlockSeqNumber(READER_T1_Block *pBlock, READE
 READER_T1_ACKType READER_T1_GetBlockACKType(READER_T1_Block *pBlock);
 READER_T1_ExpSeqNumber READER_T1_GetExpectedBlockSeqNumber(READER_T1_Block *pBlock);
 
-READER_Status READER_T1_ForgeRBlock(READER_T1_Block *pBlock, READER_T1_ACKType ack, READER_T1_ExpSeqNumber expctdBlockSeq);
+READER_Status READER_T1_ForgeRBlock(READER_T1_Block *pBlock, READER_T1_ACKType ack, READER_T1_ExpSeqNumber expctdBlockSeq, READER_T1_RedundancyType rType);
 
 READER_Status READER_T1_CheckRBlock(READER_T1_Block *pBlock);
 
