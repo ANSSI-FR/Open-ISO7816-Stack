@@ -94,7 +94,7 @@ uint32_t READER_T1_GetBlockSizeWithoutCheck(READER_T1_Block *pBlock);
 uint8_t* READER_T1_GetBlockFrame(READER_T1_Block *pBlock);
 //uint32_t READER_T1_GetBlockMBit(READER_T1_Block *pBlock);
 
-READER_Status READER_T1_CheckBlockIntegrity(READER_T1_Block *pBlock);
+READER_Status READER_T1_CheckBlockIntegrity(READER_T1_Block *pBlock, READER_T1_RedundancyType rType);
 
 READER_Status READER_T1_ForgeBlock(READER_T1_Block *pBlock, READER_T1_RedundancyType rType);
 READER_Status READER_T1_SendBlock(READER_T1_Block *pBlock, uint32_t currentCWT, uint32_t extraStartDelay, uint32_t *pTickstart, READER_HAL_CommSettings *pSettings);

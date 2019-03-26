@@ -771,20 +771,11 @@ READER_Status READER_T1_RcvBlock(READER_T1_Block *pBlock, READER_T1_RedundancyTy
 	return READER_OK;
 }
 
-/**
- * \fn READER_Status READER_T1_CheckBlockIntegrity(READER_T1_Block *pBlock)
- * \brief Cette fonction permet de vérifier qu'un Block est intègre (ie : son checksum est correct). La fonction récupère le type de checksum du Block (LRC ou CRC), calcule le checksum du Prologue field et du Data field, puis le compare au Epilogue field transporté par le Block.
- * \return La fonction retourne un code de type READER_Status. La valeur est READER_OK si la cérification donne un résultat correct. Tout autre valeur indique une erreur.
- * \param *pBlock est un pointeur sur une structure de type READER_T1_Block. Il pointe sur le Block à vérifier.
- */
-READER_Status READER_T1_CheckBlockIntegrity(READER_T1_Block *pBlock){
-	READER_T1_RedundancyType rType;
+
+READER_Status READER_T1_CheckBlockIntegrity(READER_T1_Block *pBlock, READER_T1_RedundancyType rType){
 	uint8_t blockLRC, expectedBlockLRC;
 	uint16_t blockCRC, expectedBlockCRC;
 	
-	
-	//rType = READER_T1_GetBlockRedundancyType(pBlock);   /* Ca n'a pas de sens, on ne peut pas recuperer cette information dans le Block (il est potentiellement corrompu). */
-	rType = READER_HAL_GetRedunancyType();
 	
 	if(rType == READER_T1_LRC){
 		expectedBlockLRC = READER_T1_GetBlockLRC(pBlock);
