@@ -174,6 +174,7 @@ READER_Status READER_T1_FORGE_NACK72(READER_T1_ContextHandler *pContext, READER_
 READER_Status READER_T1_FORGE_ACKIBlock(READER_T1_ContextHandler *pContext, READER_T1_Block *pBlockDest){
 	READER_Status retVal;
 	READER_T1_SeqNumber seqNum;
+	READER_T1_RedundancyType rType;
 	uint32_t tmpSeqNum;
 	
 	
@@ -195,7 +196,10 @@ READER_Status READER_T1_FORGE_ACKIBlock(READER_T1_ContextHandler *pContext, READ
 	}
 	
 	/* On forge le I-Block                             */
-	retVal = READER_T1_ForgeIBlock(pBlockDest, NULL, 0, seqNum, READER_T1_MBIT_ZERO);
+	retVal = READER_T1_CONTEXT_GetCurrentRedundancyType(pContext, &rType);
+	if(retVal != READER_OK) return retVal;
+	
+	retVal = READER_T1_ForgeIBlock(pBlockDest, NULL, 0, seqNum, READER_T1_MBIT_ZERO, rType);
 	if(retVal != READER_OK) return retVal;
 	
 	return READER_OK;
@@ -209,6 +213,7 @@ READER_Status READER_T1_FORGE_DataIBlock(READER_T1_ContextHandler *pContext, REA
 	uint32_t nextDeviceSeqNum;
 	READER_Status retVal;
 	READER_T1_MBit tmpMBit;
+	READER_T1_RedundancyType rType;
 	
 	
 	/* On calcule le numero de sequence que l'on doit placer dans le I-Block qu'on va forger ...  */
@@ -228,7 +233,10 @@ READER_Status READER_T1_FORGE_DataIBlock(READER_T1_ContextHandler *pContext, REA
 	
 	/* On fabrique un I-Block avec le bon numero de sequence ...                                                                    */
 	/* Pas besoin de faire de verifications sur la Size etc... (elles sont deja faites dans la fonction qui forge les I-Blocks ...) */
-	retVal = READER_T1_ForgeIBlock(pBlockDest, dataBuff, dataSize, nextDeviceSeqNum, tmpMBit);
+	retVal = READER_T1_CONTEXT_GetCurrentRedundancyType(pContext, &rType);
+	if(retVal != READER_OK) return retVal;
+	
+	retVal = READER_T1_ForgeIBlock(pBlockDest, dataBuff, dataSize, nextDeviceSeqNum, tmpMBit, rType);
 	if(retVal != READER_OK) return retVal;
 	
 	return READER_OK;
@@ -250,6 +258,7 @@ READER_Status READER_T1_FORGE_SliceDataAndFillBuffer(READER_T1_ContextHandler *p
 	READER_T1_Block tmpBlock;
 	READER_T1_SeqNumber seqNum;
 	READER_T1_MBit mBit;
+	READER_T1_RedundancyType rType;
 	uint32_t tmpSeqNum;
 	uint32_t currentIFSC;
 	uint32_t nbBlocksNeeded, buffPlacesLeft;
@@ -311,7 +320,10 @@ READER_Status READER_T1_FORGE_SliceDataAndFillBuffer(READER_T1_ContextHandler *p
 		}
 		
 		/* On forge le Block ...  */
-		retVal = READER_T1_ForgeIBlock(&tmpBlock, dataBuff+i, blockLEN, seqNum, mBit);
+		retVal = READER_T1_CONTEXT_GetCurrentRedundancyType(pContext, &rType);
+		if(retVal != READER_OK) return retVal;
+	
+		retVal = READER_T1_ForgeIBlock(&tmpBlock, dataBuff+i, blockLEN, seqNum, mBit, rType);
 		if(retVal != READER_OK) return retVal;	
 		
 		/* On enfile ce Block dans le Buffer ...  */
