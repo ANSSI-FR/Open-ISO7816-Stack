@@ -19,7 +19,7 @@ READER_Status READER_T1_FORGE_ChainingRBlockForCard(READER_T1_ContextHandler *pC
 	if(retVal != READER_OK) return retVal;
 	
 	/* On fabrique un R-Block avec ce numero de sequence    */
-	retVal = READER_T1_ForgeRBlock(pBlockDest, READER_T1_ACKTYPE_ACK, nextSeqNum);
+	retVal = READER_T1_FORGE_RBlock(pContext, pBlockDest, READER_T1_ACKTYPE_ACK, nextSeqNum);
 	if(retVal != READER_OK) return retVal;
 	
 	
@@ -76,11 +76,11 @@ READER_Status READER_T1_FORGE_NACKR0(READER_T1_ContextHandler *pContext, READER_
 		
 	
 	if(integrityFlag == 0){
-		retVal = READER_T1_ForgeRBlock(pBlockDest, READER_T1_ACKTYPE_NACK, READER_T1_SEQNUM_ZERO);
+		retVal = READER_T1_FORGE_RBlock(pContext, pBlockDest, READER_T1_ACKTYPE_NACK, READER_T1_SEQNUM_ZERO);
 		if(retVal != READER_OK) return retVal;
 	}
 	else if(integrityFlag == 1){
-		retVal = READER_T1_ForgeRBlock(pBlockDest, READER_T1_ACKTYPE_NACK_CRCLRC, READER_T1_SEQNUM_ZERO);
+		retVal = READER_T1_FORGE_RBlock(pContext, pBlockDest, READER_T1_ACKTYPE_NACK_CRCLRC, READER_T1_SEQNUM_ZERO);
 		if(retVal != READER_OK) return retVal;
 	}
 	else{
@@ -135,7 +135,7 @@ READER_Status READER_T1_FORGE_NACK71(READER_T1_ContextHandler *pContext, READER_
 	}
 	
 	/* On forge le R-Block qui correspond ...             */
-	retVal = READER_T1_ForgeRBlock(pBlockDest, ACKType, seqNum);
+	retVal = READER_T1_FORGE_RBlock(pContext, pBlockDest, ACKType, seqNum);
 	if(retVal != READER_OK) return retVal;
 	
 	return READER_OK;
