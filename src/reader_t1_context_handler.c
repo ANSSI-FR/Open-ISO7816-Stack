@@ -247,7 +247,14 @@ READER_Status READER_T1_CONTEXT_GetCurrentCGT(READER_T1_ContextHandler *pContext
 
 /* On recupere la valeur en nombre d'ETU ...  */
 READER_Status READER_T1_CONTEXT_GetCurrentCWT(READER_T1_ContextHandler *pContext, uint32_t *pCwt){
-	*pCwt = pContext->currentCWT;
+	READER_Status retVal;
+	
+	
+	retVal = READER_T1_CONTEXT_GetCurrentCWI(pContext, &currentCWI);
+	if(retVal != READER_OK) return retVal;
+	
+	*pCwt = 11 + READER_UTILS_Pow(2, currentCWI);
+	
 	return READER_OK;
 }
 
