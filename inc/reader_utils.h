@@ -25,5 +25,6 @@ uint32_t READER_UTILS_ComputeBWTEtu(uint32_t BWI, uint32_t f);
 uint32_t READER_UTILS_ComputeBWTMili(uint32_t BWTEtu, uint32_t F, uint32_t D, uint32_t f);
 uint32_t READER_UTILS_ComputeEtuMili(uint32_t F, uint32_t D, uint32_t f);
 float READER_UTILS_ComputeEtuMiliFloat(uint32_t F, uint32_t D, uint32_t f);
+uint32_t READER_UTILS_Pow(uint32_t a, uint32_t b);
 
 #endif

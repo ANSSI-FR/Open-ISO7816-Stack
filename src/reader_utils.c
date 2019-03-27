@@ -121,3 +121,14 @@ uint32_t READER_UTILS_ComputeEtuMili(uint32_t F, uint32_t D, uint32_t f){
 	/* Voir ISO7816-3 section 7.1 */
 	return (uint32_t)(   (  F / (float)(D)  ) *   (   1 / (float)(f)   )    ) * 1000;
 }
+
+
+/* On calcule a puissance b ...  */
+uint32_t READER_UTILS_Pow(uint32_t a, uint32_t b){
+	if(b != 0){
+		return a * READER_UTILS_Pow(a, b-1);
+	}
+	else{
+		return 1;
+	}
+}
