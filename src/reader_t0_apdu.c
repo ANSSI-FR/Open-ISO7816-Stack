@@ -26,38 +26,38 @@ READER_Status READER_T0_APDU_Init(READER_T0_ContextHandler *pContext, READER_HAL
  * \return Valeur de type READER_Status. READER_OK si l'exécution s'est correctement déroulée. Toute autre valeur suggère une erreur.
  * \param *pApduCmd Un pointeur sur un structure de type READER_APDU_Command.
  */
-READER_Status READER_T0_APDU_Execute(READER_T0_ContextHandler *pContext, READER_APDU_Command *pApduCmd, READER_APDU_Response *pApduResp, uint32_t timeout){
+READER_Status READER_T0_APDU_Execute(READER_T0_ContextHandler *pContext, READER_APDU_Command *pApduCmd, READER_APDU_Response *pApduResp){
 	READER_APDU_ProtocolCase protocolCase;
 	
 	protocolCase = READER_APDU_GetProtocolCase(pApduCmd);
 	
 	switch(protocolCase){
 		case READER_APDU_CASE_1:
-			return READER_T0_APDU_ExecuteCase1(pContext, pApduCmd, pApduResp, timeout);
+			return READER_T0_APDU_ExecuteCase1(pContext, pApduCmd, pApduResp);
 			break;
 			
 		case READER_APDU_CASE_2E:
-			return READER_T0_APDU_ExecuteCase2E(pContext, pApduCmd, pApduResp, timeout);
+			return READER_T0_APDU_ExecuteCase2E(pContext, pApduCmd, pApduResp);
 			break;
 			
 		case READER_APDU_CASE_2S:
-			return READER_T0_APDU_ExecuteCase2S(pContext, pApduCmd, pApduResp, timeout);
+			return READER_T0_APDU_ExecuteCase2S(pContext, pApduCmd, pApduResp);
 			break;
 			
 		case READER_APDU_CASE_3E:
-			return READER_T0_APDU_ExecuteCase3E(pContext, pApduCmd, pApduResp, timeout);
+			return READER_T0_APDU_ExecuteCase3E(pContext, pApduCmd, pApduResp);
 			break;
 			
 		case READER_APDU_CASE_3S:
-			return READER_T0_APDU_ExecuteCase3S(pContext, pApduCmd, pApduResp, timeout);
+			return READER_T0_APDU_ExecuteCase3S(pContext, pApduCmd, pApduResp);
 			break;
 			
 		case READER_APDU_CASE_4E:
-			return READER_T0_APDU_ExecuteCase4E(pContext, pApduCmd, pApduResp, timeout);
+			return READER_T0_APDU_ExecuteCase4E(pContext, pApduCmd, pApduResp);
 			break;
 			
 		case READER_APDU_CASE_4S:
-			return READER_T0_APDU_ExecuteCase4S(pContext, pApduCmd, pApduResp, timeout);
+			return READER_T0_APDU_ExecuteCase4S(pContext, pApduCmd, pApduResp);
 			break;
 			
 		case READER_APDU_CASE_ERR:
@@ -71,11 +71,17 @@ READER_Status READER_T0_APDU_Execute(READER_T0_ContextHandler *pContext, READER_
 
 
 
-READER_Status READER_T0_APDU_ExecuteCase1(READER_T0_ContextHandler *pContext, READER_APDU_Command *pApduCmd, READER_APDU_Response *pApduResp, uint32_t timeout){
+READER_Status READER_T0_APDU_ExecuteCase1(READER_T0_ContextHandler *pContext, READER_APDU_Command *pApduCmd, READER_APDU_Response *pApduResp){
 	/* Voir ISO7816-3 section 12.2.2 */
 	READER_TPDU_Command tpduCmd;
 	READER_TPDU_Response tpduResp;
 	READER_Status retVal;
+	uint32_t timeout;
+	
+	
+	/* Recuperation de la valeur de timeout actuellement utilisee dans le contexte de communication ...  */
+	retVal = READER_T0_CONTEXT_GetCurrentWT(pContext, &timeout);
+	if(retVal != READER_OK) return retVal;
 	
 	/* On forge une structure de type commande TPDU */
 	retVal = READER_TPDU_Forge(
@@ -106,12 +112,18 @@ READER_Status READER_T0_APDU_ExecuteCase1(READER_T0_ContextHandler *pContext, RE
 }
 
 
-READER_Status READER_T0_APDU_ExecuteCase2S(READER_T0_ContextHandler *pContext, READER_APDU_Command *pApduCmd, READER_APDU_Response *pApduResp, uint32_t timeout){
+READER_Status READER_T0_APDU_ExecuteCase2S(READER_T0_ContextHandler *pContext, READER_APDU_Command *pApduCmd, READER_APDU_Response *pApduResp){
 	/* Voir ISO7816-3 section 12.2.3 */
 	READER_TPDU_Command tpduCmd;
 	READER_TPDU_Response tpduResp;
 	READER_Status retVal;
 	uint8_t Na, Ne;
+	uint32_t timeout;
+	
+	
+	/* Recuperation de la valeur de timeout actuellement utilisee dans le contexte de communication ...  */
+	retVal = READER_T0_CONTEXT_GetCurrentWT(pContext, &timeout);
+	if(retVal != READER_OK) return retVal;
 	
 	Ne = pApduCmd->body.Ne;
 	
@@ -177,11 +189,17 @@ READER_Status READER_T0_APDU_ExecuteCase2S(READER_T0_ContextHandler *pContext, R
 }
 
 
-READER_Status READER_T0_APDU_ExecuteCase3S(READER_T0_ContextHandler *pContext, READER_APDU_Command *pApduCmd, READER_APDU_Response *pApduResp, uint32_t timeout){
+READER_Status READER_T0_APDU_ExecuteCase3S(READER_T0_ContextHandler *pContext, READER_APDU_Command *pApduCmd, READER_APDU_Response *pApduResp){
 	/* Voir ISO7816-3 section 12.2.4 */
 	READER_TPDU_Command tpduCmd;
 	READER_TPDU_Response tpduResp;
 	READER_Status retVal;
+	uint32_t timeout;
+	
+	
+	/* Recuperation de la valeur de timeout actuellement utilisee dans le contexte de communication ...  */
+	retVal = READER_T0_CONTEXT_GetCurrentWT(pContext, &timeout);
+	if(retVal != READER_OK) return retVal;
 	
 	/* verifications preliminaires */
 	if((pApduCmd->body.Nc > 255) || (pApduCmd->body.Ne != 0)){
@@ -218,7 +236,7 @@ READER_Status READER_T0_APDU_ExecuteCase3S(READER_T0_ContextHandler *pContext, R
 
 
 
-READER_Status READER_T0_APDU_ExecuteCase3E(READER_T0_ContextHandler *pContext, READER_APDU_Command *pApduCmd, READER_APDU_Response *pApduResp, uint32_t timeout){
+READER_Status READER_T0_APDU_ExecuteCase3E(READER_T0_ContextHandler *pContext, READER_APDU_Command *pApduCmd, READER_APDU_Response *pApduResp){
 	/* Voir ISO7816-3 section 12.2.7 */
 	READER_TPDU_Command tpduCmd;
 	READER_TPDU_Response tpduResp;
@@ -228,6 +246,12 @@ READER_Status READER_T0_APDU_ExecuteCase3E(READER_T0_ContextHandler *pContext, R
 	uint32_t i,j;
 	uint32_t Nc;
 	uint32_t nbSegments, nbResidualBytes;
+	uint32_t timeout;
+	
+	
+	/* Recuperation de la valeur de timeout actuellement utilisee dans le contexte de communication ...  */
+	retVal = READER_T0_CONTEXT_GetCurrentWT(pContext, &timeout);
+	if(retVal != READER_OK) return retVal;
 	
 	Nc = pApduCmd->body.Nc;
 	
@@ -342,7 +366,7 @@ READER_Status READER_T0_APDU_ExecuteCase3E(READER_T0_ContextHandler *pContext, R
 
 
 
-READER_Status READER_T0_APDU_ExecuteCase2E(READER_T0_ContextHandler *pContext, READER_APDU_Command *pApduCmd, READER_APDU_Response *pApduResp, uint32_t timeout){
+READER_Status READER_T0_APDU_ExecuteCase2E(READER_T0_ContextHandler *pContext, READER_APDU_Command *pApduCmd, READER_APDU_Response *pApduResp){
 	/* Voir ISO7816-3 section 12.2.6 */
 	READER_TPDU_Command tpduCmd;
 	READER_TPDU_Response tpduResp;
@@ -350,6 +374,12 @@ READER_Status READER_T0_APDU_ExecuteCase2E(READER_T0_ContextHandler *pContext, R
 	
 	uint32_t Ne, Na, Nm, Nx;            /* Meme notation que ISO7816  */
 	uint32_t i;
+	uint32_t timeout;
+	
+	
+	/* Recuperation de la valeur de timeout actuellement utilisee dans le contexte de communication ...  */
+	retVal = READER_T0_CONTEXT_GetCurrentWT(pContext, &timeout);
+	if(retVal != READER_OK) return retVal;
 	
 	Ne = pApduCmd->body.Ne;         /* Ne = N expected            */
 	Nm = Ne;                        /* Nm = N remaining           */
@@ -450,13 +480,19 @@ READER_Status READER_T0_APDU_ExecuteCase2E(READER_T0_ContextHandler *pContext, R
 
 
 
-READER_Status READER_T0_APDU_ExecuteCase4S(READER_T0_ContextHandler *pContext, READER_APDU_Command *pApduCmd, READER_APDU_Response *pApduResp, uint32_t timeout){
+READER_Status READER_T0_APDU_ExecuteCase4S(READER_T0_ContextHandler *pContext, READER_APDU_Command *pApduCmd, READER_APDU_Response *pApduResp){
 	READER_TPDU_Command tpduCmd;
 	READER_TPDU_Response tpduResp;
 	READER_APDU_Command newApduCmd;
 	//READER_APDU_Response newApduResp;
 	READER_Status retVal;
 	uint32_t Na, Ne;
+	uint32_t timeout;
+	
+	
+	/* Recuperation de la valeur de timeout actuellement utilisee dans le contexte de communication ...  */
+	retVal = READER_T0_CONTEXT_GetCurrentWT(pContext, &timeout);
+	if(retVal != READER_OK) return retVal;
 	
 	
 	Ne = pApduCmd->body.Ne;
@@ -519,7 +555,14 @@ READER_Status READER_T0_APDU_ExecuteCase4S(READER_T0_ContextHandler *pContext, R
 }
 
 
-READER_Status READER_T0_APDU_ExecuteCase4E(READER_T0_ContextHandler *pContext, READER_APDU_Command *pApduCmd, READER_APDU_Response *pApduResp, uint32_t timeout){
+READER_Status READER_T0_APDU_ExecuteCase4E(READER_T0_ContextHandler *pContext, READER_APDU_Command *pApduCmd, READER_APDU_Response *pApduResp){
+	uint32_t timeout;
+	
+	
+	/* Recuperation de la valeur de timeout actuellement utilisee dans le contexte de communication ...  */
+	retVal = READER_T0_CONTEXT_GetCurrentWT(pContext, &timeout);
+	if(retVal != READER_OK) return retVal;
+	
 	
 	return READER_OK;
 }
