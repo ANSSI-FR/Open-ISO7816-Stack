@@ -112,7 +112,7 @@ struct READER_T1_ContextHandler{
 	uint32_t currentBWI;
 	uint32_t currentBWT;
 	uint32_t currentBGT;
-	uint32_t currentCWT;
+	uint32_t currentCWT;    /* Stocke sous forme de nombre d'ETU. */
 	uint32_t currentCGT;
 	READER_T1_RedundancyType currentRType;
 	
