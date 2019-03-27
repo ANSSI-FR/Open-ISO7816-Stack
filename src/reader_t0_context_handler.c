@@ -220,6 +220,7 @@ READER_Status READER_T0_CONTEXT_GetCurrentWI(READER_T0_ContextHandler *pContext,
 }
 
 
+/* Attention on prends des millisecondes en param ...  */
 READER_Status READER_T0_CONTEXT_GetCurrentWT(READER_T0_ContextHandler *pContext, uint32_t *pCurrentWT){
 	*pCurrentWT = pContext->currentWT;
 	
@@ -241,7 +242,8 @@ READER_Status READER_T0_CONTEXT_SetCurrentWI(READER_T0_ContextHandler *pContext,
 	if(retVal != READER_OK) return retVal;
 	
 	/* On calcule le nouveau currentWT. Voir ISO7816-3 section 10.2 ...  */
-	newWT = (uint32_t)(newWI * 960 * ((float)(currentFi) / (float)(currentFreq))) + 1;
+	/* Attention, ici contrairment a la sec on manipule des millisecondes et pas des secondes (d'ou le x1000) ...  */
+	newWT = (uint32_t)(1000 * newWI * 960 * ((float)(currentFi) / (float)(currentFreq))) + 1;  /* Arrondi a l'entier superieur ...  */
 	
 	/* On mets a jour le contexte de communication ...  */
 	retVal = READER_T0_CONTEXT_SetCurrentWT(pContext, newWT);
