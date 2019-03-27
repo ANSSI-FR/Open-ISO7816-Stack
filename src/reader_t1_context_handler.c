@@ -35,7 +35,7 @@ READER_Status READER_T1_CONTEXT_InitCommSettings(READER_T1_ContextHandler *pCont
 	retVal = READER_T1_CONTEXT_SetCurrentCGT(pContext, READER_T1_CONTEXT_DEFAULT_CGT);
 	if(retVal != READER_OK) return retVal;
 	
-	retVal = READER_T1_CONTEXT_SetCurrentCWT(pContext, READER_T1_CONTEXT_DEFAULT_CWT);
+	retVal = READER_T1_CONTEXT_SetCurrentCWT(pContext, READER_T1_CONTEXT_DEFAULT_CWT_ETU);
 	if(retVal != READER_OK) return retVal;
 	
 	retVal = READER_T1_CONTEXT_SetCurrentBWI(pContext, READER_T1_CONTEXT_DEFAULT_BWI);
