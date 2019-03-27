@@ -175,10 +175,25 @@ READER_Status READER_T1_CONTEXT_InitRcptBuff(READER_T1_ContextHandler *pContext)
 /* On retourne BGT en milisecondes ...  */
 READER_Status READER_T1_CONTEXT_GetCurrentBGT(READER_T1_ContextHandler *pContext, uint32_t *pBgt){
 	float etuMili;
+	uint32_t currentFi, currentDi, currentFreq;
+	READER_Status retVal;
 	
 	
+	/* Recuperation des valeurs necessaires pour calculer la duree d'un ETU ...  */
+	retVal = READER_T1_CONTEXT_GetHalCommSettingsFi(pContext, &currentFi);
+	if(retVal != READER_OK) return retVal;
+	
+	retVal = READER_T1_CONTEXT_GetHalCommSettingsDi(pContext, &currentDi);
+	if(retVal != READER_OK) return retVal;
+	
+	retVal = READER_T1_CONTEXT_GetHalCommSettingsFreq(pContext, &currentFreq);
+	if(retVal != READER_OK) return retVal;
+	
+	/* Calcul de la duree d'un ETU en milisecondes ...  */
 	etuMili = READER_UTILS_ComputeEtuMiliFloat(READER_HAL_GetFi(), READER_HAL_GetDi(), READER_HAL_GetFreq());
+	etuMili = MAX(etuMili, 1);
 
+	/* Dans le cotexte, le BGT est stocke en nombre de caracteres, on le convertit en millisecondes ...  */
 	*pBgt = (uint32_t)((float)(pContext->currentBGT) * etuMili) + 1;
 	
 	//etuMili = READER_UTILS_ComputeEtuMili(READER_HAL_GetFi(), READER_HAL_GetDi(), READER_HAL_GetFreq());
