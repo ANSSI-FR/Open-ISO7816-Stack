@@ -253,7 +253,7 @@ READER_Status READER_T1_CONTEXT_GetCurrentCWT(READER_T1_ContextHandler *pContext
 	retVal = READER_T1_CONTEXT_GetCurrentCWI(pContext, &currentCWI);
 	if(retVal != READER_OK) return retVal;
 	
-	*pCwt = 11 + READER_UTILS_Pow(2, currentCWI);
+	*pCwt = 11 + READER_UTILS_Pow(2, currentCWI);   /* ISO7816-3 section 11.4.3 ...  */
 	
 	return READER_OK;
 }
