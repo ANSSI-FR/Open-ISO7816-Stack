@@ -269,7 +269,7 @@ READER_Status READER_T1_CONTEXT_GetCurrentCWTMilli(READER_T1_ContextHandler *pCo
 	if(retVal != READER_OK) return retVal;
 	
 	/* On calcule CWT en millisecondes. On utilise la formule ISO7816-3 section 11.4.3 ...  */
-	*pCwtMilli = (uint32_t)((float)(11 + READER_UTILS_Pow(2, currentCWI)) * currentEtuMilli);
+	*pCwtMilli = (uint32_t)((float)(11 + READER_UTILS_Pow(2, currentCWI)) * currentEtuMilli)+1;   /* On arrondi au dessus. */
 	
 	return READER_OK;
 }
