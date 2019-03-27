@@ -190,7 +190,7 @@ READER_Status READER_T1_CONTEXT_GetCurrentBGT(READER_T1_ContextHandler *pContext
 	if(retVal != READER_OK) return retVal;
 	
 	/* Calcul de la duree d'un ETU en milisecondes ...  */
-	etuMili = READER_UTILS_ComputeEtuMiliFloat(READER_HAL_GetFi(), READER_HAL_GetDi(), READER_HAL_GetFreq());
+	etuMili = READER_UTILS_ComputeEtuMiliFloat(currentFi, currentDi, currentFreq);
 	etuMili = MAX(etuMili, 1);  /* Pour eviter uen multipication par zero dans 'etape suivante. */
 
 	/* Dans le contexte, le BGT est stocke en nombre de caracteres, on le convertit en millisecondes ...  */
