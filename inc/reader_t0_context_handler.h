@@ -20,7 +20,7 @@ typedef struct READER_T0_ContextHandler READER_T0_ContextHandler;
 struct READER_T0_ContextHandler{
 	READER_HAL_CommSettings halCommSettings;
 	uint32_t currentWI;
-	uint32_t currentWT;
+	//uint32_t currentWT;
 };
 
 
