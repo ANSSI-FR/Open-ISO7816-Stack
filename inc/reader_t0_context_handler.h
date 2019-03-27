@@ -9,7 +9,7 @@
 
 
 
-#define READER_T0_DEFAULT_WI         (uint32_t)(10)
+#define READER_T0_CONTEXT_DEFAULT_WI         (uint32_t)(10)
 //#define READER_DEFAULT_WT_MILI    (uint32_t)((1000 * READER_DEFAULT_WI * 960 * READER_HAL_DEFAULT_FI) / (float)READER_HAL_DEFAULT_FREQ)      /* Voir ISO7816-3 section 10.2 */
 
 

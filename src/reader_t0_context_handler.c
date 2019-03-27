@@ -12,6 +12,10 @@ READER_Status READER_T0_CONTEXT_Init(READER_T0_ContextHandler *pContext, READER_
 	retVal = READER_T0_CONTEXT_ImportHalCommSettingsToContext(pContext, pSettings);
 	if(retVal != READER_OK) return retVal;
 	
+	retVal = READER_T0_CONTEXT_SetCurrentWI(pContext, READER_T0_CONTEXT_DEFAULT_WI);  /* Quand on set le WI ca set aussi e WT .. */
+	if(retVal != READER_OK) return retVal;
+	
+	
 	return READER_OK;
 }
 
