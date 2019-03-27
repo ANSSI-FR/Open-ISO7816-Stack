@@ -260,9 +260,9 @@ READER_Status READER_T0_CONTEXT_SetCurrentWI(READER_T0_ContextHandler *pContext,
 }
 
 
-READER_Status READER_T0_CONTEXT_SetCurrentWT(READER_T0_ContextHandler *pContext, uint32_t newWT){
-	pContext->currentWT = newWT;
-	
-	return READER_OK;
-}
+//READER_Status READER_T0_CONTEXT_SetCurrentWT(READER_T0_ContextHandler *pContext, uint32_t newWT){
+//	pContext->currentWT = newWT;
+//	
+//	return READER_OK;
+//}
 

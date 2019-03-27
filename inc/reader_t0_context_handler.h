@@ -51,6 +51,6 @@ READER_Status READER_T0_CONTEXT_GetCurrentWI(READER_T0_ContextHandler *pContext,
 READER_Status READER_T0_CONTEXT_GetCurrentWTMilli(READER_T0_ContextHandler *pContext, uint32_t *pCurrentWT);
 
 READER_Status READER_T0_CONTEXT_SetCurrentWI(READER_T0_ContextHandler *pContext, uint32_t newWI);
-READER_Status READER_T0_CONTEXT_SetCurrentWT(READER_T0_ContextHandler *pContext, uint32_t newWT);
+//READER_Status READER_T0_CONTEXT_SetCurrentWT(READER_T0_ContextHandler *pContext, uint32_t newWT);
 
 #endif
