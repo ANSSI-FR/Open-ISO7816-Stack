@@ -488,6 +488,7 @@ READER_Status READER_T1_CONTROL_RcvBlock(READER_T1_ContextHandler *pContext, REA
 	READER_T1_BlockType bType;
 	READER_T1_RedundancyType rType;
 	READER_T1_FlagStatus SBlockExpected;
+	READER_HAL_CommSettings *pCommSettings;
 	uint32_t currentCWT, currentBWT;
 	uint32_t extraTimeout;
 	uint32_t tickLastBlock, tick;
@@ -517,10 +518,13 @@ READER_Status READER_T1_CONTROL_RcvBlock(READER_T1_ContextHandler *pContext, REA
 	}
 	
 	/* On receptionne le Block ... */
-	retVal = READER_T1_CONTEXT_GetCurrentRedundancyType(pContext, &rType);
+	retVal = READER_T1_CONTEXT_GetCurrentRedundancyType(pContext, &rType);            /* On recupere le type de code corrcteur actuellement utilise dans le contexte de communication */             
 	if(retVal != READER_OK) return retVal;
 	
-	retVal = READER_T1_RcvBlock(pBlock, rType, currentCWT, extraTimeout, &tickLastBlock);    /* La fonction de reception de Block fait remonter la date du leading Edge du Block recu ...  */
+	retVal = READER_T1_CONTEXT_GetHalCommSettingsPtr(pContext, &pCommSettings);       /* On recuepre les paramettres de comm bas niveau actuellement utilises dans le contexte de communication ...  */
+	if(retVal != READER_OK) return retVal;
+	
+	retVal = READER_T1_RcvBlock(pBlock, rType, currentCWT, extraTimeout, &tickLastBlock, pCommSettings);    /* La fonction de reception de Block fait remonter la date du leading Edge du Block recu ...  */
 	if((retVal != READER_OK) && (retVal != READER_TIMEOUT)) return retVal;
 	
 	/* On regarde si on a eu un timeout     */
