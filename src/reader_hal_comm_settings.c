@@ -70,10 +70,10 @@ READER_Status READER_HAL_SetEtu(READER_HAL_CommSettings *pSettings, uint32_t Fi,
 	if(HAL_SMARTCARD_Init(&smartcardHandleStruct) != HAL_OK) return READER_ERR;
 	
 	/* Le changement de l'etu a pour consequence la modification du Wait Time (WT) */
-	WI = READER_HAL_GetWI(pSettings);
-	newWT = READER_UTILS_ComputeWT1(freq, Fi, WI);
-	retVal = READER_HAL_SetWT(pSettings, newWT);
-	if(retVal != READER_OK) return retVal;	
+	//WI = READER_HAL_GetWI(pSettings);
+	//newWT = READER_UTILS_ComputeWT1(freq, Fi, WI);
+	//retVal = READER_HAL_SetWT(pSettings, newWT);
+	//if(retVal != READER_OK) return retVal;	
 	
 	/* On met a jour la structure globalCurrentSettings */
 	pSettings->Fi = Fi;
