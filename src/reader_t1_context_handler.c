@@ -368,7 +368,13 @@ READER_Status READER_T1_CONTEXT_SetCurrentCGT(READER_T1_ContextHandler *pContext
 
 
 READER_Status READER_T1_CONTEXT_SetCurrentCWT(READER_T1_ContextHandler *pContext, uint32_t cwt){
+	/* Verification sur la nouvelle valeur de CWT. VAleur minimale 12 ETU, voir ISO7816-3 section 11.4.3 ...  */
+	if(cwt < 12){
+		return READER_BAD_ARG;
+	}
+	
 	pContext->currentCWT = cwt;
+	
 	return READER_OK;
 }
 
