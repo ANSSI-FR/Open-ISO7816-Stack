@@ -255,6 +255,10 @@ READER_Status READER_T1_CONTEXT_GetCurrentCWT(READER_T1_ContextHandler *pContext
 	
 	*pCwt = 11 + READER_UTILS_Pow(2, currentCWI);   /* ISO7816-3 section 11.4.3 ...  */
 	
+	if(*pCwt < 12){
+		return READER_ERR;
+	}
+	
 	return READER_OK;
 }
 
