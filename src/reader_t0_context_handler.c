@@ -206,3 +206,33 @@ READER_Status READER_T0_CONTEXT_ExportHalCommSettingsFromContext(READER_T0_Conte
 	
 }
 
+
+
+
+READER_Status READER_T0_CONTEXT_GetCurrentWI(READER_T0_ContextHandler *pContext, uint32_t *pCurrentWI){
+	*pCurrentWI = pContext->currentWI;
+	
+	return READER_OK;
+}
+
+
+READER_Status READER_T0_CONTEXT_GetCurrentWT(READER_T0_ContextHandler *pContext, uint32_t *pCurrentWT){
+	*pCurrentWT = pContext->currentWT;
+	
+	return READER_OK;
+}
+
+
+READER_Status READER_T0_CONTEXT_SetCurrentWI(READER_T0_ContextHandler *pContext, uint32_t newWI){
+	pContext->currentWI = newWI;
+	
+	return READER_OK;
+}
+
+
+READER_Status READER_T0_CONTEXT_SetCurrentWT(READER_T0_ContextHandler *pContext, uint32_t newWT){
+	pContext->currentWT = newWT;
+	
+	return READER_OK;
+}
+
