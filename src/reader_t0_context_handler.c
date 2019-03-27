@@ -221,7 +221,7 @@ READER_Status READER_T0_CONTEXT_GetCurrentWI(READER_T0_ContextHandler *pContext,
 
 
 /* Attention on prends des millisecondes en param ...  */
-READER_Status READER_T0_CONTEXT_GetCurrentWT(READER_T0_ContextHandler *pContext, uint32_t *pCurrentWT){
+READER_Status READER_T0_CONTEXT_GetCurrentWTMilli(READER_T0_ContextHandler *pContext, uint32_t *pCurrentWT){
 	*pCurrentWT = pContext->currentWT;
 	
 	return READER_OK;
