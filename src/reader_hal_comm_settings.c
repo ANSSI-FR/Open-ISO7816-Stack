@@ -295,7 +295,7 @@ uint32_t READER_HAL_GetDi(READER_HAL_CommSettings *pSettings){
 	return pSettings->Di;
 }
 
-uint32_t READER_HAL_GetRedunancyType(READER_HAL_CommSettings *pSettings){
-	return pSettings->redundancyType;
-}
+//uint32_t READER_HAL_GetRedunancyType(READER_HAL_CommSettings *pSettings){
+//	return pSettings->redundancyType;
+//}
 

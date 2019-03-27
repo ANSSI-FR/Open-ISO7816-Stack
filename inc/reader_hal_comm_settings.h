@@ -45,7 +45,7 @@ uint32_t READER_HAL_GetDi(READER_HAL_CommSettings *pSettings);
 //uint32_t READER_HAL_GetBWT(void);
 //uint32_t READER_HAL_GetBWI(void);
 //uint32_t READER_HAL_GetBGT(void);
-uint32_t READER_HAL_GetRedunancyType(READER_HAL_CommSettings *pSettings);
+//uint32_t READER_HAL_GetRedunancyType(READER_HAL_CommSettings *pSettings);
 //uint32_t READER_HAL_GetWI(READER_HAL_CommSettings *pSettings);
 
 #endif
