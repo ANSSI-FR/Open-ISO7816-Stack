@@ -253,7 +253,7 @@ READER_Status READER_T1_CONTROL_SendBlock(READER_T1_ContextHandler *pContext, RE
 	}
 
 	/* On envoie le Block                                                       */
-	retVal = READER_T1_CONTEXT_GetCurrentCWT(pContext, &currentCWT);
+	retVal = READER_T1_CONTEXT_GetCurrentCWTMilli(pContext, &currentCWT);
 	if(retVal != READER_OK) return retVal;
 	
 	retVal = READER_T1_SendBlock(pBlockToSend, currentCWT, extraStartDelay, &tickLastBlock);     /* On recupere au passage le tick (date) du leading edge du dernier caractere envoye dans ce Block */
@@ -495,7 +495,7 @@ READER_Status READER_T1_CONTROL_RcvBlock(READER_T1_ContextHandler *pContext, REA
 	
 	
 	/* On recupere les valeurs de timeout a appliquer ... */
-	retVal = READER_T1_CONTEXT_GetCurrentCWT(pContext, &currentCWT);
+	retVal = READER_T1_CONTEXT_GetCurrentCWTMilli(pContext, &currentCWT);
 	if(retVal != READER_OK) return retVal;
 	
 	retVal = READER_T1_CONTEXT_GetCurrentBWT(pContext, &currentBWT);

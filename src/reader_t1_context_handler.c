@@ -172,6 +172,34 @@ READER_Status READER_T1_CONTEXT_InitRcptBuff(READER_T1_ContextHandler *pContext)
 
 /* Accesseurs sur les parametres actuels de communication */
 
+
+READER_Status READER_T1_CONTEXT_GetCurrentEtuMilliFloat(READER_T1_ContextHandler *pContext, float *pEtuMilli){
+	float etuMili;
+	uint32_t currentFi, currentDi, currentFreq;
+	READER_Status retVal;
+	
+	
+	/* Recuperation des valeurs necessaires pour calculer la duree d'un ETU ...  */
+	retVal = READER_T1_CONTEXT_GetHalCommSettingsFi(pContext, &currentFi);
+	if(retVal != READER_OK) return retVal;
+	
+	retVal = READER_T1_CONTEXT_GetHalCommSettingsDi(pContext, &currentDi);
+	if(retVal != READER_OK) return retVal;
+	
+	retVal = READER_T1_CONTEXT_GetHalCommSettingsFreq(pContext, &currentFreq);
+	if(retVal != READER_OK) return retVal;
+	
+	/* Calcul de la duree d'un ETU en milisecondes ...  */
+	etuMili = READER_UTILS_ComputeEtuMiliFloat(currentFi, currentDi, currentFreq);
+
+	/* Retour du resultat ...  */
+	*pEtuMilli = etuMili;
+
+	return READER_OK;
+}
+
+
+
 /* On retourne BGT en milisecondes ...  */
 READER_Status READER_T1_CONTEXT_GetCurrentBGT(READER_T1_ContextHandler *pContext, uint32_t *pBgt){
 	float etuMili;
@@ -217,8 +245,32 @@ READER_Status READER_T1_CONTEXT_GetCurrentCGT(READER_T1_ContextHandler *pContext
 }
 
 
+/* On recupere la valeur en nombre d'ETU ...  */
 READER_Status READER_T1_CONTEXT_GetCurrentCWT(READER_T1_ContextHandler *pContext, uint32_t *pCwt){
 	*pCwt = pContext->currentCWT;
+	return READER_OK;
+}
+
+/* On recupere la valeur en millisecondes ...  */
+READER_Status READER_T1_CONTEXT_GetCurrentCWTMilli(READER_T1_ContextHandler *pContext, uint32_t *pCwtMilli){
+	READER_Status retVal;
+	float currentEtuMilli;
+	uint32_t currentCWT, currentCWI;
+	
+	
+	/* On recupere les donnees necessaires au calcul de CWT en millisecondes ...  */
+	retVal = READER_T1_CONTEXT_GetCurrentCWT(pContext, &currentCWT);
+	if(retVal != READER_OK) return retVal;	
+	
+	retVal = READER_T1_CONTEXT_GetCurrentEtuMilliFloat(pContext, &currentEtuMilli);
+	if(retVal != READER_OK) return retVal;
+	
+	retVal = READER_T1_CONTEXT_GetCurrentCWI(pContext, &currentCWI);
+	if(retVal != READER_OK) return retVal;
+	
+	/* On calcule CWT en millisecondes. On utilise la formule ISO7816-3 section 11.4.3 ...  */
+	*pCwtMilli = (uint32_t)((float)(11 + READER_UTILS_Pow(2, currentCWI)) * currentEtuMilli);
+	
 	return READER_OK;
 }
 
