@@ -35,8 +35,8 @@ READER_Status READER_T1_CONTEXT_InitCommSettings(READER_T1_ContextHandler *pCont
 	retVal = READER_T1_CONTEXT_SetCurrentCGT(pContext, READER_T1_CONTEXT_DEFAULT_CGT);
 	if(retVal != READER_OK) return retVal;
 	
-	retVal = READER_T1_CONTEXT_SetCurrentCWT(pContext, READER_T1_CONTEXT_DEFAULT_CWT_ETU);
-	if(retVal != READER_OK) return retVal;
+	//retVal = READER_T1_CONTEXT_SetCurrentCWT(pContext, READER_T1_CONTEXT_DEFAULT_CWT_ETU);
+	//if(retVal != READER_OK) return retVal;
 	
 	retVal = READER_T1_CONTEXT_SetCurrentBWI(pContext, READER_T1_CONTEXT_DEFAULT_BWI);
 	if(retVal != READER_OK) return retVal;
@@ -375,16 +375,16 @@ READER_Status READER_T1_CONTEXT_SetCurrentCGT(READER_T1_ContextHandler *pContext
 }
 
 
-READER_Status READER_T1_CONTEXT_SetCurrentCWT(READER_T1_ContextHandler *pContext, uint32_t cwt){
-	/* Verification sur la nouvelle valeur de CWT. VAleur minimale 12 ETU, voir ISO7816-3 section 11.4.3 ...  */
-	if(cwt < 12){
-		return READER_BAD_ARG;
-	}
-	
-	pContext->currentCWT = cwt;
-	
-	return READER_OK;
-}
+//READER_Status READER_T1_CONTEXT_SetCurrentCWT(READER_T1_ContextHandler *pContext, uint32_t cwt){
+//	/* Verification sur la nouvelle valeur de CWT. VAleur minimale 12 ETU, voir ISO7816-3 section 11.4.3 ...  */
+//	if(cwt < 12){
+//		return READER_BAD_ARG;
+//	}
+//	
+//	pContext->currentCWT = cwt;
+//	
+//	return READER_OK;
+//}
 
 
 READER_Status READER_T1_CONTEXT_SetCurrentCWI(READER_T1_ContextHandler *pContext, uint32_t cwi){
