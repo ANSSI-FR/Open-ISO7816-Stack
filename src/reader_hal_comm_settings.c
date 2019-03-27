@@ -27,10 +27,10 @@ READER_Status READER_HAL_SetFreq(READER_HAL_CommSettings *pSettings, uint32_t ne
 	if(HAL_SMARTCARD_Init(&smartcardHandleStruct) != HAL_OK) return READER_ERR;
 	
 	/* On modifie en consequence la valeur du Wait Time (WT) (car WT est dependant de f) */
-	WI = READER_HAL_GetWI(pSettings);
-	newWaitTime = READER_UTILS_ComputeWT1(newFreq, READER_HAL_GetFi(pSettings), WI);
-	retVal = READER_HAL_SetWT(pSettings, newWaitTime); 
-	if(retVal != READER_OK) return retVal;
+	//WI = READER_HAL_GetWI(pSettings);
+	//newWaitTime = READER_UTILS_ComputeWT1(newFreq, READER_HAL_GetFi(pSettings), WI);
+	//retVal = READER_HAL_SetWT(pSettings, newWaitTime); 
+	//if(retVal != READER_OK) return retVal;
 	
 	/* On modifie en consequence la valeur du BWT Voir ISO7816-3 section 11.4.3 */
 	//BWI = READER_HAL_GetBWI();
