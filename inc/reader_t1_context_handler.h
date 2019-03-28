@@ -114,7 +114,7 @@ struct READER_T1_ContextHandler{
 	uint32_t currentIFSD;
 	uint32_t currentCWI;
 	uint32_t currentBWI;
-	uint32_t currentBWT;
+	//uint32_t currentBWT;
 	uint32_t currentBWTMultiplier;
 	uint32_t currentBGT;
 	//uint32_t currentCWT;    /* Stocke sous forme de nombre d'ETU. */
@@ -182,7 +182,7 @@ READER_Status READER_T1_CONTEXT_GetCurrentRedundancyLen(READER_T1_ContextHandler
 READER_Status READER_T1_CONTEXT_GetCurrentEtuMilliFloat(READER_T1_ContextHandler *pContext, float *pEtuMilli);
 
 READER_Status READER_T1_CONTEXT_SetCurrentBGT(READER_T1_ContextHandler *pContext, uint32_t bgt);
-READER_Status READER_T1_CONTEXT_SetCurrentBWT(READER_T1_ContextHandler *pContext, uint32_t bwt);
+//READER_Status READER_T1_CONTEXT_SetCurrentBWT(READER_T1_ContextHandler *pContext, uint32_t bwt);
 READER_Status READER_T1_CONTEXT_SetCurrentCGT(READER_T1_ContextHandler *pContext, uint32_t cgt);
 READER_Status READER_T1_CONTEXT_SetCurrentBWTMultiplier(READER_T1_ContextHandler *pContext, uint32_t multiplier);
 //READER_Status READER_T1_CONTEXT_SetCurrentCWT(READER_T1_ContextHandler *pContext, uint32_t cwt);

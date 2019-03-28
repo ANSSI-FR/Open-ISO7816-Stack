@@ -1101,8 +1101,8 @@ READER_Status READER_T1_CONTROL_ApplySBlockWtx(READER_T1_ContextHandler *pContex
 	newBWT = currentBWT * ((uint32_t)(multiplier));
 	
 	/* On mets a jour le BWT dans le contexte de communication ...  */
-	retVal = READER_T1_CONTEXT_SetCurrentBWT(pContext, newBWT);
-	if(retVal != READER_OK) return retVal;
+	//retVal = READER_T1_CONTEXT_SetCurrentBWT(pContext, newBWT);
+	//if(retVal != READER_OK) return retVal;
 	
 	return READER_OK;
 }
