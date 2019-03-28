@@ -235,7 +235,7 @@ READER_Status READER_T1_CONTROL_SendBlock(READER_T1_ContextHandler *pContext, RE
 	//if(retVal != READER_OK) return retVal; 
 	
 	/* Avant d'envoyer le Block, on calcule le delai a appliquer pour respecter le BGT entre les Blocks */
-	retVal = READER_T1_CONTEXT_GetCurrentBGT(pContext, &currentBGT);
+	retVal = READER_T1_CONTEXT_GetCurrentBGTMilli(pContext, &currentBGT);
 	if(retVal != READER_OK) return retVal;
 	
 	retVal = READER_T1_CONTEXT_GetTickLastBlock(pContext, &tickLastBlock);

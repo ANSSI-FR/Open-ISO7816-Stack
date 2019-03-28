@@ -169,6 +169,7 @@ READER_Status READER_T1_CONTEXT_InitRcptBuff(READER_T1_ContextHandler *pContext)
 
 /* Accesseurs sur les parametres actuels de communication */
 READER_Status READER_T1_CONTEXT_GetCurrentBGT(READER_T1_ContextHandler *pContext, uint32_t *pBgt);
+READER_Status READER_T1_CONTEXT_GetCurrentBGTMilli(READER_T1_ContextHandler *pContext, uint32_t *pBgt);
 READER_Status READER_T1_CONTEXT_GetCurrentBWTMilli(READER_T1_ContextHandler *pContext, uint32_t *pBwt);
 READER_Status READER_T1_CONTEXT_GetCurrentCGT(READER_T1_ContextHandler *pContext, uint32_t *pCgt);
 READER_Status READER_T1_CONTEXT_GetCurrentCWT(READER_T1_ContextHandler *pContext, uint32_t *pCwt);

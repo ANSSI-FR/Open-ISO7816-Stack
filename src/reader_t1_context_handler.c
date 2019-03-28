@@ -203,34 +203,27 @@ READER_Status READER_T1_CONTEXT_GetCurrentEtuMilliFloat(READER_T1_ContextHandler
 
 
 
-/* On retourne BGT en milisecondes ...  */
 READER_Status READER_T1_CONTEXT_GetCurrentBGT(READER_T1_ContextHandler *pContext, uint32_t *pBgt){
-	float etuMili;
-	uint32_t currentFi, currentDi, currentFreq;
-	READER_Status retVal;
-	
-	
-	/* Recuperation des valeurs necessaires pour calculer la duree d'un ETU ...  */
-	retVal = READER_T1_CONTEXT_GetHalCommSettingsFi(pContext, &currentFi);
-	if(retVal != READER_OK) return retVal;
-	
-	retVal = READER_T1_CONTEXT_GetHalCommSettingsDi(pContext, &currentDi);
-	if(retVal != READER_OK) return retVal;
-	
-	retVal = READER_T1_CONTEXT_GetHalCommSettingsFreq(pContext, &currentFreq);
-	if(retVal != READER_OK) return retVal;
-	
-	/* Calcul de la duree d'un ETU en milisecondes ...  */
-	etuMili = READER_UTILS_ComputeEtuMiliFloat(currentFi, currentDi, currentFreq);
-	etuMili = MAX(etuMili, 1);  /* Pour eviter uen multipication par zero dans 'etape suivante. */
+	*pBgt = pContext->currentBGT;
+	return READER_OK;
+}
 
-	/* Dans le contexte, le BGT est stocke en nombre de caracteres, on le convertit en millisecondes ...  */
-	*pBgt = (uint32_t)((float)(pContext->currentBGT) * etuMili) + 1;
+/* On retourne BGT en milisecondes ...  */
+READER_Status READER_T1_CONTEXT_GetCurrentBGTMilli(READER_T1_ContextHandler *pContext, uint32_t *pBgt){
+	READER_Status retVal;
+	float currentEtuMilli;
+	uint32_t currentBgtEtu, currentBgtMilli;
 	
-	//etuMili = READER_UTILS_ComputeEtuMili(READER_HAL_GetFi(), READER_HAL_GetDi(), READER_HAL_GetFreq());
-	//etuMili = MAX(etuMili, 1);
-	//
-	//*pBgt = (pContext->currentBGT) * etuMili;
+	
+	retVal = READER_T1_CONTEXT_GetCurrentBGT(pContext, &currentBgtEtu);
+	if(retVal != READER_OK) return retVal;
+	
+	retVal = READER_T1_CONTEXT_GetCurrentEtuMilliFloat(pContext, &currentEtuMilli);
+	if(retVal != READER_OK) return retVal;
+	
+	currentBgtMilli = (uint32_t)((float)(currentBgtEtu) * currentEtuMilli) + 1;
+	
+	*pBgt = currentBgtMilli;
 	
 	return READER_OK;
 }
