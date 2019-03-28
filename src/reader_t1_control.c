@@ -1093,16 +1093,9 @@ READER_Status READER_T1_CONTROL_ApplySBlockWtx(READER_T1_ContextHandler *pContex
 	/* On recupere les donnes multiplieur de BWT dans le S-Block ...  */
 	multiplier = READER_T1_GetBlockSPayload(pBlock);
 	
-	/* On recupere le BWT actuel ...  */
-	retVal = READER_T1_CONTEXT_GetCurrentBWTMilli(pContext, &currentBWT);
+	/* On applique au contexte le multipieur recupere dans le S-Block ...  */
+	retVal = READER_T1_CONTEXT_ExtendCurrentBWT(pContext, multiplier);
 	if(retVal != READER_OK) return retVal;
-	
-	/* On calcule le nouveau BWT */
-	newBWT = currentBWT * ((uint32_t)(multiplier));
-	
-	/* On mets a jour le BWT dans le contexte de communication ...  */
-	//retVal = READER_T1_CONTEXT_SetCurrentBWT(pContext, newBWT);
-	//if(retVal != READER_OK) return retVal;
 	
 	return READER_OK;
 }
