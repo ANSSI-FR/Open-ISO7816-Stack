@@ -35,8 +35,8 @@ READER_Status READER_T1_CONTEXT_InitCommSettings(READER_T1_ContextHandler *pCont
 	retVal = READER_T1_CONTEXT_SetCurrentBWTMultiplier(pContext, READER_T1_CONTEXT_DEFAULT_BWTMULTIPLIER);
 	if(retVal != READER_OK) return retVal;
 	
-	retVal = READER_T1_CONTEXT_SetCurrentCGT(pContext, READER_T1_CONTEXT_DEFAULT_CGT);
-	if(retVal != READER_OK) return retVal;
+	//retVal = READER_T1_CONTEXT_SetCurrentCGT(pContext, READER_T1_CONTEXT_DEFAULT_CGT);
+	//if(retVal != READER_OK) return retVal;
 	
 	//retVal = READER_T1_CONTEXT_SetCurrentCWT(pContext, READER_T1_CONTEXT_DEFAULT_CWT_ETU);
 	//if(retVal != READER_OK) return retVal;
@@ -266,10 +266,10 @@ READER_Status READER_T1_CONTEXT_GetCurrentBWTMilli(READER_T1_ContextHandler *pCo
 }
 
 
-READER_Status READER_T1_CONTEXT_GetCurrentCGT(READER_T1_ContextHandler *pContext, uint32_t *pCgt){
-	*pCgt = pContext->currentCGT;
-	return READER_OK;
-}
+//READER_Status READER_T1_CONTEXT_GetCurrentCGT(READER_T1_ContextHandler *pContext, uint32_t *pCgt){
+//	*pCgt = pContext->currentCGT;
+//	return READER_OK;
+//}
 
 
 /* On recupere la valeur en nombre d'ETU ...  */
@@ -403,10 +403,10 @@ READER_Status READER_T1_CONTEXT_SetCurrentBGT(READER_T1_ContextHandler *pContext
 //}
 
 
-READER_Status READER_T1_CONTEXT_SetCurrentCGT(READER_T1_ContextHandler *pContext, uint32_t cgt){
-	pContext->currentCGT = cgt;
-	return READER_OK;
-}
+//READER_Status READER_T1_CONTEXT_SetCurrentCGT(READER_T1_ContextHandler *pContext, uint32_t cgt){
+//	pContext->currentCGT = cgt;
+//	return READER_OK;
+//}
 
 
 READER_Status READER_T1_CONTEXT_SetCurrentBWTMultiplier(READER_T1_ContextHandler *pContext, uint32_t multiplier){
