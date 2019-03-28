@@ -115,6 +115,7 @@ struct READER_T1_ContextHandler{
 	uint32_t currentCWI;
 	uint32_t currentBWI;
 	uint32_t currentBWT;
+	uint32_t currentBWTMultiplier;
 	uint32_t currentBGT;
 	//uint32_t currentCWT;    /* Stocke sous forme de nombre d'ETU. */
 	uint32_t currentCGT;
@@ -173,6 +174,7 @@ READER_Status READER_T1_CONTEXT_GetCurrentCWT(READER_T1_ContextHandler *pContext
 READER_Status READER_T1_CONTEXT_GetCurrentCWTMilli(READER_T1_ContextHandler *pContext, uint32_t *pCwtMilli);
 READER_Status READER_T1_CONTEXT_GetCurrentCWI(READER_T1_ContextHandler *pContext, uint32_t *pCwi);
 READER_Status READER_T1_CONTEXT_GetCurrentBWI(READER_T1_ContextHandler *pContext, uint32_t *pBwi);
+READER_Status READER_T1_CONTEXT_GetCurrentBWTMultiplier(READER_T1_ContextHandler *pContext, uint32_t *pMultiplier);
 READER_Status READER_T1_CONTEXT_GetCurrentIFSC(READER_T1_ContextHandler *pContext, uint32_t *pIfsc);
 READER_Status READER_T1_CONTEXT_GetCurrentIFSD(READER_T1_ContextHandler *pContext, uint32_t *pIfsd);
 READER_Status READER_T1_CONTEXT_GetCurrentRedundancyType(READER_T1_ContextHandler *pContext, READER_T1_RedundancyType *pRType);
@@ -182,6 +184,7 @@ READER_Status READER_T1_CONTEXT_GetCurrentEtuMilliFloat(READER_T1_ContextHandler
 READER_Status READER_T1_CONTEXT_SetCurrentBGT(READER_T1_ContextHandler *pContext, uint32_t bgt);
 READER_Status READER_T1_CONTEXT_SetCurrentBWT(READER_T1_ContextHandler *pContext, uint32_t bwt);
 READER_Status READER_T1_CONTEXT_SetCurrentCGT(READER_T1_ContextHandler *pContext, uint32_t cgt);
+READER_Status READER_T1_CONTEXT_SetCurrentBWTMultiplier(READER_T1_ContextHandler *pContext, uint32_t multiplier);
 //READER_Status READER_T1_CONTEXT_SetCurrentCWT(READER_T1_ContextHandler *pContext, uint32_t cwt);
 READER_Status READER_T1_CONTEXT_SetCurrentCWI(READER_T1_ContextHandler *pContext, uint32_t cwi);
 READER_Status READER_T1_CONTEXT_SetCurrentBWI(READER_T1_ContextHandler *pContext, uint32_t bwi);

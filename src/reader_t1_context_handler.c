@@ -319,6 +319,13 @@ READER_Status READER_T1_CONTEXT_GetCurrentBWI(READER_T1_ContextHandler *pContext
 }
 
 
+READER_Status READER_T1_CONTEXT_GetCurrentBWTMultiplier(READER_T1_ContextHandler *pContext, uint32_t *pMultiplier){
+	*pMultiplier = pContext->currentBWTMultiplier;
+	
+	return READER_OK;
+}
+
+
 READER_Status READER_T1_CONTEXT_GetCurrentIFSC(READER_T1_ContextHandler *pContext, uint32_t *pIfsc){
 	/* On verifie que la valeur est valide (Voir ISO7816-3 section 11.4.2) ...  */
 	if((pContext->currentIFSC >= READER_T1_MIN_IFSC_ACCEPTED) && (pContext->currentIFSC <= READER_T1_MAX_IFSC_ACCEPTED)){
@@ -395,6 +402,17 @@ READER_Status READER_T1_CONTEXT_SetCurrentBWT(READER_T1_ContextHandler *pContext
 
 READER_Status READER_T1_CONTEXT_SetCurrentCGT(READER_T1_ContextHandler *pContext, uint32_t cgt){
 	pContext->currentCGT = cgt;
+	return READER_OK;
+}
+
+
+READER_Status READER_T1_CONTEXT_SetCurrentBWTMultiplier(READER_T1_ContextHandler *pContext, uint32_t multiplier){
+	if(multiplier == 0){
+		return READER_BAD_ARG;
+	}
+	
+	pContext->currentBWTMultiplier = multiplier;
+	
 	return READER_OK;
 }
 
