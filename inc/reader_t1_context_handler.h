@@ -28,6 +28,7 @@
 #define READER_T1_CONTEXT_DEFAULT_CWT_ETU   (uint32_t)(12)        /* Voir ISO7816-3 section 11.4.3 */
 #define READER_T1_CONTEXT_DEFAULT_CGT       READER_HAL_DEFAULT_GT
 #define READER_T1_CONTEXT_DEFAULT_CORRCODE  READER_T1_LRC         /* Voir ISO7816-3 section 11.4.4 */
+#define READER_T1_CONTEXT_DEFAULT_BWTMULTIPLIER  (uint32_t)(1)
 
 
 #define READER_T1_CONTEXT_MIN_BWI_ACCEPTED  (uint32_t)(0)         /* Voir ISO7816-3 section 11.4.3 */
