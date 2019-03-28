@@ -233,7 +233,7 @@ READER_Status READER_T1_CONTEXT_GetCurrentBGT(READER_T1_ContextHandler *pContext
 }
 
 
-READER_Status READER_T1_CONTEXT_GetCurrentBWT(READER_T1_ContextHandler *pContext, uint32_t *pBwt){
+READER_Status READER_T1_CONTEXT_GetCurrentBWTMilli(READER_T1_ContextHandler *pContext, uint32_t *pBwt){
 	*pBwt = pContext->currentBWT;
 	return READER_OK;
 }

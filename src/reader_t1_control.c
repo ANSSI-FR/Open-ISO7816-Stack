@@ -498,7 +498,7 @@ READER_Status READER_T1_CONTROL_RcvBlock(READER_T1_ContextHandler *pContext, REA
 	retVal = READER_T1_CONTEXT_GetCurrentCWTMilli(pContext, &currentCWT);
 	if(retVal != READER_OK) return retVal;
 	
-	retVal = READER_T1_CONTEXT_GetCurrentBWT(pContext, &currentBWT);
+	retVal = READER_T1_CONTEXT_GetCurrentBWTMilli(pContext, &currentBWT);
 	if(retVal != READER_OK) return retVal;
 	
 	/* On calcule le extraTimout pour le premier caractere du Block que l'on va recevoir. Sert a garantir le BWT  */
@@ -1094,7 +1094,7 @@ READER_Status READER_T1_CONTROL_ApplySBlockWtx(READER_T1_ContextHandler *pContex
 	multiplier = READER_T1_GetBlockSPayload(pBlock);
 	
 	/* On recupere le BWT actuel ...  */
-	retVal = READER_T1_CONTEXT_GetCurrentBWT(pContext, &currentBWT);
+	retVal = READER_T1_CONTEXT_GetCurrentBWTMilli(pContext, &currentBWT);
 	if(retVal != READER_OK) return retVal;
 	
 	/* On calcule le nouveau BWT */
