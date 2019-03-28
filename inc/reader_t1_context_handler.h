@@ -30,6 +30,9 @@
 #define READER_T1_CONTEXT_DEFAULT_CORRCODE  READER_T1_LRC         /* Voir ISO7816-3 section 11.4.4 */
 
 
+#define READER_T1_CONTEXT_MIN_BWI_ACCEPTED  (uint32_t)(0)         /* Voir ISO7816-3 section 11.4.3 */
+#define READER_T1_CONTEXT_MAX_BWI_ACCEPTED  (uint32_t)(9)         /* Voir ISO7816-3 section 11.4.3 */
+
 
 /* Choix de ces valeurs en fonction de ISO7816-3 section 11.4.2 et contraintes cible dev */
 #define READER_T1_MAX_IFSD_ACCEPTED 0xFE

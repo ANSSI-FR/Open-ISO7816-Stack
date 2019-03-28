@@ -394,7 +394,16 @@ READER_Status READER_T1_CONTEXT_SetCurrentCWI(READER_T1_ContextHandler *pContext
 
 
 READER_Status READER_T1_CONTEXT_SetCurrentBWI(READER_T1_ContextHandler *pContext, uint32_t bwi){
+	if(bwi < READER_T1_CONTEXT_MIN_BWI_ACCEPTED){
+		return READER_BAD_ARG;
+	}
+	
+	if(bwi > READER_T1_CONTEXT_MAX_BWI_ACCEPTED){
+		return READER_BAD_ARG;
+	}
+	
 	pContext->currentBWI = bwi;
+	
 	return READER_OK;
 }
 
