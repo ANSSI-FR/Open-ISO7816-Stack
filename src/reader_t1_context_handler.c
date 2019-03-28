@@ -507,6 +507,28 @@ READER_Status READER_T1_CONTEXT_SetCurrentRedundancyType(READER_T1_ContextHandle
 }
 
 
+READER_Status READER_T1_CONTEXT_ExtendCurrentBWT(READER_T1_ContextHandler *pContext, uint32_t multiplier){
+	READER_Status retVal;
+	uint32_t currentMultiplier, newMultiplier;
+	
+	
+	if(multiplier == 0){
+		return READER_BAD_ARG;
+	}
+	
+	retVal = READER_T1_CONTEXT_GetCurrentBWTMultiplier(pContext, &currentMultiplier);
+	if(retVal != READER_OK) return retVal;
+	
+	newMultiplier = currentMultiplier * multiplier;
+	
+	retVal = READER_T1_CONTEXT_SetCurrentBWTMultiplier(pContext, newMultiplier);
+	if(retVal != READER_OK) return retVal;
+	
+	
+	return READER_OK;
+}
+
+
 
 /* Manipulation des compteurs de redemande d'infos et de demandes de resynchro ... */
 

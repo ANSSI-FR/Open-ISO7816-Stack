@@ -193,6 +193,8 @@ READER_Status READER_T1_CONTEXT_SetCurrentIFSC(READER_T1_ContextHandler *pContex
 READER_Status READER_T1_CONTEXT_SetCurrentIFSD(READER_T1_ContextHandler *pContext, uint32_t ifsd);
 READER_Status READER_T1_CONTEXT_SetCurrentRedundancyType(READER_T1_ContextHandler *pContext, READER_T1_RedundancyType rType);
 
+READER_Status READER_T1_CONTEXT_ExtendCurrentBWT(READER_T1_ContextHandler *pContext, uint32_t multiplier);
+
 
 /* Manipulation des compteurs de redemande d'infos et de demandes de resynchro ... */
 READER_Status READER_T1_CONTEXT_GetRepeatCounter(READER_T1_ContextHandler *pContext, uint32_t *pCounter);
