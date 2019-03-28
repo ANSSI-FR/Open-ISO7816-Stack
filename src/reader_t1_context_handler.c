@@ -234,7 +234,31 @@ READER_Status READER_T1_CONTEXT_GetCurrentBGT(READER_T1_ContextHandler *pContext
 
 
 READER_Status READER_T1_CONTEXT_GetCurrentBWTMilli(READER_T1_ContextHandler *pContext, uint32_t *pBwt){
-	*pBwt = pContext->currentBWT;
+	READER_Status retVal;
+	float currentEtuMili;
+	uint32_t currentBWI, currentBWT, currentFi, currentFreq;
+	
+	
+	/* On recupere les valeurs necessaires au calcul de BWT ...  */
+	retVal = READER_T1_CONTEXT_GetCurrentBWI(pContext, &currentBWI);
+	if(retVal != READER_OK) return retVal;
+	
+	retVal = READER_T1_CONTEXT_GetHalCommSettingsFi(pContext, &currentFi);
+	if(retVal != READER_OK) return retVal;
+	
+	retVal = READER_T1_CONTEXT_GetHalCommSettingsFreq(pContext, &currentFreq);
+	if(retVal != READER_OK) return retVal;
+	
+	retVal = READER_T1_CONTEXT_GetCurrentEtuMilliFloat(pContext, &currentEtuMilli);
+	if(retVal != READER_OK) return retVal;
+	
+	
+	/* On fait le calcul de BWT selon la formule indiquee ISO7816-3 section 11.4.3 ...  */
+	currentBWT = (uint32_t)((11 * currentEtuMilli) + (1000 * READER_UTILS_Pow(2, currentBWI) * 960 * ((float)currentFi / (float)currentFreq))) + 1;
+	
+	*pBwt = currentBWT;
+	
+	
 	return READER_OK;
 }
 
