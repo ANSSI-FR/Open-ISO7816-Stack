@@ -236,7 +236,7 @@ READER_Status READER_T1_CONTEXT_GetCurrentBGT(READER_T1_ContextHandler *pContext
 READER_Status READER_T1_CONTEXT_GetCurrentBWTMilli(READER_T1_ContextHandler *pContext, uint32_t *pBwt){
 	READER_Status retVal;
 	float currentEtuMili;
-	uint32_t currentBWI, currentBWT, currentFi, currentFreq;
+	uint32_t currentBWI, currentBWT, currentFi, currentFreq, currentBWTMultiplier;
 	
 	
 	/* On recupere les valeurs necessaires au calcul de BWT ...  */
@@ -256,6 +256,13 @@ READER_Status READER_T1_CONTEXT_GetCurrentBWTMilli(READER_T1_ContextHandler *pCo
 	/* On fait le calcul de BWT selon la formule indiquee ISO7816-3 section 11.4.3 ...  */
 	currentBWT = (uint32_t)((11 * currentEtuMilli) + (1000 * READER_UTILS_Pow(2, currentBWI) * 960 * ((float)currentFi / (float)currentFreq))) + 1;
 	
+	/* On prends en compte un eventuel BWT Multiplier (suite a une WTX Request par exemple). Voir ISO7816-3 Rule 3 ...  */
+	retVal = READER_T1_CONTEXT_GetCurrentBWTMultiplier(pContext, &currentBWTMultiplier);
+	if(retVal != READER_OK) return retVal;
+	
+	currentBWT = currentBWT * currentBWTMultiplier;
+	
+	/* Retour de la caleur de BWT calculee en millisecondes ...  */
 	*pBwt = currentBWT;
 	
 	
