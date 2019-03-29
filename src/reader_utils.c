@@ -1,6 +1,7 @@
 #include "reader.h"
 #include "reader_utils.h"
 #include "stm32f4xx_hal.h"
+#include "reader_hal_comm_settings.h"
 
 
 uint32_t READER_UTILS_ComputeBaudRate(uint32_t freq, uint32_t Fi, uint32_t Di){

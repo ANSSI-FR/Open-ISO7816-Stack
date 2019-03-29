@@ -237,11 +237,11 @@ READER_Status READER_T0_APDU_ExecuteCase3S(READER_T0_ContextHandler *pContext, R
 	if(retVal != READER_OK) return retVal;
 	
 	/* On envoie la requette TPDU */
-	retVal = READER_TPDU_Send(&tpduCmd, timeout);
+	retVal = READER_TPDU_Send(&tpduCmd, timeout, pSettings);
 	if(retVal != READER_OK) return retVal;
 	
 	/* On recupere la reponse. On attend pas de donnees en retour, juste SW */
-	retVal = READER_TPDU_RcvResponse(&tpduResp, 0, timeout);
+	retVal = READER_TPDU_RcvResponse(&tpduResp, 0, timeout, pSettings);
 	if(retVal != READER_OK) return retVal;
 	
 	/* On mape la reponse APDU sur la reponse TPDU */
@@ -556,7 +556,7 @@ READER_Status READER_T0_APDU_ExecuteCase4S(READER_T0_ContextHandler *pContext, R
 		retVal = READER_APDU_Forge(&newApduCmd, pApduCmd->header.CLA, READER_APDU_INS_GETRESPONSE, 0x00, 0x00, 0, NULL, pApduCmd->body.Ne);
 		if(retVal != READER_OK) return retVal;
 		
-		retVal = READER_T0_APDU_ExecuteCase2S(pContext, &newApduCmd, pApduResp, timeout);
+		retVal = READER_T0_APDU_ExecuteCase2S(pContext, &newApduCmd, pApduResp);
 		if(retVal != READER_OK) return retVal;
 		
 		//retVal = READER_APDU_CopyResponse(&newApduResp, pApduResp);
@@ -568,7 +568,7 @@ READER_Status READER_T0_APDU_ExecuteCase4S(READER_T0_ContextHandler *pContext, R
 		retVal = READER_APDU_Forge(&newApduCmd, pApduCmd->header.CLA, READER_APDU_INS_GETRESPONSE, 0x00, 0x00, 0, NULL, (Ne<Na)?Na:Ne);
 		if(retVal != READER_OK) return retVal;
 		
-		retVal = READER_T0_APDU_ExecuteCase2S(pContext, &newApduCmd, pApduResp, timeout);
+		retVal = READER_T0_APDU_ExecuteCase2S(pContext, &newApduCmd, pApduResp);
 		if(retVal != READER_OK) return retVal;
 		
 		return READER_OK;
@@ -590,6 +590,7 @@ READER_Status READER_T0_APDU_ExecuteCase4S(READER_T0_ContextHandler *pContext, R
 READER_Status READER_T0_APDU_ExecuteCase4E(READER_T0_ContextHandler *pContext, READER_APDU_Command *pApduCmd, READER_APDU_Response *pApduResp){
 	uint32_t timeout;
 	READER_HAL_CommSettings *pSettings;
+	READER_Status retVal;
 	
 	
 	/* Recuperation d'un pointeur sur les parametres de comm bas niveau actuellement utilises ...  */

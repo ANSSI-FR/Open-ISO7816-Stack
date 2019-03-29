@@ -100,7 +100,7 @@ READER_Status READER_T0_CONTEXT_SetHalCommSettingsFreq(READER_T0_ContextHandler 
 	READER_Status retVal;
 	
 	
-	if(frequ == 0){
+	if(freq == 0){
 		return READER_BAD_ARG;
 	}
 	
@@ -207,7 +207,7 @@ READER_Status READER_T0_CONTEXT_ImportHalCommSettingsToContext(READER_T0_Context
 
 
 READER_Status READER_T0_CONTEXT_ExportHalCommSettingsFromContext(READER_T0_ContextHandler *pContext, READER_HAL_CommSettings *pSettings){
-	
+	return READER_OK;
 }
 
 

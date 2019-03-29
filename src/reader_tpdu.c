@@ -84,7 +84,7 @@ READER_Status READER_TPDU_SendHeader(READER_TPDU_Command *tpdu, uint32_t timeout
 	headerBuff[3] = tpdu->headerField.P2;
 	headerBuff[4] = tpdu->headerField.P3;
 	
-	retVal = READER_HAL_SendCharFrame(pSettings, headerBuff, READER_TPDU_HEADER_SIZE, timeout);
+	retVal = READER_HAL_SendCharFrame(pSettings, READER_HAL_PROTOCOL_T0, headerBuff, READER_TPDU_HEADER_SIZE, timeout);
 	
 	return retVal;
 }
@@ -102,7 +102,7 @@ READER_Status READER_TPDU_SendDataOneshot(READER_TPDU_Command *tpdu, uint32_t ti
 	
 	/* On envoie les donnees si il y en a ... */
 	if(tpdu->dataField.size != 0){
-		retVal = READER_HAL_SendCharFrame(pSettings, tpdu->dataField.data, tpdu->dataField.size, timeout);
+		retVal = READER_HAL_SendCharFrame(pSettings, READER_HAL_PROTOCOL_T0, tpdu->dataField.data, tpdu->dataField.size, timeout);
 		return retVal;
 	}
 	
@@ -129,7 +129,7 @@ READER_Status READER_TPDU_SendDataSliced(READER_TPDU_Command *tpdu, uint32_t tim
 
 	/* On envoie les caracteres un par un tantque il en reste et tantque la carte ne demande pas de tout envoyer d'un seul coups */
 	do{
-		retVal = READER_HAL_SendChar(pSettings, tpduDataField->data[i], timeout);
+		retVal = READER_HAL_SendChar(pSettings, READER_HAL_PROTOCOL_T0, tpduDataField->data[i], timeout);
 		if(retVal != READER_OK) return retVal;
 		
 		retVal = READER_TPDU_WaitACK(tpdu->headerField.INS, &ACKType, timeout, pSettings);
@@ -145,7 +145,7 @@ READER_Status READER_TPDU_SendDataSliced(READER_TPDU_Command *tpdu, uint32_t tim
 	}
 	else{
 		/* On envoie le reste en oneshot */
-		retVal = READER_HAL_SendCharFrame(pSettings, tpduDataField->data+i, tpduDataField->size-i, timeout);
+		retVal = READER_HAL_SendCharFrame(pSettings, READER_HAL_PROTOCOL_T0, tpduDataField->data+i, tpduDataField->size-i, timeout);
 		if(retVal != READER_OK) return retVal;
 		
 		return READER_OK;
@@ -167,13 +167,13 @@ READER_Status READER_TPDU_RcvSW(uint8_t *SW1, uint8_t *SW2, uint32_t timeout, RE
 	
 	/* On attend SW1 en prenant en compte les null bytes ... */
 	do{
-		retVal = READER_HAL_RcvChar(pSettings, &byte1, timeout);
+		retVal = READER_HAL_RcvChar(pSettings, READER_HAL_PROTOCOL_T0, &byte1, timeout);
 	} while( (retVal==READER_OK) && (READER_TPDU_IsNullByte(byte1)) && !(READER_TPDU_IsSW1(byte1)) );
 	
 	if(retVal != READER_OK) return retVal;
 	
 	/* On recupere SW2 */
-	retVal = READER_HAL_RcvChar(pSettings, &byte2, timeout);
+	retVal = READER_HAL_RcvChar(pSettings, READER_HAL_PROTOCOL_T0, &byte2, timeout);
 	if(retVal != READER_OK) return retVal;
 	
 	/* On retourne le resultat */
@@ -197,7 +197,7 @@ READER_Status READER_TPDU_RcvDataField(uint8_t *buffer, uint32_t Ne, uint32_t ti
 	READER_Status retVal;
 	
 	if(Ne != 0){
-		retVal = READER_HAL_RcvCharFrame(pSettings, buffer, Ne, timeout);
+		retVal = READER_HAL_RcvCharFrame(pSettings, READER_HAL_PROTOCOL_T0, buffer, Ne, timeout);
 	}
 	else{
 		retVal = READER_OK;
@@ -226,7 +226,7 @@ READER_Status READER_TPDU_RcvResponse(READER_TPDU_Response *pResp, uint32_t expe
 
 	/* On recupere les donnees */
 	if(expectedDataSize != 0){
-		retVal = READER_HAL_RcvCharFrameCount(pSettings, pResp->dataBytes, expectedDataSize, &rcvdCount, timeout);
+		retVal = READER_HAL_RcvCharFrameCount(pSettings, READER_HAL_PROTOCOL_T0, pResp->dataBytes, expectedDataSize, &rcvdCount, timeout);
 		if((retVal == READER_TIMEOUT) && (rcvdCount == 2)){
 			/* On a probablement recu que le SW1SW2 et pas de data */
 			pResp->SW1 = pResp->dataBytes[0];
@@ -332,7 +332,7 @@ READER_Status READER_TPDU_WaitProcedureByte(uint8_t *procedureByte, uint8_t INS,
 	READER_Status retVal;
 	
 	
-	retVal = READER_HAL_RcvChar(pSettings, &byte, timeout);
+	retVal = READER_HAL_RcvChar(pSettings, READER_HAL_PROTOCOL_T0, &byte, timeout);
 	if(retVal != READER_OK){
 		return retVal;
 	}
@@ -359,7 +359,7 @@ READER_Status READER_TPDU_WaitACK(uint8_t INS, uint8_t *ACKType, uint32_t timeou
 	uint8_t byte;
 	
 	do{
-		retVal = READER_HAL_RcvChar(pSettings, &byte, timeout);
+		retVal = READER_HAL_RcvChar(pSettings, READER_HAL_PROTOCOL_T0, &byte, timeout);
 		//HAL_UART_Transmit_IT(&uartHandleStruct, &byte, 0x01);  // DEBUG !!!
 	} while( (retVal==READER_OK) && (READER_TPDU_IsNullByte(byte)) && !(READER_TPDU_IsACK(byte, INS)) && !(READER_TPDU_IsXoredACK(byte, INS)));
 	

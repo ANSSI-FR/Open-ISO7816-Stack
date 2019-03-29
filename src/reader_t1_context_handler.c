@@ -138,7 +138,7 @@ READER_Status READER_T1_CONTEXT_InitSeqNums(READER_T1_ContextHandler *pContext){
 }
 
 
-READER_Status READER_T1_CONTEXT_InitSettings(READER_T1_ContextHandler *pContext){
+READER_Status READER_T1_CONTEXT_InitSettings(READER_T1_ContextHandler *pContext, READER_HAL_CommSettings *pSettings){
 	READER_Status retVal;
 	
 	
@@ -231,7 +231,7 @@ READER_Status READER_T1_CONTEXT_GetCurrentBGTMilli(READER_T1_ContextHandler *pCo
 
 READER_Status READER_T1_CONTEXT_GetCurrentBWTMilli(READER_T1_ContextHandler *pContext, uint32_t *pBwt){
 	READER_Status retVal;
-	float currentEtuMili;
+	float currentEtuMilli;
 	uint32_t currentBWI, currentBWT, currentFi, currentFreq, currentBWTMultiplier;
 	
 	
@@ -275,6 +275,7 @@ READER_Status READER_T1_CONTEXT_GetCurrentBWTMilli(READER_T1_ContextHandler *pCo
 /* On recupere la valeur en nombre d'ETU ...  */
 READER_Status READER_T1_CONTEXT_GetCurrentCWT(READER_T1_ContextHandler *pContext, uint32_t *pCwt){
 	READER_Status retVal;
+	uint32_t currentCWI;
 	
 	
 	retVal = READER_T1_CONTEXT_GetCurrentCWI(pContext, &currentCWI);
@@ -304,7 +305,7 @@ READER_Status READER_T1_CONTEXT_GetCurrentCWTMilli(READER_T1_ContextHandler *pCo
 	if(retVal != READER_OK) return retVal;
 	
 	/* On calcule CWT en millisecondes. On utilise la formule ISO7816-3 section 11.4.3 ...  */
-	*pCwtMilli = (uint32_t)((float)(currentCWT) * currentEtuMilli) +1  /* On arrondi au dessus. */
+	*pCwtMilli = (uint32_t)((float)(currentCWT) * currentEtuMilli) +1;  /* On arrondi au dessus. */
 	
 	return READER_OK;
 }
@@ -1747,7 +1748,7 @@ READER_Status READER_T1_CONTEXT_SetHalCommSettingsFreq(READER_T1_ContextHandler 
 	READER_Status retVal;
 	
 	
-	if(frequ == 0){
+	if(freq == 0){
 		return READER_BAD_ARG;
 	}
 	
@@ -1854,7 +1855,7 @@ READER_Status READER_T1_CONTEXT_ImportHalCommSettingsToContext(READER_T1_Context
 
 
 READER_Status READER_T1_CONTEXT_ExportHalCommSettingsFromContext(READER_T1_ContextHandler *pContext, READER_HAL_CommSettings *pSettings){
-	
+	return READER_OK;
 }
 
 
