@@ -3,6 +3,7 @@
 
 
 #include "reader_t0_context_handler.h"
+#include "reader_hal_comm_settings.h"
 
 
 
@@ -75,9 +76,14 @@ READER_Status READER_T0_APDU_ExecuteCase1(READER_T0_ContextHandler *pContext, RE
 	/* Voir ISO7816-3 section 12.2.2 */
 	READER_TPDU_Command tpduCmd;
 	READER_TPDU_Response tpduResp;
+	READER_HAL_CommSettings *pSettings;
 	READER_Status retVal;
 	uint32_t timeout;
 	
+	
+	/* Recuperation d'un pointeur sur les parametres de comm bas niveau actuellement utilises ...  */
+	retVal = READER_T0_CONTEXT_GetHalCommSettingsPtr(pContext, &pSettings);
+	if(retVal != READER_OK) return retVal;
 	
 	/* Recuperation de la valeur de timeout actuellement utilisee dans le contexte de communication ...  */
 	retVal = READER_T0_CONTEXT_GetCurrentWTMilli(pContext, &timeout);
@@ -98,11 +104,11 @@ READER_Status READER_T0_APDU_ExecuteCase1(READER_T0_ContextHandler *pContext, RE
 	if(retVal != READER_OK) return retVal;
 	
 	/* On envoie cet TPDU */
-	retVal = READER_TPDU_Send(&tpduCmd, timeout);
+	retVal = READER_TPDU_Send(&tpduCmd, timeout, pSettings);
 	if(retVal != READER_OK) return retVal;
 	
 	/* On recupere le reponse */
-	retVal = READER_TPDU_RcvResponse(&tpduResp, 0, timeout);
+	retVal = READER_TPDU_RcvResponse(&tpduResp, 0, timeout, pSettings);
 	if(retVal != READER_OK) return retVal;	
 	
 	/* On map la reponse TPDU sur la reponse APDU */
@@ -117,10 +123,15 @@ READER_Status READER_T0_APDU_ExecuteCase2S(READER_T0_ContextHandler *pContext, R
 	/* Voir ISO7816-3 section 12.2.3 */
 	READER_TPDU_Command tpduCmd;
 	READER_TPDU_Response tpduResp;
+	READER_HAL_CommSettings *pSettings;
 	READER_Status retVal;
 	uint8_t Na, Ne;
 	uint32_t timeout;
 	
+	
+	/* Recuperation d'un pointeur sur les parametres de comm bas niveau actuellement utilises ...  */
+	retVal = READER_T0_CONTEXT_GetHalCommSettingsPtr(pContext, &pSettings);
+	if(retVal != READER_OK) return retVal;
 	
 	/* Recuperation de la valeur de timeout actuellement utilisee dans le contexte de communication ...  */
 	retVal = READER_T0_CONTEXT_GetCurrentWTMilli(pContext, &timeout);
@@ -142,11 +153,11 @@ READER_Status READER_T0_APDU_ExecuteCase2S(READER_T0_ContextHandler *pContext, R
 	if(retVal != READER_OK) return retVal;
 	
 	/* On envoie la requette TPDU */
-	retVal = READER_TPDU_Send(&tpduCmd, timeout);
+	retVal = READER_TPDU_Send(&tpduCmd, timeout, pSettings);
 	if(retVal != READER_OK) return retVal;
 	
 	/* On recupere le TPDU response */
-	retVal = READER_TPDU_RcvResponse(&tpduResp, Ne, timeout);
+	retVal = READER_TPDU_RcvResponse(&tpduResp, Ne, timeout, pSettings);
 	if((retVal != READER_OK) && (retVal != READER_TIMEOUT_GOT_ONLY_SW)) return retVal;
 	
 	/* Case 2S.2 Process Aborted, Ne definitely not accepted        */
@@ -170,10 +181,10 @@ READER_Status READER_T0_APDU_ExecuteCase2S(READER_T0_ContextHandler *pContext, R
 		);
 		if(retVal != READER_OK) return retVal;
 	
-		retVal = READER_TPDU_Send(&tpduCmd, timeout);
+		retVal = READER_TPDU_Send(&tpduCmd, timeout, pSettings);
 		if(retVal != READER_OK) return retVal;
 		
-		retVal = READER_TPDU_RcvResponse(&tpduResp, (Ne<Na)?Ne:Na, timeout);    /* Voir ISO7816-3 section 12.2.3 case 2S.3 */
+		retVal = READER_TPDU_RcvResponse(&tpduResp, (Ne<Na)?Ne:Na, timeout, pSettings);    /* Voir ISO7816-3 section 12.2.3 case 2S.3 */
 		if(retVal != READER_OK) return retVal;
 		
 		retVal = READER_T0_APDU_MapTpduRespToApdu(pContext, &tpduResp, pApduResp);
@@ -194,9 +205,14 @@ READER_Status READER_T0_APDU_ExecuteCase3S(READER_T0_ContextHandler *pContext, R
 	/* Voir ISO7816-3 section 12.2.4 */
 	READER_TPDU_Command tpduCmd;
 	READER_TPDU_Response tpduResp;
+	READER_HAL_CommSettings *pSettings;
 	READER_Status retVal;
 	uint32_t timeout;
 	
+	
+	/* Recuperation d'un pointeur sur les parametres de comm bas niveau actuellement utilises ...  */
+	retVal = READER_T0_CONTEXT_GetHalCommSettingsPtr(pContext, &pSettings);
+	if(retVal != READER_OK) return retVal;
 	
 	/* Recuperation de la valeur de timeout actuellement utilisee dans le contexte de communication ...  */
 	retVal = READER_T0_CONTEXT_GetCurrentWTMilli(pContext, &timeout);
@@ -241,6 +257,7 @@ READER_Status READER_T0_APDU_ExecuteCase3E(READER_T0_ContextHandler *pContext, R
 	/* Voir ISO7816-3 section 12.2.7 */
 	READER_TPDU_Command tpduCmd;
 	READER_TPDU_Response tpduResp;
+	READER_HAL_CommSettings *pSettings;
 	READER_Status retVal;
 	
 	uint8_t tmpTpduBuff[255];
@@ -249,6 +266,10 @@ READER_Status READER_T0_APDU_ExecuteCase3E(READER_T0_ContextHandler *pContext, R
 	uint32_t nbSegments, nbResidualBytes;
 	uint32_t timeout;
 	
+	
+	/* Recuperation d'un pointeur sur les parametres de comm bas niveau actuellement utilises ...  */
+	retVal = READER_T0_CONTEXT_GetHalCommSettingsPtr(pContext, &pSettings);
+	if(retVal != READER_OK) return retVal;
 	
 	/* Recuperation de la valeur de timeout actuellement utilisee dans le contexte de communication ...  */
 	retVal = READER_T0_CONTEXT_GetCurrentWTMilli(pContext, &timeout);
@@ -279,11 +300,11 @@ READER_Status READER_T0_APDU_ExecuteCase3E(READER_T0_ContextHandler *pContext, R
 	
 	
 	/* On envoie la requette TPDU */
-	retVal = READER_TPDU_Send(&tpduCmd, timeout);
+	retVal = READER_TPDU_Send(&tpduCmd, timeout, pSettings);
 	if(retVal != READER_OK) return retVal;
 	
 	/* On recupere la reponse. On attend pas de donnees en retour, juste SW */
-	retVal = READER_TPDU_RcvResponse(&tpduResp, 0, timeout);
+	retVal = READER_TPDU_RcvResponse(&tpduResp, 0, timeout, pSettings);
 	if(retVal != READER_OK) return retVal;
 	
 	/* On regarde le SW de la reponse et on en déduit si la carte supporte ou non l'instruction ENVELOPE                 */
@@ -308,11 +329,11 @@ READER_Status READER_T0_APDU_ExecuteCase3E(READER_T0_ContextHandler *pContext, R
 			if(retVal != READER_OK) return retVal;
 			
 			/* On envoie la requette TPDU */
-			retVal = READER_TPDU_Send(&tpduCmd, timeout);
+			retVal = READER_TPDU_Send(&tpduCmd, timeout, pSettings);
 			if(retVal != READER_OK) return retVal;
 			
 			/* On recupere la reponse. On attend pas de donnees en retour, juste SW */
-			retVal = READER_TPDU_RcvResponse(&tpduResp, 0, timeout);
+			retVal = READER_TPDU_RcvResponse(&tpduResp, 0, timeout, pSettings);
 			if(retVal != READER_OK) return retVal;
 			
 			if((tpduResp.SW1 != 0x90) || (tpduResp.SW2 != 0x00)){  /* A propri la commande ENVELOPE est mal passée */
@@ -328,11 +349,11 @@ READER_Status READER_T0_APDU_ExecuteCase3E(READER_T0_ContextHandler *pContext, R
 		if(retVal != READER_OK) return retVal;
 		
 		/* On envoie la requette TPDU */
-		retVal = READER_TPDU_Send(&tpduCmd, timeout);
+		retVal = READER_TPDU_Send(&tpduCmd, timeout, pSettings);
 		if(retVal != READER_OK) return retVal;
 		
 		/* On recupere la reponse. On attend pas de donnees en retour, juste SW */
-		retVal = READER_TPDU_RcvResponse(&tpduResp, 0, timeout);
+		retVal = READER_TPDU_RcvResponse(&tpduResp, 0, timeout, pSettings);
 		if(retVal != READER_OK) return retVal;
 		
 		if((tpduResp.SW1 != 0x90) || (tpduResp.SW2 != 0x00)){  /* A propri la commande ENVELOPE est mal passée */
@@ -344,11 +365,11 @@ READER_Status READER_T0_APDU_ExecuteCase3E(READER_T0_ContextHandler *pContext, R
 		if(retVal != READER_OK) return retVal;
 		
 		/* On envoie la requette TPDU */
-		retVal = READER_TPDU_Send(&tpduCmd, timeout);
+		retVal = READER_TPDU_Send(&tpduCmd, timeout, pSettings);
 		if(retVal != READER_OK) return retVal;
 		
 		/* On recupere la reponse. On attend pas de donnees en retour, juste SW */
-		retVal = READER_TPDU_RcvResponse(&tpduResp, 0, timeout);
+		retVal = READER_TPDU_RcvResponse(&tpduResp, 0, timeout, pSettings);
 		if(retVal != READER_OK) return retVal;
 		
 		/* Le SW de la derniere commande ENVELOPE vide est la SW de la commande globale */
@@ -371,12 +392,17 @@ READER_Status READER_T0_APDU_ExecuteCase2E(READER_T0_ContextHandler *pContext, R
 	/* Voir ISO7816-3 section 12.2.6 */
 	READER_TPDU_Command tpduCmd;
 	READER_TPDU_Response tpduResp;
+	READER_HAL_CommSettings *pSettings;
 	READER_Status retVal;
 	
 	uint32_t Ne, Na, Nm, Nx;            /* Meme notation que ISO7816  */
 	uint32_t i;
 	uint32_t timeout;
 	
+	
+	/* Recuperation d'un pointeur sur les parametres de comm bas niveau actuellement utilises ...  */
+	retVal = READER_T0_CONTEXT_GetHalCommSettingsPtr(pContext, &pSettings);
+	if(retVal != READER_OK) return retVal;
 	
 	/* Recuperation de la valeur de timeout actuellement utilisee dans le contexte de communication ...  */
 	retVal = READER_T0_CONTEXT_GetCurrentWTMilli(pContext, &timeout);
@@ -390,11 +416,11 @@ READER_Status READER_T0_APDU_ExecuteCase2E(READER_T0_ContextHandler *pContext, R
 	if(retVal != READER_OK) return retVal;
 	
 	/* On envoie la requette TPDU */
-	retVal = READER_TPDU_Send(&tpduCmd, timeout);
+	retVal = READER_TPDU_Send(&tpduCmd, timeout, pSettings);
 	if(retVal != READER_OK) return retVal;
 	
 	/* On recupere la reponse */
-	retVal = READER_TPDU_RcvResponse(&tpduResp, 256, timeout);
+	retVal = READER_TPDU_RcvResponse(&tpduResp, 256, timeout, pSettings);
 	if((retVal != READER_OK) && (retVal != READER_TIMEOUT_GOT_ONLY_SW)) return retVal;
 	
 	
@@ -411,10 +437,10 @@ READER_Status READER_T0_APDU_ExecuteCase2E(READER_T0_ContextHandler *pContext, R
 		retVal = READER_TPDU_Forge(&tpduCmd, pApduCmd->header.CLA, pApduCmd->header.INS, pApduCmd->header.P1, pApduCmd->header.P2, READER_APDU_NeToLe(Na), NULL, 0);
 		if(retVal != READER_OK) return retVal;
 	
-		retVal = READER_TPDU_Send(&tpduCmd, timeout);
+		retVal = READER_TPDU_Send(&tpduCmd, timeout, pSettings);
 		if(retVal != READER_OK) return retVal;
 		
-		retVal = READER_TPDU_RcvResponse(&tpduResp, (Ne<Na)?Ne:Na, timeout);    /* Voir ISO7816-3 section 12.2.3 case 2S.3 */
+		retVal = READER_TPDU_RcvResponse(&tpduResp, (Ne<Na)?Ne:Na, timeout, pSettings);    /* Voir ISO7816-3 section 12.2.3 case 2S.3 */
 		if(retVal != READER_OK) return retVal;
 		
 		retVal = READER_T0_APDU_MapTpduRespToApdu(pContext, &tpduResp, pApduResp);
@@ -440,10 +466,10 @@ READER_Status READER_T0_APDU_ExecuteCase2E(READER_T0_ContextHandler *pContext, R
 			
 			
 			/* Execution de la commande  */
-			retVal = READER_TPDU_Send(&tpduCmd, timeout);
+			retVal = READER_TPDU_Send(&tpduCmd, timeout, pSettings);
 			if(retVal != READER_OK) return retVal;
 		
-			retVal = READER_TPDU_RcvResponse(&tpduResp, Nx, timeout);    /* Voir ISO7816-3 section 12.2.3 case 2S.3 */
+			retVal = READER_TPDU_RcvResponse(&tpduResp, Nx, timeout, pSettings);    /* Voir ISO7816-3 section 12.2.3 case 2S.3 */
 			if(retVal != READER_OK) return retVal;
 			
 			
@@ -485,12 +511,17 @@ READER_Status READER_T0_APDU_ExecuteCase4S(READER_T0_ContextHandler *pContext, R
 	READER_TPDU_Command tpduCmd;
 	READER_TPDU_Response tpduResp;
 	READER_APDU_Command newApduCmd;
+	READER_HAL_CommSettings *pSettings;
 	//READER_APDU_Response newApduResp;
 	READER_Status retVal;
 	uint32_t Na, Ne;
 	uint32_t timeout;
 	
-	
+
+	/* Recuperation d'un pointeur sur les parametres de comm bas niveau actuellement utilises ...  */
+	retVal = READER_T0_CONTEXT_GetHalCommSettingsPtr(pContext, &pSettings);
+	if(retVal != READER_OK) return retVal;
+
 	/* Recuperation de la valeur de timeout actuellement utilisee dans le contexte de communication ...  */
 	retVal = READER_T0_CONTEXT_GetCurrentWTMilli(pContext, &timeout);
 	if(retVal != READER_OK) return retVal;
@@ -503,12 +534,12 @@ READER_Status READER_T0_APDU_ExecuteCase4S(READER_T0_ContextHandler *pContext, R
 	if(retVal != READER_OK) return retVal;
 	
 	/* On envoie le TPDU */
-	retVal = READER_TPDU_Send(&tpduCmd, timeout);
+	retVal = READER_TPDU_Send(&tpduCmd, timeout, pSettings);
 	if(retVal != READER_OK) return retVal;
 	
 	
 	/* On attend en reponse juste un SW (avant d'envoyer le GET RESPONSE) */
-	retVal = READER_TPDU_RcvResponse(&tpduResp, 0, timeout);
+	retVal = READER_TPDU_RcvResponse(&tpduResp, 0, timeout, pSettings);
 	if(retVal != READER_OK) return retVal;
 	
 	
@@ -558,7 +589,12 @@ READER_Status READER_T0_APDU_ExecuteCase4S(READER_T0_ContextHandler *pContext, R
 
 READER_Status READER_T0_APDU_ExecuteCase4E(READER_T0_ContextHandler *pContext, READER_APDU_Command *pApduCmd, READER_APDU_Response *pApduResp){
 	uint32_t timeout;
+	READER_HAL_CommSettings *pSettings;
 	
+	
+	/* Recuperation d'un pointeur sur les parametres de comm bas niveau actuellement utilises ...  */
+	retVal = READER_T0_CONTEXT_GetHalCommSettingsPtr(pContext, &pSettings);
+	if(retVal != READER_OK) return retVal;
 	
 	/* Recuperation de la valeur de timeout actuellement utilisee dans le contexte de communication ...  */
 	retVal = READER_T0_CONTEXT_GetCurrentWTMilli(pContext, &timeout);
