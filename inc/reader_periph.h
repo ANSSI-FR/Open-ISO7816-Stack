@@ -6,6 +6,7 @@
 #include "stm32f4xx_hal.h"
 #include "reader_utils.h"
 #include "reader.h"
+#include "reader_hal_comm_settings.h"
 
 
 #define READER_PERIPH_CLK_PIN          GPIO_PIN_4

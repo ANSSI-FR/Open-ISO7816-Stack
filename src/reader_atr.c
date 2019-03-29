@@ -9,94 +9,96 @@ static uint8_t  globalDiConvTable[0x10] = {1, 1, 2, 4, 8, 16, 32, 64, 12, 20, 1,
 static uint32_t globalFMaxConvTable[0x10] = {4000000, 5000000, 6000000, 8000000, 12000000, 16000000, 20000000, 0xFFFFFFFF, 0xFFFFFFFF, 5000000, 7500000, 10000000, 15000000, 20000000, 0xFFFFFFFF, 0xFFFFFFFF};
 
 
-
 READER_Status READER_ATR_Receive(READER_ATR_Atr *atr){
-	READER_Status retVal;
-	uint32_t j, i = 1;
-	uint8_t TS, T0, TA, TB, TC, TD;
-	uint8_t Y, T = 0;
-	uint8_t checkByte;
-	uint8_t rcvdBytes[READER_ATR_MAX_SIZE];                     /* l'ATR fait au max 32 octets, voir ISO7816-3 section 8.2.1. */
-	uint32_t rcvdCount = 0;
-	uint8_t byte;
-	
-	
-	/* Initialisation des certains elements de la structure ATR */
-	READER_ATR_InitStruct(atr);
-		
-	
-	/* Recuperation de TS */
-	retVal = READER_HAL_RcvChar(&TS, READER_HAL_USE_ISO_WT);
-	if(retVal != READER_OK) return retVal;
-	retVal = READER_ATR_CheckTS(TS);
-	if(retVal != READER_OK) return retVal;
-	atr->encodingConv = READER_ATR_GetEncoding(TS);
-	
-	/* Recuperation de T0 */
-	retVal = READER_HAL_RcvChar(&T0, READER_HAL_USE_ISO_WT);
-	if(retVal != READER_OK) return retVal;
-	atr->K = READER_ATR_ComputeK(T0);
-	retVal = READER_ATR_AddRcvdByte(T0, rcvdBytes, &rcvdCount);
-	if(retVal != READER_OK) return retVal;
-	
-	
-	Y = READER_ATR_ComputeY(T0);
-	
-	/* Recupertion de tous les Interfaces Bytes */
-	while(READER_ATR_IsInterfacesBytesToRead(Y)){
-		if(READER_ATR_IsTAToRead(Y)){
-			if(READER_HAL_RcvChar(&TA, READER_HAL_USE_ISO_WT) != READER_OK) return READER_ERR;
-			if(READER_ATR_ProcessTA(atr, TA, i, T) != READER_OK) return READER_ERR;
-			if(READER_ATR_AddRcvdByte(TA, rcvdBytes, &rcvdCount) != READER_OK) return READER_ERR;
-		}
-		if(READER_ATR_IsTBToRead(Y)){
-			if(READER_HAL_RcvChar(&TB, READER_HAL_USE_ISO_WT) != READER_OK) return READER_ERR;
-			if(READER_ATR_ProcessTB(atr, TB, i, T) != READER_OK) return READER_ERR;
-			if(READER_ATR_AddRcvdByte(TB, rcvdBytes, &rcvdCount) != READER_OK) return READER_ERR;
-		}
-		if(READER_ATR_IsTCToRead(Y)){
-			if(READER_HAL_RcvChar(&TC, READER_HAL_USE_ISO_WT) != READER_OK) return READER_ERR;
-			if(READER_ATR_ProcessTC(atr, TC, i, T) != READER_OK) return READER_ERR;
-			if(READER_ATR_AddRcvdByte(TC, rcvdBytes, &rcvdCount) != READER_OK) return READER_ERR;
-		}
-		if(READER_ATR_IsTDToRead(Y)){
-			if(READER_HAL_RcvChar(&TD, READER_HAL_USE_ISO_WT) != READER_OK) return READER_ERR;
-			Y = READER_ATR_ComputeY(TD);
-			T = READER_ATR_ComputeT(TD);
-			READER_ATR_ProcessT(atr, T);
-			if(READER_ATR_AddRcvdByte(TD, rcvdBytes, &rcvdCount) != READER_OK) return READER_ERR;
-		}
-		else{
-			Y = 0x00;
-		}
-		i++;
-	}
-	
-	/* Recuperation de tous les Historical Bytes */
-	for(j=0; j<atr->K; j++){
-		retVal = READER_HAL_RcvChar(&byte, READER_HAL_USE_ISO_WT);
-		if(retVal != READER_OK) return retVal;
-		
-		atr->histBytes[j] = byte;
-		
-		retVal = READER_ATR_AddRcvdByte(byte, rcvdBytes, &rcvdCount);
-		if(retVal != READER_OK) return retVal;
-	}
-	
-	
-	/* Recuperation du Check Byte */
-	/* La presence du check byte n'est pas systematique, voir ISO7816-3 section 8.2.5. */
-	if(!(READER_ATR_IsT0(atr) && !READER_ATR_IsT15(atr))){
-		retVal = READER_HAL_RcvChar(&checkByte, READER_HAL_USE_ISO_WT);
-		if(retVal != READER_OK) return retVal;	
-		
-		/* Verification des caracteres recus avec le TCK */
-		retVal = READER_ATR_CheckTCK(rcvdBytes, rcvdCount, checkByte);	
-		if(retVal != READER_OK) return retVal;
-	}
-	
 	return READER_OK;
 }
+//READER_Status READER_ATR_Receive(READER_ATR_Atr *atr){
+//	READER_Status retVal;
+//	uint32_t j, i = 1;
+//	uint8_t TS, T0, TA, TB, TC, TD;
+//	uint8_t Y, T = 0;
+//	uint8_t checkByte;
+//	uint8_t rcvdBytes[READER_ATR_MAX_SIZE];                     /* l'ATR fait au max 32 octets, voir ISO7816-3 section 8.2.1. */
+//	uint32_t rcvdCount = 0;
+//	uint8_t byte;
+//	
+//	
+//	/* Initialisation des certains elements de la structure ATR */
+//	READER_ATR_InitStruct(atr);
+//		
+//	
+//	/* Recuperation de TS */
+//	retVal = READER_HAL_RcvChar(&TS, READER_HAL_USE_ISO_WT);
+//	if(retVal != READER_OK) return retVal;
+//	retVal = READER_ATR_CheckTS(TS);
+//	if(retVal != READER_OK) return retVal;
+//	atr->encodingConv = READER_ATR_GetEncoding(TS);
+//	
+//	/* Recuperation de T0 */
+//	retVal = READER_HAL_RcvChar(&T0, READER_HAL_USE_ISO_WT);
+//	if(retVal != READER_OK) return retVal;
+//	atr->K = READER_ATR_ComputeK(T0);
+//	retVal = READER_ATR_AddRcvdByte(T0, rcvdBytes, &rcvdCount);
+//	if(retVal != READER_OK) return retVal;
+//	
+//	
+//	Y = READER_ATR_ComputeY(T0);
+//	
+//	/* Recupertion de tous les Interfaces Bytes */
+//	while(READER_ATR_IsInterfacesBytesToRead(Y)){
+//		if(READER_ATR_IsTAToRead(Y)){
+//			if(READER_HAL_RcvChar(&TA, READER_HAL_USE_ISO_WT) != READER_OK) return READER_ERR;
+//			if(READER_ATR_ProcessTA(atr, TA, i, T) != READER_OK) return READER_ERR;
+//			if(READER_ATR_AddRcvdByte(TA, rcvdBytes, &rcvdCount) != READER_OK) return READER_ERR;
+//		}
+//		if(READER_ATR_IsTBToRead(Y)){
+//			if(READER_HAL_RcvChar(&TB, READER_HAL_USE_ISO_WT) != READER_OK) return READER_ERR;
+//			if(READER_ATR_ProcessTB(atr, TB, i, T) != READER_OK) return READER_ERR;
+//			if(READER_ATR_AddRcvdByte(TB, rcvdBytes, &rcvdCount) != READER_OK) return READER_ERR;
+//		}
+//		if(READER_ATR_IsTCToRead(Y)){
+//			if(READER_HAL_RcvChar(&TC, READER_HAL_USE_ISO_WT) != READER_OK) return READER_ERR;
+//			if(READER_ATR_ProcessTC(atr, TC, i, T) != READER_OK) return READER_ERR;
+//			if(READER_ATR_AddRcvdByte(TC, rcvdBytes, &rcvdCount) != READER_OK) return READER_ERR;
+//		}
+//		if(READER_ATR_IsTDToRead(Y)){
+//			if(READER_HAL_RcvChar(&TD, READER_HAL_USE_ISO_WT) != READER_OK) return READER_ERR;
+//			Y = READER_ATR_ComputeY(TD);
+//			T = READER_ATR_ComputeT(TD);
+//			READER_ATR_ProcessT(atr, T);
+//			if(READER_ATR_AddRcvdByte(TD, rcvdBytes, &rcvdCount) != READER_OK) return READER_ERR;
+//		}
+//		else{
+//			Y = 0x00;
+//		}
+//		i++;
+//	}
+//	
+//	/* Recuperation de tous les Historical Bytes */
+//	for(j=0; j<atr->K; j++){
+//		retVal = READER_HAL_RcvChar(&byte, READER_HAL_USE_ISO_WT);
+//		if(retVal != READER_OK) return retVal;
+//		
+//		atr->histBytes[j] = byte;
+//		
+//		retVal = READER_ATR_AddRcvdByte(byte, rcvdBytes, &rcvdCount);
+//		if(retVal != READER_OK) return retVal;
+//	}
+//	
+//	
+//	/* Recuperation du Check Byte */
+//	/* La presence du check byte n'est pas systematique, voir ISO7816-3 section 8.2.5. */
+//	if(!(READER_ATR_IsT0(atr) && !READER_ATR_IsT15(atr))){
+//		retVal = READER_HAL_RcvChar(&checkByte, READER_HAL_USE_ISO_WT);
+//		if(retVal != READER_OK) return retVal;	
+//		
+//		/* Verification des caracteres recus avec le TCK */
+//		retVal = READER_ATR_CheckTCK(rcvdBytes, rcvdCount, checkByte);	
+//		if(retVal != READER_OK) return retVal;
+//	}
+//	
+//	return READER_OK;
+//}
 
 
 /**
@@ -105,67 +107,70 @@ READER_Status READER_ATR_Receive(READER_ATR_Atr *atr){
  * \return Retourne uen code d'erreur de stype READER_Status. Retourne READER_OK si l'exécution s'est correctement déroulée. Pour toute autre valeur il s'agit d'une erreur.
  * \param *atr Pointeur sur une structure de type READER_ATR_Atr;
  */
-READER_Status READER_ATR_ApplySettings(READER_ATR_Atr *atr){
-	READER_Status retVal;
-	uint32_t Fi, Di, R, f;
-	uint32_t IFSC, BWI, BWTEtu, BWTMili, rType, WI;
-	uint32_t newGT;
-	
-	/* Application des parametres Fi et Di (qui definissent le ETU) */
-	if((atr->Fi != READER_ATR_VALUE_NOT_INDICATED) && (atr->Di != READER_ATR_VALUE_NOT_INDICATED)){
-		Fi = atr->Fi;
-		Di = atr->Di;
-	}
-	else if((atr->Fi != READER_ATR_VALUE_NOT_INDICATED) && (atr->Di == READER_ATR_VALUE_NOT_INDICATED)){
-		Fi = atr->Fi;
-		Di = READER_HAL_GetDi();
-	}
-	else if((atr->Fi == READER_ATR_VALUE_NOT_INDICATED) && (atr->Di != READER_ATR_VALUE_NOT_INDICATED)){
-		Fi = READER_HAL_GetFi();
-		Di = atr->Di;
-	}
-	else{
-		Fi = READER_HAL_GetFi();
-		Di = READER_HAL_GetDi();
-	}
-	
-	retVal = READER_HAL_SetEtu(Fi, Di);
-	if(retVal != READER_OK) return retVal;
-	
-	/* Application de WI                        */
-	WI = READER_ATR_GetWI(atr);
-	retVal = READER_HAL_SetWI(WI);
-	if(retVal != READER_OK) return retVal;
-	
-	/* Application du parametre GT (guard time) */
-	Fi = READER_HAL_GetFi();
-	Di = READER_HAL_GetDi();
-	R = Fi / Di;
-	f = READER_HAL_GetFreq(pSettings);
-	newGT = (uint32_t)((float)READER_HAL_DEFAULT_GT + (float)R*((float)atr->N / (float)f));    /* Voir ISO7816-3 section 8.3, TC1 */
-
-	retVal = READER_HAL_SetGT(newGT);                   
-	if(retVal != READER_OK) return retVal; 
-	
-	/* Application de parametres T1 */
-	IFSC = READER_ATR_GetIFSC(atr);
-	BWI = READER_ATR_GetBWI(atr);
-	BWTEtu = READER_UTILS_ComputeBWTEtu(BWI, f);
-	BWTMili = READER_UTILS_ComputeBWTMili(BWTEtu, Fi, Di, f);
-	rType = READER_ATR_GetRedundancyType(atr);
-	
-	//retVal = READER_HAL_SetIFSC(IFSC);
-	//if(retVal != READER_OK) return retVal;
-	
-	//retVal = READER_HAL_SetBWT(BWTMili);
-	//if(retVal != READER_OK) return retVal;
-	
-	retVal = READER_HAL_SetRedundancyType(rType);
-	if(retVal != READER_OK) return retVal;
- 
-	
-	return READER_OK;   
-}
+ READER_Status READER_ATR_ApplySettings(READER_ATR_Atr *atr){
+	 return READER_OK;
+ }
+//READER_Status READER_ATR_ApplySettings(READER_ATR_Atr *atr){
+//	READER_Status retVal;
+//	uint32_t Fi, Di, R, f;
+//	uint32_t IFSC, BWI, BWTEtu, BWTMili, rType, WI;
+//	uint32_t newGT;
+//	
+//	/* Application des parametres Fi et Di (qui definissent le ETU) */
+//	if((atr->Fi != READER_ATR_VALUE_NOT_INDICATED) && (atr->Di != READER_ATR_VALUE_NOT_INDICATED)){
+//		Fi = atr->Fi;
+//		Di = atr->Di;
+//	}
+//	else if((atr->Fi != READER_ATR_VALUE_NOT_INDICATED) && (atr->Di == READER_ATR_VALUE_NOT_INDICATED)){
+//		Fi = atr->Fi;
+//		Di = READER_HAL_GetDi();
+//	}
+//	else if((atr->Fi == READER_ATR_VALUE_NOT_INDICATED) && (atr->Di != READER_ATR_VALUE_NOT_INDICATED)){
+//		Fi = READER_HAL_GetFi();
+//		Di = atr->Di;
+//	}
+//	else{
+//		Fi = READER_HAL_GetFi();
+//		Di = READER_HAL_GetDi();
+//	}
+//	
+//	retVal = READER_HAL_SetEtu(Fi, Di);
+//	if(retVal != READER_OK) return retVal;
+//	
+//	/* Application de WI                        */
+//	WI = READER_ATR_GetWI(atr);
+//	retVal = READER_HAL_SetWI(WI);
+//	if(retVal != READER_OK) return retVal;
+//	
+//	/* Application du parametre GT (guard time) */
+//	Fi = READER_HAL_GetFi();
+//	Di = READER_HAL_GetDi();
+//	R = Fi / Di;
+//	f = READER_HAL_GetFreq(pSettings);
+//	newGT = (uint32_t)((float)READER_HAL_DEFAULT_GT + (float)R*((float)atr->N / (float)f));    /* Voir ISO7816-3 section 8.3, TC1 */
+//
+//	retVal = READER_HAL_SetGT(newGT);                   
+//	if(retVal != READER_OK) return retVal; 
+//	
+//	/* Application de parametres T1 */
+//	IFSC = READER_ATR_GetIFSC(atr);
+//	BWI = READER_ATR_GetBWI(atr);
+//	BWTEtu = READER_UTILS_ComputeBWTEtu(BWI, f);
+//	BWTMili = READER_UTILS_ComputeBWTMili(BWTEtu, Fi, Di, f);
+//	rType = READER_ATR_GetRedundancyType(atr);
+//	
+//	//retVal = READER_HAL_SetIFSC(IFSC);
+//	//if(retVal != READER_OK) return retVal;
+//	
+//	//retVal = READER_HAL_SetBWT(BWTMili);
+//	//if(retVal != READER_OK) return retVal;
+//	
+//	retVal = READER_HAL_SetRedundancyType(rType);
+//	if(retVal != READER_OK) return retVal;
+// 
+//	
+//	return READER_OK;   
+//}
 
 
 
@@ -542,71 +547,71 @@ READER_Status READER_ATR_AddRcvdByte(uint8_t byte, uint8_t *byteList, uint32_t *
 
 
 
-uint32_t READER_ATR_GetBWI(READER_ATR_Atr *pAtr){
-	uint8_t byte;
-	
-	
-	byte = pAtr->T1Protocol.TBBytes[0];
-	
-	if(byte != READER_ATR_NOT_INDICATED){
-		return (uint32_t)((byte & 0xF0) >> 4);                           /* Voir ISO7816-3 section 11.4.3 */
-	}
-	else{
-		return READER_DEFAULT_BWI;
-	}
-	
-}
+//uint32_t READER_ATR_GetBWI(READER_ATR_Atr *pAtr){
+//	uint8_t byte;
+//	
+//	
+//	byte = pAtr->T1Protocol.TBBytes[0];
+//	
+//	if(byte != READER_ATR_NOT_INDICATED){
+//		return (uint32_t)((byte & 0xF0) >> 4);                           /* Voir ISO7816-3 section 11.4.3 */
+//	}
+//	else{
+//		return READER_DEFAULT_BWI;
+//	}
+//	
+//}
 
 
-uint32_t READER_ATR_GetRedundancyType(READER_ATR_Atr *pAtr){
-	/* Voir ISO7816-3 section 11.4.4 */
-	uint8_t byte;
-	
-	
-	byte = pAtr->T1Protocol.TCBytes[0];
-	
-	
-	if(byte == READER_ATR_NOT_INDICATED){
-		return READER_DEFAULT_REDUNDANCY_TYPE;  
-	}
-	else{
-		if((byte & 0x01) == 0x00){
-			return READER_T1_LRC;
-		}
-		else{
-			return READER_T1_CRC;
-		}
-	}
-}
+//uint32_t READER_ATR_GetRedundancyType(READER_ATR_Atr *pAtr){
+//	/* Voir ISO7816-3 section 11.4.4 */
+//	uint8_t byte;
+//	
+//	
+//	byte = pAtr->T1Protocol.TCBytes[0];
+//	
+//	
+//	if(byte == READER_ATR_NOT_INDICATED){
+//		return READER_DEFAULT_REDUNDANCY_TYPE;  
+//	}
+//	else{
+//		if((byte & 0x01) == 0x00){
+//			return READER_T1_LRC;
+//		}
+//		else{
+//			return READER_T1_CRC;
+//		}
+//	}
+//}
 
 
-uint32_t READER_ATR_GetIFSC(READER_ATR_Atr *pAtr){
-	/* Voir ISO7816-3 section 11.4.2 */
-	uint8_t byte;
-	
-	
-	byte = pAtr->T1Protocol.TABytes[0];
-	
-	if(byte == READER_ATR_NOT_INDICATED){
-		return READER_DEFAULT_IFSC;
-	}
-	else{
-		return (uint32_t)byte;
-	}
-}
+//uint32_t READER_ATR_GetIFSC(READER_ATR_Atr *pAtr){
+//	/* Voir ISO7816-3 section 11.4.2 */
+//	uint8_t byte;
+//	
+//	
+//	byte = pAtr->T1Protocol.TABytes[0];
+//	
+//	if(byte == READER_ATR_NOT_INDICATED){
+//		return READER_DEFAULT_IFSC;
+//	}
+//	else{
+//		return (uint32_t)byte;
+//	}
+//}
 
 
-uint32_t READER_ATR_GetWI(READER_ATR_Atr *pAtr){
-	/* Voir ISO7816-3 section 10.2 */
-	uint8_t byte;
-	
-	
-	byte = pAtr->T1Protocol.TCBytes[1];
-	
-	if(byte == READER_ATR_NOT_INDICATED){
-		return READER_DEFAULT_WI;
-	}
-	else{
-		return (uint32_t)byte;
-	}
-}
+//uint32_t READER_ATR_GetWI(READER_ATR_Atr *pAtr){
+//	/* Voir ISO7816-3 section 10.2 */
+//	uint8_t byte;
+//	
+//	
+//	byte = pAtr->T1Protocol.TCBytes[1];
+//	
+//	if(byte == READER_ATR_NOT_INDICATED){
+//		return READER_DEFAULT_WI;
+//	}
+//	else{
+//		return (uint32_t)byte;
+//	}
+//}

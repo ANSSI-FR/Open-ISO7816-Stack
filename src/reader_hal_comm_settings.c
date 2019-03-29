@@ -1,4 +1,13 @@
 #include "reader_hal_comm_settings.h"
+#include "stdint.h"
+#include "reader.h"
+#include "reader_utils.h"
+#include "stm32f4xx_hal.h"
+
+
+
+
+extern SMARTCARD_HandleTypeDef smartcardHandleStruct;
 
 
 /**
@@ -8,12 +17,13 @@
  * \param newFreq uint32_t indiquant la nouvelle fréquence à adopter (en Hz). Attention, selon l'implémentation matérielle toutes les fréquences ne sont pas permises. Pour plus d'informations sur les fréquences supportées voir l'implémentation de la fonction READER_UTILS_ComputePrescFromFreq() dans le fichier "reader_utils.h". Attention l'implémentation de cette fonction varie selon la cible matérielle.
  */
 READER_Status READER_HAL_SetFreq(READER_HAL_CommSettings *pSettings, uint32_t newFreq){
-	READER_Status retVal;
+	//READER_Status retVal;
 	uint32_t oldFreq, oldBaudRate;
 	uint32_t newBaudRate;
-	uint32_t newWaitTime;
-	uint32_t newBlockWaitTimeEtu, newBlockWaitTimeMili;
-	uint32_t BWI, WI;
+	//uint32_t newWaitTime;
+	//uint32_t newBlockWaitTimeEtu, newBlockWaitTimeMili;
+	//uint32_t BWI, WI;
+	
 	
 	/* On recupere la frequence et la baudrate actuel. Peut aussi etre recupere a partir des infos de *currentSettings */
 	oldFreq = READER_UTILS_GetCardFreq(168000000, 1, 4, smartcardHandleStruct.Init.Prescaler);
@@ -53,10 +63,10 @@ READER_Status READER_HAL_SetFreq(READER_HAL_CommSettings *pSettings, uint32_t ne
  * \param Di "Baudrate Adjustement Integer"
  */
 READER_Status READER_HAL_SetEtu(READER_HAL_CommSettings *pSettings, uint32_t Fi, uint32_t Di){
-	READER_Status retVal;
+	//READER_Status retVal;
 	uint32_t freq, newBaudRate;
-	uint32_t newWT;
-	uint32_t WI;
+	//uint32_t newWT;
+	//uint32_t WI;
 	
 	/* On recupere les parametres de communication actuels. On aurait aussi pu le faire a partir de la structure globalCurrentSettings */
 	freq = READER_UTILS_GetCardFreq(168000000, 1, 4, smartcardHandleStruct.Init.Prescaler);
@@ -216,11 +226,11 @@ READER_Status READER_HAL_SetGT(READER_HAL_CommSettings *pSettings, uint32_t newG
 //}
 
 
-READER_Status READER_HAL_SetRedundancyType(READER_HAL_CommSettings *pSettings, uint32_t rType){
-	pSettings->redundancyType = rType;
-	
-	return READER_OK;
-}
+//READER_Status READER_HAL_SetRedundancyType(READER_HAL_CommSettings *pSettings, uint32_t rType){
+//	pSettings->redundancyType = rType;
+//	
+//	return READER_OK;
+//}
 
 
 

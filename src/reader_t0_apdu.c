@@ -83,6 +83,7 @@ READER_Status READER_T0_APDU_ExecuteCase1(READER_T0_ContextHandler *pContext, RE
 	retVal = READER_T0_CONTEXT_GetCurrentWTMilli(pContext, &timeout);
 	if(retVal != READER_OK) return retVal;
 	
+	
 	/* On forge une structure de type commande TPDU */
 	retVal = READER_TPDU_Forge(
 		&tpduCmd,

@@ -2,6 +2,7 @@
 #include "reader_apdu.h"
 #include "reader_tpdu.h"
 #include "reader_atr.h"
+#include "reader_t0_context_handler.h"
 
 
 

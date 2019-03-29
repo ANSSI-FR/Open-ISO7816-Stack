@@ -3,7 +3,7 @@
 
 
 
-#include "reader_t1_hall_comm_settings.h"
+#include "reader_hal_comm_settings.h"
 
 
 

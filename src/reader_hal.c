@@ -13,7 +13,7 @@
 #define SMARTCARD_TX_FROM_SCRATCH
 #define SMARTCARD_RX_FROM_SCRATCH
 
-//SMARTCARD_HandleTypeDef smartcardHandleStruct;
+SMARTCARD_HandleTypeDef smartcardHandleStruct;
 //extern UART_HandleTypeDef uartHandleStruct;   // juste pour debug
 
 //uint32_t globalWaitTimeMili;
@@ -274,7 +274,7 @@ READER_Status READER_HAL_RcvCharFrame(READER_HAL_CommSettings *pSettings, READER
 	READER_Status retVal;
 	uint32_t rcvCount;
 	
-	retVal = READER_HAL_RcvCharFrameCount(pSetting, protocol, frame, frameSize, &rcvCount, timeout);
+	retVal = READER_HAL_RcvCharFrameCount(pSettings, protocol, frame, frameSize, &rcvCount, timeout);
 	if(retVal != READER_OK) return retVal;
 	
 	return READER_OK;

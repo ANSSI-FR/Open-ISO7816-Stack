@@ -2,6 +2,7 @@
 #include "reader_periph.h"
 #include "reader_utils.h"
 #include "reader.h"
+#include "reader_hal_comm_settings.h"
 
 
 extern SMARTCARD_HandleTypeDef smartcardHandleStruct;

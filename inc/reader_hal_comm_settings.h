@@ -3,6 +3,13 @@
 
 
 
+#include "stdint.h"
+#include "reader.h"
+#include "reader_utils.h"
+#include "stm32f4xx_hal.h"
+
+
+
 #define READER_HAL_DEFAULT_FI         (uint32_t)(372)
 #define READER_HAL_DEFAULT_DI         (uint32_t)(1)
 #define READER_HAL_DEFAULT_FREQ       (uint32_t)(4200000)
