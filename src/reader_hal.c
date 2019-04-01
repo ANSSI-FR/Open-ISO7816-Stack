@@ -171,11 +171,11 @@ READER_Status READER_HAL_SendCharFrame(READER_HAL_CommSettings *pSettings, READE
 
 
 /* Retourne le timestamp du leading edge de la frame (Tickstart) ...  */
-READER_Status READER_HAL_RcvCharFrameCountTickstart(READER_HAL_CommSettings *pSettings, READER_HAL_Protocol protocol, uint8_t *frame, uint32_t frameSize, uint32_t *rcvCount, uint32_t timeout, uint32_t *tickstart){
+READER_Status READER_HAL_RcvCharFrameCountTickstart(READER_HAL_CommSettings *pSettings, READER_HAL_Protocol protocol, uint8_t *frame, uint32_t frameSize, uint32_t *rcvCount, uint32_t timeout, uint32_t *pTickstart){
 	READER_Status retVal;
 	uint32_t i = 0;
 	uint8_t rcvByte;
-	//uint32_t timeoutMili;
+	uint32_t characterDelay;
 	uint32_t rcvCounter = 0;
 	uint32_t dummy;
 	
@@ -185,47 +185,25 @@ READER_Status READER_HAL_RcvCharFrameCountTickstart(READER_HAL_CommSettings *pSe
 		rcvCount = &dummy;
 	}
 	
-	
 	/* Le nombre de caracteres recus est de 0 pour l'instant */
 	*rcvCount = 0;
 	
-	/* Finalement, on considere que le GT ne concerne que l'envoi. Ici, on suppose que le WT a ete calcule intelligemment de sorte a prendre en compte l'enventuel GT ...  */
-	///* Prise en compte du Guard Time (GT). On ajoute simplement le delai de GT au timeout. */
-	//if(timeout == READER_HAL_USE_ISO_WT){
-	//	timeoutMili = READER_HAL_GetWT() + READER_HAL_GetGTMili();
-	//}
-	//else{
-	//	timeoutMili = timeout + READER_HAL_GetGTMili();
-	//}
-	
-	
 	while(i<frameSize){
-		//tickstart = READER_HAL_GetTick();
-		
 		retVal = READER_HAL_RcvChar(pSettings, protocol, &rcvByte, timeout);
 		if(retVal != READER_OK) return retVal;
 		
-		/* Si on vient de recevoir le premier caractere, alors on mets a jour le tickstart du leading edge de la frame ...  */
+		/* Si on vient de recevoir le dernier caractere, alors on mets a jour le tickstart du leading edge de la frame ...  */
 		if(i == (frameSize-1)){
+			characterDelay = (uint32_t)(READER_UTILS_ComputeEtuMiliFloat(READER_HAL_GetFi(pSettings), READER_HAL_GetDi(pSettings), READER_HAL_GetFreq(pSettings)) *10);   /*  10 etu dans un caractere (10 moments) */
+			characterDelay = MAX(1, characterDelay);
 			/* On veut la date du debut de la reception de la frame, donc on retire le temps en milisecondes que dure un caractere ...  */
-			*tickstart = READER_HAL_GetTick() - (uint32_t)(READER_UTILS_ComputeEtuMili(READER_HAL_GetFi(pSettings), READER_HAL_GetDi(pSettings), READER_HAL_GetFreq(pSettings)) *10);
+			*pTickstart = READER_HAL_GetTick() - characterDelay; 
 		}
 		
 		rcvCounter++;
 		*rcvCount = rcvCounter;
 		
-		frame[i] = rcvByte;
-		
-		///* On prend en compte le Guard Time (GT). On attend l'ecoulement du GT avant de commencer une nouvelle reception de caractere. */
-		//while((READER_HAL_GetTick()-tickstart) < READER_HAL_GetGTMili()-1   ){   /* La definition de la fonction READER_HAL_GetGTMili() garantit que la valeur >= 1 */
-		//	/* On s'efforce de respecter le GT mais c'est peu evident a cause du manque de precision des delais (granularite de 1ms) */
-		//	/* La fonction READER_HAL_GetGTMili() renvoie la valeur arrondie a l'entier superieur */
-		//	/* Ici on ne peut pas se le permettre car si on attend 1ms trop longtemps il se peut que l'on rate la reception du caratere suivant. */
-		//	/* Donc on retranche 1 & la valeur de retour de READER_HAL_GetGTMili() */
-		//}
-		
-		/* Ou sinon on pourrait ajouter le GT au timeout ? */
-		
+		frame[i] = rcvByte;	
 		i++;
 	}
 	
