@@ -25,15 +25,6 @@
 #include <stdint.h>
 
 
-/**
- * \def READER_HAL_USE_ISO_WT
- * \brief Valeur permettant d'indiquer à uen fonction d'envoi/reception que le timeout à appliqué est le WT défini dans la norme ISO.
- * 
- * Cette constante passée en parametre à certaines fonctions d'envoi et de réception permet d'indiquer le type de timeout à utiliser.
- * Si la valeur de timeout passée en argument à une fonction d'envoi/réception est différente de READER_HAL_USE_ISO_WT alors le timout appliqué sera cette valeur en milisecondes.
- * Si la valeur de timeout passée en argument à une fonction d'envoi/réception est READER_HAL_USE_ISO_WT alors le timeout appliqué sera le "wait time" (WT) tel que défini dans la norme ISO.
- */
-#define READER_HAL_USE_ISO_WT    (uint32_t)(0x00000000)
 
 
 
