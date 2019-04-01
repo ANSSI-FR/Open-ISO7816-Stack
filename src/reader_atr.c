@@ -9,96 +9,95 @@ static uint8_t  globalDiConvTable[0x10] = {1, 1, 2, 4, 8, 16, 32, 64, 12, 20, 1,
 static uint32_t globalFMaxConvTable[0x10] = {4000000, 5000000, 6000000, 8000000, 12000000, 16000000, 20000000, 0xFFFFFFFF, 0xFFFFFFFF, 5000000, 7500000, 10000000, 15000000, 20000000, 0xFFFFFFFF, 0xFFFFFFFF};
 
 
-READER_Status READER_ATR_Receive(READER_ATR_Atr *atr){
+
+READER_Status READER_ATR_Receive(READER_ATR_Atr *atr, READER_HAL_CommSettings *pSettings){
+	READER_Status retVal;
+	uint32_t j, i = 1;
+	uint8_t TS, T0, TA, TB, TC, TD;
+	uint8_t Y, T = 0;
+	uint8_t checkByte;
+	uint8_t rcvdBytes[READER_ATR_MAX_SIZE];                     /* l'ATR fait au max 32 octets, voir ISO7816-3 section 8.2.1. */
+	uint32_t rcvdCount = 0;
+	uint8_t byte;
+	
+	
+	/* Initialisation des certains elements de la structure ATR */
+	retVal = READER_ATR_InitStruct(atr);
+	if(retVal != READER_OK) return retVal;
+		
+	
+	/* Recuperation de TS */
+	retVal = READER_HAL_RcvChar(pSettings, READER_HAL_PROTOCOL_ANY, &TS, READER_ATR_DEFAULT_TIMEOUT);
+	if(retVal != READER_OK) return retVal;
+	retVal = READER_ATR_CheckTS(TS);
+	if(retVal != READER_OK) return retVal;
+	atr->encodingConv = READER_ATR_GetEncoding(TS);
+	
+	/* Recuperation de T0 */
+	retVal = READER_HAL_RcvChar(pSettings, READER_HAL_PROTOCOL_ANY, &T0, READER_ATR_DEFAULT_TIMEOUT);
+	if(retVal != READER_OK) return retVal;
+	atr->K = READER_ATR_ComputeK(T0);
+	retVal = READER_ATR_AddRcvdByte(T0, rcvdBytes, &rcvdCount);
+	if(retVal != READER_OK) return retVal;
+	
+	
+	Y = READER_ATR_ComputeY(T0);
+	
+	/* Recupertion de tous les Interfaces Bytes */
+	while(READER_ATR_IsInterfacesBytesToRead(Y)){
+		if(READER_ATR_IsTAToRead(Y)){
+			if(READER_HAL_RcvChar(pSettings, READER_HAL_PROTOCOL_ANY, &TA, READER_ATR_DEFAULT_TIMEOUT) != READER_OK) return READER_ERR;
+			if(READER_ATR_ProcessTA(atr, TA, i, T) != READER_OK) return READER_ERR;
+			if(READER_ATR_AddRcvdByte(TA, rcvdBytes, &rcvdCount) != READER_OK) return READER_ERR;
+		}
+		if(READER_ATR_IsTBToRead(Y)){
+			if(READER_HAL_RcvChar(pSettings, READER_HAL_PROTOCOL_ANY, &TB, READER_ATR_DEFAULT_TIMEOUT) != READER_OK) return READER_ERR;
+			if(READER_ATR_ProcessTB(atr, TB, i, T) != READER_OK) return READER_ERR;
+			if(READER_ATR_AddRcvdByte(TB, rcvdBytes, &rcvdCount) != READER_OK) return READER_ERR;
+		}
+		if(READER_ATR_IsTCToRead(Y)){
+			if(READER_HAL_RcvChar(pSettings, READER_HAL_PROTOCOL_ANY, &TC, READER_ATR_DEFAULT_TIMEOUT) != READER_OK) return READER_ERR;
+			if(READER_ATR_ProcessTC(atr, TC, i, T) != READER_OK) return READER_ERR;
+			if(READER_ATR_AddRcvdByte(TC, rcvdBytes, &rcvdCount) != READER_OK) return READER_ERR;
+		}
+		if(READER_ATR_IsTDToRead(Y)){
+			if(READER_HAL_RcvChar(pSettings, READER_HAL_PROTOCOL_ANY, &TD, READER_ATR_DEFAULT_TIMEOUT) != READER_OK) return READER_ERR;
+			Y = READER_ATR_ComputeY(TD);
+			T = READER_ATR_ComputeT(TD);
+			READER_ATR_ProcessT(atr, T);
+			if(READER_ATR_AddRcvdByte(TD, rcvdBytes, &rcvdCount) != READER_OK) return READER_ERR;
+		}
+		else{
+			Y = 0x00;
+		}
+		i++;
+	}
+	
+	/* Recuperation de tous les Historical Bytes */
+	for(j=0; j<atr->K; j++){
+		retVal = READER_HAL_RcvChar(pSettings, READER_HAL_PROTOCOL_ANY, &byte, READER_ATR_DEFAULT_TIMEOUT);
+		if(retVal != READER_OK) return retVal;
+		
+		atr->histBytes[j] = byte;
+		
+		retVal = READER_ATR_AddRcvdByte(byte, rcvdBytes, &rcvdCount);
+		if(retVal != READER_OK) return retVal;
+	}
+	
+	
+	/* Recuperation du Check Byte */
+	/* La presence du check byte n'est pas systematique, voir ISO7816-3 section 8.2.5. */
+	if(!(READER_ATR_IsT0(atr) && !READER_ATR_IsT15(atr))){
+		retVal = READER_HAL_RcvChar(pSettings, READER_HAL_PROTOCOL_ANY, &checkByte, READER_ATR_DEFAULT_TIMEOUT);
+		if(retVal != READER_OK) return retVal;	
+		
+		/* Verification des caracteres recus avec le TCK */
+		retVal = READER_ATR_CheckTCK(rcvdBytes, rcvdCount, checkByte);	
+		if(retVal != READER_OK) return retVal;
+	}
+	
 	return READER_OK;
 }
-//READER_Status READER_ATR_Receive(READER_ATR_Atr *atr){
-//	READER_Status retVal;
-//	uint32_t j, i = 1;
-//	uint8_t TS, T0, TA, TB, TC, TD;
-//	uint8_t Y, T = 0;
-//	uint8_t checkByte;
-//	uint8_t rcvdBytes[READER_ATR_MAX_SIZE];                     /* l'ATR fait au max 32 octets, voir ISO7816-3 section 8.2.1. */
-//	uint32_t rcvdCount = 0;
-//	uint8_t byte;
-//	
-//	
-//	/* Initialisation des certains elements de la structure ATR */
-//	READER_ATR_InitStruct(atr);
-//		
-//	
-//	/* Recuperation de TS */
-//	retVal = READER_HAL_RcvChar(&TS, READER_HAL_USE_ISO_WT);
-//	if(retVal != READER_OK) return retVal;
-//	retVal = READER_ATR_CheckTS(TS);
-//	if(retVal != READER_OK) return retVal;
-//	atr->encodingConv = READER_ATR_GetEncoding(TS);
-//	
-//	/* Recuperation de T0 */
-//	retVal = READER_HAL_RcvChar(&T0, READER_HAL_USE_ISO_WT);
-//	if(retVal != READER_OK) return retVal;
-//	atr->K = READER_ATR_ComputeK(T0);
-//	retVal = READER_ATR_AddRcvdByte(T0, rcvdBytes, &rcvdCount);
-//	if(retVal != READER_OK) return retVal;
-//	
-//	
-//	Y = READER_ATR_ComputeY(T0);
-//	
-//	/* Recupertion de tous les Interfaces Bytes */
-//	while(READER_ATR_IsInterfacesBytesToRead(Y)){
-//		if(READER_ATR_IsTAToRead(Y)){
-//			if(READER_HAL_RcvChar(&TA, READER_HAL_USE_ISO_WT) != READER_OK) return READER_ERR;
-//			if(READER_ATR_ProcessTA(atr, TA, i, T) != READER_OK) return READER_ERR;
-//			if(READER_ATR_AddRcvdByte(TA, rcvdBytes, &rcvdCount) != READER_OK) return READER_ERR;
-//		}
-//		if(READER_ATR_IsTBToRead(Y)){
-//			if(READER_HAL_RcvChar(&TB, READER_HAL_USE_ISO_WT) != READER_OK) return READER_ERR;
-//			if(READER_ATR_ProcessTB(atr, TB, i, T) != READER_OK) return READER_ERR;
-//			if(READER_ATR_AddRcvdByte(TB, rcvdBytes, &rcvdCount) != READER_OK) return READER_ERR;
-//		}
-//		if(READER_ATR_IsTCToRead(Y)){
-//			if(READER_HAL_RcvChar(&TC, READER_HAL_USE_ISO_WT) != READER_OK) return READER_ERR;
-//			if(READER_ATR_ProcessTC(atr, TC, i, T) != READER_OK) return READER_ERR;
-//			if(READER_ATR_AddRcvdByte(TC, rcvdBytes, &rcvdCount) != READER_OK) return READER_ERR;
-//		}
-//		if(READER_ATR_IsTDToRead(Y)){
-//			if(READER_HAL_RcvChar(&TD, READER_HAL_USE_ISO_WT) != READER_OK) return READER_ERR;
-//			Y = READER_ATR_ComputeY(TD);
-//			T = READER_ATR_ComputeT(TD);
-//			READER_ATR_ProcessT(atr, T);
-//			if(READER_ATR_AddRcvdByte(TD, rcvdBytes, &rcvdCount) != READER_OK) return READER_ERR;
-//		}
-//		else{
-//			Y = 0x00;
-//		}
-//		i++;
-//	}
-//	
-//	/* Recuperation de tous les Historical Bytes */
-//	for(j=0; j<atr->K; j++){
-//		retVal = READER_HAL_RcvChar(&byte, READER_HAL_USE_ISO_WT);
-//		if(retVal != READER_OK) return retVal;
-//		
-//		atr->histBytes[j] = byte;
-//		
-//		retVal = READER_ATR_AddRcvdByte(byte, rcvdBytes, &rcvdCount);
-//		if(retVal != READER_OK) return retVal;
-//	}
-//	
-//	
-//	/* Recuperation du Check Byte */
-//	/* La presence du check byte n'est pas systematique, voir ISO7816-3 section 8.2.5. */
-//	if(!(READER_ATR_IsT0(atr) && !READER_ATR_IsT15(atr))){
-//		retVal = READER_HAL_RcvChar(&checkByte, READER_HAL_USE_ISO_WT);
-//		if(retVal != READER_OK) return retVal;	
-//		
-//		/* Verification des caracteres recus avec le TCK */
-//		retVal = READER_ATR_CheckTCK(rcvdBytes, rcvdCount, checkByte);	
-//		if(retVal != READER_OK) return retVal;
-//	}
-//	
-//	return READER_OK;
-//}
 
 
 /**
