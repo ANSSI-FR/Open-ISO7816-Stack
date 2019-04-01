@@ -304,6 +304,7 @@ READER_Status READER_HAL_RcvChar(READER_HAL_CommSettings *pSettings, READER_HAL_
 	uint8_t dummy;
 	
 	
+	/* Verification elementaire des parametres ...  */
 	if(timeout==0){
 		return READER_BAD_ARG;
 	}
@@ -312,8 +313,6 @@ READER_Status READER_HAL_RcvChar(READER_HAL_CommSettings *pSettings, READER_HAL_
 	if(USART2->SR & USART_SR_ORE){
 		dummy = USART2->DR;
 	}
-	
-	
 	
 	/* Reception d'un caractere */
 	/* On suppose ici que le bloc USART2 a deja ete configure en mode smartcard et qu'il est active et correctement initailise avec les bon parametres de communication */
