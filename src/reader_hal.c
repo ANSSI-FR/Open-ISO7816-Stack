@@ -329,6 +329,12 @@ READER_Status READER_HAL_RcvChar(READER_HAL_CommSettings *pSettings, READER_HAL_
 		return READER_BAD_ARG;
 	}
 	
+	/* On clear le block USART ... On desactive UART et Receiver, on clear RXNE et Overrrun error ...  */
+	USART2->CR1 &= ~USART_CR1_UE;
+	USART2->CR1 &= ~USART_CR1_RE;
+	USART2->SR &= ~USART_SR_RXNE;
+	USART2->SR &= ~USART_SR_ORE;
+	
 	/* Reception d'un caractere */
 	/* On suppose ici que le bloc USART2 a deja ete configure en mode smartcard et qu'il est active et correctement initailise avec les bon parametres de communication */
 	tickstart = READER_HAL_GetTick();
