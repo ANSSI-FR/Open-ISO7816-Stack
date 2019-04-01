@@ -111,7 +111,7 @@ READER_Status READER_HAL_InitWithDefaults(READER_HAL_CommSettings *pSettings){
 
 READER_Status READER_HAL_SendCharFrameTickstart(READER_HAL_CommSettings *pSettings, READER_HAL_Protocol protocol, uint8_t *frame, uint32_t frameSize, uint32_t timeout, uint32_t *pTickstart){
 	READER_Status retVal;
-	//uint32_t tickstart;
+	uint32_t tickstart;
 	uint32_t i;
 	
 	
@@ -123,7 +123,8 @@ READER_Status READER_HAL_SendCharFrameTickstart(READER_HAL_CommSettings *pSettin
 		
 		/* On mets a jour la date du debut de l'envoi du dernier caractere de la frame. (On soustrait le temps en milisec qu'il faut pour envoyer un carac) */
 		if(i == (frameSize-1)){
-			*pTickstart = READER_HAL_GetTick() - (uint32_t)(READER_UTILS_ComputeEtuMiliFloat(READER_HAL_GetFi(pSettings), READER_HAL_GetDi(pSettings), READER_HAL_GetFreq(pSettings)) *10 +1);
+			tickstart = READER_HAL_GetTick() - (uint32_t)(READER_UTILS_ComputeEtuMiliFloat(READER_HAL_GetFi(pSettings), READER_HAL_GetDi(pSettings), READER_HAL_GetFreq(pSettings)) *10);  /*  10 etu dans un caractere (10 moments) */
+			*pTickstart = MAX(1, tickstart);
 		}
 		
 		/* On fait attention a respecter le Guard Time (GT) entre les caracteres */
