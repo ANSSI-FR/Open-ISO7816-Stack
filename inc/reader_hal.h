@@ -52,8 +52,9 @@ enum READER_HAL_State{
 
 typedef enum READER_HAL_Protocol READER_HAL_Protocol;
 enum READER_HAL_Protocol{
-	READER_HAL_PROTOCOL_T0 = (uint32_t)(0x00000000),     
-	READER_HAL_PROTOCOL_T1 = (uint32_t)(0x00000001)
+	READER_HAL_PROTOCOL_T0 =  (uint32_t)(0x00000000),     
+	READER_HAL_PROTOCOL_T1 =  (uint32_t)(0x00000001),
+	READER_HAL_PROTOCOL_ANY = (uint32_t)(0x00000002)
 };
 
 
