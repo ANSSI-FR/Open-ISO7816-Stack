@@ -380,7 +380,8 @@ READER_Status READER_T1_BUFFER_DequeueAndDiscard(READER_T1_ContextHandler *pCont
 	pBlockBuffer->indexBottom = newBottomIndex;
 	
 	/* On mets a jour la length */
-	pBlockBuffer->length -= 1;
+	retVal = READER_T1_BUFFER_DecLength(pContext);
+	if(retVal != READER_OK) return retVal;
 	
 	/* On mets a jour le nombre de I-Blocks dans le Buffer d'envoi ...  */
 	bType = READER_T1_GetBlockType(pBlockBottom);
