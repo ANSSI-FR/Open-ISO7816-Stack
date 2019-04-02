@@ -262,42 +262,6 @@ READER_Status READER_HAL_RcvCharFrame(READER_HAL_CommSettings *pSettings, READER
 }
 
 
-
-#ifndef SMARTCARD_RX_FROM_SCRATCH
-/**
- * \fn READER_Status READER_HAL_RcvChar(uint8_t *character, uint32_t timeout)
- * \brief Cette fonction permet de lire un seul octet du la ligne IO.
- * \return Valeur de type READER_Status. READER_OK si l'exécution s'est correctement déroulée. Toute autre valeur suggère une erreur.
- * \param *character Pointeur vers un octet dans lequel sera stocké le caractère reçu.
- * \param timeout Valeur du timeout en milisecondes à utiliser. Si cette valeur est READER_HAL_USE_ISO_WT alors le timeout utilisé sera celui spécifié dans la norme ISO.
- */
-READER_Status READER_HAL_RcvChar(uint8_t *character, uint32_t timeout){
-	HAL_StatusTypeDef retVal;
-	
-	
-	if(timeout==0){
-		return READER_BAD_ARG;
-	}
-	
-	
-	retVal = HAL_SMARTCARD_Receive(&smartcardHandleStruct, character, 1, timeout);
-	
-	switch(retVal){
-		case HAL_TIMEOUT:
-			return READER_TIMEOUT;
-			break;
-		case HAL_OK:
-			return READER_OK;
-			break;
-		default:
-			return READER_ERR;
-	}
-}
-
-#else
-
-
-
 /* Fonction "from scratch" pour recevoir un caractere */
 READER_Status READER_HAL_RcvChar(READER_HAL_CommSettings *pSettings, READER_HAL_Protocol protocol, uint8_t *character, uint32_t timeout){
 	uint32_t newTimeout, currentGTMilli, tickstart;
@@ -364,40 +328,6 @@ READER_Status READER_HAL_RcvChar(READER_HAL_CommSettings *pSettings, READER_HAL_
 	return READER_OK;
 }
 
-#endif
-
-#ifndef SMARTCARD_TX_FROM_SCRATCH
-/**
- * \fn READER_Status READER_HAL_RcvChar(uint8_t *character, uint32_t timeout)
- * \brief Cette fonction permet d'envoyer un seul octet du la ligne IO.
- * \return Valeur de type READER_Status. READER_OK si l'exécution s'est correctement déroulée. Toute autre valeur suggère une erreur.
- * \param character uint8_t qui indique le caractère à envoyer.
- * \param timeout Valeur du timeout en milisecondes à utiliser. Si cette valeur est READER_HAL_USE_ISO_WT alors le timeout utilisé sera celui spécifié dans la norme ISO.
- */
-READER_Status READER_HAL_SendChar(uint8_t character, uint32_t timeout){
-	HAL_StatusTypeDef retVal;
-	
-	
-	if(timeout==0){
-		return READER_BAD_ARG;
-	}
-	
-	
-	retVal = HAL_SMARTCARD_Transmit(&smartcardHandleStruct, &character, 1, timeout);
-	
-	switch(retVal){
-		case HAL_TIMEOUT:
-			return READER_TIMEOUT;
-			break;
-		case HAL_OK:
-			return READER_OK;
-			break;
-		default:
-			return READER_ERR;
-	}
-}
-
-#else
 
 READER_Status READER_HAL_SendChar(READER_HAL_CommSettings *pSettings, READER_HAL_Protocol protocol, uint8_t character, uint32_t timeout){
 	uint32_t tickstart;
@@ -451,8 +381,6 @@ READER_Status READER_HAL_SendChar(READER_HAL_CommSettings *pSettings, READER_HAL
 	
 	return READER_OK;
 }
-
-#endif
 
 
 
