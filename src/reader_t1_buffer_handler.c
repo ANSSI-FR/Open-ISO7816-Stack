@@ -422,11 +422,9 @@ READER_Status READER_T1_BUFFER_DecLength(READER_T1_ContextHandler *pContext){
 	uint32_t currentLength;
 	
 	
-	/* On recupere un pointeur sur la structure du buffer dans le contexte */
-	retVal = READER_T1_CONTEXT_GetBlockBuff(pContext, &pBlockBuffer);
+	/* On recupere la length actuelle ...  */
+	retVal = READER_T1_BUFFER_GetLength(pContext, &currentLength);
 	if(retVal != READER_OK) return retVal;
-	
-	currentLength = pBlockBuffer->length;
 	
 	/* On fait des vérifications avant d'incrementer ...  */
 	if(currentLength == 0){
@@ -434,7 +432,11 @@ READER_Status READER_T1_BUFFER_DecLength(READER_T1_ContextHandler *pContext){
 	}
 	
 	/* On incremente ...  */
-	pBlockBuffer->length -= 1;
+	currentLength -= 1;
+	
+	/* On update les changements ...  */
+	retVal = READER_T1_BUFFER_SetLength(pContext, currentLength);
+	if(retVal != READER_OK) return retVal;
 	
 	
 	return READER_OK;
