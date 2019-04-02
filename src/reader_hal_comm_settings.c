@@ -279,18 +279,18 @@ uint32_t READER_HAL_GetGT(READER_HAL_CommSettings *pSettings){
  * \return Guard Time exprimé en milisecondes. Attention cette valeur est arrondie à l'entier supérieur. Dans certains cas cela peut être problématique, il faut rester vigilant.
  */
 uint32_t READER_HAL_GetGTMili(READER_HAL_CommSettings *pSettings){
-	float f, Fi, Di, GTEtu;
+	uint32_t freq, Fi, Di, GTEtu;
+	uint32_t GTMilli;
 	
-	Fi     =  (float)READER_HAL_GetFi(pSettings);
-	Di     =  (float)READER_HAL_GetDi(pSettings);
-	f      =  (float)READER_HAL_GetFreq(pSettings);
-	GTEtu  =  (float)READER_HAL_GetGT(pSettings);
+	Fi     =  READER_HAL_GetFi(pSettings);
+	Di     =  READER_HAL_GetDi(pSettings);
+	freq   =  READER_HAL_GetFreq(pSettings);
+	GTEtu  =  READER_HAL_GetGT(pSettings);
 	
-	/* GT mili = GT * 1etu * 1000                                                          */
-	/* GT mili = GT * ((Fi/Di)  * (1/f)) * 1000                                            */
-	/* On ajoute +1 pour eviter un troncature a 0                                          */
-	/* Attention il y a des endroits dans le code ou on compte sur le fait que RETOUR >= 1 */
-	return (uint32_t)((GTEtu * Fi * 1000) / (f * Di)) + 1;
+	GTMilli = (uint32_t)(GTEtu * READER_UTILS_ComputeEtuMili(Fi, Di, freq));
+	
+	
+	return GTMilli;
 }
 
 uint32_t READER_HAL_GetFreq(READER_HAL_CommSettings *pSettings){
