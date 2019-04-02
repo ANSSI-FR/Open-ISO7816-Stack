@@ -25,8 +25,6 @@ enum READER_T1_BufferStatus{
 
 READER_Status READER_T1_BUFFER_Init(READER_T1_ContextHandler *pContext);
 READER_Status READER_T1_BUFFER_Clear(READER_T1_ContextHandler *pContext);
-READER_Status READER_T1_BUFFER_PlacesLeft(READER_T1_ContextHandler *pContext, uint32_t *pPlaces);
-READER_Status READER_T1_BUFFER_GetLength(READER_T1_ContextHandler *pContext, uint32_t *pLength);
 READER_Status READER_T1_BUFFER_IsEmpty(READER_T1_ContextHandler *pContext, READER_T1_BufferStatus *pStatus);
 READER_Status READER_T1_BUFFER_IsFull(READER_T1_ContextHandler *pContext, READER_T1_BufferStatus *pStatus);
 READER_Status READER_T1_BUFFER_Enqueue(READER_T1_ContextHandler *pContext, READER_T1_Block *pBlock);
@@ -35,6 +33,10 @@ READER_Status READER_T1_BUFFER_Stack(READER_T1_ContextHandler *pContext, READER_
 READER_Status READER_T1_BUFFER_GetBottomBlockPtr(READER_T1_ContextHandler *pContext, READER_T1_Block **ppBlock);
 READER_Status READER_T1_BUFFER_GetBottomBlockType(READER_T1_ContextHandler *pContext, READER_T1_BlockType *pType);
 READER_Status READER_T1_BUFFER_DequeueAndDiscard(READER_T1_ContextHandler *pContext);
+
+READER_Status READER_T1_BUFFER_PlacesLeft(READER_T1_ContextHandler *pContext, uint32_t *pPlaces);
+READER_Status READER_T1_BUFFER_GetLength(READER_T1_ContextHandler *pContext, uint32_t *pLength);
+READER_Status READER_T1_BUFFER_GetSetLength(READER_T1_ContextHandler *pContext, uint32_t length);
 READER_Status READER_T1_BUFFER_IncLength(READER_T1_ContextHandler *pContext);
 READER_Status READER_T1_BUFFER_DecLength(READER_T1_ContextHandler *pContext);
 //READER_Status READER_T1_BUFFER_DeleteBlock(READER_T1_ContextHandler *pContext, uint32_t index);

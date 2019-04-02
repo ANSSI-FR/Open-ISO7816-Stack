@@ -439,6 +439,28 @@ READER_Status READER_T1_BUFFER_DecLength(READER_T1_ContextHandler *pContext){
 }
 
 
+READER_Status READER_T1_BUFFER_SetLength(READER_T1_ContextHandler *pContext, uint32_t length){
+	READER_T1_BlockBuffer *pBlockBuffer;
+	
+	
+	/* On recupere un pointeur sur la structure du buffer dans le contexte */
+	retVal = READER_T1_CONTEXT_GetBlockBuff(pContext, &pBlockBuffer);
+	if(retVal != READER_OK) return retVal;
+	
+	
+	/* On fait des vérifications ...  */
+	if(length > READER_T1_CONTEXT_STATICBUFF_MAXSIZE){
+		return READER_ERR;
+	}
+	
+	/* On incremente ...  */
+	pBlockBuffer->length = length;
+	
+	
+	return READER_OK;
+}
+
+
 //READER_Status READER_T1_BUFFER_Delete(READER_T1_ContextHandler *pContext, uint32_t index){
 //	READER_T1_BlockBuffer *pBlockBuffer;
 //	READER_T1_Block *pBlockTab;
