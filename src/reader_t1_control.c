@@ -497,6 +497,7 @@ READER_Status READER_T1_CONTROL_RcvBlock(READER_T1_ContextHandler *pContext, REA
 	uint32_t currentCWT, currentBWT;
 	uint32_t extraTimeout;
 	uint32_t tickLastBlock, tick;
+	uint32_t blockLEN;
 	
 	
 	/* On recupere les valeurs de timeout a appliquer ... */
@@ -536,6 +537,14 @@ READER_Status READER_T1_CONTROL_RcvBlock(READER_T1_ContextHandler *pContext, REA
 	if(retVal == READER_TIMEOUT){
 		retVal = READER_T1_ERR_DealWithError(pContext, 0);
 		if(retVal != READER_OK) return retVal;
+	}
+	
+	/* On verifie que le Block recu ne depase pas le MAX IFSD que l'on peut accepter cote device ... */
+	blockLEN = READER_T1_GetBlockLEN(pBlock);
+	if(blockLEN > READER_T1_MAX_IFSD_ACCEPTED){
+		retVal = READER_T1_ERR_DoResynch(pContext);
+		if(retVal != READER_OK) return retVal;
+		return READER_OK;
 	}
 	
 	/* On mets a jour le tick du leading edge du dernier Block recu ...  */
