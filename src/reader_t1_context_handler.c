@@ -3,7 +3,7 @@
 
 /* Initialisation de la structure */
 
-READER_Status READER_T1_CONTEXT_Init(READER_T1_ContextHandler *pContext){
+READER_Status READER_T1_CONTEXT_Init(READER_T1_ContextHandler *pContext, READER_HAL_CommSettings *pSettings){
 	READER_Status retVal;
 	
 	
@@ -11,7 +11,7 @@ READER_Status READER_T1_CONTEXT_Init(READER_T1_ContextHandler *pContext){
 	retVal = READER_T1_CONTEXT_InitBuffer(pContext); /* Attention, il faut que Buffer soit initialise avant les Settings (nottament a cause de SetIFSC()/UpdateIFSC()) */
 	if(retVal != READER_OK) return retVal;
 	
-	retVal = READER_T1_CONTEXT_InitSettings(pContext);
+	retVal = READER_T1_CONTEXT_InitSettings(pContext, pSettings);
 	if(retVal != READER_OK) return retVal;
 	
 	retVal = READER_T1_CONTEXT_InitSeqNums(pContext);
@@ -22,21 +22,24 @@ READER_Status READER_T1_CONTEXT_Init(READER_T1_ContextHandler *pContext){
 }
 
 
-READER_Status READER_T1_CONTEXT_InitCommSettings(READER_T1_ContextHandler *pContext){
+READER_Status READER_T1_CONTEXT_InitCommSettings(READER_T1_ContextHandler *pContext, READER_HAL_CommSettings *pSettings){
 	READER_Status retVal;
 	
 	
 	retVal = READER_T1_CONTEXT_SetCurrentBGT(pContext, READER_T1_CONTEXT_DEFAULT_BGT);
 	if(retVal != READER_OK) return retVal;
 	
-	retVal = READER_T1_CONTEXT_SetCurrentBWT(pContext, READER_T1_CONTEXT_DEFAULT_BWT);
+	//retVal = READER_T1_CONTEXT_SetCurrentBWT(pContext, READER_T1_CONTEXT_DEFAULT_BWT);
+	//if(retVal != READER_OK) return retVal;
+	
+	retVal = READER_T1_CONTEXT_SetCurrentBWTMultiplier(pContext, READER_T1_CONTEXT_DEFAULT_BWTMULTIPLIER);
 	if(retVal != READER_OK) return retVal;
 	
-	retVal = READER_T1_CONTEXT_SetCurrentCGT(pContext, READER_T1_CONTEXT_DEFAULT_CGT);
-	if(retVal != READER_OK) return retVal;
+	//retVal = READER_T1_CONTEXT_SetCurrentCGT(pContext, READER_T1_CONTEXT_DEFAULT_CGT);
+	//if(retVal != READER_OK) return retVal;
 	
-	retVal = READER_T1_CONTEXT_SetCurrentCWT(pContext, READER_HAL_GetWT());
-	if(retVal != READER_OK) return retVal;
+	//retVal = READER_T1_CONTEXT_SetCurrentCWT(pContext, READER_T1_CONTEXT_DEFAULT_CWT_ETU);
+	//if(retVal != READER_OK) return retVal;
 	
 	retVal = READER_T1_CONTEXT_SetCurrentBWI(pContext, READER_T1_CONTEXT_DEFAULT_BWI);
 	if(retVal != READER_OK) return retVal;
@@ -51,6 +54,9 @@ READER_Status READER_T1_CONTEXT_InitCommSettings(READER_T1_ContextHandler *pCont
 	if(retVal != READER_OK) return retVal;
 	
 	retVal = READER_T1_CONTEXT_SetCurrentRedundancyType(pContext, READER_T1_CONTEXT_DEFAULT_CORRCODE);
+	if(retVal != READER_OK) return retVal;
+	
+	retVal = READER_T1_CONTEXT_ImportHalCommSettingsToContext(pContext, pSettings);
 	if(retVal != READER_OK) return retVal;
 	
 	return READER_OK;
@@ -132,13 +138,13 @@ READER_Status READER_T1_CONTEXT_InitSeqNums(READER_T1_ContextHandler *pContext){
 }
 
 
-READER_Status READER_T1_CONTEXT_InitSettings(READER_T1_ContextHandler *pContext){
+READER_Status READER_T1_CONTEXT_InitSettings(READER_T1_ContextHandler *pContext, READER_HAL_CommSettings *pSettings){
 	READER_Status retVal;
 	
 	
 	/* On reinitialise tous les parametres de communication dans le contexte               */
 	
-	retVal = READER_T1_CONTEXT_InitCommSettings(pContext);
+	retVal = READER_T1_CONTEXT_InitCommSettings(pContext, pSettings);
 	if(retVal != READER_OK) return retVal;
 	
 	retVal = READER_T1_CONTEXT_InitContextSettings(pContext);
@@ -169,38 +175,138 @@ READER_Status READER_T1_CONTEXT_InitRcptBuff(READER_T1_ContextHandler *pContext)
 
 /* Accesseurs sur les parametres actuels de communication */
 
-/* On retourne BGT en milisecondes ...  */
-READER_Status READER_T1_CONTEXT_GetCurrentBGT(READER_T1_ContextHandler *pContext, uint32_t *pBgt){
+
+READER_Status READER_T1_CONTEXT_GetCurrentEtuMilliFloat(READER_T1_ContextHandler *pContext, float *pEtuMilli){
 	float etuMili;
+	uint32_t currentFi, currentDi, currentFreq;
+	READER_Status retVal;
 	
 	
-	etuMili = READER_UTILS_ComputeEtuMiliFloat(READER_HAL_GetFi(), READER_HAL_GetDi(), READER_HAL_GetFreq());
+	/* Recuperation des valeurs necessaires pour calculer la duree d'un ETU ...  */
+	retVal = READER_T1_CONTEXT_GetHalCommSettingsFi(pContext, &currentFi);
+	if(retVal != READER_OK) return retVal;
+	
+	retVal = READER_T1_CONTEXT_GetHalCommSettingsDi(pContext, &currentDi);
+	if(retVal != READER_OK) return retVal;
+	
+	retVal = READER_T1_CONTEXT_GetHalCommSettingsFreq(pContext, &currentFreq);
+	if(retVal != READER_OK) return retVal;
+	
+	/* Calcul de la duree d'un ETU en milisecondes ...  */
+	etuMili = READER_UTILS_ComputeEtuMiliFloat(currentFi, currentDi, currentFreq);
 
-	*pBgt = (uint32_t)((float)(pContext->currentBGT) * etuMili) + 1;
+	/* Retour du resultat ...  */
+	*pEtuMilli = etuMili;
+
+	return READER_OK;
+}
+
+
+
+READER_Status READER_T1_CONTEXT_GetCurrentBGT(READER_T1_ContextHandler *pContext, uint32_t *pBgt){
+	*pBgt = pContext->currentBGT;
+	return READER_OK;
+}
+
+/* On retourne BGT en milisecondes ...  */
+READER_Status READER_T1_CONTEXT_GetCurrentBGTMilli(READER_T1_ContextHandler *pContext, uint32_t *pBgt){
+	READER_Status retVal;
+	float currentEtuMilli;
+	uint32_t currentBgtEtu, currentBgtMilli;
 	
-	//etuMili = READER_UTILS_ComputeEtuMili(READER_HAL_GetFi(), READER_HAL_GetDi(), READER_HAL_GetFreq());
-	//etuMili = MAX(etuMili, 1);
-	//
-	//*pBgt = (pContext->currentBGT) * etuMili;
+	
+	retVal = READER_T1_CONTEXT_GetCurrentBGT(pContext, &currentBgtEtu);
+	if(retVal != READER_OK) return retVal;
+	
+	retVal = READER_T1_CONTEXT_GetCurrentEtuMilliFloat(pContext, &currentEtuMilli);
+	if(retVal != READER_OK) return retVal;
+	
+	currentBgtMilli = (uint32_t)((float)(currentBgtEtu) * currentEtuMilli) + 1;
+	
+	*pBgt = currentBgtMilli;
 	
 	return READER_OK;
 }
 
 
-READER_Status READER_T1_CONTEXT_GetCurrentBWT(READER_T1_ContextHandler *pContext, uint32_t *pBwt){
-	*pBwt = pContext->currentBWT;
+READER_Status READER_T1_CONTEXT_GetCurrentBWTMilli(READER_T1_ContextHandler *pContext, uint32_t *pBwt){
+	READER_Status retVal;
+	float currentEtuMilli;
+	uint32_t currentBWI, currentBWT, currentFi, currentFreq, currentBWTMultiplier;
+	
+	
+	/* On recupere les valeurs necessaires au calcul de BWT ...  */
+	retVal = READER_T1_CONTEXT_GetCurrentBWI(pContext, &currentBWI);
+	if(retVal != READER_OK) return retVal;
+	
+	retVal = READER_T1_CONTEXT_GetHalCommSettingsFi(pContext, &currentFi);
+	if(retVal != READER_OK) return retVal;
+	
+	retVal = READER_T1_CONTEXT_GetHalCommSettingsFreq(pContext, &currentFreq);
+	if(retVal != READER_OK) return retVal;
+	
+	retVal = READER_T1_CONTEXT_GetCurrentEtuMilliFloat(pContext, &currentEtuMilli);
+	if(retVal != READER_OK) return retVal;
+	
+	
+	/* On fait le calcul de BWT selon la formule indiquee ISO7816-3 section 11.4.3 ...  */
+	currentBWT = (uint32_t)((11 * currentEtuMilli) + (1000 * READER_UTILS_Pow(2, currentBWI) * 960 * ((float)currentFi / (float)currentFreq))) + 1;
+	
+	/* On prends en compte un eventuel BWT Multiplier (suite a une WTX Request par exemple). Voir ISO7816-3 Rule 3 ...  */
+	retVal = READER_T1_CONTEXT_GetCurrentBWTMultiplier(pContext, &currentBWTMultiplier);
+	if(retVal != READER_OK) return retVal;
+	
+	currentBWT = currentBWT * currentBWTMultiplier;
+	
+	/* Retour de la caleur de BWT calculee en millisecondes ...  */
+	*pBwt = currentBWT;
+	
+	
 	return READER_OK;
 }
 
 
-READER_Status READER_T1_CONTEXT_GetCurrentCGT(READER_T1_ContextHandler *pContext, uint32_t *pCgt){
-	*pCgt = pContext->currentCGT;
-	return READER_OK;
-}
+//READER_Status READER_T1_CONTEXT_GetCurrentCGT(READER_T1_ContextHandler *pContext, uint32_t *pCgt){
+//	*pCgt = pContext->currentCGT;
+//	return READER_OK;
+//}
 
 
+/* On recupere la valeur en nombre d'ETU ...  */
 READER_Status READER_T1_CONTEXT_GetCurrentCWT(READER_T1_ContextHandler *pContext, uint32_t *pCwt){
-	*pCwt = pContext->currentCWT;
+	READER_Status retVal;
+	uint32_t currentCWI;
+	
+	
+	retVal = READER_T1_CONTEXT_GetCurrentCWI(pContext, &currentCWI);
+	if(retVal != READER_OK) return retVal;
+	
+	*pCwt = 11 + READER_UTILS_Pow(2, currentCWI);   /* ISO7816-3 section 11.4.3 ...  */
+	
+	if(*pCwt < 12){
+		return READER_ERR;
+	}
+	
+	return READER_OK;
+}
+
+/* On recupere la valeur en millisecondes ...  */
+READER_Status READER_T1_CONTEXT_GetCurrentCWTMilli(READER_T1_ContextHandler *pContext, uint32_t *pCwtMilli){
+	READER_Status retVal;
+	float currentEtuMilli;
+	uint32_t currentCWT;
+	
+	
+	/* On recupere les donnees necessaires au calcul de CWT en millisecondes ...  */
+	retVal = READER_T1_CONTEXT_GetCurrentCWT(pContext, &currentCWT);
+	if(retVal != READER_OK) return retVal;	
+	
+	retVal = READER_T1_CONTEXT_GetCurrentEtuMilliFloat(pContext, &currentEtuMilli);
+	if(retVal != READER_OK) return retVal;
+	
+	/* On calcule CWT en millisecondes. On utilise la formule ISO7816-3 section 11.4.3 ...  */
+	*pCwtMilli = (uint32_t)((float)(currentCWT) * currentEtuMilli) +1;  /* On arrondi au dessus. */
+	
 	return READER_OK;
 }
 
@@ -213,6 +319,13 @@ READER_Status READER_T1_CONTEXT_GetCurrentCWI(READER_T1_ContextHandler *pContext
 
 READER_Status READER_T1_CONTEXT_GetCurrentBWI(READER_T1_ContextHandler *pContext, uint32_t *pBwi){
 	*pBwi = pContext->currentBWI;
+	return READER_OK;
+}
+
+
+READER_Status READER_T1_CONTEXT_GetCurrentBWTMultiplier(READER_T1_ContextHandler *pContext, uint32_t *pMultiplier){
+	*pMultiplier = pContext->currentBWTMultiplier;
+	
 	return READER_OK;
 }
 
@@ -285,22 +398,39 @@ READER_Status READER_T1_CONTEXT_SetCurrentBGT(READER_T1_ContextHandler *pContext
 }
 
 
-READER_Status READER_T1_CONTEXT_SetCurrentBWT(READER_T1_ContextHandler *pContext, uint32_t bwt){
-	pContext->currentBWT = bwt;
+//READER_Status READER_T1_CONTEXT_SetCurrentBWT(READER_T1_ContextHandler *pContext, uint32_t bwt){
+//	pContext->currentBWT = bwt;
+//	return READER_OK;
+//}
+
+
+//READER_Status READER_T1_CONTEXT_SetCurrentCGT(READER_T1_ContextHandler *pContext, uint32_t cgt){
+//	pContext->currentCGT = cgt;
+//	return READER_OK;
+//}
+
+
+READER_Status READER_T1_CONTEXT_SetCurrentBWTMultiplier(READER_T1_ContextHandler *pContext, uint32_t multiplier){
+	if(multiplier == 0){
+		return READER_BAD_ARG;
+	}
+	
+	pContext->currentBWTMultiplier = multiplier;
+	
 	return READER_OK;
 }
 
 
-READER_Status READER_T1_CONTEXT_SetCurrentCGT(READER_T1_ContextHandler *pContext, uint32_t cgt){
-	pContext->currentCGT = cgt;
-	return READER_OK;
-}
-
-
-READER_Status READER_T1_CONTEXT_SetCurrentCWT(READER_T1_ContextHandler *pContext, uint32_t cwt){
-	pContext->currentCWT = cwt;
-	return READER_OK;
-}
+//READER_Status READER_T1_CONTEXT_SetCurrentCWT(READER_T1_ContextHandler *pContext, uint32_t cwt){
+//	/* Verification sur la nouvelle valeur de CWT. VAleur minimale 12 ETU, voir ISO7816-3 section 11.4.3 ...  */
+//	if(cwt < 12){
+//		return READER_BAD_ARG;
+//	}
+//	
+//	pContext->currentCWT = cwt;
+//	
+//	return READER_OK;
+//}
 
 
 READER_Status READER_T1_CONTEXT_SetCurrentCWI(READER_T1_ContextHandler *pContext, uint32_t cwi){
@@ -310,7 +440,16 @@ READER_Status READER_T1_CONTEXT_SetCurrentCWI(READER_T1_ContextHandler *pContext
 
 
 READER_Status READER_T1_CONTEXT_SetCurrentBWI(READER_T1_ContextHandler *pContext, uint32_t bwi){
+	if(bwi < READER_T1_CONTEXT_MIN_BWI_ACCEPTED){
+		return READER_BAD_ARG;
+	}
+	
+	if(bwi > READER_T1_CONTEXT_MAX_BWI_ACCEPTED){
+		return READER_BAD_ARG;
+	}
+	
 	pContext->currentBWI = bwi;
+	
 	return READER_OK;
 }
 
@@ -357,6 +496,28 @@ READER_Status READER_T1_CONTEXT_SetCurrentRedundancyType(READER_T1_ContextHandle
 	else{
 		return READER_ERR;
 	}
+	
+	return READER_OK;
+}
+
+
+READER_Status READER_T1_CONTEXT_ExtendCurrentBWT(READER_T1_ContextHandler *pContext, uint32_t multiplier){
+	READER_Status retVal;
+	uint32_t currentMultiplier, newMultiplier;
+	
+	
+	if(multiplier == 0){
+		return READER_BAD_ARG;
+	}
+	
+	retVal = READER_T1_CONTEXT_GetCurrentBWTMultiplier(pContext, &currentMultiplier);
+	if(retVal != READER_OK) return retVal;
+	
+	newMultiplier = currentMultiplier * multiplier;
+	
+	retVal = READER_T1_CONTEXT_SetCurrentBWTMultiplier(pContext, newMultiplier);
+	if(retVal != READER_OK) return retVal;
+	
 	
 	return READER_OK;
 }
@@ -1507,4 +1668,195 @@ READER_Status READER_T1_CONTEXT_GetTickLastBlock(READER_T1_ContextHandler *pCont
 		return READER_ERR;
 	}
 }
+
+
+/* Manipulation des commSettings ...  */
+READER_Status READER_T1_CONTEXT_GetHalCommSettingsPtr(READER_T1_ContextHandler *pContext, READER_HAL_CommSettings **ppCommSettings){
+	READER_HAL_CommSettings *pCommSettings;
+	
+	
+	pCommSettings = &(pContext->halCommSettings);
+	*ppCommSettings = pCommSettings;
+	
+	return READER_OK;
+}
+
+
+READER_Status READER_T1_CONTEXT_GetHalCommSettingsFreq(READER_T1_ContextHandler *pContext, uint32_t *pFreq){
+	READER_HAL_CommSettings *pCommSettings;
+	READER_Status retVal;
+	
+	
+	retVal = READER_T1_CONTEXT_GetHalCommSettingsPtr(pContext, &pCommSettings);
+	if(retVal != READER_OK) return READER_ERR;
+	
+	*pFreq = READER_HAL_GetFreq(pCommSettings);	
+	
+	
+	return READER_OK;
+}
+
+
+READER_Status READER_T1_CONTEXT_GetHalCommSettingsFi(READER_T1_ContextHandler *pContext, uint32_t *pFi){
+	READER_HAL_CommSettings *pCommSettings;
+	READER_Status retVal;
+	
+	
+	retVal = READER_T1_CONTEXT_GetHalCommSettingsPtr(pContext, &pCommSettings);
+	if(retVal != READER_OK) return READER_ERR;
+	
+	*pFi = READER_HAL_GetFi(pCommSettings);	
+	
+	
+	return READER_OK;
+}
+
+
+READER_Status READER_T1_CONTEXT_GetHalCommSettingsDi(READER_T1_ContextHandler *pContext, uint32_t *pDi){
+	READER_HAL_CommSettings *pCommSettings;
+	READER_Status retVal;
+	
+	
+	retVal = READER_T1_CONTEXT_GetHalCommSettingsPtr(pContext, &pCommSettings);
+	if(retVal != READER_OK) return READER_ERR;
+	
+	*pDi = READER_HAL_GetDi(pCommSettings);	
+	
+	
+	return READER_OK;
+}
+
+
+READER_Status READER_T1_CONTEXT_GetHalCommSettingsGT(READER_T1_ContextHandler *pContext, uint32_t *pGT){
+	READER_HAL_CommSettings *pCommSettings;
+	READER_Status retVal;
+	
+	
+	retVal = READER_T1_CONTEXT_GetHalCommSettingsPtr(pContext, &pCommSettings);
+	if(retVal != READER_OK) return READER_ERR;
+	
+	*pGT = READER_HAL_GetGT(pCommSettings);	
+	
+	
+	return READER_OK;
+}
+
+
+
+READER_Status READER_T1_CONTEXT_SetHalCommSettingsFreq(READER_T1_ContextHandler *pContext, uint32_t freq){
+	READER_HAL_CommSettings *pCommSettings;
+	READER_Status retVal;
+	
+	
+	if(freq == 0){
+		return READER_BAD_ARG;
+	}
+	
+	retVal = READER_T1_CONTEXT_GetHalCommSettingsPtr(pContext, &pCommSettings);
+	if(retVal != READER_OK) return READER_ERR;
+	
+	retVal = READER_HAL_SetFreq(pCommSettings, freq);
+	if(retVal != READER_OK) return READER_ERR;
+	
+	
+	return READER_OK;
+}
+
+
+READER_Status READER_T1_CONTEXT_SetHalCommSettingsFi(READER_T1_ContextHandler *pContext, uint32_t Fi){
+	READER_HAL_CommSettings *pCommSettings;
+	READER_Status retVal;
+	
+	
+	if(Fi == 0){
+		return READER_BAD_ARG;
+	}
+	
+	retVal = READER_T1_CONTEXT_GetHalCommSettingsPtr(pContext, &pCommSettings);
+	if(retVal != READER_OK) return READER_ERR;
+	
+	retVal = READER_HAL_SetFi(pCommSettings, Fi);
+	if(retVal != READER_OK) return READER_ERR;
+	
+	
+	return READER_OK;
+}
+
+
+READER_Status READER_T1_CONTEXT_SetHalCommSettingsDi(READER_T1_ContextHandler *pContext, uint32_t Di){
+	READER_HAL_CommSettings *pCommSettings;
+	READER_Status retVal;
+	
+	
+	if(Di == 0){
+		return READER_BAD_ARG;
+	}
+	
+	retVal = READER_T1_CONTEXT_GetHalCommSettingsPtr(pContext, &pCommSettings);
+	if(retVal != READER_OK) return READER_ERR;
+	
+	retVal = READER_HAL_SetDi(pCommSettings, Di);
+	if(retVal != READER_OK) return READER_ERR;
+	
+	
+	return READER_OK;
+}
+
+
+READER_Status READER_T1_CONTEXT_SetHalCommSettingsGT(READER_T1_ContextHandler *pContext, uint32_t GT){
+	READER_HAL_CommSettings *pCommSettings;
+	READER_Status retVal;
+	
+	
+	retVal = READER_T1_CONTEXT_GetHalCommSettingsPtr(pContext, &pCommSettings);
+	if(retVal != READER_OK) return READER_ERR;
+	
+	retVal = READER_HAL_SetGT(pCommSettings, GT);
+	if(retVal != READER_OK) return READER_ERR;
+	
+	
+	return READER_OK;
+}
+
+
+
+
+READER_Status READER_T1_CONTEXT_ImportHalCommSettingsToContext(READER_T1_ContextHandler *pContext, READER_HAL_CommSettings *pSettings){
+	READER_HAL_CommSettings *pCommSettings;
+	READER_Status retVal;
+	uint32_t freq, Fi, Di, GT;
+	
+	
+	freq = READER_HAL_GetFreq(pSettings);
+	Fi = READER_HAL_GetFi(pSettings);
+	Di = READER_HAL_GetDi(pSettings);
+	GT = READER_HAL_GetGT(pSettings);
+	
+	
+	retVal = READER_T1_CONTEXT_GetHalCommSettingsPtr(pContext, &pCommSettings);
+	if(retVal != READER_OK) return READER_ERR;
+	
+	
+	retVal = READER_T1_CONTEXT_SetHalCommSettingsFreq(pContext, freq);
+	if(retVal != READER_OK) return READER_ERR;
+	
+	retVal = READER_T1_CONTEXT_SetHalCommSettingsFi(pContext, Fi);
+	if(retVal != READER_OK) return READER_ERR;
+	
+	retVal = READER_T1_CONTEXT_SetHalCommSettingsDi(pContext, Di);
+	if(retVal != READER_OK) return READER_ERR;
+	
+	retVal = READER_T1_CONTEXT_SetHalCommSettingsGT(pContext, GT);
+	if(retVal != READER_OK) return READER_ERR;
+	
+	
+	return READER_OK;
+}
+
+
+READER_Status READER_T1_CONTEXT_ExportHalCommSettingsFromContext(READER_T1_ContextHandler *pContext, READER_HAL_CommSettings *pSettings){
+	return READER_OK;
+}
+
+
 

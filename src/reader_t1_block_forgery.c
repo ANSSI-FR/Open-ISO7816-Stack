@@ -19,7 +19,7 @@ READER_Status READER_T1_FORGE_ChainingRBlockForCard(READER_T1_ContextHandler *pC
 	if(retVal != READER_OK) return retVal;
 	
 	/* On fabrique un R-Block avec ce numero de sequence    */
-	retVal = READER_T1_ForgeRBlock(pBlockDest, READER_T1_ACKTYPE_ACK, nextSeqNum);
+	retVal = READER_T1_FORGE_RBlock(pContext, pBlockDest, READER_T1_ACKTYPE_ACK, nextSeqNum);
 	if(retVal != READER_OK) return retVal;
 	
 	
@@ -76,11 +76,11 @@ READER_Status READER_T1_FORGE_NACKR0(READER_T1_ContextHandler *pContext, READER_
 		
 	
 	if(integrityFlag == 0){
-		retVal = READER_T1_ForgeRBlock(pBlockDest, READER_T1_ACKTYPE_NACK, READER_T1_SEQNUM_ZERO);
+		retVal = READER_T1_FORGE_RBlock(pContext, pBlockDest, READER_T1_ACKTYPE_NACK, READER_T1_SEQNUM_ZERO);
 		if(retVal != READER_OK) return retVal;
 	}
 	else if(integrityFlag == 1){
-		retVal = READER_T1_ForgeRBlock(pBlockDest, READER_T1_ACKTYPE_NACK_CRCLRC, READER_T1_SEQNUM_ZERO);
+		retVal = READER_T1_FORGE_RBlock(pContext, pBlockDest, READER_T1_ACKTYPE_NACK_CRCLRC, READER_T1_SEQNUM_ZERO);
 		if(retVal != READER_OK) return retVal;
 	}
 	else{
@@ -135,7 +135,7 @@ READER_Status READER_T1_FORGE_NACK71(READER_T1_ContextHandler *pContext, READER_
 	}
 	
 	/* On forge le R-Block qui correspond ...             */
-	retVal = READER_T1_ForgeRBlock(pBlockDest, ACKType, seqNum);
+	retVal = READER_T1_FORGE_RBlock(pContext, pBlockDest, ACKType, seqNum);
 	if(retVal != READER_OK) return retVal;
 	
 	return READER_OK;
@@ -174,6 +174,7 @@ READER_Status READER_T1_FORGE_NACK72(READER_T1_ContextHandler *pContext, READER_
 READER_Status READER_T1_FORGE_ACKIBlock(READER_T1_ContextHandler *pContext, READER_T1_Block *pBlockDest){
 	READER_Status retVal;
 	READER_T1_SeqNumber seqNum;
+	READER_T1_RedundancyType rType;
 	uint32_t tmpSeqNum;
 	
 	
@@ -195,7 +196,7 @@ READER_Status READER_T1_FORGE_ACKIBlock(READER_T1_ContextHandler *pContext, READ
 	}
 	
 	/* On forge le I-Block                             */
-	retVal = READER_T1_ForgeIBlock(pBlockDest, NULL, 0, seqNum, READER_T1_MBIT_ZERO);
+	retVal = READER_T1_FORGE_IBlock(pContext, pBlockDest, NULL, 0, seqNum, READER_T1_MBIT_ZERO);
 	if(retVal != READER_OK) return retVal;
 	
 	return READER_OK;
@@ -209,6 +210,7 @@ READER_Status READER_T1_FORGE_DataIBlock(READER_T1_ContextHandler *pContext, REA
 	uint32_t nextDeviceSeqNum;
 	READER_Status retVal;
 	READER_T1_MBit tmpMBit;
+	READER_T1_RedundancyType rType;
 	
 	
 	/* On calcule le numero de sequence que l'on doit placer dans le I-Block qu'on va forger ...  */
@@ -228,7 +230,8 @@ READER_Status READER_T1_FORGE_DataIBlock(READER_T1_ContextHandler *pContext, REA
 	
 	/* On fabrique un I-Block avec le bon numero de sequence ...                                                                    */
 	/* Pas besoin de faire de verifications sur la Size etc... (elles sont deja faites dans la fonction qui forge les I-Blocks ...) */
-	retVal = READER_T1_ForgeIBlock(pBlockDest, dataBuff, dataSize, nextDeviceSeqNum, tmpMBit);
+
+	retVal = READER_T1_FORGE_IBlock(pContext, pBlockDest, dataBuff, dataSize, nextDeviceSeqNum, tmpMBit);
 	if(retVal != READER_OK) return retVal;
 	
 	return READER_OK;
@@ -250,6 +253,7 @@ READER_Status READER_T1_FORGE_SliceDataAndFillBuffer(READER_T1_ContextHandler *p
 	READER_T1_Block tmpBlock;
 	READER_T1_SeqNumber seqNum;
 	READER_T1_MBit mBit;
+	READER_T1_RedundancyType rType;
 	uint32_t tmpSeqNum;
 	uint32_t currentIFSC;
 	uint32_t nbBlocksNeeded, buffPlacesLeft;
@@ -311,7 +315,7 @@ READER_Status READER_T1_FORGE_SliceDataAndFillBuffer(READER_T1_ContextHandler *p
 		}
 		
 		/* On forge le Block ...  */
-		retVal = READER_T1_ForgeIBlock(&tmpBlock, dataBuff+i, blockLEN, seqNum, mBit);
+		retVal = READER_T1_FORGE_IBlock(pContext, &tmpBlock, dataBuff+i, blockLEN, seqNum, mBit);
 		if(retVal != READER_OK) return retVal;	
 		
 		/* On enfile ce Block dans le Buffer ...  */
@@ -571,6 +575,161 @@ READER_Status READER_T1_FORGE_FillBuffWithAPDUCase4E(READER_T1_ContextHandler *p
 	/* On decoupe ce buffer en I-Blocks que l'on place dans le Buffer d'envoi ....     */
 	retVal = READER_T1_FORGE_SliceDataAndFillBuffer(pContext, rawBuff, READER_APDU_HEADER_SIZE + pApduCmd->body.Nc + 2 + 3);
 	if(retVal != READER_OK) return retVal;
+	
+	return READER_OK;
+}
+
+
+READER_Status READER_T1_FORGE_IBlock(READER_T1_ContextHandler *pContext, READER_T1_Block *pBlock, uint8_t *data, uint32_t dataSize, READER_T1_SeqNumber seq, READER_T1_MBit mBit){
+	READER_Status retVal;
+	READER_T1_RedundancyType rType;
+	
+	
+	retVal = READER_T1_CONTEXT_GetCurrentRedundancyType(pContext, &rType);
+	if(retVal != READER_OK) return retVal;
+	
+	retVal = READER_T1_ForgeIBlock(pBlock, data, dataSize, seq, mBit, rType);
+	if(retVal != READER_OK) return retVal;
+	
+	return READER_OK;
+}
+
+
+READER_Status READER_T1_FORGE_RBlock(READER_T1_ContextHandler *pContext, READER_T1_Block *pBlock, READER_T1_ACKType ack, READER_T1_ExpSeqNumber expctdBlockSeq){
+	READER_Status retVal;
+	READER_T1_RedundancyType rType;
+	
+	
+	retVal = READER_T1_CONTEXT_GetCurrentRedundancyType(pContext, &rType);
+	if(retVal != READER_OK) return retVal;
+	
+	retVal = READER_T1_ForgeRBlock(pBlock, ack, expctdBlockSeq, rType);
+	if(retVal != READER_OK) return retVal;
+	
+	return READER_OK;
+}
+
+
+READER_Status READER_T1_FORGE_SBlock(READER_T1_ContextHandler *pContext, READER_T1_Block *pBlock, READER_T1_SBlockType type){
+	READER_Status retVal;
+	READER_T1_RedundancyType rType;
+	
+	
+	retVal = READER_T1_CONTEXT_GetCurrentRedundancyType(pContext, &rType);
+	if(retVal != READER_OK) return retVal;
+	
+	retVal = READER_T1_ForgeSBlock(pBlock, type, rType);
+	if(retVal != READER_OK) return retVal;
+	
+	return READER_OK;
+}
+
+
+
+
+READER_Status READER_T1_FORGE_SBlockResynchRequest(READER_T1_ContextHandler *pContext, READER_T1_Block *pBlock){
+	READER_Status retVal;
+	
+	
+	retVal = READER_T1_FORGE_SBlock(pContext, pBlock, READER_T1_STYPE_RESYNCH_REQU);
+	if(retVal != READER_OK) return retVal;
+	
+	
+	return READER_OK;
+}
+
+
+READER_Status READER_T1_FORGE_SBlockResynchResponse(READER_T1_ContextHandler *pContext, READER_T1_Block *pBlock){
+	READER_Status retVal;
+	
+	
+	retVal = READER_T1_FORGE_SBlock(pContext, pBlock, READER_T1_STYPE_RESYNCH_RESP);
+	if(retVal != READER_OK) return retVal;
+	
+	
+	return READER_OK;
+}
+
+
+READER_Status READER_T1_FORGE_SBlockIfsRequest(READER_T1_ContextHandler *pContext, READER_T1_Block *pBlock, uint8_t newIfs){
+	READER_Status retVal;
+	
+	
+	retVal = READER_T1_FORGE_SBlock(pContext, pBlock, READER_T1_STYPE_IFS_REQU);
+	if(retVal != READER_OK) return retVal;
+	
+	retVal = READER_T1_SetBlockSPayload(pBlock, newIfs);
+	if(retVal != READER_OK) return retVal;
+	
+	
+	return READER_OK;
+}
+
+
+READER_Status READER_T1_FORGE_SBlockIfsResponse(READER_T1_ContextHandler *pContext, READER_T1_Block *pBlock, uint8_t newIfs){
+	READER_Status retVal;
+	
+	
+	retVal = READER_T1_FORGE_SBlock(pContext, pBlock, READER_T1_STYPE_IFS_RESP);
+	if(retVal != READER_OK) return retVal;
+	
+	retVal = READER_T1_SetBlockSPayload(pBlock, newIfs);
+	if(retVal != READER_OK) return retVal;
+	
+	
+	return READER_OK;
+}
+
+
+READER_Status READER_T1_FORGE_SBlockAbortRequest(READER_T1_ContextHandler *pContext, READER_T1_Block *pBlock){
+	READER_Status retVal;
+	
+	
+	retVal = READER_T1_FORGE_SBlock(pContext, pBlock, READER_T1_STYPE_ABORT_REQU);
+	if(retVal != READER_OK) return retVal;
+	
+	
+	return READER_OK;
+}
+
+
+READER_Status READER_T1_FORGE_SBlockAbortResponse(READER_T1_ContextHandler *pContext, READER_T1_Block *pBlock){
+	READER_Status retVal;
+	
+	
+	retVal = READER_T1_FORGE_SBlock(pContext, pBlock, READER_T1_STYPE_ABORT_RESP);
+	if(retVal != READER_OK) return retVal;
+	
+	
+	return READER_OK;
+}
+
+
+READER_Status READER_T1_FORGE_SBlockWtxRequest(READER_T1_ContextHandler *pContext, READER_T1_Block *pBlock, uint8_t wtMultiplier){
+	READER_Status retVal;
+	
+	
+	retVal = READER_T1_FORGE_SBlock(pContext, pBlock, READER_T1_STYPE_WTX_REQU);
+	if(retVal != READER_OK) return retVal;
+	
+	retVal = READER_T1_SetBlockSPayload(pBlock, wtMultiplier);
+	if(retVal != READER_OK) return retVal;
+	
+	
+	return READER_OK;
+}
+
+
+READER_Status READER_T1_FORGE_SBlockWtxResponse(READER_T1_ContextHandler *pContext, READER_T1_Block *pBlock, uint8_t wtMultiplier){
+	READER_Status retVal;
+	
+	
+	retVal = READER_T1_FORGE_SBlock(pContext, pBlock, READER_T1_STYPE_WTX_RESP);
+	if(retVal != READER_OK) return retVal;
+	
+	retVal = READER_T1_SetBlockSPayload(pBlock, wtMultiplier);
+	if(retVal != READER_OK) return retVal;
+	
 	
 	return READER_OK;
 }

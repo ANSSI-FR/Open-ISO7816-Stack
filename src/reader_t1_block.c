@@ -626,7 +626,7 @@ READER_Status READER_T1_ForgeBlock(READER_T1_Block *pBlock, READER_T1_Redundancy
  * \param *pTickStart est un pointeur sur un uint32_t. Il permet  la fonction de retourner la date (en milisecondes) du début de l'envoi du dernier caractère du Block. (leading edge du dernier caractère du block, voir ISO7816-3 section 11.4.3).
  * \return La fonction retourne un code d'erreur de type READER_Status. READER_Ok indique le bon déroulement.
  */
-READER_Status READER_T1_SendBlock(READER_T1_Block *pBlock, uint32_t currentCWT, uint32_t extraStartDelay, uint32_t *pTickstart){
+READER_Status READER_T1_SendBlock(READER_T1_Block *pBlock, uint32_t currentCWT, uint32_t extraStartDelay, uint32_t *pTickstart, READER_HAL_CommSettings *pSettings){
 	READER_Status retVal;
 	uint8_t *blockFrame;
 	uint32_t blockFrameSize;
@@ -644,7 +644,7 @@ READER_Status READER_T1_SendBlock(READER_T1_Block *pBlock, uint32_t currentCWT, 
 	}
 	
 	/* On envoie toutes les donnees brutes. Le temps maximal dont ont dispose pour envoyer un caractere est currentCWT ... */
-	retVal = READER_HAL_SendCharFrameTickstart(blockFrame, blockFrameSize, currentCWT, &tickstart);
+	retVal = READER_HAL_SendCharFrameTickstart(pSettings, READER_HAL_PROTOCOL_T1, blockFrame, blockFrameSize, currentCWT, &tickstart);
 	if(retVal != READER_OK) return retVal;
 	
 	*pTickstart = tickstart;
@@ -661,7 +661,7 @@ READER_Status READER_T1_SendBlock(READER_T1_Block *pBlock, uint32_t currentCWT, 
  * \param *pBlock Pointeur sur une structure de type READER_T1_Block. Le contenu du Block reçu sera placé à l'intérieur.
  * \param timeout Il s'agit de la valeur du timeout pour chaque caractère en milisecondes.
  */
-READER_Status READER_T1_RcvBlock(READER_T1_Block *pBlock, READER_T1_RedundancyType rType, uint32_t currentCWT, uint32_t extraTimeout, uint32_t *pTickstart){
+READER_Status READER_T1_RcvBlock(READER_T1_Block *pBlock, READER_T1_RedundancyType rType, uint32_t currentCWT, uint32_t extraTimeout, uint32_t *pTickstart, READER_HAL_CommSettings *pSettings){
 	READER_Status retVal;
 	uint8_t buffPrologue[READER_T1_BLOCK_PROLOGUE_SIZE];
 	uint8_t buff[READER_T1_BLOCK_MAX_DATA_SIZE + 2];  /* MAXDATA + MAX CRC */
@@ -679,7 +679,7 @@ READER_Status READER_T1_RcvBlock(READER_T1_Block *pBlock, READER_T1_RedundancyTy
 	/* En l'occurence on ajoute le WT du Block au WT du premier caractere                       */
 	/* Il s'agit du premier caractere du Prologue                                               */
 	/* Le extraTimeout est calcule a plus haut niveau ...                                       */
-	retVal = READER_HAL_RcvCharFrameCount(buffPrologue, 1, &count, currentCWT + extraTimeout);
+	retVal = READER_HAL_RcvCharFrameCount(pSettings, READER_HAL_PROTOCOL_T1, buffPrologue, 1, &count, currentCWT + extraTimeout);
 	if(retVal != READER_OK) return retVal;
 	
 	if(count != 1){
@@ -688,7 +688,7 @@ READER_Status READER_T1_RcvBlock(READER_T1_Block *pBlock, READER_T1_RedundancyTy
 	
 	/* Ensuite on recupere les deux suivants du prologue ...                                    */
 
-	retVal = READER_HAL_RcvCharFrameCount(buffPrologue +1, READER_T1_BLOCK_PROLOGUE_SIZE-1, &count, currentCWT);
+	retVal = READER_HAL_RcvCharFrameCount(pSettings, READER_HAL_PROTOCOL_T1, buffPrologue +1, READER_T1_BLOCK_PROLOGUE_SIZE-1, &count, currentCWT);
 	if(retVal != READER_OK) return retVal;
 	
 	if(count != READER_T1_BLOCK_PROLOGUE_SIZE -1){
@@ -714,7 +714,7 @@ READER_Status READER_T1_RcvBlock(READER_T1_Block *pBlock, READER_T1_RedundancyTy
 	}
 	
 	/* On recoit les data et CRC/LRC d'un seul coups */
-	retVal = READER_HAL_RcvCharFrameCountTickstart(buff, buffSize, &count, currentCWT, &tickstart);
+	retVal = READER_HAL_RcvCharFrameCountTickstart(pSettings, READER_HAL_PROTOCOL_T1, buff, buffSize, &count, currentCWT, &tickstart);
 	//if(count == 6){
 	//	READER_PERIPH_ErrHandler();
 	//}
@@ -771,20 +771,11 @@ READER_Status READER_T1_RcvBlock(READER_T1_Block *pBlock, READER_T1_RedundancyTy
 	return READER_OK;
 }
 
-/**
- * \fn READER_Status READER_T1_CheckBlockIntegrity(READER_T1_Block *pBlock)
- * \brief Cette fonction permet de vérifier qu'un Block est intègre (ie : son checksum est correct). La fonction récupère le type de checksum du Block (LRC ou CRC), calcule le checksum du Prologue field et du Data field, puis le compare au Epilogue field transporté par le Block.
- * \return La fonction retourne un code de type READER_Status. La valeur est READER_OK si la cérification donne un résultat correct. Tout autre valeur indique une erreur.
- * \param *pBlock est un pointeur sur une structure de type READER_T1_Block. Il pointe sur le Block à vérifier.
- */
-READER_Status READER_T1_CheckBlockIntegrity(READER_T1_Block *pBlock){
-	READER_T1_RedundancyType rType;
+
+READER_Status READER_T1_CheckBlockIntegrity(READER_T1_Block *pBlock, READER_T1_RedundancyType rType){
 	uint8_t blockLRC, expectedBlockLRC;
 	uint16_t blockCRC, expectedBlockCRC;
 	
-	
-	//rType = READER_T1_GetBlockRedundancyType(pBlock);   /* Ca n'a pas de sens, on ne peut pas recuperer cette information dans le Block (il est potentiellement corrompu). */
-	rType = READER_HAL_GetRedunancyType();
 	
 	if(rType == READER_T1_LRC){
 		expectedBlockLRC = READER_T1_GetBlockLRC(pBlock);

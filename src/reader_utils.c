@@ -1,6 +1,7 @@
 #include "reader.h"
 #include "reader_utils.h"
 #include "stm32f4xx_hal.h"
+#include "reader_hal_comm_settings.h"
 
 
 uint32_t READER_UTILS_ComputeBaudRate(uint32_t freq, uint32_t Fi, uint32_t Di){
@@ -93,7 +94,7 @@ uint32_t READER_UTILS_ComputeWT2(uint32_t baudRate, uint32_t Di, uint32_t WI){
 uint32_t READER_UTILS_ComputeBWTEtu(uint32_t BWI, uint32_t f){
 	/* Voir ISO7816-3 section 11.4.3 */
 	uint32_t i;
-	uint32_t Fd = READER_DEFAULT_FI;
+	uint32_t Fd = READER_HAL_DEFAULT_FI;
 	float power = 1;
 	
 	for(i=0; i<BWI; i++){
@@ -120,4 +121,15 @@ float READER_UTILS_ComputeEtuMiliFloat(uint32_t F, uint32_t D, uint32_t f){
 uint32_t READER_UTILS_ComputeEtuMili(uint32_t F, uint32_t D, uint32_t f){
 	/* Voir ISO7816-3 section 7.1 */
 	return (uint32_t)(   (  F / (float)(D)  ) *   (   1 / (float)(f)   )    ) * 1000;
+}
+
+
+/* On calcule a puissance b ...  */
+uint32_t READER_UTILS_Pow(uint32_t a, uint32_t b){
+	if(b != 0){
+		return a * READER_UTILS_Pow(a, b-1);
+	}
+	else{
+		return 1;
+	}
 }

@@ -13,7 +13,7 @@
 #define SMARTCARD_TX_FROM_SCRATCH
 #define SMARTCARD_RX_FROM_SCRATCH
 
-//SMARTCARD_HandleTypeDef smartcardHandleStruct;
+SMARTCARD_HandleTypeDef smartcardHandleStruct;
 //extern UART_HandleTypeDef uartHandleStruct;   // juste pour debug
 
 //uint32_t globalWaitTimeMili;
@@ -21,12 +21,7 @@
 
 
 
-/**
- * \fn READER_Status READER_HAL_Init(void)
- * \brief Fonction pour initialiser la couche d'abstraction.
- * \return Valeur de type READER_Status. READER_OK si l'exécution s'est correctement déroulée. Toute autre valeur suggère une erreur.
- */ 
-READER_Status READER_HAL_Init(READER_HAL_CommSettings *pSettings){
+READER_Status READER_HAL_InitHardware(void){
 	READER_Status retVal;
 	
 	RCC_ClkInitTypeDef RCC_ClkInitStruct;
@@ -70,22 +65,42 @@ READER_Status READER_HAL_Init(READER_HAL_CommSettings *pSettings){
 	if(READER_HAL_SetRstLine(READER_HAL_STATE_OFF) != READER_OK)      return READER_ERR;
 	if(READER_HAL_SetClkLine(READER_HAL_STATE_OFF) != READER_OK)      return READER_ERR;
 	
+	
+	return READER_OK;
+}
+
+
+
+
+/**
+ * \fn READER_Status READER_HAL_Init(void)
+ * \brief Fonction pour initialiser la couche d'abstraction.
+ * \return Valeur de type READER_Status. READER_OK si l'exécution s'est correctement déroulée. Toute autre valeur indique une erreur.
+ */ 
+READER_Status READER_HAL_InitWithDefaults(READER_HAL_CommSettings *pSettings){
+	READER_Status retVal;
+	
+	
+	retVal = READER_HAL_InitHardware();
+	if(retVal != READER_OK) return retVal;
+	
+	
 	/* Initialisation du WT, du GT, du Etu (Fi, Di) et de f                                    */
 	/* Attention, important que pour la toute premiere init, F et D soint init en premier      */
 	//retVal = READER_HAL_SetWT(READER_DEFAULT_WT_MILI);                if(retVal != READER_OK) return retVal;
 	/* Attention l'ordre peut etre important, certaines valeurs dependant des autres           */
-	retVal = READER_HAL_SetGT(pSettings, READER_DEFAULT_GT);                     if(retVal != READER_OK) return retVal;
-	retVal = READER_HAL_SetFi(pSettings, READER_DEFAULT_FI);                     if(retVal != READER_OK) return retVal;
-	retVal = READER_HAL_SetDi(pSettings, READER_DEFAULT_DI);                     if(retVal != READER_OK) return retVal;
-	retVal = READER_HAL_SetEtu(pSettings, READER_DEFAULT_FI, READER_DEFAULT_DI); if(retVal != READER_OK) return retVal;
-	retVal = READER_HAL_SetFreq(pSettings, READER_DEFAULT_FREQ);                 if(retVal != READER_OK) return retVal;
-	retVal = READER_HAL_SetWI(pSettings, READER_DEFAULT_WI);                     if(retVal != READER_OK) return retVal;
+	retVal = READER_HAL_SetGT(pSettings, READER_HAL_DEFAULT_GT);                     if(retVal != READER_OK) return retVal;
+	retVal = READER_HAL_SetFi(pSettings, READER_HAL_DEFAULT_FI);                     if(retVal != READER_OK) return retVal;
+	retVal = READER_HAL_SetDi(pSettings, READER_HAL_DEFAULT_DI);                     if(retVal != READER_OK) return retVal;
+	retVal = READER_HAL_SetEtu(pSettings, READER_HAL_DEFAULT_FI, READER_HAL_DEFAULT_DI); if(retVal != READER_OK) return retVal;
+	retVal = READER_HAL_SetFreq(pSettings, READER_HAL_DEFAULT_FREQ);                 if(retVal != READER_OK) return retVal;
+	//retVal = READER_HAL_SetWI(pSettings, READER_DEFAULT_WI);                     if(retVal != READER_OK) return retVal;
 	//retVal = READER_HAL_SetBWI(READER_DEFAULT_BWI);                   if(retVal != READER_OK) return retVal;
 	//retVal = READER_HAL_SetBWT(READER_DEFAULT_BWT);                   if(retVal != READER_OK) return retVal;
 	//retVal = READER_HAL_SetBGT(READER_DEFAULT_BGT);                   if(retVal != READER_OK) return retVal;
 	//retVal = READER_HAL_SetIFSC(READER_DEFAULT_IFSC);                 if(retVal != READER_OK) return retVal;
 	//retVal = READER_HAL_SetIFSD(READER_DEFAULT_IFSD);                 if(retVal != READER_OK) return retVal;
-	retVal = READER_HAL_SetRedundancyType(pSettings, READER_DEFAULT_REDUNDANCY_TYPE); if(retVal != READER_OK) return retVal;
+	//retVal = READER_HAL_SetRedundancyType(pSettings, READER_DEFAULT_REDUNDANCY_TYPE); if(retVal != READER_OK) return retVal;
 	
 	
 	return READER_OK;
@@ -94,21 +109,24 @@ READER_Status READER_HAL_Init(READER_HAL_CommSettings *pSettings){
 
 
 
-READER_Status READER_HAL_SendCharFrameTickstart(READER_HAL_CommSettings *pSettings, uint8_t *frame, uint32_t frameSize, uint32_t timeout, uint32_t *pTickstart){
+READER_Status READER_HAL_SendCharFrameTickstart(READER_HAL_CommSettings *pSettings, READER_HAL_Protocol protocol, uint8_t *frame, uint32_t frameSize, uint32_t timeout, uint32_t *pTickstart){
 	READER_Status retVal;
-	//uint32_t tickstart;
+	uint32_t characterDelay;
 	uint32_t i;
 	
 	
 	for(i=0; i<frameSize; i++){
 		//tickstart = READER_HAL_GetTick();
 		
-		retVal = READER_HAL_SendChar(pSettings, frame[i], timeout);
+		retVal = READER_HAL_SendChar(pSettings, protocol, frame[i], timeout);
 		if(retVal != READER_OK) return retVal;
 		
 		/* On mets a jour la date du debut de l'envoi du dernier caractere de la frame. (On soustrait le temps en milisec qu'il faut pour envoyer un carac) */
 		if(i == (frameSize-1)){
-			*pTickstart = READER_HAL_GetTick() - (uint32_t)(READER_UTILS_ComputeEtuMiliFloat(READER_HAL_GetFi(pSettings), READER_HAL_GetDi(pSettings), READER_HAL_GetFreq(pSettings)) *10 +1);
+			characterDelay = (uint32_t)(READER_UTILS_ComputeEtuMiliFloat(READER_HAL_GetFi(pSettings), READER_HAL_GetDi(pSettings), READER_HAL_GetFreq(pSettings)) *10);
+			characterDelay = MAX(1, characterDelay);
+			
+			pTickstart = READER_HAL_GetTick() - characterDelay;  /*  10 etu dans un caractere (10 moments) */
 		}
 		
 		/* On fait attention a respecter le Guard Time (GT) entre les caracteres */
@@ -140,12 +158,12 @@ READER_Status READER_HAL_SendCharFrameTickstart(READER_HAL_CommSettings *pSettin
  * \param frameSize Taille de la chaine d'octets à envoyer.
  * \param timeout Valeur du timeout en milisecondes à utiliser. Si cette valeur est READER_HAL_USE_ISO_WT alors le timeout utilisé sera celui spécifié dans la norme ISO.
  */
-READER_Status READER_HAL_SendCharFrame(READER_HAL_CommSettings *pSettings, uint8_t *frame, uint32_t frameSize, uint32_t timeout){
+READER_Status READER_HAL_SendCharFrame(READER_HAL_CommSettings *pSettings, READER_HAL_Protocol protocol, uint8_t *frame, uint32_t frameSize, uint32_t timeout){
 	READER_Status retVal;
 	uint32_t tickstart;
 	
 	
-	retVal = READER_HAL_SendCharFrameTickstart(pSettings, frame, frameSize, timeout, &tickstart);
+	retVal = READER_HAL_SendCharFrameTickstart(pSettings, protocol, frame, frameSize, timeout, &tickstart);
 	if(retVal != READER_OK) return retVal;
 	
 	return READER_OK;
@@ -153,11 +171,11 @@ READER_Status READER_HAL_SendCharFrame(READER_HAL_CommSettings *pSettings, uint8
 
 
 /* Retourne le timestamp du leading edge de la frame (Tickstart) ...  */
-READER_Status READER_HAL_RcvCharFrameCountTickstart(READER_HAL_CommSettings *pSettings, uint8_t *frame, uint32_t frameSize, uint32_t *rcvCount, uint32_t timeout, uint32_t *tickstart){
+READER_Status READER_HAL_RcvCharFrameCountTickstart(READER_HAL_CommSettings *pSettings, READER_HAL_Protocol protocol, uint8_t *frame, uint32_t frameSize, uint32_t *rcvCount, uint32_t timeout, uint32_t *pTickstart){
 	READER_Status retVal;
 	uint32_t i = 0;
 	uint8_t rcvByte;
-	//uint32_t timeoutMili;
+	uint32_t characterDelay;
 	uint32_t rcvCounter = 0;
 	uint32_t dummy;
 	
@@ -167,47 +185,25 @@ READER_Status READER_HAL_RcvCharFrameCountTickstart(READER_HAL_CommSettings *pSe
 		rcvCount = &dummy;
 	}
 	
-	
 	/* Le nombre de caracteres recus est de 0 pour l'instant */
 	*rcvCount = 0;
 	
-	/* Finalement, on considere que le GT ne concerne que l'envoi. Ici, on suppose que le WT a ete calcule intelligemment de sorte a prendre en compte l'enventuel GT ...  */
-	///* Prise en compte du Guard Time (GT). On ajoute simplement le delai de GT au timeout. */
-	//if(timeout == READER_HAL_USE_ISO_WT){
-	//	timeoutMili = READER_HAL_GetWT() + READER_HAL_GetGTMili();
-	//}
-	//else{
-	//	timeoutMili = timeout + READER_HAL_GetGTMili();
-	//}
-	
-	
 	while(i<frameSize){
-		//tickstart = READER_HAL_GetTick();
-		
-		retVal = READER_HAL_RcvChar(pSettings, &rcvByte, timeout);
+		retVal = READER_HAL_RcvChar(pSettings, protocol, &rcvByte, timeout);
 		if(retVal != READER_OK) return retVal;
 		
-		/* Si on vient de recevoir le premier caractere, alors on mets a jour le tickstart du leading edge de la frame ...  */
+		/* Si on vient de recevoir le dernier caractere, alors on mets a jour le tickstart du leading edge de la frame ...  */
 		if(i == (frameSize-1)){
+			characterDelay = (uint32_t)(READER_UTILS_ComputeEtuMiliFloat(READER_HAL_GetFi(pSettings), READER_HAL_GetDi(pSettings), READER_HAL_GetFreq(pSettings)) *10);   /*  10 etu dans un caractere (10 moments) */
+			characterDelay = MAX(1, characterDelay);
 			/* On veut la date du debut de la reception de la frame, donc on retire le temps en milisecondes que dure un caractere ...  */
-			*tickstart = READER_HAL_GetTick() - (uint32_t)(READER_UTILS_ComputeEtuMili(READER_HAL_GetFi(pSettings), READER_HAL_GetDi(pSettings), READER_HAL_GetFreq(pSettings)) *10);
+			*pTickstart = READER_HAL_GetTick() - characterDelay; 
 		}
 		
 		rcvCounter++;
 		*rcvCount = rcvCounter;
 		
-		frame[i] = rcvByte;
-		
-		///* On prend en compte le Guard Time (GT). On attend l'ecoulement du GT avant de commencer une nouvelle reception de caractere. */
-		//while((READER_HAL_GetTick()-tickstart) < READER_HAL_GetGTMili()-1   ){   /* La definition de la fonction READER_HAL_GetGTMili() garantit que la valeur >= 1 */
-		//	/* On s'efforce de respecter le GT mais c'est peu evident a cause du manque de precision des delais (granularite de 1ms) */
-		//	/* La fonction READER_HAL_GetGTMili() renvoie la valeur arrondie a l'entier superieur */
-		//	/* Ici on ne peut pas se le permettre car si on attend 1ms trop longtemps il se peut que l'on rate la reception du caratere suivant. */
-		//	/* Donc on retranche 1 & la valeur de retour de READER_HAL_GetGTMili() */
-		//}
-		
-		/* Ou sinon on pourrait ajouter le GT au timeout ? */
-		
+		frame[i] = rcvByte;	
 		i++;
 	}
 	
@@ -225,12 +221,12 @@ READER_Status READER_HAL_RcvCharFrameCountTickstart(READER_HAL_CommSettings *pSe
  * \param timeout Valeur du timeout en milisecondes à utiliser. Si cette valeur est READER_HAL_USE_ISO_WT alors le timeout utilisé sera celui spécifié dans la norme ISO.
  * \param *rcvCount Pointeur sur une variable de type unit32_t. Elle sera remplie avec le nombre de caractères qui ont pu être lus. Si pas de necessite de recuperer cette valeur alors il est possible d'indoquer NULL.
  */
-READER_Status READER_HAL_RcvCharFrameCount(READER_HAL_CommSettings *pSettings, uint8_t *frame, uint32_t frameSize, uint32_t *rcvCount, uint32_t timeout){
+READER_Status READER_HAL_RcvCharFrameCount(READER_HAL_CommSettings *pSettings, READER_HAL_Protocol protocol, uint8_t *frame, uint32_t frameSize, uint32_t *rcvCount, uint32_t timeout){
 	READER_Status retVal;
 	uint32_t tickstart;
 	
 	
-	retVal = READER_HAL_RcvCharFrameCountTickstart(pSettings, frame, frameSize, rcvCount, timeout, &tickstart);
+	retVal = READER_HAL_RcvCharFrameCountTickstart(pSettings, protocol, frame, frameSize, rcvCount, timeout, &tickstart);
 	if(retVal != READER_OK) return retVal;
 	
 	return READER_OK;
@@ -255,11 +251,11 @@ READER_Status READER_HAL_RcvCharFrameCount(READER_HAL_CommSettings *pSettings, u
   * Cette fonction est conservee pour des resos de compatibilite avec du code plus ancien.
   * Elle peret egalement de ne pas s'embeter avec des parametres supplementaires lorsque il n'y a pas besoin de compter le nombre de caracteres recus.
   */
-READER_Status READER_HAL_RcvCharFrame(READER_HAL_CommSettings *pSettings, uint8_t *frame, uint32_t frameSize, uint32_t timeout){
+READER_Status READER_HAL_RcvCharFrame(READER_HAL_CommSettings *pSettings, READER_HAL_Protocol protocol, uint8_t *frame, uint32_t frameSize, uint32_t timeout){
 	READER_Status retVal;
 	uint32_t rcvCount;
 	
-	retVal = READER_HAL_RcvCharFrameCount(pSetting, frame, frameSize, &rcvCount, timeout);
+	retVal = READER_HAL_RcvCharFrameCount(pSettings, protocol, frame, frameSize, &rcvCount, timeout);
 	if(retVal != READER_OK) return retVal;
 	
 	return READER_OK;
@@ -276,18 +272,15 @@ READER_Status READER_HAL_RcvCharFrame(READER_HAL_CommSettings *pSettings, uint8_
  * \param timeout Valeur du timeout en milisecondes à utiliser. Si cette valeur est READER_HAL_USE_ISO_WT alors le timeout utilisé sera celui spécifié dans la norme ISO.
  */
 READER_Status READER_HAL_RcvChar(uint8_t *character, uint32_t timeout){
-	uint32_t timeoutMili;
 	HAL_StatusTypeDef retVal;
 	
-	if(timeout == READER_HAL_USE_ISO_WT){
-		timeoutMili = READER_HAL_GetWT(pSettings);
-	}
-	else{
-		timeoutMili = timeout;
+	
+	if(timeout==0){
+		return READER_BAD_ARG;
 	}
 	
 	
-	retVal = HAL_SMARTCARD_Receive(&smartcardHandleStruct, character, 1, timeoutMili);
+	retVal = HAL_SMARTCARD_Receive(&smartcardHandleStruct, character, 1, timeout);
 	
 	switch(retVal){
 		case HAL_TIMEOUT:
@@ -306,18 +299,20 @@ READER_Status READER_HAL_RcvChar(uint8_t *character, uint32_t timeout){
 
 
 /* Fonction "from scratch" pour recevoir un caractere */
-READER_Status READER_HAL_RcvChar(READER_HAL_CommSettings *pSettings, uint8_t *character, uint32_t timeout){
-	uint32_t timeoutMili, tickstart;
+READER_Status READER_HAL_RcvChar(READER_HAL_CommSettings *pSettings, READER_HAL_Protocol protocol, uint8_t *character, uint32_t timeout){
+	uint32_t tickstart;
+	uint8_t dummy;
 	
 	
-	/* Calcul du timeout effectif en milisecondes */
-	if(timeout == READER_HAL_USE_ISO_WT){
-		timeoutMili = READER_HAL_GetWT(pSettings);
-	}
-	else{
-		timeoutMili = timeout;
+	/* Verification elementaire des parametres ...  */
+	if(timeout==0){
+		return READER_BAD_ARG;
 	}
 	
+	/* Si on a un overrun ici, c'est que des carateres parasites sont arrives avant que l'on commence a recevoir. On les elimine ...  */
+	if(USART2->SR & USART_SR_ORE){
+		dummy = USART2->DR;
+	}
 	
 	/* Reception d'un caractere */
 	/* On suppose ici que le bloc USART2 a deja ete configure en mode smartcard et qu'il est active et correctement initailise avec les bon parametres de communication */
@@ -333,13 +328,12 @@ READER_Status READER_HAL_RcvChar(READER_HAL_CommSettings *pSettings, uint8_t *ch
 	USART2->CR1 |= USART_CR1_RE;
 	//USART2->SR &= ~USART_SR_RXNE;
 	
-	while(!(USART2->SR & USART_SR_RXNE) && !(READER_HAL_GetTick()-tickstart >= timeoutMili)){
+	while(!(USART2->SR & USART_SR_RXNE) && !(READER_HAL_GetTick()-tickstart >= timeout)){
 			
 	}
 	
-	
 	/* Quand on sort de la boucle d'attente, on verifie si on est sorti a cause d'un timeout */
-	if(READER_HAL_GetTick()-tickstart >= timeoutMili){
+	if(READER_HAL_GetTick()-tickstart >= timeout){
 		USART2->CR1 &= ~USART_CR1_RE;
 		return READER_TIMEOUT;
 	}
@@ -377,18 +371,15 @@ READER_Status READER_HAL_RcvChar(READER_HAL_CommSettings *pSettings, uint8_t *ch
  * \param timeout Valeur du timeout en milisecondes à utiliser. Si cette valeur est READER_HAL_USE_ISO_WT alors le timeout utilisé sera celui spécifié dans la norme ISO.
  */
 READER_Status READER_HAL_SendChar(uint8_t character, uint32_t timeout){
-	uint32_t timeoutMili;
 	HAL_StatusTypeDef retVal;
 	
-	if(timeout == READER_HAL_USE_ISO_WT){
-		timeoutMili = READER_HAL_GetWT(pSettings);
-	}
-	else{
-		timeoutMili = timeout;
+	
+	if(timeout==0){
+		return READER_BAD_ARG;
 	}
 	
 	
-	retVal = HAL_SMARTCARD_Transmit(&smartcardHandleStruct, &character, 1, timeoutMili);
+	retVal = HAL_SMARTCARD_Transmit(&smartcardHandleStruct, &character, 1, timeout);
 	
 	switch(retVal){
 		case HAL_TIMEOUT:
@@ -404,20 +395,14 @@ READER_Status READER_HAL_SendChar(uint8_t character, uint32_t timeout){
 
 #else
 
-READER_Status READER_HAL_SendChar(READER_HAL_CommSettings *pSettings, uint8_t character, uint32_t timeout){
-	uint32_t timeoutMili;
+READER_Status READER_HAL_SendChar(READER_HAL_CommSettings *pSettings, READER_HAL_Protocol protocol, uint8_t character, uint32_t timeout){
 	uint32_t tickstart;
 	uint32_t guardTime;
 	
 	
-	/* On calcule le timeout effectif (Celui fourni en parametre ou celui defini dans la norme ISO) */
-	if(timeout == READER_HAL_USE_ISO_WT){
-		timeoutMili = READER_HAL_GetWT(pSettings);
+	if(timeout==0){
+		return READER_BAD_ARG;
 	}
-	else{
-		timeoutMili = timeout;
-	}
-	
 	
 	/* On active le bloc USART */
 	USART2->CR1 |= USART_CR1_UE;
@@ -432,12 +417,12 @@ READER_Status READER_HAL_SendChar(READER_HAL_CommSettings *pSettings, uint8_t ch
 	/* Dans la norme ISO il s'agit du nombre d'etu entre les starts bits de deux caracteres consecutifs                                                              */
 	/* Dans le STM32 il s'agit du delai (en nombre d'etu) a ajouter apres le stop bit du premier caractere avant d'envoyer le start bit du second                    */
 	guardTime = READER_HAL_GetGT(pSettings);
-	MODIFY_REG(USART2->GTPR, USART_GTPR_GT, ((guardTime-READER_DEFAULT_GT)<<8U));
+	MODIFY_REG(USART2->GTPR, USART_GTPR_GT, ((guardTime-READER_HAL_DEFAULT_GT)<<8U));
 	
 	tickstart = READER_HAL_GetTick();
 	
 	/* On attend que le buffer d'envoi soit empty. On verifie aussi qu'on depasse pas timeout. */
-	while(!(USART2->SR & USART_SR_TXE) && ((READER_HAL_GetTick()-tickstart < timeoutMili))){
+	while(!(USART2->SR & USART_SR_TXE) && ((READER_HAL_GetTick()-tickstart < timeout))){
 		
 	}
 	
@@ -448,7 +433,7 @@ READER_Status READER_HAL_SendChar(READER_HAL_CommSettings *pSettings, uint8_t ch
 		
 	}
 	
-	if((READER_HAL_GetTick()-tickstart) >= timeoutMili){
+	if((READER_HAL_GetTick()-tickstart) >= timeout){
 		return READER_TIMEOUT;
 	}
 	
@@ -466,113 +451,6 @@ READER_Status READER_HAL_SendChar(READER_HAL_CommSettings *pSettings, uint8_t ch
 #endif
 
 
-/**
- * \fn READER_Status READER_HAL_SetFreq(uint32_t newFreq)
- * \brief Cette fonction permet de changer la fréquence de l'horloge fournie à la carte à puce. Attention cette fonction dépend de la variable globale : globalCurrentSettings. Cette variable est locale au fichier "reader_hal.c". Cette structure contient en permanance les parametres de communication utilisés.
- * \return Valeur de type READER_Status. READER_OK si l'exécution s'est correctement déroulée. Toute autre valeur suggère une erreur.
- * \param newFreq uint32_t indiquant la nouvelle fréquence à adopter (en Hz). Attention, selon l'implémentation matérielle toutes les fréquences ne sont pas permises. Pour plus d'informations sur les fréquences supportées voir l'implémentation de la fonction READER_UTILS_ComputePrescFromFreq() dans le fichier "reader_utils.h". Attention l'implémentation de cette fonction varie selon la cible matérielle.
- */
-READER_Status READER_HAL_SetFreq(READER_HAL_CommSettings *pSettings, uint32_t newFreq){
-	READER_Status retVal;
-	uint32_t oldFreq, oldBaudRate;
-	uint32_t newBaudRate;
-	uint32_t newWaitTime;
-	uint32_t newBlockWaitTimeEtu, newBlockWaitTimeMili;
-	uint32_t BWI, WI;
-	
-	/* On recupere la frequence et la baudrate actuel. Peut aussi etre recupere a partir des infos de *currentSettings */
-	oldFreq = READER_UTILS_GetCardFreq(168000000, 1, 4, smartcardHandleStruct.Init.Prescaler);
-	oldBaudRate = smartcardHandleStruct.Init.BaudRate;
-	newBaudRate = READER_UTILS_ComputeNewBaudRate(oldBaudRate, oldFreq, newFreq);
-	
-	/* On applique les changements au bloc materiel USART */
-	smartcardHandleStruct.Init.BaudRate = newBaudRate;
-	smartcardHandleStruct.Init.Prescaler = READER_UTILS_ComputePrescFromFreq(newFreq);
-	
-	if(HAL_SMARTCARD_Init(&smartcardHandleStruct) != HAL_OK) return READER_ERR;
-	
-	/* On modifie en consequence la valeur du Wait Time (WT) (car WT est dependant de f) */
-	WI = READER_HAL_GetWI(pSettings);
-	newWaitTime = READER_UTILS_ComputeWT1(newFreq, READER_HAL_GetFi(pSettings), WI);
-	retVal = READER_HAL_SetWT(pSettings, newWaitTime); 
-	if(retVal != READER_OK) return retVal;
-	
-	/* On modifie en consequence la valeur du BWT Voir ISO7816-3 section 11.4.3 */
-	//BWI = READER_HAL_GetBWI();
-	//newBlockWaitTimeEtu = READER_UTILS_ComputeBWTEtu(BWI, newFreq);
-	//newBlockWaitTimeMili = READER_UTILS_ComputeBWTMili(newBlockWaitTimeEtu, READER_HAL_GetFi(), READER_HAL_GetDi(), newFreq);
-	//READER_HAL_SetBWT(newBlockWaitTimeMili);
-	
-	/* Mise a jour des informations dans la structure qui contient les parametres de communication */
-	pSettings->f = newFreq;
-	
-	return READER_OK;
-}
-
-
-/**
- * \fn READER_Status READER_HAL_SetEtu(uint32_t Fi, uint32_t Di)
- * \brief Cette fonction permet de configurer la valeur du "Elementary Time Unit" (ETU) utilisé dans les communications sur la ligne IO. Attention cette fonction dépend de la variable globale : globalCurrentSettings. Cette variable est locale au fichier "reader_hal.c". Cette structure contient en permanance les parametres de communication utilisés.
- * \return Valeur de type READER_Status. READER_OK si l'exécution s'est correctement déroulée. Toute autre valeur suggère une erreur.
- * \param Fi "Clock Rate Conversion Integer"
- * \param Di "Baudrate Adjustement Integer"
- */
-READER_Status READER_HAL_SetEtu(READER_HAL_CommSettings *pSettings, uint32_t Fi, uint32_t Di){
-	READER_Status retVal;
-	uint32_t freq, newBaudRate;
-	uint32_t newWT;
-	uint32_t WI;
-	
-	/* On recupere les parametres de communication actuels. On aurait aussi pu le faire a partir de la structure globalCurrentSettings */
-	freq = READER_UTILS_GetCardFreq(168000000, 1, 4, smartcardHandleStruct.Init.Prescaler);
-	
-	/* On calcule le nouveau baudrate qui correspond a la nouvelle config (nouveau etu) */
-	//newBaudRate = freq / (Fi / Di);
-	newBaudRate = READER_UTILS_ComputeBaudRate(freq, Fi, Di);
-	
-	/* On applique les changements au bloc materiel USART */
-	smartcardHandleStruct.Init.BaudRate = newBaudRate;
-	if(HAL_SMARTCARD_Init(&smartcardHandleStruct) != HAL_OK) return READER_ERR;
-	
-	/* Le changement de l'etu a pour consequence la modification du Wait Time (WT) */
-	WI = READER_HAL_GetWI(pSettings);
-	newWT = READER_UTILS_ComputeWT1(freq, Fi, WI);
-	retVal = READER_HAL_SetWT(pSettings, newWT);
-	if(retVal != READER_OK) return retVal;	
-	
-	/* On met a jour la structure globalCurrentSettings */
-	pSettings->Fi = Fi;
-	pSettings->Di = Di;
-	
-	return READER_OK;	
-}
-
-
-READER_Status READER_HAL_SetFi(READER_HAL_CommSettings *pSettings, uint32_t Fi){
-	READER_Status retVal;
-	uint32_t Di;
-	
-	Di = READER_HAL_GetDi(pSettings);
-	retVal = READER_HAL_SetEtu(pSettings, Fi, Di);
-	if(retVal != READER_OK) return retVal;
-	
-	pSettings->Fi = Fi;
-	
-	return READER_OK;
-}
-
-READER_Status READER_HAL_SetDi(READER_HAL_CommSettings *pSettings, uint32_t Di){
-	READER_Status retVal;
-	uint32_t Fi;
-	
-	Fi = READER_HAL_GetFi(pSettings);
-	retVal = READER_HAL_SetEtu(pSettings, Fi, Di);
-	if(retVal != READER_OK) return retVal;
-	
-	pSettings->Di = Di;
-	
-	return READER_OK;
-}
 
 
 /**
@@ -680,194 +558,6 @@ READER_Status READER_HAL_SetClkLine(READER_HAL_State state){
 	}
 	
 	return READER_OK;
-}
-
-
-/**
- * \fn READER_Status READER_HAL_SetGT(uint32_t newGT)
- * \brief Cette fonction permet de configurer le "Gard Time" (GT) à utiliser lors des communications sur la ligne IO. Le GT est défini dans la norme ISO7816-3 à la section 7.2. Attention cette fonction dépend de la variable globale : globalCurrentSettings. Cette variable est locale au fichier "reader_hal.c". Cette structure contient en permanance les parametres de communication utilisés.
- * \return Valeur de type READER_Status. READER_OK si l'exécution s'est correctement déroulée. Toute autre valeur suggère une erreur.
- * \param uint32_t newGT uint32_t indiquant la nouvelle valeur de GT qu'il faut désormais utiliser. Cette valeur est un nombre entier d'ETU.
- */
-READER_Status READER_HAL_SetGT(READER_HAL_CommSettings *pSettings, uint32_t newGT){
-	if(newGT < 12) return READER_ERR;
-	
-	smartcardHandleStruct.Init.GuardTime = newGT;
-	
-	if(HAL_SMARTCARD_Init(&smartcardHandleStruct) != HAL_OK) return READER_ERR;
-	
-	pSettings->GT = newGT;
-	
-	return READER_OK;	
-}
-
-/**
- * \fn READER_Status READER_HAL_SetWT(uint32_t newWT)
- * \brief Cette fonction permet de configurer le "Wait Time" (WT) à utiliser lors des communications sur la ligne IO. Le GT est défini dans la norme ISO7816-3 à la section 7.2. Attention cette fonction dépend de la variable globale : globalCurrentSettings. Cette variable est locale au fichier "reader_hal.c". Cette structure contient en permanance les parametres de communication utilisés.
- * \return Valeur de type READER_Status. READER_OK si l'exécution s'est correctement déroulée. Toute autre valeur suggère une erreur.
- * \param uint32_t newGT uint32_t indiquant la nouvelle valeur de WT qu'il faut désormais utiliser. Cette valeur est un nombre entier d'ETU.
- 
- */
-READER_Status READER_HAL_SetWT(READER_HAL_CommSettings *pSettings, uint32_t newWT){
-	//globalWaitTimeMili = newWT;
-	pSettings->WT = newWT;
-	return READER_OK;
-}
-
-READER_Status READER_HAL_SetWI(READER_HAL_CommSettings *pSettings, uint32_t WI){
-	READER_Status retVal;
-	uint32_t WTMili;
-	uint32_t f;
-	uint32_t Fi;
-	
-	pSettings->WI = WI;
-	
-	/* Modification de WT en consequence. Voir ISO7816-3 section 10.2 */
-	f = READER_HAL_GetFreq(pSettings);
-	Fi = READER_HAL_GetFi(pSettings);
-	
-	WTMili = READER_UTILS_ComputeWT1(f, Fi, WI);
-	retVal = READER_HAL_SetWT(pSettings, WTMili);
-	if(retVal != READER_OK) return retVal;
-	
-	
-	return READER_OK;
-}
-
-
-//READER_Status READER_HAL_SetIFSC(uint32_t IFSC){
-//	globalCurrentSettings.IFSC = IFSC;
-//	
-//	return READER_OK;
-//}
-
-
-//READER_Status READER_HAL_SetIFSD(uint32_t IFSD){
-//	globalCurrentSettings.IFSD = IFSD;
-//	
-//	return READER_OK;
-//}
-
-
-//READER_Status READER_HAL_SetBWT(uint32_t BWT){
-//	globalCurrentSettings.BWT = BWT;
-//	
-//	return READER_OK;
-//}
-
-
-//READER_Status READER_HAL_SetBWI(uint32_t BWI){
-//	READER_Status retVal;
-//	uint32_t BWTEtu, BWTMili;
-//	uint32_t currentFreq, currentF, currentD;
-//	
-//	currentFreq = READER_HAL_GetFreq();
-//	currentF = READER_HAL_GetFi();
-//	currentD = READER_HAL_GetDi();
-//	
-//	BWTEtu = READER_UTILS_ComputeBWTEtu(BWI, currentFreq);
-//	BWTMili = READER_UTILS_ComputeBWTMili(BWTEtu, currentF, currentD, currentFreq);
-//	
-//	/* On modifie le BWT en consequence  */
-//	retVal = READER_HAL_SetBWT(BWTMili);
-//	if(retVal != READER_OK) return retVal;
-//	
-//	
-//	globalCurrentSettings.BWI = BWI;
-//	
-//	
-//	return READER_OK;
-//}
-
-
-//READER_Status READER_HAL_SetBGT(uint32_t BGT){
-//	globalCurrentSettings.BGT = BGT;
-//	
-//	return READER_OK;
-//}
-
-
-READER_Status READER_HAL_SetRedundancyType(READER_HAL_CommSettings *pSettings, uint32_t rType){
-	pSettings->redundancyType = rType;
-	
-	return READER_OK;
-}
-
-
-
-
-
-/**
- * \fn uint32_t READER_HAL_GetWT(void)
- * \brief Cette fonction permet d'obtenir le Wait Time (WT) selon les parametres de communication actuels. Attention cette fonction dépend de la variable globale : globalCurrentSettings. Cette variable est locale au fichier "reader_hal.c".
- * \return Retourne la valeur du WT (tel que defini dans la norme ISO) en milisecondes.
- */
-uint32_t READER_HAL_GetWT(READER_HAL_CommSettings *pSettings){
-	pSettings->WT;
-}
-
-
-uint32_t READER_HAL_GetWI(READER_HAL_CommSettings *pSettings){
-	pSettings->WI;
-}
-
-
-//uint32_t READER_HAL_GetBWT(void){
-//	return globalCurrentSettings.BWT;
-//}
-
-//uint32_t READER_HAL_GetBWI(void){
-//	return globalCurrentSettings.BWI;
-//}
-
-//uint32_t READER_HAL_GetBGT(void){
-//	return globalCurrentSettings.BGT;
-//}
-
-
-/**
- * \fn uint32_t READER_HAL_GetGT(void)
- * \brief Cette fonction retourne le Guard Time (GT) actuellement utilisé par toutes les fonctions de la bibliothèque. 
- * \return Guard Time exprimé en nombre d'ETU.
- */
-uint32_t READER_HAL_GetGT(READER_HAL_CommSettings *pSettings){
-	return pSettings->GT;
-}
-
-/**
- * \fn uint32_t READER_HAL_GetGTMili(void)
- * \brief Cette fonction renvoie le Guard Time (GT) utilié actuellment.
- * \return Guard Time exprimé en milisecondes. Attention cette valeur est arrondie à l'entier supérieur. Dans certains cas cela peut être problématique, il faut rester vigilant.
- */
-uint32_t READER_HAL_GetGTMili(READER_HAL_CommSettings *pSettings){
-	float f, Fi, Di, GTEtu;
-	
-	Fi     =  (float)READER_HAL_GetFi(pSettings);
-	Di     =  (float)READER_HAL_GetDi(pSettings);
-	f      =  (float)READER_HAL_GetFreq(pSettings);
-	GTEtu  =  (float)READER_HAL_GetGT(pSettings);
-	
-	/* GT mili = GT * 1etu * 1000                                                          */
-	/* GT mili = GT * ((Fi/Di)  * (1/f)) * 1000                                            */
-	/* On ajoute +1 pour eviter un troncature a 0                                          */
-	/* Attention il y a des endroits dans le code ou on compte sur le fait que RETOUR >= 1 */
-	return (uint32_t)((GTEtu * Fi * 1000) / (f * Di)) + 1;
-}
-
-uint32_t READER_HAL_GetFreq(READER_HAL_CommSettings *pSettings){
-	return pSettings->f;
-}
-
-uint32_t READER_HAL_GetFi(READER_HAL_CommSettings *pSettings){
-	return pSettings->Fi;
-}
-
-uint32_t READER_HAL_GetDi(READER_HAL_CommSettings *pSettings){
-	return pSettings->Di;
-}
-
-uint32_t READER_HAL_GetRedunancyType(READER_HAL_CommSettings *pSettings){
-	return pSettings->redundancyType;
 }
 
 

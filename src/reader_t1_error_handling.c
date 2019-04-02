@@ -1,4 +1,6 @@
 #include "reader_t1_error_handling.h"
+#include "reader_hal.h"
+#include "reader_hal_comm_settings.h"
 
 
 
@@ -160,7 +162,7 @@ READER_Status READER_T1_ERR_PrepareResynchRequ(READER_T1_ContextHandler *pContex
 	if(retVal != READER_OK) return retVal;
 	
 	/* On forge un Block de requette de Resynchro                                           */
-	retVal = READER_T1_ForgeSBlock(&block, READER_T1_STYPE_RESYNCH_REQU);
+	retVal = READER_T1_FORGE_SBlock(pContext, &block, READER_T1_STYPE_RESYNCH_REQU);
 	if(retVal != READER_OK) return retVal;
 	
 	/* On Stack le S-Block ainsi forge dans le Buffer d'envoi                               */
@@ -211,13 +213,19 @@ READER_Status READER_T1_ERR_DoResynch(READER_T1_ContextHandler *pContext){
 
 
 READER_Status READER_T1_ERR_DoReset(READER_T1_ContextHandler *pContext){
+	READER_HAL_CommSettings *pSettings;
 	READER_Status retVal;
 	
 	
-	retVal = READER_T1_CONTEXT_Init(pContext);
+	/* On recupere un pointeur sur les parametes actuels de communication bas niveau ...  */
+	retVal = READER_T1_CONTEXT_GetHalCommSettingsPtr(pContext, &pSettings);
 	if(retVal != READER_OK) return retVal;
 	
-	retVal = READER_HAL_Init();
+	
+	retVal = READER_T1_CONTEXT_Init(pContext, pSettings);
+	if(retVal != READER_OK) return retVal;
+	
+	retVal = READER_HAL_InitWithDefaults(pSettings);
 	if(retVal != READER_OK) return retVal;
 	
 	retVal = READER_HAL_DoColdReset();

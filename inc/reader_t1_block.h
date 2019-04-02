@@ -2,6 +2,8 @@
 #include "reader_hal.h"
 #include "reader_t1.h"
 
+#include "reader_hal_comm_settings.h"
+
 
 
 #ifndef __READER_T1_BLOCK_H__
@@ -10,21 +12,21 @@
 
 
 
-#define READER_T1_BLOCK_MAX_DATA_SIZE     254     /* Attention, doit etre superieur a current IFSC, max=254 (Voir ISO7816-3 section 11.3.2.3), peut etre reduit pour reduire significativement l'emprunte memeoir edu programme.  */
-#define READER_T1_BLOCK_PROLOGUE_SIZE     3
-#define READER_T1_BLOCK_EPILOGUE_MAXSIZE  2
-#define READER_T1_BLOCKFRAME_NAD_POSITION 0       /* Voir ISO7816-3 section 11.3.1   */
-#define READER_T1_BLOCKFRAME_PCB_POSITION 1       /* Voir ISO7816-3 section 11.3.1   */
-#define READER_T1_BLOCKFRAME_LEN_POSITION 2       /* Voir ISO7816-3 section 11.3.1   */
-#define READER_T1_BLOCKFRAME_INF_POSITION 3       /* Voir ISO7816-3 section 11.3.1   */
-#define READER_T1_CRC_POLY                0x91
+#define READER_T1_BLOCK_MAX_DATA_SIZE          (uint32_t)(254)     /* Attention, doit etre superieur a current IFSC, max=254 (Voir ISO7816-3 section 11.3.2.3), peut etre reduit pour reduire significativement l'emprunte memeoir edu programme.  */
+#define READER_T1_BLOCK_PROLOGUE_SIZE          (uint32_t)(3)
+#define READER_T1_BLOCK_EPILOGUE_MAXSIZE       (uint32_t)(2)
+#define READER_T1_BLOCKFRAME_NAD_POSITION      (uint32_t)(0)       /* Voir ISO7816-3 section 11.3.1   */
+#define READER_T1_BLOCKFRAME_PCB_POSITION      (uint32_t)(1)       /* Voir ISO7816-3 section 11.3.1   */
+#define READER_T1_BLOCKFRAME_LEN_POSITION      (uint32_t)(2)       /* Voir ISO7816-3 section 11.3.1   */
+#define READER_T1_BLOCKFRAME_INF_POSITION      (uint32_t)(3)       /* Voir ISO7816-3 section 11.3.1   */
+#define READER_T1_CRC_POLY                     (uint32_t)(0x91)
 
 
 
 typedef enum READER_T1_RedundancyType READER_T1_RedundancyType;
 enum READER_T1_RedundancyType{
 	READER_T1_CRC                      = (uint32_t)(0x00000000),
-	READER_T1_LRC                      = (uint32_t)(0x00000001)      /* Attention READER_DEFAULT_REDUNDANCY_TYPE dans reader.h depend de cette valeur */
+	READER_T1_LRC                      = (uint32_t)(0x00000001)      
 };
 
 
@@ -92,11 +94,11 @@ uint32_t READER_T1_GetBlockSizeWithoutCheck(READER_T1_Block *pBlock);
 uint8_t* READER_T1_GetBlockFrame(READER_T1_Block *pBlock);
 //uint32_t READER_T1_GetBlockMBit(READER_T1_Block *pBlock);
 
-READER_Status READER_T1_CheckBlockIntegrity(READER_T1_Block *pBlock);
+READER_Status READER_T1_CheckBlockIntegrity(READER_T1_Block *pBlock, READER_T1_RedundancyType rType);
 
 READER_Status READER_T1_ForgeBlock(READER_T1_Block *pBlock, READER_T1_RedundancyType rType);
-READER_Status READER_T1_SendBlock(READER_T1_Block *pBlock, uint32_t currentCWT, uint32_t extraStartDelay, uint32_t *pTickstart);
-READER_Status READER_T1_RcvBlock(READER_T1_Block *pBlock, READER_T1_RedundancyType rType, uint32_t currentCWT, uint32_t extraTimeout, uint32_t *pTickstart);
+READER_Status READER_T1_SendBlock(READER_T1_Block *pBlock, uint32_t currentCWT, uint32_t extraStartDelay, uint32_t *pTickstart, READER_HAL_CommSettings *pSettings);
+READER_Status READER_T1_RcvBlock(READER_T1_Block *pBlock, READER_T1_RedundancyType rType, uint32_t currentCWT, uint32_t extraTimeout, uint32_t *pTickstart, READER_HAL_CommSettings *pSettings);
 
 
 READER_Status READER_T1_CopyBlock(READER_T1_Block *pBlockDest, READER_T1_Block *pBlockSource);

@@ -226,6 +226,7 @@ READER_Status READER_T1_CONTROL_SendBlock(READER_T1_ContextHandler *pContext, RE
 	READER_Status retVal;
 	//READER_T1_Block blockToSend;
 	READER_T1_BlockType bType;
+	READER_HAL_CommSettings *pSettings;
 	uint32_t currentCWT, currentBGT;
 	uint32_t tickLastBlock, extraStartDelay, tick;
 		
@@ -234,8 +235,12 @@ READER_Status READER_T1_CONTROL_SendBlock(READER_T1_ContextHandler *pContext, RE
 	//retVal = READER_T1_BUFFER_Enqueue(pContext, &blockToSend);
 	//if(retVal != READER_OK) return retVal; 
 	
+	/* On recupere un pointeur sur les parametres de communication bas niveau ...  */
+	retVal = READER_T1_CONTEXT_GetHalCommSettingsPtr(pContext, &pSettings);
+	if(retVal != READER_OK) return retVal;
+	
 	/* Avant d'envoyer le Block, on calcule le delai a appliquer pour respecter le BGT entre les Blocks */
-	retVal = READER_T1_CONTEXT_GetCurrentBGT(pContext, &currentBGT);
+	retVal = READER_T1_CONTEXT_GetCurrentBGTMilli(pContext, &currentBGT);
 	if(retVal != READER_OK) return retVal;
 	
 	retVal = READER_T1_CONTEXT_GetTickLastBlock(pContext, &tickLastBlock);
@@ -253,10 +258,10 @@ READER_Status READER_T1_CONTROL_SendBlock(READER_T1_ContextHandler *pContext, RE
 	}
 
 	/* On envoie le Block                                                       */
-	retVal = READER_T1_CONTEXT_GetCurrentCWT(pContext, &currentCWT);
+	retVal = READER_T1_CONTEXT_GetCurrentCWTMilli(pContext, &currentCWT);
 	if(retVal != READER_OK) return retVal;
 	
-	retVal = READER_T1_SendBlock(pBlockToSend, currentCWT, extraStartDelay, &tickLastBlock);     /* On recupere au passage le tick (date) du leading edge du dernier caractere envoye dans ce Block */
+	retVal = READER_T1_SendBlock(pBlockToSend, currentCWT, extraStartDelay, &tickLastBlock, pSettings);     /* On recupere au passage le tick (date) du leading edge du dernier caractere envoye dans ce Block */
 	if(retVal != READER_OK) return retVal;
 	
 	/* On mets a jour la date (tick) du leading edge du dernier caractere du Block envoye ... (Voir ISO7816 section 11.4.3) */
@@ -488,16 +493,17 @@ READER_Status READER_T1_CONTROL_RcvBlock(READER_T1_ContextHandler *pContext, REA
 	READER_T1_BlockType bType;
 	READER_T1_RedundancyType rType;
 	READER_T1_FlagStatus SBlockExpected;
+	READER_HAL_CommSettings *pCommSettings;
 	uint32_t currentCWT, currentBWT;
 	uint32_t extraTimeout;
 	uint32_t tickLastBlock, tick;
 	
 	
 	/* On recupere les valeurs de timeout a appliquer ... */
-	retVal = READER_T1_CONTEXT_GetCurrentCWT(pContext, &currentCWT);
+	retVal = READER_T1_CONTEXT_GetCurrentCWTMilli(pContext, &currentCWT);
 	if(retVal != READER_OK) return retVal;
 	
-	retVal = READER_T1_CONTEXT_GetCurrentBWT(pContext, &currentBWT);
+	retVal = READER_T1_CONTEXT_GetCurrentBWTMilli(pContext, &currentBWT);
 	if(retVal != READER_OK) return retVal;
 	
 	/* On calcule le extraTimout pour le premier caractere du Block que l'on va recevoir. Sert a garantir le BWT  */
@@ -517,10 +523,13 @@ READER_Status READER_T1_CONTROL_RcvBlock(READER_T1_ContextHandler *pContext, REA
 	}
 	
 	/* On receptionne le Block ... */
-	retVal = READER_T1_CONTEXT_GetCurrentRedundancyType(pContext, &rType);
+	retVal = READER_T1_CONTEXT_GetCurrentRedundancyType(pContext, &rType);            /* On recupere le type de code corrcteur actuellement utilise dans le contexte de communication */             
 	if(retVal != READER_OK) return retVal;
 	
-	retVal = READER_T1_RcvBlock(pBlock, rType, currentCWT, extraTimeout, &tickLastBlock);    /* La fonction de reception de Block fait remonter la date du leading Edge du Block recu ...  */
+	retVal = READER_T1_CONTEXT_GetHalCommSettingsPtr(pContext, &pCommSettings);       /* On recuepre les paramettres de comm bas niveau actuellement utilises dans le contexte de communication ...  */
+	if(retVal != READER_OK) return retVal;
+	
+	retVal = READER_T1_RcvBlock(pBlock, rType, currentCWT, extraTimeout, &tickLastBlock, pCommSettings);    /* La fonction de reception de Block fait remonter la date du leading Edge du Block recu ...  */
 	if((retVal != READER_OK) && (retVal != READER_TIMEOUT)) return retVal;
 	
 	/* On regarde si on a eu un timeout     */
@@ -534,7 +543,7 @@ READER_Status READER_T1_CONTROL_RcvBlock(READER_T1_ContextHandler *pContext, REA
 	if(retVal != READER_OK) return retVal;
 	
 	/* On regarde si le Block est corrompu ... */
-	retVal = READER_T1_CheckBlockIntegrity(pBlock);
+	retVal = READER_T1_CheckBlockIntegrity(pBlock, rType);
 	if((retVal != READER_OK) && (retVal != READER_INTEGRITY)) return retVal;		
 	
 	if(retVal == READER_INTEGRITY){
@@ -831,7 +840,7 @@ READER_Status READER_T1_CONTROL_ApplySBlockRequestRcvd(READER_T1_ContextHandler 
 			retVal = READER_T1_CONTROL_ApplySBlockAbort(pContext, pBlock);
 			if(retVal != READER_OK) return retVal;
 			
-			retVal = READER_T1_ForgeSBlockAbortResponse(&responseBlock);
+			retVal = READER_T1_FORGE_SBlockAbortResponse(pContext, &responseBlock);
 			if(retVal != READER_OK) return retVal;
 		}
 		else if(rcvdSBlockType == READER_T1_STYPE_IFS_REQU){
@@ -842,7 +851,7 @@ READER_Status READER_T1_CONTROL_ApplySBlockRequestRcvd(READER_T1_ContextHandler 
 			if(retVal != READER_BAD_VALUE){
 				blockINF = READER_T1_GetBlockSPayload(pBlock);
 			
-				retVal = READER_T1_ForgeSBlockIfsResponse(&responseBlock, blockINF);
+				retVal = READER_T1_FORGE_SBlockIfsResponse(pContext, &responseBlock, blockINF);
 				if(retVal != READER_OK) return retVal;
 			}			
 		}
@@ -850,7 +859,7 @@ READER_Status READER_T1_CONTROL_ApplySBlockRequestRcvd(READER_T1_ContextHandler 
 			retVal = READER_T1_CONTROL_ApplySBlockResynch(pContext, pBlock);
 			if(retVal != READER_OK) return retVal;
 			
-			retVal = READER_T1_ForgeSBlockResynchResponse(&responseBlock);
+			retVal = READER_T1_FORGE_SBlockResynchResponse(pContext, &responseBlock);
 			if(retVal != READER_OK) return retVal;
 		}
 		else if(rcvdSBlockType == READER_T1_STYPE_WTX_REQU){
@@ -859,7 +868,7 @@ READER_Status READER_T1_CONTROL_ApplySBlockRequestRcvd(READER_T1_ContextHandler 
 			
 			blockINF = READER_T1_GetBlockSPayload(pBlock);
 			
-			retVal = READER_T1_ForgeSBlockWtxResponse(&responseBlock, blockINF);
+			retVal = READER_T1_FORGE_SBlockWtxResponse(pContext, &responseBlock, blockINF);
 			if(retVal != READER_OK) return retVal;
 		}
 		else{
@@ -1074,7 +1083,6 @@ READER_Status READER_T1_CONTROL_ApplySBlockWtx(READER_T1_ContextHandler *pContex
 	READER_Status retVal;
 	READER_T1_SBlockType SBlockType;
 	uint32_t multiplier;
-	uint32_t currentBWT, newBWT;
 	
 	
 	/* On fait des verifications sur le Block ...  */
@@ -1089,15 +1097,8 @@ READER_Status READER_T1_CONTROL_ApplySBlockWtx(READER_T1_ContextHandler *pContex
 	/* On recupere les donnes multiplieur de BWT dans le S-Block ...  */
 	multiplier = READER_T1_GetBlockSPayload(pBlock);
 	
-	/* On recupere le BWT actuel ...  */
-	retVal = READER_T1_CONTEXT_GetCurrentBWT(pContext, &currentBWT);
-	if(retVal != READER_OK) return retVal;
-	
-	/* On calcule le nouveau BWT */
-	newBWT = currentBWT * ((uint32_t)(multiplier));
-	
-	/* On mets a jour le BWT dans le contexte de communication ...  */
-	retVal = READER_T1_CONTEXT_SetCurrentBWT(pContext, newBWT);
+	/* On applique au contexte le multipieur recupere dans le S-Block ...  */
+	retVal = READER_T1_CONTEXT_ExtendCurrentBWT(pContext, multiplier);
 	if(retVal != READER_OK) return retVal;
 	
 	return READER_OK;
@@ -1110,7 +1111,7 @@ READER_Status READER_T1_CONTROL_SendAbortRequest(READER_T1_ContextHandler *pCont
 	
 	
 	/* On forge le S-Block correspondant ...  */
-	retVal = READER_T1_ForgeSBlockAbortRequest(&tmpBlock);
+	retVal = READER_T1_FORGE_SBlockAbortRequest(pContext, &tmpBlock);
 	if(retVal != READER_OK) return retVal;
 	
 	/* On stack le nouveau S-Block dans le Buffer d'envoi ...  */
@@ -1128,7 +1129,7 @@ READER_Status READER_T1_CONTROL_SendResynchRequest(READER_T1_ContextHandler *pCo
 	
 	
 	/* On forge le S-Block correspondant ...  */
-	retVal = READER_T1_ForgeSBlockResynchRequest(&tmpBlock);
+	retVal = READER_T1_FORGE_SBlockResynchRequest(pContext, &tmpBlock);
 	if(retVal != READER_OK) return retVal;
 	
 	/* On stack le nouveau S-Block dans le Buffer d'envoi ...  */
@@ -1146,7 +1147,7 @@ READER_Status READER_T1_CONTROL_SendIfsdRequest(READER_T1_ContextHandler *pConte
 	
 	
 	/* On forge le S-Block correspondant ...  */
-	retVal = READER_T1_ForgeSBlockIfsRequest(&tmpBlock, newIfsd);
+	retVal = READER_T1_FORGE_SBlockIfsRequest(pContext, &tmpBlock, newIfsd);
 	if(retVal != READER_OK) return retVal;
 	
 	/* On stack ce Block dans le Buffer d'envoi ...  */
@@ -1164,7 +1165,7 @@ READER_Status READER_T1_CONTROL_SendWtxRequest(READER_T1_ContextHandler *pContex
 	
 	
 	/* On forge le S-Block correspondant ...  */
-	retVal = READER_T1_ForgeSBlockWtxRequest(&tmpBlock, wtMultiplier);
+	retVal = READER_T1_FORGE_SBlockWtxRequest(pContext, &tmpBlock, wtMultiplier);
 	if(retVal != READER_OK) return retVal;
 	
 	/* On stack ce Block dans le Buffer d'envoi ...  */

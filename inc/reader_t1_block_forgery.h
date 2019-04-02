@@ -34,5 +34,20 @@ READER_Status READER_T1_FORGE_FillBuffWithAPDUCase4E(READER_T1_ContextHandler *p
 
 
 
+READER_Status READER_T1_FORGE_IBlock(READER_T1_ContextHandler *pContext, READER_T1_Block *pBlock, uint8_t *data, uint32_t dataSize, READER_T1_SeqNumber seq, READER_T1_MBit mBit);
+READER_Status READER_T1_FORGE_RBlock(READER_T1_ContextHandler *pContext, READER_T1_Block *pBlock, READER_T1_ACKType ack, READER_T1_ExpSeqNumber expctdBlockSeq);
+READER_Status READER_T1_FORGE_SBlock(READER_T1_ContextHandler *pContext, READER_T1_Block *pBlock, READER_T1_SBlockType type);
+
+
+
+READER_Status READER_T1_FORGE_SBlockResynchRequest(READER_T1_ContextHandler *pContext, READER_T1_Block *pBlock);
+READER_Status READER_T1_FORGE_SBlockResynchResponse(READER_T1_ContextHandler *pContext, READER_T1_Block *pBlock);
+READER_Status READER_T1_FORGE_SBlockIfsRequest(READER_T1_ContextHandler *pContext, READER_T1_Block *pBlock, uint8_t newIfs);
+READER_Status READER_T1_FORGE_SBlockIfsResponse(READER_T1_ContextHandler *pContext, READER_T1_Block *pBlock, uint8_t newIfs);
+READER_Status READER_T1_FORGE_SBlockAbortRequest(READER_T1_ContextHandler *pContext, READER_T1_Block *pBlock);
+READER_Status READER_T1_FORGE_SBlockAbortResponse(READER_T1_ContextHandler *pContext, READER_T1_Block *pBlock);
+READER_Status READER_T1_FORGE_SBlockWtxRequest(READER_T1_ContextHandler *pContext, READER_T1_Block *pBlock, uint8_t wtMultiplier);
+READER_Status READER_T1_FORGE_SBlockWtxResponse(READER_T1_ContextHandler *pContext, READER_T1_Block *pBlock, uint8_t wtMultiplier);
+
 
 #endif

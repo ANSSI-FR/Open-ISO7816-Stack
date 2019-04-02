@@ -15,6 +15,9 @@
 #define READER_ATR_INDICATED             1
 #define READER_ATR_NOT_INDICATED         0
 
+#define READER_ATR_DEFAULT_TIMEOUT       1000
+
+
 
 typedef enum READER_ATR_ClockStopIndicator READER_ATR_ClockStopIndicator;
 enum READER_ATR_ClockStopIndicator{
@@ -124,7 +127,7 @@ uint32_t READER_ATR_GetRedundancyType(READER_ATR_Atr *pAtr);
 uint32_t READER_ATR_GetIFSC(READER_ATR_Atr *pAtr);
 uint32_t READER_ATR_GetWI(READER_ATR_Atr *pAtr);
 
-READER_Status READER_ATR_Receive(READER_ATR_Atr *atr);
+READER_Status READER_ATR_Receive(READER_ATR_Atr *atr, READER_HAL_CommSettings *pSettings);
 READER_Status READER_ATR_InitStruct(READER_ATR_Atr *atr);
 READER_Status READER_ATR_ApplySettings(READER_ATR_Atr *atr);
 
