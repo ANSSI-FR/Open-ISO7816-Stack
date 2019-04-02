@@ -300,7 +300,7 @@ READER_Status READER_HAL_RcvChar(uint8_t *character, uint32_t timeout){
 
 /* Fonction "from scratch" pour recevoir un caractere */
 READER_Status READER_HAL_RcvChar(READER_HAL_CommSettings *pSettings, READER_HAL_Protocol protocol, uint8_t *character, uint32_t timeout){
-	uint32_t tickstart;
+	uint32_t newTimeout, currentGTMilli, tickstart;
 	uint8_t dummy;
 	
 	
@@ -328,12 +328,16 @@ READER_Status READER_HAL_RcvChar(READER_HAL_CommSettings *pSettings, READER_HAL_
 	USART2->CR1 |= USART_CR1_RE;
 	//USART2->SR &= ~USART_SR_RXNE;
 	
-	while(!(USART2->SR & USART_SR_RXNE) && !(READER_HAL_GetTick()-tickstart >= timeout)){
+	/* Pour prendre en compte le GT, on ajoute le GTMilli au timeout ...  */
+	currentGTMilli = READER_HAL_GetGTMili(pSettings);
+	newTimeout = timeout + currentGTMilli;
+	
+	while(!(USART2->SR & USART_SR_RXNE) && !(READER_HAL_GetTick()-tickstart >= newTimeout)){
 			
 	}
 	
 	/* Quand on sort de la boucle d'attente, on verifie si on est sorti a cause d'un timeout */
-	if(READER_HAL_GetTick()-tickstart >= timeout){
+	if(READER_HAL_GetTick()-tickstart >= newTimeout){
 		USART2->CR1 &= ~USART_CR1_RE;
 		return READER_TIMEOUT;
 	}
