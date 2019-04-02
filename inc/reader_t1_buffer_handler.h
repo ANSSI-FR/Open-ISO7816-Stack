@@ -35,6 +35,8 @@ READER_Status READER_T1_BUFFER_Stack(READER_T1_ContextHandler *pContext, READER_
 READER_Status READER_T1_BUFFER_GetBottomBlockPtr(READER_T1_ContextHandler *pContext, READER_T1_Block **ppBlock);
 READER_Status READER_T1_BUFFER_GetBottomBlockType(READER_T1_ContextHandler *pContext, READER_T1_BlockType *pType);
 READER_Status READER_T1_BUFFER_DequeueAndDiscard(READER_T1_ContextHandler *pContext);
+READER_Status READER_T1_BUFFER_IncLength(READER_T1_ContextHandler *pContext);
+READER_Status READER_T1_BUFFER_DecLength(READER_T1_ContextHandler *pContext);
 //READER_Status READER_T1_BUFFER_DeleteBlock(READER_T1_ContextHandler *pContext, uint32_t index);
 //READER_Status READER_T1_BUFFER_ShiftInBottomDirection(READER_T1_ContextHandler *pContext);
 //READER_Status READER_T1_BUFFER_ShiftInTopDirection(READER_T1_ContextHandler *pContext);

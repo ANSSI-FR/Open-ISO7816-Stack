@@ -391,6 +391,54 @@ READER_Status READER_T1_BUFFER_DequeueAndDiscard(READER_T1_ContextHandler *pCont
 }
 
 
+READER_Status READER_T1_BUFFER_IncLength(READER_T1_ContextHandler *pContext){
+	READER_T1_BlockBuffer *pBlockBuffer;
+	uint32_t currentLength;
+	
+	
+	/* On recupere un pointeur sur la structure du buffer dans le contexte */
+	retVal = READER_T1_CONTEXT_GetBlockBuff(pContext, &pBlockBuffer);
+	if(retVal != READER_OK) return retVal;
+	
+	currentLength = pBlockBuffer->length;
+	
+	/* On fait des vérifications avant d'incrementer ...  */
+	if(currentLength == READER_T1_CONTEXT_STATICBUFF_MAXSIZE){
+		return READER_OVERFLOW;
+	}
+	
+	/* On incremente ...  */
+	pBlockBuffer->length += 1;
+	
+	
+	return READER_OK;
+}
+
+
+READER_Status READER_T1_BUFFER_DecLength(READER_T1_ContextHandler *pContext){
+	READER_T1_BlockBuffer *pBlockBuffer;
+	uint32_t currentLength;
+	
+	
+	/* On recupere un pointeur sur la structure du buffer dans le contexte */
+	retVal = READER_T1_CONTEXT_GetBlockBuff(pContext, &pBlockBuffer);
+	if(retVal != READER_OK) return retVal;
+	
+	currentLength = pBlockBuffer->length;
+	
+	/* On fait des vérifications avant d'incrementer ...  */
+	if(currentLength == 0){
+		return READER_ERR;
+	}
+	
+	/* On incremente ...  */
+	pBlockBuffer->length -= 1;
+	
+	
+	return READER_OK;
+}
+
+
 //READER_Status READER_T1_BUFFER_Delete(READER_T1_ContextHandler *pContext, uint32_t index){
 //	READER_T1_BlockBuffer *pBlockBuffer;
 //	READER_T1_Block *pBlockTab;
