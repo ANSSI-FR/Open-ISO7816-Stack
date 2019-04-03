@@ -11,7 +11,7 @@
 
 
 
-#define READER_T1_MAX_SREQUESTS 2
+#define READER_T1_MAX_SREQUESTS 3   /* Voir ISO7816-3 section 11.6.3.2 rule 6.4 */
 
 
 #define READER_T1_MAX_REAPEAT 0x03
