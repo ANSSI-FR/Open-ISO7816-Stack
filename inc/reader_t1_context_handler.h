@@ -15,7 +15,7 @@
 
 
 #define READER_T1_MAX_REAPEAT 0x02     /* Voir ISO7816-3 section 11.6.3.2 rule 7.4.2 */
-#define READER_T1_MAX_RESYNCH 0x03
+#define READER_T1_MAX_RESYNCH 0x03     /* Voir ISO7816-3 section 11.6.3.2 rule 6.4   */
 
 
 #define READER_T1_CONTEXT_DEFAULT_IFSC      (uint32_t)(32)        /* Voir ISO7816-3 section 11.4.2 */
