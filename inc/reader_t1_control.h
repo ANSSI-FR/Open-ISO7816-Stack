@@ -54,7 +54,7 @@ READER_Status READER_T1_CONTROL_ResendRequest(READER_T1_ContextHandler *pContext
 READER_Status READER_T1_CONTROL_SBlockResponseNotReceived(READER_T1_ContextHandler *pContext);
 READER_Status READER_T1_CONTROL_CheckExpectedINF(READER_T1_ContextHandler *pContext, READER_T1_Block *pRcvdSBlockResp);
 READER_Status READER_T1_CONTROL_CheckExpectedINFAndApplyRules(READER_T1_ContextHandler *pContext, READER_T1_Block *pRcvdSBlockResp);
-READER_Status READER_T1_CONTROL_CheckIfThisSBlockResponseIsExpected(READER_T1_ContextHandler *pContext, READER_T1_Block *pRcvdSBlockResp);
+READER_Status READER_T1_CONTROL_CheckIfThisSBlockResponseIsCorrect(READER_T1_ContextHandler *pContext, READER_T1_Block *pRcvdSBlockResp);
 
 
 #endif
