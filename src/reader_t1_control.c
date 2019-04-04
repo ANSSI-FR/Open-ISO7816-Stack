@@ -1322,7 +1322,7 @@ READER_Status READER_T1_CONTROL_CheckIfThisSBlockResponseIsCorrect(READER_T1_Con
 	if(retVal != READER_OK) return retVal;
 	
 	
-	/* On verifie qu'un S-Block Response etait bien attendue ...  */
+	/* On verifie qu'un S-Block Response etait bien attendue (normalement si on entre dans cette fonction c'est bien le cas, mais on verifie quand meme) ...  */
 	retVal = READER_T1_CONTEXT_IsSBlockResponseExpectedNow(pContext, &isSBlockExpected);
 	if(retVal != READER_OK) return retVal;
 	
@@ -1341,6 +1341,16 @@ READER_Status READER_T1_CONTROL_CheckIfThisSBlockResponseIsCorrect(READER_T1_Con
 	
 	if(SBlockTypeRcvd != SBlockTypeExpected){
 		return READER_NO;
+	}
+	
+	/* Si c'est un S-Block sense contenir un champs INF, on le verifie ... */
+	if((SBlockTypeRcvd == READER_T1_STYPE_IFS_RESP) || (SBlockTypeRcvd == READER_T1_STYPE_WTX_RESP)){
+		retVal = READER_T1_CONTROL_CheckExpectedINF(pContext, SBlockTypeRcvd);
+		if((retVal != READER_OK) && (retVal != READER_NO)) return retVal;
+		
+		if(retVal == READER_NO){
+			return READER_NO;
+		}
 	}
 	
 	
