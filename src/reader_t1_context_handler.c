@@ -599,7 +599,11 @@ READER_Status READER_T1_CONTEXT_GetLastSent(READER_T1_ContextHandler *pContext, 
 	
 	/* On verifie qu'il existe effectivement un dernier Block envoye ...  */
 	retVal = READER_T1_CONTEXT_LastSentExists(pContext);
-	if(retVal != READER_OK) return retVal;
+	if((retVal != READER_OK) && (retVal != READER_DOESNT_EXIST)) return retVal;
+	
+	if(retVal == READER_DOESNT_EXIST){
+		return READER_DOESNT_EXIST;
+	}
 	
 	/* On positionne le pointeur sur le dernier Block envoye ...  */
 	*ppBlockDest = &(pContext->lastSent);
