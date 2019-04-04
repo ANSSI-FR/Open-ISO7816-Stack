@@ -932,33 +932,25 @@ READER_Status READER_T1_CONTROL_ApplySBlockResponseRcvd(READER_T1_ContextHandler
 		if(retVal != READER_OK) return retVal;
 	}
 	
+	/* On RAZ le compteur de S-Block Requests faites a la carte pour obtenir la S-Block Response ...  */
+	retVal = READER_T1_CONTEXT_ClearSBlockRequestCounter(pContext);
+	if(retVal != READER_OK) return retVal;
+	
 	
 	/* On applique la demande du S-Block ... */
 	if(rcvdSBlockType == READER_T1_STYPE_ABORT_RESP){
-		retVal = READER_T1_CONTEXT_ClearSBlockRequestCounter(pContext);
-		if(retVal != READER_OK) return retVal;
-		
 		retVal = READER_T1_CONTROL_ApplySBlockAbort(pContext, pBlock);
 		if(retVal != READER_OK) return retVal;
 	}
 	else if(rcvdSBlockType == READER_T1_STYPE_IFS_RESP){
-		retVal = READER_T1_CONTEXT_ClearSBlockRequestCounter(pContext);
-		if(retVal != READER_OK) return retVal;
-		
 		retVal = READER_T1_CONTROL_ApplySBlockIfsd(pContext, pBlock);
 		if(retVal != READER_OK) return retVal;		
 	}
 	else if(rcvdSBlockType == READER_T1_STYPE_RESYNCH_RESP){
-		retVal = READER_T1_CONTEXT_ClearSBlockRequestCounter(pContext);
-		if(retVal != READER_OK) return retVal;
-		
 		retVal = READER_T1_CONTROL_ApplySBlockResynch(pContext, pBlock);
 		if(retVal != READER_OK) return retVal;
 	}
 	else if(rcvdSBlockType == READER_T1_STYPE_WTX_RESP){
-		retVal = READER_T1_CONTEXT_ClearSBlockRequestCounter(pContext);
-		if(retVal != READER_OK) return retVal;
-		
 		retVal = READER_T1_CONTROL_ApplySBlockWtx(pContext, pBlock);
 		if(retVal != READER_OK) return retVal;
 	}
