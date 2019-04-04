@@ -273,7 +273,7 @@ READER_Status READER_T1_CONTEXT_SetNoSBlockExpectedResponse(READER_T1_ContextHan
 
 READER_Status READER_T1_CONTEXT_GetSBlockRequestsCounter(READER_T1_ContextHandler *pContext, uint32_t *pCounter);
 READER_Status READER_T1_CONTEXT_SetSBlockRequestsCounter(READER_T1_ContextHandler *pContext, uint32_t counter);
-READER_Status READER_T1_CONTEXT_IncSBlockRequestsCounterREADER_T1_ContextHandler *pContext);
+READER_Status READER_T1_CONTEXT_IncSBlockRequestsCounter(READER_T1_ContextHandler *pContext);
 READER_Status READER_T1_CONTEXT_CheckSBlockRequestsCounter(READER_T1_ContextHandler *pContext);
 READER_Status READER_T1_CONTEXT_ClearSBlockRequestsCounter(READER_T1_ContextHandler *pContext);
 

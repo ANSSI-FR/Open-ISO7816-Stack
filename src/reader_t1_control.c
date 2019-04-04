@@ -1214,7 +1214,7 @@ READER_Status READER_T1_CONTROL_ResendRequest(READER_T1_ContextHandler *pContext
 	
 	
 	/* On incremente le compteur de S-Block Requests ...  */
-	retVal = READER_T1_CONTEXT_IncSBlockRequestsCounterpContext);
+	retVal = READER_T1_CONTEXT_IncSBlockRequestsCounter(pContext);
 	if(retVal != READER_OK) return retVal;
 	
 	
@@ -1319,7 +1319,7 @@ READER_Status READER_T1_CONTROL_CheckIfThisSBlockResponseIsCorrect(READER_T1_Con
 	
 	/* Si c'est un S-Block sense contenir un champs INF, on le verifie ... */
 	if((SBlockTypeRcvd == READER_T1_STYPE_IFS_RESP) || (SBlockTypeRcvd == READER_T1_STYPE_WTX_RESP)){
-		retVal = READER_T1_CONTROL_CheckExpectedINF(pContext, SBlockTypeRcvd);
+		retVal = READER_T1_CONTROL_CheckExpectedINF(pContext, pRcvdSBlockResp);
 		if((retVal != READER_OK) && (retVal != READER_NO)) return retVal;
 		
 		if(retVal == READER_NO){

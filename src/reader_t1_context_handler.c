@@ -1524,7 +1524,7 @@ READER_Status READER_T1_CONTEXT_ClearSBlockRequestsCounter(READER_T1_ContextHand
 }
 
 
-READER_Status READER_T1_CONTEXT_IncSBlockRequestsCounterREADER_T1_ContextHandler *pContext){
+READER_Status READER_T1_CONTEXT_IncSBlockRequestsCounter(READER_T1_ContextHandler *pContext){
 	uint32_t counter, newCounter;
 	READER_Status retVal;
 	
