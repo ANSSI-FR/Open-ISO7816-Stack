@@ -36,7 +36,7 @@ READER_Status READER_T1_BUFFER_DequeueAndDiscard(READER_T1_ContextHandler *pCont
 
 READER_Status READER_T1_BUFFER_PlacesLeft(READER_T1_ContextHandler *pContext, uint32_t *pPlaces);
 READER_Status READER_T1_BUFFER_GetLength(READER_T1_ContextHandler *pContext, uint32_t *pLength);
-READER_Status READER_T1_BUFFER_GetSetLength(READER_T1_ContextHandler *pContext, uint32_t length);
+READER_Status READER_T1_BUFFER_SetLength(READER_T1_ContextHandler *pContext, uint32_t length);
 READER_Status READER_T1_BUFFER_IncLength(READER_T1_ContextHandler *pContext);
 READER_Status READER_T1_BUFFER_DecLength(READER_T1_ContextHandler *pContext);
 //READER_Status READER_T1_BUFFER_DeleteBlock(READER_T1_ContextHandler *pContext, uint32_t index);
