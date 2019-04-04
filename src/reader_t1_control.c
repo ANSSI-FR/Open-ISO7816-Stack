@@ -454,7 +454,7 @@ READER_Status READER_T1_CONTROL_SBlockRequestSentUpdateContext(READER_T1_Context
 	pContext->SBlockExpectedINF = expectedINF;
 	
 	/* On remets a zero le compteur de S-Block Requests successives ...  */
-	//retVal = READER_T1_CONTEXT_ClearSBlockRequestCounter(pContext);
+	//retVal = READER_T1_CONTEXT_ClearSBlockRequestsCounter(pContext);
 	//if(retVal != READER_OK) return retVal;
 	
 	
@@ -936,7 +936,7 @@ READER_Status READER_T1_CONTROL_ApplySBlockResponseRcvd(READER_T1_ContextHandler
 	}
 	
 	/* On RAZ le compteur de S-Block Requests faites a la carte pour obtenir la S-Block Response ...  */
-	retVal = READER_T1_CONTEXT_ClearSBlockRequestCounter(pContext);
+	retVal = READER_T1_CONTEXT_ClearSBlockRequestsCounter(pContext);
 	if(retVal != READER_OK) return retVal;
 	
 	
@@ -1184,7 +1184,7 @@ READER_Status READER_T1_CONTROL_ResendRequest(READER_T1_ContextHandler *pContext
 	
 	
 	/* On verifie le compteur d'envoi de S-Block Requests successives ... */
-	retVal = READER_T1_CONTEXT_CheckSBlockRequestCounter(pContext);
+	retVal = READER_T1_CONTEXT_CheckSBlockRequestsCounter(pContext);
 	if((retVal != READER_OK) && (retVal != READER_NO)) return retVal;
 	
 	/* Si on a depasse le compteur de S-Block Requests ...  */
@@ -1214,7 +1214,7 @@ READER_Status READER_T1_CONTROL_ResendRequest(READER_T1_ContextHandler *pContext
 	
 	
 	/* On incremente le compteur de S-Block Requests ...  */
-	retVal = READER_T1_CONTEXT_IncSBlockRequCounter(pContext);
+	retVal = READER_T1_CONTEXT_IncSBlockRequestsCounterpContext);
 	if(retVal != READER_OK) return retVal;
 	
 	
