@@ -641,7 +641,11 @@ READER_Status READER_T1_CONTEXT_GetLastRcvd(READER_T1_ContextHandler *pContext, 
 	
 	/* On verifie qu'il existe un dernier Block recu ...  */
 	retVal = READER_T1_CONTEXT_LastRcvdExists(pContext);
-	if(retVal != READER_OK) return retVal;
+	if((retVal != READER_OK) && (retVal != READER_DOESNT_EXIST)) return retVal;
+	
+	if(retVal == READER_DOESNT_EXIST){
+		return READER_DOESNT_EXIST;
+	}
 	
 	/* On positionne le pointeur sur le dernier Block recu ...  */
 	*ppBlockDest = &(pContext->lastRcvd);
