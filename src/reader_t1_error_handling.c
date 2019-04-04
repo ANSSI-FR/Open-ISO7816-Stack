@@ -185,28 +185,65 @@ READER_Status READER_T1_ERR_PrepareResynchRequ(READER_T1_ContextHandler *pContex
 READER_Status READER_T1_ERR_DoResynch(READER_T1_ContextHandler *pContext){
 	READER_T1_Block *pLastBlock;
 	READER_T1_Block tmpBlock;
-	READER_Status retVal;
+	READER_T1_BlockType bType;
+	READER_Status retVal, retVal2;
+	uint8_t rawDataBuff[READER_T1_BUFFER_MAXBYTES];
+	uint32_t saveResynchCounter;
+	uint32_t nbExtractedBytes;
 	
 	
-	/* On recupere un pointeur sur le dernier I-Block envoye                                               */
-	retVal = READER_T1_CONTEXT_GetLastIBlockSent(pContext, &pLastBlock);
+	/* On mets de cote la valeur du compteur de resynchro ...  */
+	retVal = READER_T1_CONTEXT_GetResynchCounter(pContext, &saveResynchCounter);
 	if(retVal != READER_OK) return retVal;
 	
-	/* On fait une copie de ce Block dans une variable locale a la fonction (le contexte va etre reinitialise par la suite) */
-	retVal = READER_T1_CopyBlock(&tmpBlock, pLastBlock);
+	/* On recupere un pointeur sur le dernier Block envoye                                               */
+	retVal2 = READER_T1_CONTEXT_GetLastSent(pContext, &pLastBlock);
+	if((retVal2 != READER_OK) && (retVal2 != READER_DOESNT_EXIST)) return retVal;
+	
+	/* Si le dernier Block envoye existe ...  */
+	if(retVal2 != READER_DOESNT_EXIST){
+		bType = READER_T1_GetBlockType(pLastBlock);
+		
+		if(bType == READER_T1_IBLOCK){
+			retVal = READER_T1_BUFFER_Stack(pContext, pLastBlock);
+			if(retVal != READER_OK) return retVal;
+		}
+		else if((bType == READER_T1_RBLOCK) || (bType == READER_T1_SBLOCK)){
+			retVal = READER_T1_CopyBlock(&tmpBlock, pLastBlock);
+			if(retVal != READER_OK) return retVal;
+		}
+		else{
+			return READER_ERR;
+		}
+	}
+	
+	retVal = READER_T1_BUFFER_ExtractRawDataFromBuffer(pContext, rawDataBuff, READER_T1_BUFFER_MAXBYTES, &nbExtractedBytes);
 	if(retVal != READER_OK) return retVal;
 	
-	/* On reinitialise tous les parametres de communication dans le contexte               */
+	
+	/* La spec n'indique pas precisement ce qu'il faut reinitialiser lors du RESYNCH.             */
 	retVal = READER_T1_CONTEXT_InitContextSettings(pContext);
 	if(retVal != READER_OK) return retVal;
 	
-	/* On enleve les S-Blocks et R-Blocks en sortie du Buffer d'envoi ?                    */
-	retVal = READER_T1_BUFFER_StripControlBlocks(pContext);
+	retVal = READER_T1_CONTEXT_InitSeqNums(pContext);
 	if(retVal != READER_OK) return retVal;
 	
-	/* On Stack le dernier I-Block qu'on avait envoye sur la pile d'envoi (Rule 6.5) (pour le re-envoyer)  */
-	retVal = READER_T1_BUFFER_Stack(pContext, &tmpBlock);
-	if(retVal != READER_OK) return retVal;	
+	/* On re-remplit le BUFFER de Blocks avec les bons niuveaux nureros de sequence suite au reinit ...  */
+	retVal = READER_T1_FORGE_SliceDataAndFillBuffer(pContext, rawDataBuff, nbExtractedBytes);
+	if(retVal != READER_OK) return retVal;
+	
+	
+	
+	if((retVal != READER_DOESNT_EXIST) && (bType != READER_T1_IBLOCK)){
+		retVal = READER_T1_BUFFER_Stack(pContext, &tmpBlock);
+		if(retVal != READER_OK) return retVal;
+	}
+	
+	
+	/* On remets le compteur de resynch dans le contexte de communication ...  */
+	retVal = READER_T1_CONTEXT_SetResynchCounter(pContext, saveResynchCounter);
+	if(retVal != READER_OK) return retVal;
+ 	
 	
 	return READER_OK;
 }
