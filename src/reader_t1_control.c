@@ -908,7 +908,8 @@ READER_Status READER_T1_CONTROL_ApplySBlockResponseRcvd(READER_T1_ContextHandler
 	retVal = READER_T1_CheckSBlock(pBlock);
 	if(retVal != READER_OK) return retVal;
 	
-	/* On verifie q'une S-Block Response etait bien attendue ...  */
+	/* On verifie q'une S-Block Response etait bien attendue ...        */
+	/* Si aucune S-Response attendue alors on ignore le Block recu ...  */
 	retVal = READER_T1_CONTEXT_IsSBlockResponseExpectedNow(pContext, &flag);
 	if(retVal != READER_OK) return retVal;
 	
@@ -921,18 +922,18 @@ READER_Status READER_T1_CONTROL_ApplySBlockResponseRcvd(READER_T1_ContextHandler
 		return READER_ERR;
 	}
 	
-	/* On verifie que la S-Block Response est du bon type ...  */
-	retVal = READER_T1_CONTEXT_GetSBlockExpectedResponseType(pContext, &expectedSBlockType);
-	if(retVal != READER_OK) return retVal;
+	/* On verifie que la S-Block Response recu correspond a celle qui etait attendue ...  */
+	/* Si on a pas recu la bonne reponse alors que une reponse erait attendue, alors il faut appliquer la bonne regle (ISO7816-3 section 11.6.3.2 rue 7.3) ...  */
+	retVal = READER_T1_CONTROL_CheckIfThisSBlockResponseIsCorrect(pContext, pBlock);
+	if((retVal != READER_OK) && (retVal != READER_NO)) return retVal;
 	
-	rcvdSBlockType = READER_T1_GetBlockSType(pBlock);
-	
-	if(rcvdSBlockType != expectedSBlockType){
+	if(retVal == READER_NO){
 		retVal = READER_T1_CONTROL_SBlockResponseNotReceived(pContext);
 		if(retVal != READER_OK) return retVal;
 	}
 	
-	/* On applique la demande du S-Block ... Pour certains cas on verifie aussi l'exactitude du champs INF ... Voir ISO7816-3 Rule 4 */
+	
+	/* On applique la demande du S-Block ... */
 	if(rcvdSBlockType == READER_T1_STYPE_ABORT_RESP){
 		retVal = READER_T1_CONTEXT_ClearSBlockRequestCounter(pContext);
 		if(retVal != READER_OK) return retVal;
@@ -941,9 +942,6 @@ READER_Status READER_T1_CONTROL_ApplySBlockResponseRcvd(READER_T1_ContextHandler
 		if(retVal != READER_OK) return retVal;
 	}
 	else if(rcvdSBlockType == READER_T1_STYPE_IFS_RESP){
-		retVal = READER_T1_CONTROL_CheckExpectedINFAndApplyRules(pContext, pBlock);
-		if(retVal != READER_OK) return retVal;
-		
 		retVal = READER_T1_CONTEXT_ClearSBlockRequestCounter(pContext);
 		if(retVal != READER_OK) return retVal;
 		
@@ -958,9 +956,6 @@ READER_Status READER_T1_CONTROL_ApplySBlockResponseRcvd(READER_T1_ContextHandler
 		if(retVal != READER_OK) return retVal;
 	}
 	else if(rcvdSBlockType == READER_T1_STYPE_WTX_RESP){
-		retVal = READER_T1_CONTROL_CheckExpectedINFAndApplyRules(pContext, pBlock);
-		if(retVal != READER_OK) return retVal;
-		
 		retVal = READER_T1_CONTEXT_ClearSBlockRequestCounter(pContext);
 		if(retVal != READER_OK) return retVal;
 		
