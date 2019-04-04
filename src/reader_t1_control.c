@@ -1307,7 +1307,8 @@ READER_Status READER_T1_CONTROL_CheckExpectedINFAndApplyRules(READER_T1_ContextH
 
 
 /* Retourne READER_NO si n'est pas expected ...  */
-READER_Status READER_T1_CONTROL_CheckIfThisSBlockResponseIsExpected(READER_T1_ContextHandler *pContext, READER_T1_Block *pRcvdSBlockResp){
+/* Quand on lance la fonction, on considere que un S-Block etait effectivement attendu. On veut savoir si il correspond exactement a ce que on attendait ... */
+READER_Status READER_T1_CONTROL_CheckIfThisSBlockResponseIsCorrect(READER_T1_ContextHandler *pContext, READER_T1_Block *pRcvdSBlockResp){
 	READER_Status retVal;
 	READER_T1_SBlockType SBlockTypeRcvd, SBlockTypeExpected;
 	READER_T1_FlagStatus isSBlockExpected;
