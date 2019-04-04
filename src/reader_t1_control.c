@@ -981,7 +981,7 @@ READER_Status READER_T1_CONTROL_ApplySBlockResynch(READER_T1_ContextHandler *pCo
 		return READER_ERR;
 	}
 	
-	/* On verifie le compteur de demandes de Resynch successives ...  */
+	/* On verifie le compteur de demandes de Resynch successives (ISO7816-3 section 11.K6.3.2, rule 6.4) ...  */
 	retVal = READER_T1_ERR_CheckResynchCounter(pContext);
 	if((retVal != READER_OK) && (retVal != READER_NO)) return retVal;
 	
