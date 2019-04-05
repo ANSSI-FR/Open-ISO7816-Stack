@@ -13,7 +13,7 @@ uint8_t pSmartcardTxBuff[100];
 uint8_t pSmartcardRxBuff[100];
 
 
-
+#ifndef TEST
 int main(void){
 	READER_Status retVal;
 	//READER_ATR_Atr atr;
@@ -232,7 +232,7 @@ int main(void){
 	
 	return 0;
 }
-
+#endif
 
 
 

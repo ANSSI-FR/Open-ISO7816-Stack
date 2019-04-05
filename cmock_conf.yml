@@ -1,4 +1,4 @@
 :cmock:
-	:mock_path: tests/mocks
-	:mock_prefix: mock_
-	:verbosity: 3
+  :mock_path: tests/mocks
+  :mock_prefix: mock_
+  :verbosity: 3
