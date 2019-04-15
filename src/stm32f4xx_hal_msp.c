@@ -38,6 +38,7 @@
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f4xx_hal.h"
 #include "main.h"
+#include "reader_periph.h"
 
 /** @addtogroup STM32F4xx_HAL_Driver
   * @{
