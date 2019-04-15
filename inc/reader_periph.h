@@ -3,11 +3,15 @@
 
 
 
-#include "stm32f4xx_hal.h"
+
 #include "reader_utils.h"
 #include "reader.h"
 #include "reader_hal_comm_settings.h"
 
+
+#ifndef TEST
+
+#include "stm32f4xx_hal.h"
 
 #define READER_PERIPH_CLK_PIN          GPIO_PIN_4
 #define READER_PERIPH_IO_PIN           GPIO_PIN_2
@@ -19,6 +23,12 @@
 #define READER_PERIPH_RST_PORT         GPIOA
 #define READER_PERIPH_PWR_PORT         GPIOA
 
+
+#define PIN_LED_VERTE GPIO_PIN_12       /* PD12 */
+#define PIN_LED_ROUGE GPIO_PIN_14       /* PD14 */
+#define PIN_BOUTON_BLEU GPIO_PIN_0      /* PA0  */
+
+#endif
 
 
 

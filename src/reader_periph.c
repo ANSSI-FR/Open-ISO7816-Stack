@@ -94,7 +94,7 @@ READER_Status READER_PERIPH_Init(void){
 	smartcardHandleStruct.Init.GuardTime = 0; //READER_HAL_DEFAULT_GT;
 	smartcardHandleStruct.Init.NACKState = SMARTCARD_NACK_ENABLE;
 	
-	smartcardHandleStruct.Init.Prescaler = READER_UTILS_ComputePrescFromFreq(READER_HAL_DEFAULT_FREQ);
+	smartcardHandleStruct.Init.Prescaler = READER_HAL_ComputePrescFromFreq(READER_HAL_DEFAULT_FREQ);
 	
 	
 	__HAL_RCC_USART2_CLK_ENABLE();

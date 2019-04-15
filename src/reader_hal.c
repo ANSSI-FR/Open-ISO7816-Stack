@@ -8,6 +8,7 @@
 
 
 #include "reader_hal.h"
+#include "stm32f4xx_hal.h"
 
 
 #define SMARTCARD_TX_FROM_SCRATCH

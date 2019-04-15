@@ -32,7 +32,7 @@ READER_Status READER_HAL_SetFreq(READER_HAL_CommSettings *pSettings, uint32_t ne
 	
 	/* On applique les changements au bloc materiel USART */
 	smartcardHandleStruct.Init.BaudRate = newBaudRate;
-	smartcardHandleStruct.Init.Prescaler = READER_UTILS_ComputePrescFromFreq(newFreq);
+	smartcardHandleStruct.Init.Prescaler = READER_HAL_ComputePrescFromFreq(newFreq);
 	
 	if(HAL_SMARTCARD_Init(&smartcardHandleStruct) != HAL_OK) return READER_ERR;
 	
@@ -309,3 +309,22 @@ uint32_t READER_HAL_GetDi(READER_HAL_CommSettings *pSettings){
 //	return pSettings->redundancyType;
 //}
 
+
+uint32_t READER_HAL_ComputePrescFromFreq(uint32_t freq){
+	switch(freq){
+		case 4200000:
+			return SMARTCARD_PRESCALER_SYSCLK_DIV10;
+			break;
+		case 3500000:
+			return SMARTCARD_PRESCALER_SYSCLK_DIV12;
+			break;
+		case 3000000:
+			return SMARTCARD_PRESCALER_SYSCLK_DIV14;
+			break;
+		case 5250000:
+			return SMARTCARD_PRESCALER_SYSCLK_DIV8;
+			break;
+		default:
+			return SMARTCARD_PRESCALER_SYSCLK_DIV10;
+	}
+}

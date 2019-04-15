@@ -1,6 +1,5 @@
 #include "reader.h"
 #include "reader_utils.h"
-#include "stm32f4xx_hal.h"
 #include "reader_hal_comm_settings.h"
 
 
@@ -16,42 +15,6 @@ uint32_t READER_UTILS_ComputeNewBaudRate(uint32_t oldBaudRate, uint32_t oldFreq,
 	return (uint32_t)(((float)newFreq / (float)oldFreq) * (float)oldBaudRate);
 }
 
-uint32_t READER_UTILS_ComputePrescFromFreq(uint32_t freq){
-	switch(freq){
-		case 4200000:
-			return SMARTCARD_PRESCALER_SYSCLK_DIV10;
-			break;
-		case 3500000:
-			return SMARTCARD_PRESCALER_SYSCLK_DIV12;
-			break;
-		case 3000000:
-			return SMARTCARD_PRESCALER_SYSCLK_DIV14;
-			break;
-		case 5250000:
-			return SMARTCARD_PRESCALER_SYSCLK_DIV8;
-			break;
-		default:
-			return SMARTCARD_PRESCALER_SYSCLK_DIV10;
-	}
-}
-
-uint32_t READER_UTILS_ComputeBestFreq(uint32_t maxFreq){
-	if(5250000 <= maxFreq){
-		return 5250000;
-	}
-	else if(4200000 <= maxFreq){
-		return 4200000;
-	}
-	else if(3500000 <= maxFreq){
-		return 3500000;
-	}
-	else if(3000000 <= maxFreq){
-		return 3000000;
-	}
-	else{
-		return 3000000;
-	}
-}
 
 //uint32_t READER_UTILS_ComputeTimeoutMiliSec(uint32_t baudRate, uint32_t WT){
 //	return ((1000 * WT) / baudRate) + 1;
@@ -91,18 +54,18 @@ uint32_t READER_UTILS_ComputeWT2(uint32_t baudRate, uint32_t Di, uint32_t WI){
 
 
 
-uint32_t READER_UTILS_ComputeBWTEtu(uint32_t BWI, uint32_t f){
-	/* Voir ISO7816-3 section 11.4.3 */
-	uint32_t i;
-	uint32_t Fd = READER_HAL_DEFAULT_FI;
-	float power = 1;
-	
-	for(i=0; i<BWI; i++){
-		power = power * 2;
-	}
-	
-	return (uint32_t)(11 + (power*960*((float)Fd / (float)f)));
-}
+//uint32_t READER_UTILS_ComputeBWTEtu(uint32_t BWI, uint32_t f){
+//	/* Voir ISO7816-3 section 11.4.3 */
+//	uint32_t i;
+//	uint32_t Fd = READER_HAL_DEFAULT_FI;
+//	float power = 1;
+//	
+//	for(i=0; i<BWI; i++){
+//		power = power * 2;
+//	}
+//	
+//	return (uint32_t)(11 + (power*960*((float)Fd / (float)f)));
+//}
 
 
 uint32_t READER_UTILS_ComputeBWTMili(uint32_t BWTEtu, uint32_t F, uint32_t D, uint32_t f){

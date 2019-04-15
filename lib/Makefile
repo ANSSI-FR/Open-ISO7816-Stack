@@ -1,5 +1,5 @@
 CC=arm-none-eabi-gcc
-AR = arm-none-eabi-ar
+AR=arm-none-eabi-ar
 OBJCOPY=arm-none-eabi-objcopy
 
 CPU_CIBLE=cortex-m4

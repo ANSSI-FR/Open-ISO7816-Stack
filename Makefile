@@ -3,6 +3,7 @@ AR = arm-none-eabi-ar
 OBJCOPY=arm-none-eabi-objcopy
 STLINK=~/stlink/build/Release/
 
+MAKEFILE_TESTS=Makefile_tests
 
 INCDIR=inc
 SRCDIR=src
@@ -10,6 +11,7 @@ LIBDIR=lib
 OUTDIR=out
 DEPDIR=dep
 OBJDIR=obj
+TESTDIR=tests
 
 
 LIB=stm32f407_hal
@@ -46,6 +48,7 @@ INCS+= -I$(HALDIR)/Inc
 INCS+= -I$(HALDIR)/Inc/Legacy
 INCS+= -I$(CMSISDIR)/Include
 INCS+= -I$(CMSISDIR)/Device/ST/STM32F4xx/Include
+INCS+= -I./src_hw_dependent
 
 
 CFLAGS= -mcpu=$(CPU_CIBLE)
@@ -77,7 +80,7 @@ DEPS=$(addprefix $(DEPDIR)/,$(SRCS:.c=.d))
 
 
 
-.PHONY: all dirs clean upload library
+.PHONY: all dirs clean upload library tests test
 
 
 
@@ -89,8 +92,11 @@ upload:all
 	
 	
 clean:
-	rm -rf $(OUTDIR) $(DEPDIR) $(OBJDIR)
+	rm -rf $(OUTDIR)
+	rm -rf $(DEPDIR)
+	rm -rf $(OBJDIR)
 	$(MAKE) clean -C $(LIBDIR)
+	$(MAKE) --file $(MAKEFILE_TESTS) clean
 
 
 dirs:
@@ -100,6 +106,12 @@ dirs:
 
 library:
 	$(MAKE) all -C $(LIBDIR)
+	
+tests:
+	$(MAKE) --file $(MAKEFILE_TESTS) all
+	
+test:tests
+	./$(TESTDIR)/out/test.elf
 
 
 $(OUTDIR)/$(OUTPUT_BIN):$(OUTDIR)/$(OUTPUT_ELF)

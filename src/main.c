@@ -5,8 +5,8 @@
 #include "reader_atr.h"
 
 
-UART_HandleTypeDef uartHandleStruct;
-extern SMARTCARD_HandleTypeDef smartcardHandleStruct;
+//UART_HandleTypeDef uartHandleStruct;
+//extern SMARTCARD_HandleTypeDef smartcardHandleStruct;
 
 
 uint8_t pSmartcardTxBuff[100];
@@ -233,53 +233,3 @@ int main(void){
 	return 0;
 }
 #endif
-
-
-
-
-
-void initUart(void){
-	uartHandleStruct.Instance = USART1;
-	uartHandleStruct.Init.BaudRate = 9600;
-	uartHandleStruct.Init.Mode = UART_MODE_TX_RX;
-	uartHandleStruct.Init.OverSampling = UART_OVERSAMPLING_16;
-	uartHandleStruct.Init.Parity = UART_PARITY_NONE;
-	uartHandleStruct.Init.StopBits = UART_STOPBITS_1;
-	uartHandleStruct.Init.WordLength = UART_WORDLENGTH_8B;
-	uartHandleStruct.Init.HwFlowCtl = UART_HWCONTROL_NONE;
-	
-	GPIO_InitTypeDef gpioInitStruct;
-	
-	/* Initialisation pin TX */
-	gpioInitStruct.Pin = GPIO_PIN_6;
-	gpioInitStruct.Mode = GPIO_MODE_AF_PP;
-	gpioInitStruct.Pull = GPIO_PULLUP;
-	gpioInitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
-	gpioInitStruct.Alternate = GPIO_AF7_USART1;
-	
-	__HAL_RCC_GPIOB_CLK_ENABLE();
-	HAL_GPIO_Init(GPIOB, &gpioInitStruct);
-	
-	
-	/* Initialisation pin RX */
-	gpioInitStruct.Pin = GPIO_PIN_7;
-	gpioInitStruct.Mode = GPIO_MODE_AF_OD;
-	gpioInitStruct.Pull = GPIO_PULLUP;
-	gpioInitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
-	gpioInitStruct.Alternate = GPIO_AF7_USART1;
-	
-	__HAL_RCC_GPIOB_CLK_ENABLE();
-	HAL_GPIO_Init(GPIOB, &gpioInitStruct);
-	
-	/* Activation clock bloc UART */
-	__HAL_RCC_USART1_CLK_ENABLE();
-	
-	
-	/* Configuration des Interruptions */
-	HAL_NVIC_SetPriority(USART1_IRQn, 0, 1);
-	HAL_NVIC_EnableIRQ(USART1_IRQn);
-	
-	
-	HAL_UART_Init(&uartHandleStruct);
-	
-}

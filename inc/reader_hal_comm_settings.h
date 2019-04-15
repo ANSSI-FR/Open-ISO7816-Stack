@@ -6,7 +6,6 @@
 #include "stdint.h"
 #include "reader.h"
 #include "reader_utils.h"
-#include "stm32f4xx_hal.h"
 
 
 
@@ -54,5 +53,7 @@ uint32_t READER_HAL_GetDi(READER_HAL_CommSettings *pSettings);
 //uint32_t READER_HAL_GetBGT(void);
 //uint32_t READER_HAL_GetRedunancyType(READER_HAL_CommSettings *pSettings);
 //uint32_t READER_HAL_GetWI(READER_HAL_CommSettings *pSettings);
+
+uint32_t READER_HAL_ComputePrescFromFreq(uint32_t freq);
 
 #endif
