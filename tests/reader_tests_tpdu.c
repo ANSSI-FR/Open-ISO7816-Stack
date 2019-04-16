@@ -18,6 +18,7 @@ void test_READER_TPDU_all(void){
 	RUN_TEST(test_READER_TPDU_Forge_shouldVerifyDataSize);
 	RUN_TEST(test_READER_TPDU_Forge_shouldCopyHeader);
 	RUN_TEST(test_READER_TPDU_Forge_shouldCopyData);
+	RUN_TEST(test_READER_TPDU_SendHeader_shouldSendRightFrame);
 }
 
 
@@ -40,12 +41,14 @@ void test_READER_TPDU_Forge_shouldCopyHeader(void){
 	uint32_t i;
 	
 	
+	srand(time(NULL));
+	
 	for(i=0; i<10; i++){
-		r1=rand();
-		r2=rand();
-		r3=rand();
-		r4=rand();
-		r5=rand();
+		r1=(uint8_t)(rand());
+		r2=(uint8_t)(rand());
+		r3=(uint8_t)(rand());
+		r4=(uint8_t)(rand());
+		r5=(uint8_t)(rand());
 		
 		retVal = READER_TPDU_Forge(&tpduCmd, r1, r2, r3, r4, r5, pTestBuff, READER_TPDU_MAX_DATA);
 		TEST_ASSERT_TRUE(retVal == READER_OK);
@@ -77,4 +80,39 @@ void test_READER_TPDU_Forge_shouldCopyData(void){
 		
 		TEST_ASSERT_EQUAL_UINT8_ARRAY(pTestBuff, tpduCmd.dataField.data, READER_TPDU_MAX_DATA);
 	}
+}
+
+
+void test_READER_TPDU_SendHeader_shouldSendRightFrame(void){
+	READER_TPDU_Command tpduCmd;
+	READER_HAL_CommSettings dummySettings;
+	READER_Status retVal;
+	uint8_t pTestBuff[READER_TPDU_MAX_DATA];
+	uint8_t r1, r2, r3, r4, r5;
+	uint32_t dummyTimeout = 1000;
+	uint8_t pExpectedFrame[5];
+	
+	
+	srand(time(NULL));
+	
+	r1=(uint8_t)(rand());
+	r2=(uint8_t)(rand());
+	r3=(uint8_t)(rand());
+	r4=(uint8_t)(rand());
+	r5=(uint8_t)(rand());
+	
+	retVal = READER_TPDU_Forge(&tpduCmd, r1, r2, r3, r4, r5, pTestBuff, READER_TPDU_MAX_DATA);
+	TEST_ASSERT_TRUE(retVal == READER_OK);
+	
+	
+	pExpectedFrame[0] = r1;
+	pExpectedFrame[1] = r2;
+	pExpectedFrame[2] = r3;
+	pExpectedFrame[3] = r4;
+	pExpectedFrame[4] = r5;
+	
+	READER_HAL_SendCharFrame_ExpectWithArrayAndReturn(&dummySettings, 1, READER_HAL_PROTOCOL_T0, pExpectedFrame, 5, 5, dummyTimeout, READER_OK);
+	
+	retVal = READER_TPDU_SendHeader(&tpduCmd, dummyTimeout, &dummySettings);
+	TEST_ASSERT_TRUE(retVal == READER_OK);
 }

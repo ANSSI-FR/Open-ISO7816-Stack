@@ -2,3 +2,6 @@
   :mock_path: tests/mocks/src
   :mock_prefix: 'mock_'
   :verbosity: 3
+  :plugins:
+    - array
+    - return_thru_ptr
