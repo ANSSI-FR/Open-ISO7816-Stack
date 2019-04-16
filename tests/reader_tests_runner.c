@@ -1,5 +1,6 @@
 #include "unity.h"
 #include "reader_tests_test.h"
+#include "reader_tests_tpdu.c"
 
 
 #ifdef TEST
