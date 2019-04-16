@@ -7,9 +7,7 @@
 int main(int argc, char *argv[]){
 	UNITY_BEGIN();
 
-	//RUN_TEST(test_addition_shouldWork);
-	//RUN_TEST(test_moyenne_shouldWork);
-	RUN_TEST(test_all_READER_TPDU);
+	test_READER_TPDU_all();
 	
 	return UNITY_END();
 }

@@ -8,8 +8,10 @@
 
 
 
-void test_all_READER_TPDU(void);
+void test_READER_TPDU_all(void);
 void test_READER_TPDU_Forge_shouldVerifyDataSize(void);
+void test_READER_TPDU_Forge_shouldCopyHeader(void);
+void test_READER_TPDU_Forge_shouldCopyData(void);
 
 
 
