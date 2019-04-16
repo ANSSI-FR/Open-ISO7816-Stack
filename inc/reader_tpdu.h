@@ -13,7 +13,7 @@
 
 
 
-#define READER_TPDU_MAX_DATA            (uint32_t)(0x000000FF)
+#define READER_TPDU_MAX_DATA            (uint32_t)(256)             /* Valeur MAX = 256, voir spec */
 #define READER_TPDU_HEADER_SIZE         (uint32_t)(0x00000005)
 #define READER_TPDU_DUMMY_FALSE_INS     (uint32_t)(0x00000061)
 #define READER_TPDU_ACK_NORMAL          (uint32_t)(0x00000001)
@@ -35,7 +35,7 @@ struct READER_TPDU_Header{
 
 typedef struct READER_TPDU_DataField READER_TPDU_DataField;
 struct READER_TPDU_DataField{
-	uint8_t size;
+	uint32_t size;
 	uint8_t data[READER_TPDU_MAX_DATA];
 };
 
@@ -55,7 +55,7 @@ typedef struct READER_TPDU_Response READER_TPDU_Response;
 struct READER_TPDU_Response{
 	uint8_t SW1;                                                                  /* !< Stocke la valeur de la première partie du Status Word (SW1) */   
 	uint8_t SW2;                                                                  /* !< Stocke la valeur de la deuxième partie du Status Word (SW2) */ 
-	uint8_t dataBytes[256];  /* 256 est la taille max d'une reponse TPDU */       /* !< Tabelau d'octets permettant de stocker les caractères reçus. Un "TPDU Response" fait au plus 256 caractères. */    
+	uint8_t dataBytes[READER_TPDU_MAX_DATA];  /* 256 est la taille max d'une reponse TPDU */       /* !< Tabelau d'octets permettant de stocker les caractères reçus. Un "TPDU Response" fait au plus 256 caractères. */    
 	uint32_t dataSize;                                                            /* !< Stocke la quantité de données reçues. */
 };
 
