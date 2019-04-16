@@ -392,8 +392,13 @@ READER_Status READER_TPDU_WaitACK(uint8_t INS, uint8_t *ACKType, uint32_t timeou
  * \param *dataBuff est un pointeur vers un tableau de caractères. Celui-ci contient les caractères du champ de données de la commande.
  * \param dataSize est le nombre de caractères contenus dans le champs de données de la commande.
  */
-READER_Status READER_TPDU_Forge(READER_TPDU_Command *tpdu, uint8_t CLA, uint8_t INS, uint8_t P1, uint8_t P2, uint8_t P3, uint8_t *dataBuff, uint8_t dataSize){
-	uint8_t i;
+READER_Status READER_TPDU_Forge(READER_TPDU_Command *tpdu, uint8_t CLA, uint8_t INS, uint8_t P1, uint8_t P2, uint8_t P3, uint8_t *dataBuff, uint32_t dataSize){
+	uint32_t i;
+	
+	
+	if(dataSize > READER_TPDU_MAX_DATA){
+		return READER_ERR;
+	}
 	
 	tpdu->headerField.CLA = CLA;
 	tpdu->headerField.INS = INS;
