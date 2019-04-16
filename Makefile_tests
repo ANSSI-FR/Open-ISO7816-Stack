@@ -17,7 +17,7 @@ EXCLUDED_FROM_COMPILATION+= $(HEADERS_TO_MOCK:.h=.c)
 
 
 
-DIR_TESTS=tests
+DIR_TESTS=./tests
 DIR_UNITY=./Unity
 DIR_CMOCK=./CMock
 CMOCK_SCRIPT=$(DIR_CMOCK)/lib/cmock.rb
@@ -95,6 +95,8 @@ TEST_OBJS=$(addprefix $(DIR_TEST_OBJ)/,$(TEST_SRCS:.c=.o))
 
 .PHONY: all dirs clean
 
+.PRECIOUS:$(MOCKS_SRCS)
+
 
 
 all:dirs $(DIR_OUT)/$(OUTPUT_ELF)
@@ -127,7 +129,7 @@ dirs:
 
 
 $(DIR_OUT)/$(OUTPUT_ELF):$(OBJS) $(MOCKS_OBJS) $(DIR_LIB)/$(UNITY_OBJ) $(DIR_LIB)/$(CMOCK_OBJ) $(TEST_OBJS)
-	$(CC) $(CFLAGS) $(LDFLAGS) $^ -o $@
+	$(LD) $(CFLAGS) $(LDFLAGS) $^ -o $@
 
 
 
