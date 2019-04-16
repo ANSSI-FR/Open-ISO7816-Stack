@@ -85,7 +85,7 @@ READER_Status READER_TPDU_SendHeader(READER_TPDU_Command *tpdu, uint32_t timeout
 	headerBuff[4] = tpdu->headerField.P3;
 	
 	retVal = READER_HAL_SendCharFrame(pSettings, READER_HAL_PROTOCOL_T0, headerBuff, READER_TPDU_HEADER_SIZE, timeout);
-	if(retVal != READER_OK) return retVal
+	if(retVal != READER_OK) return retVal;
 	
 	return READER_OK;
 }
