@@ -23,6 +23,7 @@ void test_READER_TPDU_all(void){
 	RUN_TEST(test_READER_TPDU_SendDataOneshot_shouldVerifyDataSize);
 	RUN_TEST(test_READER_TPDU_IsACK_shouldWork);
 	RUN_TEST(test_READER_TPDU_IsXoredACK_shouldWork);
+	RUN_TEST(test_READER_TPDU_IsNullByte_shouldWork);
 }
 
 
@@ -227,4 +228,19 @@ void test_READER_TPDU_IsXoredACK_shouldWork(void){
 	TEST_ASSERT_TRUE(READER_TPDU_IsXoredACK(0x65^0xFF, 0x65) == READER_NO);
 	TEST_ASSERT_TRUE(READER_TPDU_IsXoredACK(0x04^0xFF, 0x04) == READER_OK);
 	TEST_ASSERT_TRUE(READER_TPDU_IsXoredACK(0x17^0xFF, 0x17) == READER_OK);
+}
+
+
+void test_READER_TPDU_IsNullByte_shouldWork(void){
+	uint32_t i;
+	
+	
+	TEST_ASSERT_TRUE(READER_TPDU_IsNullByte(0x60) == READER_OK);
+	
+	for(i=0x00; i<0xFF; i++){
+		if(i != 0x60){
+			TEST_ASSERT_TRUE(READER_TPDU_IsNullByte((uint8_t)(i)) == READER_NO);
+		}
+	}
+	
 }
