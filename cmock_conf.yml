@@ -6,3 +6,4 @@
     - array
     - return_thru_ptr
     - ignore
+    - expect_any_args
