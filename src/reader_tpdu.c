@@ -283,6 +283,15 @@ READER_Status READER_TPDU_IsACK(uint8_t byte, uint8_t INS){
 
 
 READER_Status READER_TPDU_IsXoredACK(uint8_t byte, uint8_t INS){
+	/* Voir ISO7816-3 section 10.3.3 ...  */
+	if((byte & 0xF0) == 0x90){
+		return READER_NO;
+	}
+	
+	if((byte & 0xF0) == 0x60){
+		return READER_NO;
+	}
+	
 	if(byte == (INS ^ 0xFF)){
 		return READER_OK;
 	}
