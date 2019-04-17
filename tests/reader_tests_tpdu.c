@@ -29,6 +29,7 @@ void test_READER_TPDU_all(void){
 	RUN_TEST(test_READER_TPDU_WaitACK_shouldDetectINS);
 	RUN_TEST(test_READER_TPDU_WaitACK_shouldDetectXoredINS);
 	RUN_TEST(test_READER_TPDU_WaitACK_shouldTimeout);
+	RUN_TEST(test_READER_TPDU_WaitACK_shouldWaitOnNullByte);
 }
 
 
@@ -352,3 +353,25 @@ void test_READER_TPDU_WaitACK_shouldTimeout(void){
 	TEST_ASSERT_TRUE(retVal == READER_TIMEOUT);
 }
 
+
+void test_READER_TPDU_WaitACK_shouldWaitOnNullByte(void){
+	READER_HAL_CommSettings dummySettings;
+	READER_Status retVal;
+	uint8_t ACKType;
+	uint8_t ins = 0x04;
+	uint8_t nullByte = 0x60;
+	uint32_t timeout = 1000;
+	
+	
+	READER_HAL_RcvChar_ExpectAnyArgsAndReturn(READER_OK);
+	READER_HAL_RcvChar_ReturnThruPtr_character(&nullByte);
+	READER_HAL_RcvChar_ExpectAnyArgsAndReturn(READER_OK);
+	READER_HAL_RcvChar_ReturnThruPtr_character(&nullByte);
+	READER_HAL_RcvChar_ExpectAnyArgsAndReturn(READER_OK);
+	READER_HAL_RcvChar_ReturnThruPtr_character(&ins);
+	
+	retVal = READER_TPDU_WaitACK(ins, &ACKType, timeout, &dummySettings);
+	
+	TEST_ASSERT_TRUE(retVal == READER_OK);
+	TEST_ASSERT_EQUAL_UINT8(READER_TPDU_ACK_NORMAL, ACKType);
+}
