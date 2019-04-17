@@ -27,6 +27,7 @@ void test_READER_TPDU_all(void){
 	RUN_TEST(test_READER_TPDU_IsSW1_shouldWork);
 	RUN_TEST(test_READER_TPDU_IsProcedureByte_shouldWork);
 	RUN_TEST(test_READER_TPDU_WaitACK_shouldDetectINS);
+	RUN_TEST(test_READER_TPDU_WaitACK_shouldDetectXoredINS);
 }
 
 
@@ -311,5 +312,26 @@ void test_READER_TPDU_WaitACK_shouldDetectINS(void){
 		
 		TEST_ASSERT_TRUE(retVal == READER_OK);
 		TEST_ASSERT_EQUAL_UINT8(READER_TPDU_ACK_NORMAL, ACKType);
+	}
+}
+
+
+void test_READER_TPDU_WaitACK_shouldDetectXoredINS(void){
+	READER_HAL_CommSettings dummySettings;
+	READER_Status retVal;
+	uint8_t ACKType, ins, xIns;
+	uint32_t timeout = 1000;
+	
+	
+	for(ins=0x00; ins<0x40; ins++){
+		xIns = ins^0xFF;
+		
+		READER_HAL_RcvChar_ExpectAnyArgsAndReturn(READER_OK);
+		READER_HAL_RcvChar_ReturnThruPtr_character(&xIns);
+		
+		retVal = READER_TPDU_WaitACK(ins, &ACKType, timeout, &dummySettings); 
+		
+		TEST_ASSERT_TRUE(retVal == READER_OK);
+		TEST_ASSERT_EQUAL_UINT8(READER_TPDU_ACK_XORED, ACKType);
 	}
 }
