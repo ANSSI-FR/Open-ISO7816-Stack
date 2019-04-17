@@ -26,6 +26,7 @@ void test_READER_TPDU_all(void){
 	RUN_TEST(test_READER_TPDU_IsNullByte_shouldWork);
 	RUN_TEST(test_READER_TPDU_IsSW1_shouldWork);
 	RUN_TEST(test_READER_TPDU_IsProcedureByte_shouldWork);
+	RUN_TEST(test_READER_TPDU_WaitACK_shouldDetectINS);
 }
 
 
@@ -291,5 +292,24 @@ void test_READER_TPDU_IsProcedureByte_shouldWork(void){
 				TEST_ASSERT_TRUE(READER_TPDU_IsProcedureByte(byte, ins) == READER_NO);
 			}
 		}	
+	}
+}
+
+
+void test_READER_TPDU_WaitACK_shouldDetectINS(void){
+	READER_HAL_CommSettings dummySettings;
+	READER_Status retVal;
+	uint8_t ACKType, ins;
+	uint32_t timeout = 1000;
+	
+	
+	for(ins=0x00; ins<0x60; ins++){
+		READER_HAL_RcvChar_ExpectAnyArgsAndReturn(READER_OK);
+		READER_HAL_RcvChar_ReturnThruPtr_character(&ins);
+		
+		retVal = READER_TPDU_WaitACK(ins, &ACKType, timeout, &dummySettings); 
+		
+		TEST_ASSERT_TRUE(retVal == READER_OK);
+		TEST_ASSERT_EQUAL_UINT8(READER_TPDU_ACK_NORMAL, ACKType);
 	}
 }
