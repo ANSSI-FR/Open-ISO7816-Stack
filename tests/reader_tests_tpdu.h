@@ -20,6 +20,7 @@ void test_READER_TPDU_IsACK_shouldWork(void);
 void test_READER_TPDU_IsXoredACK_shouldWork(void);
 void test_READER_TPDU_IsNullByte_shouldWork(void);
 void test_READER_TPDU_IsSW1_shouldWork(void);
+void test_READER_TPDU_IsProcedureByte_shouldWork(void);
 
 
 

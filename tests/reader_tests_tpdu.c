@@ -25,6 +25,7 @@ void test_READER_TPDU_all(void){
 	RUN_TEST(test_READER_TPDU_IsXoredACK_shouldWork);
 	RUN_TEST(test_READER_TPDU_IsNullByte_shouldWork);
 	RUN_TEST(test_READER_TPDU_IsSW1_shouldWork);
+	RUN_TEST(test_READER_TPDU_IsProcedureByte_shouldWork);
 }
 
 
@@ -264,5 +265,31 @@ void test_READER_TPDU_IsSW1_shouldWork(void){
 		else{
 			TEST_ASSERT_TRUE(READER_TPDU_IsSW1(i) == READER_NO);
 		}
+	}
+}
+
+
+void test_READER_TPDU_IsProcedureByte_shouldWork(void){
+	uint32_t ins, byte;
+	
+	
+	for(ins=0x00; ins<0xFF; ins++){
+		for(byte=0x00; byte<=0xFF; byte++){
+			if((byte >= 0x60) && (byte <= 0x6F)){
+				TEST_ASSERT_TRUE(READER_TPDU_IsProcedureByte((uint8_t)(byte), (uint8_t)(ins)) == READER_OK);
+			}
+			else if((byte >= 0x90) && (byte<=0x9F)){
+				TEST_ASSERT_TRUE(READER_TPDU_IsProcedureByte((uint8_t)(byte), (uint8_t)(ins)) == READER_OK);
+			}
+			else if(byte == ins){
+				TEST_ASSERT_TRUE(READER_TPDU_IsProcedureByte(byte, ins) == READER_OK);
+			}
+			else if(byte == (ins^0xFF)){
+				TEST_ASSERT_TRUE(READER_TPDU_IsProcedureByte(byte, ins) == READER_OK);
+			}
+			else{
+				TEST_ASSERT_TRUE(READER_TPDU_IsProcedureByte(byte, ins) == READER_NO);
+			}
+		}	
 	}
 }
