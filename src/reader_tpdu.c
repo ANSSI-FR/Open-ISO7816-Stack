@@ -49,6 +49,10 @@ READER_Status READER_TPDU_Send(READER_TPDU_Command *tpdu, uint32_t timeout, READ
 		return READER_OK;
 	}
 	
+	if(tpdu->dataField.size > READER_TPDU_MAX_DATA){
+		return READER_ERR;
+	}
+	
 	
 	/* Le la requette TPDU contient des donnees alors envoi du champs de donnees selon le type de ACK recu */
 	if(ACKType == READER_TPDU_ACK_NORMAL){
