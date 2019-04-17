@@ -19,6 +19,7 @@ void test_READER_TPDU_all(void){
 	RUN_TEST(test_READER_TPDU_Forge_shouldCopyHeader);
 	RUN_TEST(test_READER_TPDU_Forge_shouldCopyData);
 	RUN_TEST(test_READER_TPDU_SendHeader_shouldSendRightFrame);
+	RUN_TEST(test_READER_TPDU_SendDataOneshot_shouldSendRightFrame);
 }
 
 
@@ -114,5 +115,44 @@ void test_READER_TPDU_SendHeader_shouldSendRightFrame(void){
 	READER_HAL_SendCharFrame_ExpectWithArrayAndReturn(&dummySettings, 1, READER_HAL_PROTOCOL_T0, pExpectedFrame, 5, 5, dummyTimeout, READER_OK);
 	
 	retVal = READER_TPDU_SendHeader(&tpduCmd, dummyTimeout, &dummySettings);
+	TEST_ASSERT_TRUE(retVal == READER_OK);
+}
+
+
+void test_READER_TPDU_SendDataOneshot_shouldSendRightFrame(void){
+	READER_TPDU_Command tpduCmd;
+	READER_HAL_CommSettings dummySettings;
+	READER_Status retVal;
+	uint8_t pTestBuff[READER_TPDU_MAX_DATA];
+	uint8_t pExpectedFrame[READER_TPDU_MAX_DATA];
+	uint8_t r1, r2, r3, r4, r5;
+	uint32_t dummyTimeout = 1000;
+	uint32_t i;
+	
+	
+	/* On prepare un TPDU et on le Forge ...  */
+	srand(time(NULL));
+	
+	r1=(uint8_t)(rand());
+	r2=(uint8_t)(rand());
+	r3=(uint8_t)(rand());
+	r4=(uint8_t)(rand());
+	r5=(uint8_t)(rand());
+	
+	for(i=0; i<READER_TPDU_MAX_DATA; i++){
+		pTestBuff[i] = (uint8_t)(rand());
+	}
+	
+	retVal = READER_TPDU_Forge(&tpduCmd, r1, r2, r3, r4, r5, pTestBuff, READER_TPDU_MAX_DATA);
+	TEST_ASSERT_TRUE(retVal == READER_OK);
+	
+	/* On fait les verifications ...  */
+	for(i=0; i<READER_TPDU_MAX_DATA; i++){
+		pExpectedFrame[i] = pTestBuff[i];
+	}
+	
+	READER_HAL_SendCharFrame_ExpectWithArrayAndReturn(&dummySettings, 1, READER_HAL_PROTOCOL_T0, pExpectedFrame, READER_TPDU_MAX_DATA, READER_TPDU_MAX_DATA, dummyTimeout, READER_OK);
+	
+	retVal = READER_TPDU_SendDataOneshot(&tpduCmd, dummyTimeout, &dummySettings);
 	TEST_ASSERT_TRUE(retVal == READER_OK);
 }
