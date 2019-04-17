@@ -23,6 +23,7 @@ void test_READER_TPDU_IsSW1_shouldWork(void);
 void test_READER_TPDU_IsProcedureByte_shouldWork(void);
 void test_READER_TPDU_WaitACK_shouldDetectINS(void);
 void test_READER_TPDU_WaitACK_shouldDetectXoredINS(void);
+void test_READER_TPDU_WaitACK_shouldTimeout(void);
 
 
 
