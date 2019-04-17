@@ -30,6 +30,7 @@ void test_READER_TPDU_all(void){
 	RUN_TEST(test_READER_TPDU_WaitACK_shouldDetectXoredINS);
 	RUN_TEST(test_READER_TPDU_WaitACK_shouldTimeout);
 	RUN_TEST(test_READER_TPDU_WaitACK_shouldWaitOnNullByte);
+	RUN_TEST(test_READER_TPDU_Send_shouldVerifyDataSize);
 }
 
 
@@ -374,4 +375,24 @@ void test_READER_TPDU_WaitACK_shouldWaitOnNullByte(void){
 	
 	TEST_ASSERT_TRUE(retVal == READER_OK);
 	TEST_ASSERT_EQUAL_UINT8(READER_TPDU_ACK_NORMAL, ACKType);
+}
+
+
+void test_READER_TPDU_Send_shouldVerifyDataSize(void){
+	READER_TPDU_Command tpduCmd;
+	READER_HAL_CommSettings dummySettings;
+	READER_Status retVal;
+	uint32_t timeout = 1000;
+	uint8_t ins = 0x04;
+	
+	
+	tpduCmd.dataField.size = READER_TPDU_MAX_DATA + 1;
+	tpduCmd.headerField.INS = ins;
+	
+	READER_HAL_SendCharFrame_IgnoreAndReturn(READER_OK);
+	READER_HAL_RcvChar_ExpectAnyArgsAndReturn(READER_OK);
+	READER_HAL_RcvChar_ReturnThruPtr_character(&ins);
+	
+	retVal = READER_TPDU_Send(&tpduCmd, timeout, &dummySettings);
+	TEST_ASSERT_FALSE(retVal == READER_OK);
 }
