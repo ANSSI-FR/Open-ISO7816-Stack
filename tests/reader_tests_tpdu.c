@@ -198,7 +198,7 @@ void test_READER_TPDU_SendDataOneshot_shouldVerifyDataSize(void){
 	tpduCmd.dataField.size += READER_TPDU_MAX_DATA;
 	
 	/* On tente l'envoi et on check la reaction ...  */
-	READER_HAL_SendCharFrame_IgnoreAndReturn(READER_OK);
+	READER_HAL_SendCharFrame_ExpectAnyArgsAndReturn(READER_OK);
 	
 	retVal = READER_TPDU_SendDataOneshot(&tpduCmd, dummyTimeout, &dummySettings);
 	TEST_ASSERT_FALSE(retVal == READER_OK);
