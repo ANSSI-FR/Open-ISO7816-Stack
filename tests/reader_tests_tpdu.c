@@ -24,6 +24,7 @@ void test_READER_TPDU_all(void){
 	RUN_TEST(test_READER_TPDU_IsACK_shouldWork);
 	RUN_TEST(test_READER_TPDU_IsXoredACK_shouldWork);
 	RUN_TEST(test_READER_TPDU_IsNullByte_shouldWork);
+	RUN_TEST(test_READER_TPDU_IsSW1_shouldWork);
 }
 
 
@@ -243,4 +244,25 @@ void test_READER_TPDU_IsNullByte_shouldWork(void){
 		}
 	}
 	
+}
+
+
+void test_READER_TPDU_IsSW1_shouldWork(void){
+	uint32_t i;
+	
+	
+	for(i=0x00; i<=0xFF; i++){
+		if((i>=0x90) && (i<=0x9F)){
+			TEST_ASSERT_TRUE(READER_TPDU_IsSW1(i) == READER_OK);
+		}
+		else if(i == 0x60){
+			TEST_ASSERT_TRUE(READER_TPDU_IsSW1(i) == READER_NO);
+		}
+		else if((i>=0x61) && (i<=0x6F)){
+			TEST_ASSERT_TRUE(READER_TPDU_IsSW1(i) == READER_OK);
+		}
+		else{
+			TEST_ASSERT_TRUE(READER_TPDU_IsSW1(i) == READER_NO);
+		}
+	}
 }
