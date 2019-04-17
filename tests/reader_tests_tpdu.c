@@ -20,6 +20,7 @@ void test_READER_TPDU_all(void){
 	RUN_TEST(test_READER_TPDU_Forge_shouldCopyData);
 	RUN_TEST(test_READER_TPDU_SendHeader_shouldSendRightFrame);
 	RUN_TEST(test_READER_TPDU_SendDataOneshot_shouldSendRightFrame);
+	RUN_TEST(test_READER_TPDU_SendDataOneshot_shouldVerifyDataSize);
 }
 
 
@@ -83,7 +84,7 @@ void test_READER_TPDU_Forge_shouldCopyData(void){
 	}
 }
 
-
+/* On verifie que la READER_HAL_SendCharFrame() recoit bien la bonne frame a envoyer et de la bonne taille ...   */
 void test_READER_TPDU_SendHeader_shouldSendRightFrame(void){
 	READER_TPDU_Command tpduCmd;
 	READER_HAL_CommSettings dummySettings;
@@ -155,4 +156,45 @@ void test_READER_TPDU_SendDataOneshot_shouldSendRightFrame(void){
 	
 	retVal = READER_TPDU_SendDataOneshot(&tpduCmd, dummyTimeout, &dummySettings);
 	TEST_ASSERT_TRUE(retVal == READER_OK);
+}
+
+
+
+/* On fabrique un TPDU incorrect avec une dataSize plus grande que la taille max acceptee (READER_TPDU_MAX_DATA). On voit ce qui se passe au moment de l'envoi ...  */
+void test_READER_TPDU_SendDataOneshot_shouldVerifyDataSize(void){
+	READER_TPDU_Command tpduCmd;
+	READER_HAL_CommSettings dummySettings;
+	READER_Status retVal;
+	uint8_t pTestBuff[READER_TPDU_MAX_DATA];
+	uint8_t pExpectedFrame[READER_TPDU_MAX_DATA];
+	uint8_t r1, r2, r3, r4, r5;
+	uint32_t dummyTimeout = 1000;
+	uint32_t i;
+	
+	
+	/* On prepare un TPDU et on le Forge ...  */
+	srand(time(NULL));
+	
+	r1=(uint8_t)(rand());
+	r2=(uint8_t)(rand());
+	r3=(uint8_t)(rand());
+	r4=(uint8_t)(rand());
+	r5=(uint8_t)(rand());
+	
+	for(i=0; i<READER_TPDU_MAX_DATA; i++){
+		pTestBuff[i] = (uint8_t)(rand());
+	}
+	
+	retVal = READER_TPDU_Forge(&tpduCmd, r1, r2, r3, r4, r5, pTestBuff, READER_TPDU_MAX_DATA);
+	TEST_ASSERT_TRUE(retVal == READER_OK);
+	
+	/* On modifie manuellement le TPDU de sorte a ce que sa taille soit anormale ...  */
+	tpduCmd.dataField.size += READER_TPDU_MAX_DATA;
+	
+	/* On tente l'envoi et on check la reaction ...  */
+	READER_HAL_SendCharFrame_IgnoreAndReturn(READER_OK);
+	
+	retVal = READER_TPDU_SendDataOneshot(&tpduCmd, dummyTimeout, &dummySettings);
+	TEST_ASSERT_FALSE(retVal == READER_OK);
+	
 }
