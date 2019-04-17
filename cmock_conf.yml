@@ -5,3 +5,4 @@
   :plugins:
     - array
     - return_thru_ptr
+    - ignore
