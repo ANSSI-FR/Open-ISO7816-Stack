@@ -102,10 +102,16 @@ READER_Status READER_TPDU_SendDataOneshot(READER_TPDU_Command *tpdu, uint32_t ti
 	READER_Status retVal;
 	
 	/* On envoie les donnees si il y en a ... */
-	if(tpdu->dataField.size != 0){
-		retVal = READER_HAL_SendCharFrame(pSettings, READER_HAL_PROTOCOL_T0, tpdu->dataField.data, tpdu->dataField.size, timeout);
-		return retVal;
+	if(tpdu->dataField.size == 0){
+		return READER_OK;
 	}
+	
+	if(tpdu->dataField.size > READER_TPDU_MAX_DATA){
+		return READER_ERR;
+	}
+	
+	retVal = READER_HAL_SendCharFrame(pSettings, READER_HAL_PROTOCOL_T0, tpdu->dataField.data, tpdu->dataField.size, timeout);
+	if(retVal != READER_OK) return retVal;
 	
 	return READER_OK;
 }
