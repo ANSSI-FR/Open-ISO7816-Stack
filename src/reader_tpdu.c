@@ -179,6 +179,11 @@ READER_Status READER_TPDU_RcvSW(uint8_t *SW1, uint8_t *SW2, uint32_t timeout, RE
 	/* On attend SW1 en prenant en compte les null bytes ... */
 	do{
 		retVal = READER_HAL_RcvChar(pSettings, READER_HAL_PROTOCOL_T0, &byte1, timeout);
+		
+		if((retVal == READER_OK) && (READER_TPDU_IsNullByte(byte1) == READER_NO) &&  (READER_TPDU_IsSW1(byte1) == READER_NO)){
+			return READER_ERR;
+		}
+		
 	} while( (retVal==READER_OK) && (READER_TPDU_IsNullByte(byte1) == READER_OK) && (READER_TPDU_IsSW1(byte1) == READER_NO) );
 	
 	if(retVal == READER_TIMEOUT){
