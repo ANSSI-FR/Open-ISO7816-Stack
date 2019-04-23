@@ -30,6 +30,7 @@ void test_READER_TPDU_RcvSW_shouldTimeoutOnSW1(void);
 void test_READER_TPDU_RcvSW_shouldTimeoutOnSW2(void);
 void test_READER_TPDU_RcvSW_shouldWaitOnNullByte(void);
 void test_READER_TPDU_RcvSW_shouldDetectIncorrectSW1(void);
+void test_READER_TPDU_RcvResponse_shouldVerifyExpectedSize(void);
 
 
 
