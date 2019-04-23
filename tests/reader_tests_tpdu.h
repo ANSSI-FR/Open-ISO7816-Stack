@@ -26,6 +26,7 @@ void test_READER_TPDU_WaitACK_shouldDetectXoredINS(void);
 void test_READER_TPDU_WaitACK_shouldTimeout(void);
 void test_READER_TPDU_WaitACK_shouldWaitOnNullByte(void);
 void test_READER_TPDU_Send_shouldVerifyDataSize(void);
+void test_READER_TPDU_RcvSW_shouldTimeoutOnSW1(void);
 
 
 
