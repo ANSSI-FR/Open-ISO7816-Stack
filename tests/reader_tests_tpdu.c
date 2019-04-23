@@ -34,6 +34,7 @@ void test_READER_TPDU_all(void){
 	RUN_TEST(test_READER_TPDU_RcvSW_shouldTimeoutOnSW1);
 	RUN_TEST(test_READER_TPDU_RcvSW_shouldTimeoutOnSW2);
 	RUN_TEST(test_READER_TPDU_RcvSW_shouldWaitOnNullByte);
+	RUN_TEST(test_READER_TPDU_RcvSW_shouldDetectIncorrectSW1);
 }
 
 
@@ -461,4 +462,40 @@ void test_READER_TPDU_RcvSW_shouldWaitOnNullByte(void){
 	TEST_ASSERT_TRUE(retVal == READER_OK);
 	TEST_ASSERT_EQUAL_UINT8(byteSW1, SW1);
 	TEST_ASSERT_EQUAL_UINT8(byteSW2, SW2);
+}
+
+
+void test_READER_TPDU_RcvSW_shouldDetectIncorrectSW1(void){
+	READER_HAL_CommSettings dummySettings;
+	READER_Status retVal;
+	uint8_t SW1, SW2;
+	uint8_t byte1 = 0x17;
+	uint8_t byte2 = 0x23;
+	uint8_t byte3 = 0x01;
+	uint32_t timeout = 1000;
+	
+	
+	/* On teste une valeur de 1er carac qui ne correspondent ni a un SW1 ni a un Null Byte ...  */
+	READER_HAL_RcvChar_ExpectAnyArgsAndReturn(READER_OK);
+	READER_HAL_RcvChar_ReturnThruPtr_character(&byte1);
+	
+	retVal = READER_TPDU_RcvSW(&SW1, &SW2, timeout, &dummySettings);
+	TEST_ASSERT_FALSE(retVal == READER_OK);
+	TEST_ASSERT_FALSE(retVal == READER_TIMEOUT);
+	
+	/* On teste une valeur de 1er carac qui ne correspondent ni a un SW1 ni a un Null Byte ...  */
+	READER_HAL_RcvChar_ExpectAnyArgsAndReturn(READER_OK);
+	READER_HAL_RcvChar_ReturnThruPtr_character(&byte2);
+	
+	retVal = READER_TPDU_RcvSW(&SW1, &SW2, timeout, &dummySettings);
+	TEST_ASSERT_FALSE(retVal == READER_OK);
+	TEST_ASSERT_FALSE(retVal == READER_TIMEOUT);
+	
+	/* On teste une valeur de 1er carac qui ne correspondent ni a un SW1 ni a un Null Byte ...  */
+	READER_HAL_RcvChar_ExpectAnyArgsAndReturn(READER_OK);
+	READER_HAL_RcvChar_ReturnThruPtr_character(&byte3);
+	
+	retVal = READER_TPDU_RcvSW(&SW1, &SW2, timeout, &dummySettings);
+	TEST_ASSERT_FALSE(retVal == READER_OK);
+	TEST_ASSERT_FALSE(retVal == READER_TIMEOUT);
 }
