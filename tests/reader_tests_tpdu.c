@@ -37,6 +37,7 @@ void test_READER_TPDU_all(void){
 	RUN_TEST(test_READER_TPDU_RcvSW_shouldDetectIncorrectSW1);
 	RUN_TEST(test_READER_TPDU_RcvResponse_shouldVerifyExpectedSize);
 	RUN_TEST(test_READER_TPDU_RcvSW_shouldReturnCorrectData);
+	RUN_TEST(test_READER_TPDU_RcvResponse_shouldTimeout);
 }
 
 
@@ -541,4 +542,18 @@ void test_READER_TPDU_RcvResponse_shouldVerifyExpectedSize(void){
 	
 	retVal = READER_TPDU_RcvResponse(&tpduResp, READER_TPDU_MAX_DATA+1, timeout, &dummySettings);
 	TEST_ASSERT_TRUE(retVal == READER_OVERFLOW);
+}
+
+
+void test_READER_TPDU_RcvResponse_shouldTimeout(void){
+	READER_HAL_CommSettings dummySettings;
+	READER_TPDU_Response tpduResp;
+	READER_Status retVal;
+	uint32_t timeout = 1000;
+	
+
+	READER_HAL_RcvCharFrameCount_ExpectAnyArgsAndReturn(READER_TIMEOUT);
+	
+	retVal = READER_TPDU_RcvResponse(&tpduResp, READER_TPDU_MAX_DATA, timeout, &dummySettings);
+	TEST_ASSERT_TRUE(retVal == READER_TIMEOUT);
 }
