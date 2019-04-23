@@ -327,7 +327,7 @@ void test_READER_TPDU_WaitACK_shouldDetectXoredINS(void){
 	uint32_t timeout = 1000;
 	
 	
-	for(ins=0x00; ins<0x40; ins++){
+	for(ins=0x00; ins<10; ins++){
 		xIns = ins^0xFF;
 		
 		READER_HAL_RcvChar_ExpectAnyArgsAndReturn(READER_OK);
