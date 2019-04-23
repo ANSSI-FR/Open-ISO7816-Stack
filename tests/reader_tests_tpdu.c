@@ -36,6 +36,7 @@ void test_READER_TPDU_all(void){
 	RUN_TEST(test_READER_TPDU_RcvSW_shouldWaitOnNullByte);
 	RUN_TEST(test_READER_TPDU_RcvSW_shouldDetectIncorrectSW1);
 	RUN_TEST(test_READER_TPDU_RcvResponse_shouldVerifyExpectedSize);
+	RUN_TEST(test_READER_TPDU_RcvSW_shouldReturnCorrectData);
 }
 
 
@@ -499,6 +500,32 @@ void test_READER_TPDU_RcvSW_shouldDetectIncorrectSW1(void){
 	retVal = READER_TPDU_RcvSW(&SW1, &SW2, timeout, &dummySettings);
 	TEST_ASSERT_FALSE(retVal == READER_OK);
 	TEST_ASSERT_FALSE(retVal == READER_TIMEOUT);
+}
+
+
+void test_READER_TPDU_RcvSW_shouldReturnCorrectData(void){
+	READER_HAL_CommSettings dummySettings;
+	READER_Status retVal;
+	uint8_t SW1, SW2;
+	uint8_t byteSW1 = 0x90;
+	uint8_t byteSW2 = 0x00;
+	uint32_t timeout = 1000;
+	
+	
+	TEST_ASSERT_TRUE(READER_TPDU_IsSW1(byteSW1) == READER_OK);
+	
+	READER_HAL_RcvChar_ExpectAnyArgsAndReturn(READER_OK);
+	READER_HAL_RcvChar_ReturnThruPtr_character(&byteSW1);
+	
+	READER_HAL_RcvChar_ExpectAnyArgsAndReturn(READER_OK);
+	READER_HAL_RcvChar_ReturnThruPtr_character(&byteSW2);
+	
+	
+	retVal = READER_TPDU_RcvSW(&SW1, &SW2, timeout, &dummySettings);
+	TEST_ASSERT_TRUE(retVal == READER_OK);
+	
+	TEST_ASSERT_EQUAL_UINT8(byteSW1, SW1);
+	TEST_ASSERT_EQUAL_UINT8(byteSW2, SW2);
 }
 
 
