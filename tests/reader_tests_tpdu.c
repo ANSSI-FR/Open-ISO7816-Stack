@@ -509,7 +509,8 @@ void test_READER_TPDU_RcvResponse_shouldVerifyExpectedSize(void){
 	uint32_t timeout = 1000;
 	
 	
-	READER_HAL_RcvCharFrameCount_IgnoreAndReturn(READER_OK);
+	/* Cette fonction ne doit pas etre appellee ...  */
+	//READER_HAL_RcvCharFrameCount_IgnoreAndReturn(READER_OK);
 	
 	retVal = READER_TPDU_RcvResponse(&tpduResp, READER_TPDU_MAX_DATA+1, timeout, &dummySettings);
 	TEST_ASSERT_TRUE(retVal == READER_OVERFLOW);
