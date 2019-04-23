@@ -245,7 +245,7 @@ READER_Status READER_TPDU_RcvResponse(READER_TPDU_Response *pResp, uint32_t expe
 	uint32_t rcvdCount;
 	
 	/* Une TPDU Response ne peut pas contenir plus de 256 caracteres. */
-	if(expectedDataSize > READER_TPDU_MAX_DATA) return READER_ERR;
+	if(expectedDataSize > READER_TPDU_MAX_DATA) return READER_OVERFLOW;
 
 	/* On recupere les donnees */
 	if(expectedDataSize != 0){
