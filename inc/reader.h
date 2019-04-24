@@ -28,7 +28,9 @@ enum READER_Status{
 	READER_BAD_VALUE                = (uint32_t)(0x0000000E),
 	READER_INVALID_BLOCK            = (uint32_t)(0x0000000F),
 	READER_OVERFLOW                 = (uint32_t)(0x00000010),
-	READER_LESS_DATA_THAN_EXPECTED  = (uint32_t)(0x00000011)
+	READER_LESS_DATA_THAN_EXPECTED  = (uint32_t)(0x00000011),
+	READER_TIMEOUT_ON_SW1           = (uint32_t)(0x00000012),
+	READER_TIMEOUT_ON_SW2           = (uint32_t)(0x00000013)
 };
 
 
