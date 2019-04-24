@@ -245,7 +245,9 @@ READER_Status READER_TPDU_RcvResponse(READER_TPDU_Response *pResp, uint32_t expe
 	uint32_t rcvdCount;
 	
 	/* Une TPDU Response ne peut pas contenir plus de 256 caracteres. */
-	if(expectedDataSize > READER_TPDU_MAX_DATA) return READER_OVERFLOW;
+	if(expectedDataSize > READER_TPDU_MAX_DATA){
+		return READER_OVERFLOW;
+	}
 
 	/* On recupere les donnees */
 	if(expectedDataSize != 0){
@@ -269,11 +271,26 @@ READER_Status READER_TPDU_RcvResponse(READER_TPDU_Response *pResp, uint32_t expe
 	
 	/* On recupere le Status Word (SW) */
 	retVal = READER_TPDU_RcvSW(&(pResp->SW1), &(pResp->SW2), timeout, pSettings);
-	if(retVal != READER_OK) return retVal;
 	
+	if((retVal == READER_TIMEOUT) && (pResp->dataSize == 2)){
+		/* Si on n'arrive pas a recevoir de SW, ca veuit dire que la carte a tres probablement envoye uniquement un SWASW2 sans envoyer de donnees ... */
+		pResp->SW1 = pResp->dataBytes[0];
+		pResp->SW2 = pResp->dataBytes[1];
+		pResp->dataSize = 0;
+		
+		if(!READER_TPDU_IsSW1(pResp->SW1)){
+			return READER_ERR;
+		}
+		return READER_TIMEOUT_GOT_ONLY_SW;
+	}
+	if((retVal != READER_OK) && !((retVal == READER_TIMEOUT) && (pResp->dataSize == 2))){
+		return retVal;
+	}
 	
 	/* Si le caractere cense etre un SW1 n'en est pas un ... */
-	if(!READER_TPDU_IsSW1(pResp->SW1)) return READER_ERR;
+	if(!READER_TPDU_IsSW1(pResp->SW1)){
+		return READER_ERR;
+	}
 	
 	
 	//pResp->dataSize = expectedDataSize;
