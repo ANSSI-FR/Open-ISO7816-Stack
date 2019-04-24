@@ -38,6 +38,7 @@ void test_READER_TPDU_all(void){
 	RUN_TEST(test_READER_TPDU_RcvResponse_shouldVerifyExpectedSize);
 	RUN_TEST(test_READER_TPDU_RcvSW_shouldReturnCorrectData);
 	RUN_TEST(test_READER_TPDU_RcvResponse_shouldTimeout);
+	RUN_TEST(test_READER_TPDU_RcvResponse_shouldRetrieveCorrectData);
 }
 
 
@@ -556,4 +557,42 @@ void test_READER_TPDU_RcvResponse_shouldTimeout(void){
 	
 	retVal = READER_TPDU_RcvResponse(&tpduResp, READER_TPDU_MAX_DATA, timeout, &dummySettings);
 	TEST_ASSERT_TRUE(retVal == READER_TIMEOUT);
+}
+
+
+void test_READER_TPDU_RcvResponse_shouldRetrieveCorrectData(void){
+	READER_TPDU_Response tpduResp;
+	READER_HAL_CommSettings dummySettings;
+	READER_Status retVal;
+	uint8_t expectedRespBytes[] = {0x00, 0x01, 0x02, 0x03, 0x04, 0x05};
+	uint32_t expectedRespBytesSize = sizeof(expectedRespBytes);
+	uint8_t expectedSW1 = 0x90;
+	uint8_t expectedSW2 = 0x00;
+	uint8_t SW1, SW2;
+	uint32_t timeout = 1000;
+	
+	
+	/* On Mock l'appel a READER_HAL_RcvCharFrameCount() ...  */
+	READER_HAL_RcvCharFrameCount_ExpectAndReturn(&dummySettings, READER_HAL_PROTOCOL_T0, NULL, expectedRespBytesSize, NULL, timeout, READER_OK);
+	READER_HAL_RcvCharFrameCount_IgnoreArg_pSettings();
+	READER_HAL_RcvCharFrameCount_IgnoreArg_frame();
+	READER_HAL_RcvCharFrameCount_IgnoreArg_rcvCount();
+	READER_HAL_RcvCharFrameCount_ReturnThruPtr_frame(expectedRespBytes);
+	READER_HAL_RcvCharFrameCount_ReturnThruPtr_rcvCount(&expectedRespBytesSize);
+	
+	/* On prepare les Mocks pour la reception du SW1SW2 ...  */
+	READER_HAL_RcvChar_ExpectAnyArgsAndReturn(READER_OK);
+	READER_HAL_RcvChar_ReturnThruPtr_character(&expectedSW1);
+	
+	READER_HAL_RcvChar_ExpectAnyArgsAndReturn(READER_OK);
+	READER_HAL_RcvChar_ReturnThruPtr_character(&expectedSW2);
+	
+	/* On efectue l'appel de la fonction que l'on veut tester, on verie la reponse ...  */
+	retVal = READER_TPDU_RcvResponse(&tpduResp, expectedRespBytesSize, timeout, &dummySettings);
+	TEST_ASSERT_TRUE(retVal == READER_OK);
+	
+	TEST_ASSERT_EQUAL_UINT8(expectedSW1, tpduResp.SW1);
+	TEST_ASSERT_EQUAL_UINT8(expectedSW2, tpduResp.SW2);
+	TEST_ASSERT_EQUAL_UINT32(expectedRespBytesSize, tpduResp.dataSize);
+	TEST_ASSERT_EQUAL_UINT8_ARRAY(expectedRespBytes, tpduResp.dataBytes, expectedRespBytesSize);
 }
