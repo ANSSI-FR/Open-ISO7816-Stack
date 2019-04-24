@@ -577,7 +577,7 @@ void test_READER_TPDU_RcvResponse_shouldRetrieveCorrectData(void){
 	READER_HAL_RcvCharFrameCount_IgnoreArg_pSettings();
 	READER_HAL_RcvCharFrameCount_IgnoreArg_frame();
 	READER_HAL_RcvCharFrameCount_IgnoreArg_rcvCount();
-	READER_HAL_RcvCharFrameCount_ReturnThruPtr_frame(expectedRespBytes);
+	READER_HAL_RcvCharFrameCount_ReturnArrayThruPtr_frame(expectedRespBytes, expectedRespBytesSize);
 	READER_HAL_RcvCharFrameCount_ReturnThruPtr_rcvCount(&expectedRespBytesSize);
 	
 	/* On prepare les Mocks pour la reception du SW1SW2 ...  */
