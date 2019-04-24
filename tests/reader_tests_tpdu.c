@@ -39,6 +39,7 @@ void test_READER_TPDU_all(void){
 	RUN_TEST(test_READER_TPDU_RcvSW_shouldReturnCorrectData);
 	RUN_TEST(test_READER_TPDU_RcvResponse_shouldTimeout);
 	RUN_TEST(test_READER_TPDU_RcvResponse_shouldRetrieveCorrectData);
+	RUN_TEST(test_READER_TPDU_RcvResponse_shouldDetectIfSWInsteadOfData_Case1);
 }
 
 
@@ -595,4 +596,37 @@ void test_READER_TPDU_RcvResponse_shouldRetrieveCorrectData(void){
 	TEST_ASSERT_EQUAL_UINT8(expectedSW2, tpduResp.SW2);
 	TEST_ASSERT_EQUAL_UINT32(expectedRespBytesSize, tpduResp.dataSize);
 	TEST_ASSERT_EQUAL_UINT8_ARRAY(expectedRespBytes, tpduResp.dataBytes, expectedRespBytesSize);
+}
+
+
+/* Ojn teste le cas ou a la place de recevoir les donnees attendues, on recoit uniquement le SW1SW2 ...  */
+void test_READER_TPDU_RcvResponse_shouldDetectIfSWInsteadOfData_Case1(void){
+	READER_TPDU_Response tpduResp;
+	READER_HAL_CommSettings dummySettings;
+	READER_Status retVal;
+	uint8_t expectedRespBytes[] = {0x00, 0x01, 0x02, 0x03, 0x04, 0x05};
+	uint32_t expectedRespBytesSize = sizeof(expectedRespBytes);
+	uint32_t reallyRcvdBytesSize = 2;
+	uint8_t reallyRcvdBytes[] = {0x90, 0x00};  /* Correspondent a SW1 et SW1 que l'ont recoit a la place des donnees */
+	uint32_t timeout = 1000;
+	
+	
+	/* On Mock m'appel a READER_HAL_RcvCharFrameCount(). On simule la reception de SW1SW2 a la place des data attendues */
+	READER_HAL_RcvCharFrameCount_ExpectAndReturn(&dummySettings, READER_HAL_PROTOCOL_T0, NULL, expectedRespBytesSize, NULL, timeout, READER_TIMEOUT);
+	READER_HAL_RcvCharFrameCount_IgnoreArg_pSettings();
+	READER_HAL_RcvCharFrameCount_IgnoreArg_frame();
+	READER_HAL_RcvCharFrameCount_IgnoreArg_rcvCount();
+	READER_HAL_RcvCharFrameCount_ReturnArrayThruPtr_frame(reallyRcvdBytes, reallyRcvdBytesSize);
+	READER_HAL_RcvCharFrameCount_ReturnThruPtr_rcvCount(&reallyRcvdBytesSize);
+	
+	/* On Mock es eventuels appels a READER_HAL_RcvChar() ...  */
+	READER_HAL_RcvChar_IgnoreAndReturn(READER_TIMEOUT);
+	
+	/* On effectue l'appel de la fonction que l'on veut tester, on verifie la reponse ...  */
+	retVal = READER_TPDU_RcvResponse(&tpduResp, expectedRespBytesSize, timeout, &dummySettings);
+	TEST_ASSERT_TRUE(retVal == READER_TIMEOUT_GOT_ONLY_SW);
+	
+	TEST_ASSERT_EQUAL_UINT8(reallyRcvdBytes[0], tpduResp.SW1);
+	TEST_ASSERT_EQUAL_UINT8(reallyRcvdBytes[1], tpduResp.SW2);
+	TEST_ASSERT_EQUAL_UINT32(0, tpduResp.dataSize);
 }
