@@ -598,15 +598,15 @@ READER_Status READER_T1_ForgeBlock(READER_T1_Block *pBlock, READER_T1_Redundancy
 	if(retVal != READER_OK) return retVal;
 	
 	/* On initialise la taille des data a zero */
-	retVal = READER_T1_SetBlockLEN(pBlock, 0x00);
+	retVal = READER_T1_SetBlockLEN(pBlock, READER_T1_BLOCK_INITIAL_LEN);
 	if(retVal != READER_OK) return retVal;
 	
 	/* On initialise le PCB à zero ...  */
-	retVal = READER_T1_SetBlockPCB(pBlock, 0x00);
+	retVal = READER_T1_SetBlockPCB(pBlock, READER_T1_BLOCK_INITIAL_PCB);
 	if(retVal != READER_OK) return retVal;
 	
 	/* A priori on utilise pas l'adresse, donc NAD et SAD sont a 000. Voir ISO7815-3 section 11.3.2.1 */
-	retVal = READER_T1_SetBlockNAD(pBlock, 0x00);
+	retVal = READER_T1_SetBlockNAD(pBlock, READER_T1_BLOCK_INITIAL_NAD);
 	if(retVal != READER_OK) return retVal;
 	
 	

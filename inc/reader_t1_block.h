@@ -23,6 +23,12 @@
 
 
 
+#define READER_T1_BLOCK_INITIAL_NAD            (uint8_t)(0x00)
+#define READER_T1_BLOCK_INITIAL_PCB            (uint8_t)(0x00)
+#define READER_T1_BLOCK_INITIAL_LEN            (uint8_t)(0x00)
+
+
+
 typedef enum READER_T1_RedundancyType READER_T1_RedundancyType;
 enum READER_T1_RedundancyType{
 	READER_T1_CRC                      = (uint32_t)(0x00000000),
