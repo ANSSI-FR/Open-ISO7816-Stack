@@ -12,6 +12,8 @@
 void test_READER_BLOCK_all(void);
 
 void test_READER_T1_ForgeBlock_shouldSetCorrectInitValues(void);
+void test_READER_T1_SetBlockData_shouldCheckMaxLength(void);
+void test_READER_T1_SetBlockData_shouldUpdateLRC(void);
 
 
 

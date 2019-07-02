@@ -15,6 +15,8 @@
 
 void test_READER_BLOCK_all(void){
 	RUN_TEST(test_READER_T1_ForgeBlock_shouldSetCorrectInitValues);
+	RUN_TEST(test_READER_T1_SetBlockData_shouldCheckMaxLength);
+	RUN_TEST(test_READER_T1_SetBlockData_shouldUpdateLRC);
 }
 
 
@@ -42,4 +44,42 @@ void test_READER_T1_ForgeBlock_shouldSetCorrectInitValues(void){
 	TEST_ASSERT_EQUAL_UINT8(READER_T1_BLOCK_INITIAL_LEN, len);
 	TEST_ASSERT_EQUAL_UINT8(expectedLRC, lrc);
 	TEST_ASSERT_TRUE(blockRType == READER_T1_LRC);
+}
+
+
+void test_READER_T1_SetBlockData_shouldCheckMaxLength(void){
+	READER_T1_Block block;
+	READER_Status retVal;
+	uint8_t dataBuff[READER_T1_BLOCK_MAX_DATA_SIZE+1];
+	
+	retVal = READER_T1_ForgeBlock(&block, READER_T1_LRC);
+	TEST_ASSERT_TRUE(retVal == READER_OK);
+	
+	retVal = READER_T1_SetBlockData(&block, dataBuff, READER_T1_BLOCK_MAX_DATA_SIZE+1);
+	TEST_ASSERT_FALSE(retVal == READER_OK);
+}
+
+void test_READER_T1_SetBlockData_shouldUpdateLRC(void){
+	READER_T1_Block block;
+	READER_Status retVal;
+	uint8_t dataBuff[] = {0xFF};
+	uint8_t dataLength = 1;
+	uint8_t oldLRC, newLRC;
+	
+	
+	retVal = READER_T1_ForgeBlock(&block, READER_T1_LRC);
+	TEST_ASSERT_TRUE(retVal == READER_OK);
+	
+	retVal = READER_T1_SetBlockData(&block, dataBuff, dataLength);
+	TEST_ASSERT_TRUE(retVal == READER_OK);
+	
+	oldLRC = READER_T1_GetBlockLRC(&block);
+	
+	dataBuff[0] = 0xFE;
+	retVal = READER_T1_SetBlockData(&block, dataBuff, dataLength);
+	TEST_ASSERT_TRUE(retVal == READER_OK);
+	
+	newLRC = READER_T1_GetBlockLRC(&block);
+	
+	TEST_ASSERT_EQUAL_UINT8(oldLRC^0xFF^0xFE, newLRC);
 }
