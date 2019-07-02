@@ -41,7 +41,7 @@ void test_READER_TPDU_all(void){
 	RUN_TEST(test_READER_TPDU_RcvResponse_shouldRetrieveCorrectData);
 	RUN_TEST(test_READER_TPDU_RcvResponse_shouldDetectIfSWInsteadOfData_Case1);
 	RUN_TEST(test_READER_TPDU_RcvResponse_shouldDetectIfSWInsteadOfData_Case2);
-	RUN_TEST(test_READER_TPDU_RcvResponse_shouldDetectIfSWInsteadOfData_Case3);
+	//RUN_TEST(test_READER_TPDU_RcvResponse_shouldDetectIfSWInsteadOfData_Case3);
 }
 
 
@@ -420,7 +420,7 @@ void test_READER_TPDU_RcvSW_shouldTimeoutOnSW1(void){
 	READER_HAL_RcvChar_ExpectAnyArgsAndReturn(READER_TIMEOUT);
 	
 	retVal = READER_TPDU_RcvSW(&SW1, &SW2, timeout, &dummySettings);
-	TEST_ASSERT_TRUE(retVal == READER_TIMEOUT);
+	TEST_ASSERT_TRUE(retVal == READER_TIMEOUT_ON_SW1);
 }
 
 void test_READER_TPDU_RcvSW_shouldTimeoutOnSW2(void){
@@ -436,7 +436,7 @@ void test_READER_TPDU_RcvSW_shouldTimeoutOnSW2(void){
 	READER_HAL_RcvChar_ExpectAnyArgsAndReturn(READER_TIMEOUT);
 	
 	retVal = READER_TPDU_RcvSW(&SW1, &SW2, timeout, &dummySettings);
-	TEST_ASSERT_TRUE(retVal == READER_TIMEOUT);
+	TEST_ASSERT_TRUE(retVal == READER_TIMEOUT_ON_SW2);
 }
 
 
@@ -554,9 +554,11 @@ void test_READER_TPDU_RcvResponse_shouldTimeout(void){
 	READER_TPDU_Response tpduResp;
 	READER_Status retVal;
 	uint32_t timeout = 1000;
+	uint32_t rcvCount = 1;
 	
-
+	
 	READER_HAL_RcvCharFrameCount_ExpectAnyArgsAndReturn(READER_TIMEOUT);
+	READER_HAL_RcvCharFrameCount_ReturnThruPtr_rcvCount(&rcvCount);
 	
 	retVal = READER_TPDU_RcvResponse(&tpduResp, READER_TPDU_MAX_DATA, timeout, &dummySettings);
 	TEST_ASSERT_TRUE(retVal == READER_TIMEOUT);
@@ -667,7 +669,7 @@ void test_READER_TPDU_RcvResponse_shouldDetectIfSWInsteadOfData_Case2(void){
 	TEST_ASSERT_EQUAL_UINT32(0, tpduResp.dataSize);
 }
 
-
+/* Ce cas ne devrait pas exister, voir ISO7816-3 section 12.2.3, case 2S.3 */
 /* Ici, on simule le cas ou ou attends une reponse avec un octet de donnees, mais la carte renvoie uniquement SW1SW2 et pas de donnees ...  */
 void test_READER_TPDU_RcvResponse_shouldDetectIfSWInsteadOfData_Case3(void){
 	READER_TPDU_Response tpduResp;
@@ -688,14 +690,14 @@ void test_READER_TPDU_RcvResponse_shouldDetectIfSWInsteadOfData_Case3(void){
 	READER_HAL_RcvCharFrameCount_ReturnArrayThruPtr_frame(reallyRcvdBytes, reallyRcvdBytesSize);
 	READER_HAL_RcvCharFrameCount_ReturnThruPtr_rcvCount(&reallyRcvdBytesSize);
 	
-	/* On Mock es eventuels appels a READER_HAL_RcvChar() ...  */
+	/* On Mock les eventuels appels a READER_HAL_RcvChar() ...  */
 	READER_HAL_RcvChar_ExpectAnyArgsAndReturn(READER_OK);
 	READER_HAL_RcvChar_ReturnThruPtr_character(reallyRcvdBytes+1);
 	READER_HAL_RcvChar_ExpectAnyArgsAndReturn(READER_TIMEOUT);
 	
 	/* On effectue l'appel de la fonction que l'on veut tester, on verifie la reponse ...  */
 	retVal = READER_TPDU_RcvResponse(&tpduResp, expectedRespBytesSize, timeout, &dummySettings);
-	TEST_ASSERT_TRUE(retVal == READER_TIMEOUT_GOT_ONLY_SW);
+	TEST_ASSERT_TRUE(retVal == READER_TIMEOUT);
 	
 	TEST_ASSERT_EQUAL_UINT8(reallyRcvdBytes[0], tpduResp.SW1);
 	TEST_ASSERT_EQUAL_UINT8(reallyRcvdBytes[1], tpduResp.SW2);

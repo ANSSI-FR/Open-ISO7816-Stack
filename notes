@@ -5,3 +5,7 @@ Le mecansime de RESYNCHRO laisse plein de zones d'ombres ...
 	
 
 Il se passe quoi si on envoie a la carte un S-Block REsponse alors que il n'était pas attendu ? Pris en compte quand meme ?
+
+
+
+A la reception d'un TPDU response quand est ce que c'est un timeout et quand est ce que c'est des donnees raccourcies avec SW1SW2 ?

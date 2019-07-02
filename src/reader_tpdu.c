@@ -4,6 +4,11 @@
 #include <stdint.h>
 
 
+#ifdef TEST
+#include <stdio.h>
+#endif
+
+
 
 extern uint32_t globalWaitTimeMili;
 
@@ -187,20 +192,22 @@ READER_Status READER_TPDU_RcvSW(uint8_t *SW1, uint8_t *SW2, uint32_t timeout, RE
 	} while( (retVal==READER_OK) && (READER_TPDU_IsNullByte(byte1) == READER_OK) && (READER_TPDU_IsSW1(byte1) == READER_NO) );
 	
 	if(retVal == READER_TIMEOUT){
-		return READER_TIMEOUT;
+		return READER_TIMEOUT_ON_SW1;
 	}
 	if(retVal != READER_OK) return retVal;
+	
+	/* On retourne tout de suite le resultat pour SW1 ...  */
+	*SW1 = byte1;
 	
 	/* On recupere SW2 */
 	retVal = READER_HAL_RcvChar(pSettings, READER_HAL_PROTOCOL_T0, &byte2, timeout);
 	
 	if(retVal == READER_TIMEOUT){
-		return READER_TIMEOUT;
+		return READER_TIMEOUT_ON_SW2;
 	}
 	if(retVal != READER_OK) return retVal;
 	
-	/* On retourne le resultat */
-	*SW1 = byte1;
+	/* On retourne le resultat pour SW2 ...  */
 	*SW2 = byte2;
 	
 	return READER_OK;
@@ -243,57 +250,86 @@ READER_Status READER_TPDU_RcvDataField(uint8_t *buffer, uint32_t Ne, uint32_t ti
 READER_Status READER_TPDU_RcvResponse(READER_TPDU_Response *pResp, uint32_t expectedDataSize, uint32_t timeout, READER_HAL_CommSettings *pSettings){
 	READER_Status retVal;
 	uint32_t rcvdCount;
+	uint8_t rcvdSW1, rcvdSW2;
 	
 	/* Une TPDU Response ne peut pas contenir plus de 256 caracteres. */
 	if(expectedDataSize > READER_TPDU_MAX_DATA){
 		return READER_OVERFLOW;
 	}
-
+	
 	/* On recupere les donnees */
 	if(expectedDataSize != 0){
 		retVal = READER_HAL_RcvCharFrameCount(pSettings, READER_HAL_PROTOCOL_T0, pResp->dataBytes, expectedDataSize, &rcvdCount, timeout);
-		if((retVal == READER_TIMEOUT) && (rcvdCount == 2)){
+		pResp->dataSize = rcvdCount;
+		
+		if((retVal == READER_TIMEOUT) && ((pResp->dataSize) >= 2)){
 			/* On a probablement recu que le SW1SW2 et pas de data */
-			pResp->SW1 = pResp->dataBytes[0];
-			pResp->SW2 = pResp->dataBytes[1];
-			pResp->dataSize = 0;
+			
+			pResp->SW1 = pResp->dataBytes[(pResp->dataSize)-2];
+			pResp->SW2 = pResp->dataBytes[(pResp->dataSize)-1];
+			pResp->dataSize = (pResp->dataSize)-2;
+			
+			if(READER_TPDU_IsSW1(pResp->SW1) != READER_OK){
+				return READER_TIMEOUT;
+			}
 			
 			return READER_TIMEOUT_GOT_ONLY_SW;
 		}
-		pResp->dataSize = rcvdCount;
-		
-		if(retVal == READER_TIMEOUT){
+		else if((retVal == READER_TIMEOUT) && ((pResp->dataSize) < 2)){
 			return READER_TIMEOUT;
 		}
-		if(retVal != READER_OK) return retVal;
+		else if((retVal != READER_OK) && (retVal != READER_TIMEOUT)){
+			return retVal;
+		}
+	}
+	else{
+		pResp->dataSize = 0;
 	}
 	
-	
 	/* On recupere le Status Word (SW) */
-	retVal = READER_TPDU_RcvSW(&(pResp->SW1), &(pResp->SW2), timeout, pSettings);
+	retVal = READER_TPDU_RcvSW(&rcvdSW1, &rcvdSW2, timeout, pSettings);
+	pResp->SW1 = rcvdSW1;
+	pResp->SW2 = rcvdSW2;
 	
-	if((retVal == READER_TIMEOUT) && (pResp->dataSize == 2)){
-		/* Si on n'arrive pas a recevoir de SW, ca veuit dire que la carte a tres probablement envoye uniquement un SWASW2 sans envoyer de donnees ... */
-		pResp->SW1 = pResp->dataBytes[0];
-		pResp->SW2 = pResp->dataBytes[1];
-		pResp->dataSize = 0;
+	if((retVal == READER_TIMEOUT_ON_SW1)){
+		/* Si on n'arrive pas a recevoir de SW, ca veut dire que la carte a tres probablement envoyer l'integralite des donnees ... */
+		if((pResp->dataSize) < 2){
+			return READER_TIMEOUT;
+		}
 		
-		if(!READER_TPDU_IsSW1(pResp->SW1)){
-			return READER_ERR;
+		pResp->SW1 = pResp->dataBytes[(pResp->dataSize)-2];
+		pResp->SW2 = pResp->dataBytes[(pResp->dataSize)-1];
+		pResp->dataSize = (pResp->dataSize)-2;
+		
+		if(READER_TPDU_IsSW1(pResp->SW1) != READER_OK){
+			return READER_TIMEOUT;
 		}
 		return READER_TIMEOUT_GOT_ONLY_SW;
 	}
-	if((retVal != READER_OK) && !((retVal == READER_TIMEOUT) && (pResp->dataSize == 2))){
+	else if((retVal == READER_TIMEOUT_ON_SW2)){
+		
+		if((pResp->dataSize) < 1){
+			return READER_TIMEOUT;
+		}
+		
+		pResp->SW1 = pResp->dataBytes[(pResp->dataSize)-1];
+		pResp->SW2 = rcvdSW1;
+		pResp->dataSize = (pResp->dataSize)-1;
+		
+		if(READER_TPDU_IsSW1(pResp->SW1) != READER_OK){
+			return READER_TIMEOUT;
+		}
+		return READER_TIMEOUT_GOT_ONLY_SW;
+	}
+	else if(retVal != READER_OK){
 		return retVal;
 	}
 	
 	/* Si le caractere cense etre un SW1 n'en est pas un ... */
-	if(!READER_TPDU_IsSW1(pResp->SW1)){
+	if(READER_TPDU_IsSW1(pResp->SW1) != READER_OK){
 		return READER_ERR;
 	}
 	
-	
-	//pResp->dataSize = expectedDataSize;
 	
 	return READER_OK;
 }
