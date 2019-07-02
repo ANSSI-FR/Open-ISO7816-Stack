@@ -23,7 +23,8 @@ void test_READER_T1_ForgeBlock_shouldSetCorrectInitValues(void){
 	READER_T1_Block block;
 	READER_Status retVal;
 	READER_T1_RedundancyType blockRType;
-	uint8_t nad, pcb, len;
+	uint8_t nad, pcb, len, lrc;
+	uint8_t expectedLRC;
 	
 	
 	retVal = READER_T1_ForgeBlock(&block, READER_T1_LRC);
@@ -32,10 +33,13 @@ void test_READER_T1_ForgeBlock_shouldSetCorrectInitValues(void){
 	nad = block.blockFrame[0];
 	pcb = block.blockFrame[1];
 	len = block.blockFrame[2];
+	lrc = block.blockFrame[3];
 	blockRType = block.RedundancyType;
+	expectedLRC = nad ^ pcb ^ len;
 	
 	TEST_ASSERT_EQUAL_UINT8(READER_T1_BLOCK_INITIAL_NAD, nad);
 	TEST_ASSERT_EQUAL_UINT8(READER_T1_BLOCK_INITIAL_PCB, pcb);
 	TEST_ASSERT_EQUAL_UINT8(READER_T1_BLOCK_INITIAL_LEN, len);
+	TEST_ASSERT_EQUAL_UINT8(expectedLRC, lrc);
 	TEST_ASSERT_TRUE(blockRType == READER_T1_LRC);
 }
