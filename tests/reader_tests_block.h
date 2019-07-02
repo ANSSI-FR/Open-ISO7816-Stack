@@ -11,6 +11,8 @@
 
 void test_READER_BLOCK_all(void);
 
+void test_READER_T1_ForgeBlock_shouldSetCorrectInitValues(void);
+
 
 
 #endif
