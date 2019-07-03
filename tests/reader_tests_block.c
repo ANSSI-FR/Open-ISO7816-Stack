@@ -20,6 +20,7 @@ void test_READER_BLOCK_all(void){
 	RUN_TEST(test_READER_T1_SetBlockType_shouldIBlockWork);
 	RUN_TEST(test_READER_T1_SetBlockType_shouldRBlockWork);
 	RUN_TEST(test_READER_T1_SetBlockType_shouldSBlockWork);
+	RUN_TEST(test_READER_T1_SetBlockData_shouldUpdateLEN);
 }
 
 
@@ -148,3 +149,27 @@ void test_READER_T1_SetBlockType_shouldSBlockWork(void){
 	blockPCB = READER_T1_GetBlockPCB(&block);
 	TEST_ASSERT_EQUAL_UINT8(0xC0, blockPCB&0xC0);
 }
+
+
+
+void test_READER_T1_SetBlockData_shouldUpdateLEN(void){
+	READER_T1_Block block;
+	READER_Status retVal;
+	uint8_t data1[] = {0x00, 0x01, 0x02};
+	uint8_t data1Length = 3;
+	uint8_t data2[] = {0x00, 0x01, 0x02, 0x03};
+	uint8_t data2Length = 4;
+	
+	
+	retVal = READER_T1_ForgeIBlock(&block, data1, data1Length, READER_T1_SEQNUM_ZERO, READER_T1_MBIT_ZERO, READER_T1_LRC);
+	TEST_ASSERT_TRUE(retVal == READER_OK);
+	
+	TEST_ASSERT_EQUAL_UINT8(data1Length, READER_T1_GetBlockLEN(&block));
+	
+	retVal = READER_T1_SetBlockData(&block, data2, data2Length);
+	TEST_ASSERT_TRUE(retVal == READER_OK);
+	
+	TEST_ASSERT_EQUAL_UINT8(data2Length, READER_T1_GetBlockLEN(&block));
+}
+
+

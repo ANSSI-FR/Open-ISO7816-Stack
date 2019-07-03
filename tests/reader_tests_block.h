@@ -17,6 +17,7 @@ void test_READER_T1_SetBlockData_shouldUpdateLRC(void);
 void test_READER_T1_SetBlockType_shouldIBlockWork(void);
 void test_READER_T1_SetBlockType_shouldRBlockWork(void);
 void test_READER_T1_SetBlockType_shouldSBlockWork(void);
+void test_READER_T1_SetBlockData_shouldUpdateLEN(void);
 
 
 #endif
