@@ -23,6 +23,7 @@ void test_READER_BLOCK_all(void){
 	RUN_TEST(test_READER_T1_SetBlockData_shouldUpdateLEN);
 	RUN_TEST(test_READER_T1_SetBlockMBit_shouldWork);
 	RUN_TEST(test_READER_T1_SetBlockSeqNumber_shouldWork);
+	RUN_TEST(test_READER_T1_ComputeBlockLRC_shouldWork);
 }
 
 
@@ -219,3 +220,40 @@ void test_READER_T1_SetBlockSeqNumber_shouldWork(void){
 	TEST_ASSERT_TRUE(seqNum == READER_T1_SEQNUM_ONE);
 }
 
+
+void test_READER_T1_ComputeBlockLRC_shouldWork(void){
+	READER_T1_Block block;
+	READER_Status retVal;
+	uint8_t nad, pcb, len, lrc;
+	uint8_t expectedLrc;
+	uint8_t data[1];
+	
+	srand(time(NULL));
+	
+	len = 1;
+	nad = (uint8_t)(rand());
+	pcb = (uint8_t)(rand());
+	data[0] = (uint8_t)(rand());
+	
+	retVal = READER_T1_ForgeBlock(&block, READER_T1_LRC);
+	TEST_ASSERT_TRUE(retVal == READER_OK);
+	
+	retVal = READER_T1_SetBlockNAD(&block, nad);
+	TEST_ASSERT_TRUE(retVal == READER_OK);
+	
+	retVal = READER_T1_SetBlockPCB(&block, pcb);
+	TEST_ASSERT_TRUE(retVal == READER_OK);
+	
+	retVal = READER_T1_SetBlockLEN(&block, len);
+	TEST_ASSERT_TRUE(retVal == READER_OK);
+	
+	retVal = READER_T1_SetBlockData(&block, data, len);
+	TEST_ASSERT_TRUE(retVal == READER_OK);
+	
+	
+	lrc = READER_T1_ComputeBlockLRC(&block);
+	
+	expectedLrc = nad ^ pcb ^ len ^ data[0];
+	
+	TEST_ASSERT_EQUAL_UINT8(expectedLrc, lrc);
+}
