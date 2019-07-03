@@ -18,6 +18,8 @@ void test_READER_T1_SetBlockType_shouldIBlockWork(void);
 void test_READER_T1_SetBlockType_shouldRBlockWork(void);
 void test_READER_T1_SetBlockType_shouldSBlockWork(void);
 void test_READER_T1_SetBlockData_shouldUpdateLEN(void);
+void test_READER_T1_SetBlockMBit_shouldWork(void);
+void test_READER_T1_SetBlockSeqNumber_shouldWork(void);
 
 
 #endif

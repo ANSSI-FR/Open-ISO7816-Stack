@@ -21,6 +21,8 @@ void test_READER_BLOCK_all(void){
 	RUN_TEST(test_READER_T1_SetBlockType_shouldRBlockWork);
 	RUN_TEST(test_READER_T1_SetBlockType_shouldSBlockWork);
 	RUN_TEST(test_READER_T1_SetBlockData_shouldUpdateLEN);
+	RUN_TEST(test_READER_T1_SetBlockMBit_shouldWork);
+	RUN_TEST(test_READER_T1_SetBlockSeqNumber_shouldWork);
 }
 
 
@@ -172,4 +174,48 @@ void test_READER_T1_SetBlockData_shouldUpdateLEN(void){
 	TEST_ASSERT_EQUAL_UINT8(data2Length, READER_T1_GetBlockLEN(&block));
 }
 
+
+void test_READER_T1_SetBlockMBit_shouldWork(void){
+	READER_T1_Block block;
+	READER_Status retVal;
+	READER_T1_MBit mBit;
+	uint8_t data[] = {0x00, 0x01};
+	uint8_t dataSize = 2;
+	
+	
+	retVal = READER_T1_ForgeIBlock(&block, data, dataSize, READER_T1_SEQNUM_ZERO, READER_T1_MBIT_ZERO, READER_T1_LRC);
+	TEST_ASSERT_TRUE(retVal == READER_OK);
+	
+	mBit = READER_T1_GetBlockMBit(&block);
+	TEST_ASSERT_TRUE(mBit == READER_T1_MBIT_ZERO);
+	
+	retVal = READER_T1_SetBlockMBit(&block, READER_T1_MBIT_ONE);
+	TEST_ASSERT_TRUE(retVal == READER_OK);
+	
+	mBit = READER_T1_GetBlockMBit(&block);
+	TEST_ASSERT_TRUE(mBit == READER_T1_MBIT_ONE);
+}
+
+
+
+void test_READER_T1_SetBlockSeqNumber_shouldWork(void){
+	READER_T1_Block block;
+	READER_Status retVal;
+	READER_T1_MBit seqNum;
+	uint8_t data[] = {0x00, 0x01};
+	uint8_t dataSize = 2;
+	
+	
+	retVal = READER_T1_ForgeIBlock(&block, data, dataSize, READER_T1_SEQNUM_ZERO, READER_T1_MBIT_ZERO, READER_T1_LRC);
+	TEST_ASSERT_TRUE(retVal == READER_OK);
+	
+	seqNum = READER_T1_GetBlockSeqNumber(&block);
+	TEST_ASSERT_TRUE(seqNum == READER_T1_SEQNUM_ZERO);
+	
+	retVal = READER_T1_SetBlockSeqNumber(&block, READER_T1_SEQNUM_ONE);
+	TEST_ASSERT_TRUE(retVal == READER_OK);
+	
+	seqNum = READER_T1_GetBlockSeqNumber(&block);
+	TEST_ASSERT_TRUE(seqNum == READER_T1_SEQNUM_ONE);
+}
 
