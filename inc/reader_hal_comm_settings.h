@@ -15,8 +15,6 @@
 #define READER_HAL_DEFAULT_GT         (uint32_t)(12)
 
 
-
-
 typedef struct READER_HAL_CommSettings READER_HAL_CommSettings;
 struct READER_HAL_CommSettings{
 	uint32_t f;
