@@ -36,7 +36,7 @@ READER_Status READER_HAL_RcvCharFrame(READER_HAL_CommSettings *pSettings, READER
 READER_Status READER_HAL_RcvCharFrameCount(READER_HAL_CommSettings *pSettings, READER_HAL_Protocol protocol, uint8_t *frame, uint32_t frameSize, uint32_t *rcvCount, uint32_t timeout);
 READER_Status READER_HAL_RcvCharFrameCountTickstart(READER_HAL_CommSettings *pSettings, READER_HAL_Protocol protocol, uint8_t *frame, uint32_t frameSize, uint32_t *rcvCount, uint32_t timeout, uint32_t *pTickstart);
 
-
+READER_Status READER_HAL_DoColdReset(void);
 
 
 

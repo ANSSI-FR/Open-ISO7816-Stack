@@ -12,8 +12,12 @@
 
 
 
+#ifdef TEST
+	#define READER_TPDU_MAX_DATA            (uint32_t)(256)
+#else
+	#define READER_TPDU_MAX_DATA            (uint32_t)(256)             /* Valeur MAX = 256, voir spec */
+#endif
 
-#define READER_TPDU_MAX_DATA            (uint32_t)(256)             /* Valeur MAX = 256, voir spec */
 #define READER_TPDU_HEADER_SIZE         (uint32_t)(0x00000005)
 #define READER_TPDU_DUMMY_FALSE_INS     (uint32_t)(0x00000061)
 #define READER_TPDU_ACK_NORMAL          (uint32_t)(0x00000001)

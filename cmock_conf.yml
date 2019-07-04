@@ -8,3 +8,4 @@
     - ignore
     - expect_any_args
     - ignore_arg
+    - callback

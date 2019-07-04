@@ -48,7 +48,7 @@ READER_Status READER_HAL_SetRstLine(READER_HAL_State state);
 READER_Status READER_HAL_SetClkLine(READER_HAL_State state);
 READER_Status READER_HAL_SetIOLine(READER_HAL_State state);
 
-READER_Status READER_HAL_DoColdReset(void);
+
 
 
 void READER_HAL_Delay(uint32_t tMili);
