@@ -24,6 +24,12 @@ void test_READER_BLOCK_all(void){
 	RUN_TEST(test_READER_T1_SetBlockMBit_shouldWork);
 	RUN_TEST(test_READER_T1_SetBlockSeqNumber_shouldWork);
 	RUN_TEST(test_READER_T1_ComputeBlockLRC_shouldWork);
+	RUN_TEST(test_READER_T1_SetBlockSType_shouldResynchRequestWork);
+	RUN_TEST(test_READER_T1_SetBlockSType_shouldResynchResponseWork);
+	RUN_TEST(test_READER_T1_SetBlockSType_shouldIFSRequestWork);
+	RUN_TEST(test_READER_T1_SetBlockSType_shouldIFSResponseWork);
+	RUN_TEST(test_READER_T1_SetBlockSType_shouldWTXRequestWork);
+	RUN_TEST(test_READER_T1_SetBlockSType_shouldWTXResponseWork);
 }
 
 
@@ -257,3 +263,135 @@ void test_READER_T1_ComputeBlockLRC_shouldWork(void){
 	
 	TEST_ASSERT_EQUAL_UINT8(expectedLrc, lrc);
 }
+
+
+void test_READER_T1_SetBlockSType_shouldResynchRequestWork(void){
+	READER_T1_Block block;
+	READER_T1_SBlockType sBlockType;
+	READER_T1_BlockType bType;
+	READER_Status retVal;
+	uint8_t blockPCB;
+	
+	
+	retVal = READER_T1_ForgeSBlock(&block, READER_T1_STYPE_RESYNCH_REQU, READER_T1_LRC);
+	TEST_ASSERT_TRUE(retVal == READER_OK);
+	
+	bType = READER_T1_GetBlockType(&block);
+	TEST_ASSERT_TRUE(bType == READER_T1_SBLOCK);
+	
+	sBlockType = READER_T1_GetBlockSType(&block);
+	TEST_ASSERT_TRUE(sBlockType == READER_T1_STYPE_RESYNCH_REQU);
+
+	blockPCB = READER_T1_GetBlockPCB(&block);
+	TEST_ASSERT_EQUAL_UINT8(0b00000000, blockPCB&0b00111111);       /* Voir ISO7816-3 section 11.3.2.2 */
+}
+
+
+void test_READER_T1_SetBlockSType_shouldResynchResponseWork(void){
+	READER_T1_Block block;
+	READER_T1_SBlockType sBlockType;
+	READER_T1_BlockType bType;
+	READER_Status retVal;
+	uint8_t blockPCB;
+	
+	
+	retVal = READER_T1_ForgeSBlock(&block, READER_T1_STYPE_RESYNCH_RESP, READER_T1_LRC);
+	TEST_ASSERT_TRUE(retVal == READER_OK);
+	
+	bType = READER_T1_GetBlockType(&block);
+	TEST_ASSERT_TRUE(bType == READER_T1_SBLOCK);
+	
+	sBlockType = READER_T1_GetBlockSType(&block);
+	TEST_ASSERT_TRUE(sBlockType == READER_T1_STYPE_RESYNCH_RESP);
+
+	blockPCB = READER_T1_GetBlockPCB(&block);
+	TEST_ASSERT_EQUAL_UINT8(0b00100000, blockPCB&0b00111111);       /* Voir ISO7816-3 section 11.3.2.2 */
+}
+
+
+
+void test_READER_T1_SetBlockSType_shouldIFSRequestWork(void){
+	READER_T1_Block block;
+	READER_T1_SBlockType sBlockType;
+	READER_T1_BlockType bType;
+	READER_Status retVal;
+	uint8_t blockPCB;
+	
+	
+	retVal = READER_T1_ForgeSBlock(&block, READER_T1_STYPE_IFS_REQU, READER_T1_LRC);
+	TEST_ASSERT_TRUE(retVal == READER_OK);
+	
+	bType = READER_T1_GetBlockType(&block);
+	TEST_ASSERT_TRUE(bType == READER_T1_SBLOCK);
+	
+	sBlockType = READER_T1_GetBlockSType(&block);
+	TEST_ASSERT_TRUE(sBlockType == READER_T1_STYPE_IFS_REQU);
+
+	blockPCB = READER_T1_GetBlockPCB(&block);
+	TEST_ASSERT_EQUAL_UINT8(0b00000001, blockPCB&0b00111111);       /* Voir ISO7816-3 section 11.3.2.2 */
+}
+
+
+void test_READER_T1_SetBlockSType_shouldIFSResponseWork(void){
+	READER_T1_Block block;
+	READER_T1_SBlockType sBlockType;
+	READER_T1_BlockType bType;
+	READER_Status retVal;
+	uint8_t blockPCB;
+	
+	
+	retVal = READER_T1_ForgeSBlock(&block, READER_T1_STYPE_IFS_RESP, READER_T1_LRC);
+	TEST_ASSERT_TRUE(retVal == READER_OK);
+	
+	bType = READER_T1_GetBlockType(&block);
+	TEST_ASSERT_TRUE(bType == READER_T1_SBLOCK);
+	
+	sBlockType = READER_T1_GetBlockSType(&block);
+	TEST_ASSERT_TRUE(sBlockType == READER_T1_STYPE_IFS_RESP);
+
+	blockPCB = READER_T1_GetBlockPCB(&block);
+	TEST_ASSERT_EQUAL_UINT8(0b00100001, blockPCB&0b00111111);       /* Voir ISO7816-3 section 11.3.2.2 */
+}
+
+void test_READER_T1_SetBlockSType_shouldWTXRequestWork(void){
+	READER_T1_Block block;
+	READER_T1_SBlockType sBlockType;
+	READER_T1_BlockType bType;
+	READER_Status retVal;
+	uint8_t blockPCB;
+	
+	
+	retVal = READER_T1_ForgeSBlock(&block, READER_T1_STYPE_WTX_REQU, READER_T1_LRC);
+	TEST_ASSERT_TRUE(retVal == READER_OK);
+	
+	bType = READER_T1_GetBlockType(&block);
+	TEST_ASSERT_TRUE(bType == READER_T1_SBLOCK);
+	
+	sBlockType = READER_T1_GetBlockSType(&block);
+	TEST_ASSERT_TRUE(sBlockType == READER_T1_STYPE_WTX_REQU);
+
+	blockPCB = READER_T1_GetBlockPCB(&block);
+	TEST_ASSERT_EQUAL_UINT8(0b00000011, blockPCB&0b00111111);       /* Voir ISO7816-3 section 11.3.2.2 */
+}
+
+void test_READER_T1_SetBlockSType_shouldWTXResponseWork(void){
+	READER_T1_Block block;
+	READER_T1_SBlockType sBlockType;
+	READER_T1_BlockType bType;
+	READER_Status retVal;
+	uint8_t blockPCB;
+	
+	
+	retVal = READER_T1_ForgeSBlock(&block, READER_T1_STYPE_WTX_RESP, READER_T1_LRC);
+	TEST_ASSERT_TRUE(retVal == READER_OK);
+	
+	bType = READER_T1_GetBlockType(&block);
+	TEST_ASSERT_TRUE(bType == READER_T1_SBLOCK);
+	
+	sBlockType = READER_T1_GetBlockSType(&block);
+	TEST_ASSERT_TRUE(sBlockType == READER_T1_STYPE_WTX_RESP);
+
+	blockPCB = READER_T1_GetBlockPCB(&block);
+	TEST_ASSERT_EQUAL_UINT8(0b00100011, blockPCB&0b00111111);       /* Voir ISO7816-3 section 11.3.2.2 */
+}
+
