@@ -82,12 +82,14 @@ READER_Status READER_HAL_SendCharFrameTickstart(READER_HAL_CommSettings *pSettin
 	
 	/* On attend le flag Transmit Complete */
 	/* Permet de bloquer la fonction pour empecher une eventuelle reception (avant d'avoir transmit complete) */
-	while(!(USART2->SR & USART_SR_TC)){
+	
+	#ifndef TEST
+		while(!(USART2->SR & USART_SR_TC)){
+			
+		}
 		
-	}
-	
-	USART2->CR1 &= ~USART_CR1_TE;
-	
+		USART2->CR1 &= ~USART_CR1_TE;
+	#endif
 	
 	return READER_OK;
 }
@@ -213,19 +215,12 @@ READER_Status READER_HAL_RcvCharFrame(READER_HAL_CommSettings *pSettings, READER
 
 
 void READER_HAL_ErrHandler(void){
-	while(1){
-		HAL_GPIO_TogglePin(GPIOD, GPIO_PIN_14);
-		HAL_Delay(100);
-	}
+	//while(1){
+	//	HAL_GPIO_TogglePin(GPIOD, GPIO_PIN_14);
+	//	HAL_Delay(100);
+	//}
 }
 
-void READER_HAL_Delay(uint32_t tMili){
-	HAL_Delay(tMili);
-}
-
-uint32_t READER_HAL_GetTick(void){
-	return HAL_GetTick();
-}
 
 
 

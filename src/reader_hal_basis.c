@@ -289,3 +289,13 @@ READER_Status READER_HAL_SetClkLine(READER_HAL_State state){
 	
 	return READER_OK;
 }
+
+
+void READER_HAL_Delay(uint32_t tMili){
+	HAL_Delay(tMili);
+}
+
+uint32_t READER_HAL_GetTick(void){
+	return HAL_GetTick();
+}
+
