@@ -4,11 +4,11 @@
 
 
 void emulate_RcvCharFrame(uint8_t *data, uint32_t dataSize){
-	READER_HAL_CommSettings dummySettings;
-	READER_HAL_Protocol dummyProtocol;
-	READER_Status retVal;
-	uint8_t character;
-	uint32_t timeout = 1000;
+	//READER_HAL_CommSettings dummySettings;
+	//READER_HAL_Protocol dummyProtocol;
+	//READER_Status retVal;
+	//uint8_t character;
+	//uint32_t timeout = 1000;
 	uint32_t i;
 	
 	for(i=0; i<dataSize; i++){
