@@ -27,6 +27,7 @@ void test_READER_T1_SetBlockSType_shouldIFSRequestWork(void);
 void test_READER_T1_SetBlockSType_shouldIFSResponseWork(void);
 void test_READER_T1_SetBlockSType_shouldWTXRequestWork(void);
 void test_READER_T1_SetBlockSType_shouldWTXResponseWork(void);
+void test_READER_T1_GetBlockPCB_shouldWork(void);
 
 
 #endif

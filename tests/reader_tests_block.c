@@ -30,6 +30,7 @@ void test_READER_BLOCK_all(void){
 	RUN_TEST(test_READER_T1_SetBlockSType_shouldIFSResponseWork);
 	RUN_TEST(test_READER_T1_SetBlockSType_shouldWTXRequestWork);
 	RUN_TEST(test_READER_T1_SetBlockSType_shouldWTXResponseWork);
+	RUN_TEST(test_READER_T1_GetBlockPCB_shouldWork);
 }
 
 
@@ -395,3 +396,19 @@ void test_READER_T1_SetBlockSType_shouldWTXResponseWork(void){
 	TEST_ASSERT_EQUAL_UINT8(0b00100011, blockPCB&0b00111111);       /* Voir ISO7816-3 section 11.3.2.2 */
 }
 
+
+void test_READER_T1_GetBlockPCB_shouldWork(void){
+	READER_T1_Block block;
+	READER_Status retVal;
+	uint8_t blockPCB, expectedBlockPCB;
+	
+	
+	expectedBlockPCB = 0xAB;
+	
+	retVal = READER_T1_ForgeBlock(&block, READER_T1_LRC);
+	TEST_ASSERT_TRUE(retVal == READER_OK);
+	
+	READER_T1_SetBlockPCB(&block, expectedBlockPCB);
+	blockPCB = READER_T1_GetBlockPCB(&block);
+	TEST_ASSERT_EQUAL_UINT8(expectedBlockPCB, blockPCB);
+}
