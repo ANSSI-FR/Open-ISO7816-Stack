@@ -12,11 +12,12 @@ void emulate_RcvCharFrame(uint8_t *data, uint32_t dataSize){
 	uint32_t i;
 	
 	for(i=0; i<dataSize; i++){
-		READER_HAL_RcvChar_ExpectAndReturn(&dummySettings, dummyProtocol, &character, timeout, READER_OK);
-		READER_HAL_RcvChar_IgnoreArg_pSettings();
-		READER_HAL_RcvChar_IgnoreArg_protocol();
-		READER_HAL_RcvChar_IgnoreArg_character();
-		READER_HAL_RcvChar_IgnoreArg_timeout();
+		//READER_HAL_RcvChar_ExpectAndReturn(&dummySettings, dummyProtocol, &character, timeout, READER_OK);
+		//READER_HAL_RcvChar_IgnoreArg_pSettings();
+		//READER_HAL_RcvChar_IgnoreArg_protocol();
+		//READER_HAL_RcvChar_IgnoreArg_character();
+		//READER_HAL_RcvChar_IgnoreArg_timeout();
+		READER_HAL_RcvChar_ExpectAnyArgsAndReturn(READER_OK);
 		READER_HAL_RcvChar_ReturnThruPtr_character(data+i);
 	}
 }
