@@ -31,6 +31,9 @@ void test_READER_BLOCK_all(void){
 	RUN_TEST(test_READER_T1_SetBlockSType_shouldWTXRequestWork);
 	RUN_TEST(test_READER_T1_SetBlockSType_shouldWTXResponseWork);
 	RUN_TEST(test_READER_T1_GetBlockPCB_shouldWork);
+	RUN_TEST(test_READER_T1_SetExpectedBlockSeqNumber_shouldWork);
+	RUN_TEST(test_READER_T1_GetBlockACKType_shouldWork);
+	RUN_TEST(test_READER_T1_RcvBlock_IBlockShouldWork);
 }
 
 
@@ -411,4 +414,120 @@ void test_READER_T1_GetBlockPCB_shouldWork(void){
 	READER_T1_SetBlockPCB(&block, expectedBlockPCB);
 	blockPCB = READER_T1_GetBlockPCB(&block);
 	TEST_ASSERT_EQUAL_UINT8(expectedBlockPCB, blockPCB);
+}
+
+
+void test_READER_T1_SetExpectedBlockSeqNumber_shouldWork(void){
+	READER_T1_Block block;
+	READER_Status retVal;
+	READER_T1_ExpSeqNumber expSeqNum;
+	uint8_t blockPCB;
+	
+	
+	retVal = READER_T1_ForgeRBlock(&block, READER_T1_ACKTYPE_ACK, READER_T1_EXPSEQNUM_ZERO, READER_T1_LRC);
+	TEST_ASSERT_TRUE(retVal == READER_OK);
+	
+	expSeqNum = READER_T1_GetExpectedBlockSeqNumber(&block);
+	TEST_ASSERT_TRUE(expSeqNum == READER_T1_EXPSEQNUM_ZERO);
+
+	blockPCB = READER_T1_GetBlockPCB(&block);
+	TEST_ASSERT_EQUAL_UINT8(0b10000000, blockPCB);
+	
+	
+	
+	retVal = READER_T1_ForgeRBlock(&block, READER_T1_ACKTYPE_ACK, READER_T1_EXPSEQNUM_ONE, READER_T1_LRC);
+	TEST_ASSERT_TRUE(retVal == READER_OK);
+	
+	expSeqNum = READER_T1_GetExpectedBlockSeqNumber(&block);
+	TEST_ASSERT_TRUE(expSeqNum == READER_T1_EXPSEQNUM_ONE);
+
+	blockPCB = READER_T1_GetBlockPCB(&block);
+	TEST_ASSERT_EQUAL_UINT8(0b10010000, blockPCB);
+}
+
+
+void test_READER_T1_GetBlockACKType_shouldWork(void){
+	READER_T1_Block block;
+	READER_Status retVal;
+	READER_T1_ACKType ackType;
+	uint8_t blockPCB;
+	
+	
+	retVal = READER_T1_ForgeRBlock(&block, READER_T1_ACKTYPE_ACK, READER_T1_EXPSEQNUM_ZERO, READER_T1_LRC);
+	TEST_ASSERT_TRUE(retVal == READER_OK);
+	
+	ackType = READER_T1_GetBlockACKType(&block);
+	TEST_ASSERT_TRUE(ackType == READER_T1_ACKTYPE_ACK);
+
+	blockPCB = READER_T1_GetBlockPCB(&block);
+	TEST_ASSERT_EQUAL_UINT8(0b10000000, blockPCB);    /* Voir ISO7816-3 section 11.3.2.2 */
+	
+	
+	
+	retVal = READER_T1_ForgeRBlock(&block, READER_T1_ACKTYPE_NACK, READER_T1_EXPSEQNUM_ZERO, READER_T1_LRC);
+	TEST_ASSERT_TRUE(retVal == READER_OK);
+	
+	ackType = READER_T1_GetBlockACKType(&block);
+	TEST_ASSERT_TRUE(ackType == READER_T1_ACKTYPE_NACK);
+
+	blockPCB = READER_T1_GetBlockPCB(&block);
+	TEST_ASSERT_EQUAL_UINT8(0b10000010, blockPCB);     /* Voir ISO7816-3 section 11.3.2.2 */
+	
+	
+	
+	retVal = READER_T1_ForgeRBlock(&block, READER_T1_ACKTYPE_NACK_CRCLRC, READER_T1_EXPSEQNUM_ZERO, READER_T1_LRC);
+	TEST_ASSERT_TRUE(retVal == READER_OK);
+	
+	ackType = READER_T1_GetBlockACKType(&block);
+	TEST_ASSERT_TRUE(ackType == READER_T1_ACKTYPE_NACK_CRCLRC);
+
+	blockPCB = READER_T1_GetBlockPCB(&block);
+	TEST_ASSERT_EQUAL_UINT8(0b10000001, blockPCB);     /* Voir ISO7816-3 section 11.3.2.2 */
+}
+
+void test_READER_T1_RcvBlock_IBlockShouldWork(void){
+	READER_T1_Block expectedBlock, rcvdBlock;
+	READER_HAL_CommSettings dummySettings;
+	READER_Status retVal;
+	uint8_t character;
+	uint8_t emulatedRcvdFrame[] = {0b00000000, 0b00000000, 0b00000010, 0b11111111, 0b11111111, 0b00000010};
+	uint8_t emulatedRcvdFrameSize = 6;
+	uint8_t emulatedRcvdDataField[] = {0b11111111, 0b11111111};
+	uint8_t emulatedRcvdDataFieldSize = 2;
+	uint32_t i, tickstart;
+	uint32_t timeout = 1000;
+	
+	
+	/* On construit la Block que l'on s'attend a recevoir ...  */
+	retVal = READER_T1_ForgeBlock(&expectedBlock, READER_T1_LRC);
+	TEST_ASSERT_TRUE(retVal == READER_OK);
+	
+	retVal = READER_T1_SetBlockNAD(&expectedBlock, emulatedRcvdFrame[READER_T1_BLOCKFRAME_NAD_POSITION]);
+	TEST_ASSERT_TRUE(retVal == READER_OK);
+	
+	retVal = READER_T1_SetBlockPCB(&expectedBlock, emulatedRcvdFrame[READER_T1_BLOCKFRAME_PCB_POSITION]);
+	TEST_ASSERT_TRUE(retVal == READER_OK);
+	
+	retVal = READER_T1_SetBlockLEN(&expectedBlock, emulatedRcvdFrame[READER_T1_BLOCKFRAME_LEN_POSITION]);
+	TEST_ASSERT_TRUE(retVal == READER_OK);
+	
+	retVal = READER_T1_SetBlockData(&expectedBlock, emulatedRcvdFrame+READER_T1_BLOCKFRAME_INF_POSITION, emulatedRcvdDataFieldSize);
+	TEST_ASSERT_TRUE(retVal == READER_OK);
+
+	/* On prepare l'emulation de la reception du Block ...  */
+	for(i=0; i<emulatedRcvdFrameSize; i++){
+		READER_HAL_RcvChar_ExpectAndReturn(&dummySettings, READER_HAL_PROTOCOL_T1, &character, timeout, READER_OK);
+		READER_HAL_RcvChar_IgnoreArg_pSettings();
+		READER_HAL_RcvChar_IgnoreArg_character();
+		READER_HAL_RcvChar_IgnoreArg_timeout();
+		READER_HAL_RcvChar_ReturnThruPtr_character(emulatedRcvdFrame+i);
+	}
+	
+	/* On effectue une reception de Block ...  */
+	retVal = READER_T1_RcvBlock(&rcvdBlock, READER_T1_LRC, timeout, 0, &tickstart, &dummySettings);
+	TEST_ASSERT_TRUE(retVal == READER_OK);
+	
+	
+	/* On compare le Block recu avec le Block attendu ...  */
+	TEST_ASSERT_EQUAL_UINT8_ARRAY(expectedBlock.blockFrame, rcvdBlock.blockFrame, emulatedRcvdFrameSize);
 }
