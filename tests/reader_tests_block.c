@@ -34,6 +34,7 @@ void test_READER_BLOCK_all(void){
 	RUN_TEST(test_READER_T1_SetExpectedBlockSeqNumber_shouldWork);
 	RUN_TEST(test_READER_T1_GetBlockACKType_shouldWork);
 	RUN_TEST(test_READER_T1_RcvBlock_IBlockShouldWork);
+	RUN_TEST(test_READER_T1_RcvBlock_shouldCheckMaxSize);
 }
 
 
@@ -530,4 +531,42 @@ void test_READER_T1_RcvBlock_IBlockShouldWork(void){
 	
 	/* On compare le Block recu avec le Block attendu ...  */
 	TEST_ASSERT_EQUAL_UINT8_ARRAY(expectedBlock.blockFrame, rcvdBlock.blockFrame, emulatedRcvdFrameSize);
+}
+
+
+void test_READER_T1_RcvBlock_shouldCheckMaxSize(void){
+	READER_T1_Block block;
+	READER_HAL_CommSettings dummySettings;
+	READER_Status retVal;
+	uint32_t timeout = 1000;
+	uint32_t tickstart;
+	uint8_t nad = 0x00;
+	uint8_t pcb = 0x00;
+	uint32_t len32 = READER_T1_BLOCK_MAX_DATA_SIZE + 1;
+	uint8_t len = (uint8_t)(len32);
+	uint8_t data = 0x00;
+	uint8_t lrc = len;
+	uint32_t i;
+	
+	
+	if(len32 > 0xFF){
+		TEST_IGNORE();
+	}
+	
+	/* On simule la reception d'un Block avec LEN > READER_T1_BLOCK_MAX_DATA_SIZE ...  */
+	READER_HAL_RcvChar_ExpectAnyArgsAndReturn(READER_OK);
+	READER_HAL_RcvChar_ReturnThruPtr_character(&nad);
+	
+	READER_HAL_RcvChar_ExpectAnyArgsAndReturn(READER_OK);
+	READER_HAL_RcvChar_ReturnThruPtr_character(&pcb);
+	
+	READER_HAL_RcvChar_ExpectAnyArgsAndReturn(READER_OK);
+	READER_HAL_RcvChar_ReturnThruPtr_character(&len);
+	
+	//READER_HAL_RcvChar_IgnoreAndReturn(READER_OK);
+	
+	
+	/* On effectue une reception et on regarde le comportement de la fonction ...  */
+	retVal = READER_T1_RcvBlock(&block, READER_T1_LRC, timeout, 1, &tickstart, &dummySettings);
+	TEST_ASSERT_FALSE(retVal == READER_OK);
 }
