@@ -1,11 +1,12 @@
 #include "unity.h"
-#include "mock_reader_hal.h"
+#include "mock_reader_hal_basis.h"
 #include "mock_reader_hal_comm_settings.h"
 #include "mock_reader_periph.h"
 
 #include "reader_tpdu.h"
 
 #include "reader_tests_tpdu.h"
+#include "reader_tests_test.h"
 
 #include <time.h>
 #include <stdio.h>
@@ -14,7 +15,12 @@
 
 
 
+
+
+
 void test_READER_TPDU_all(void){
+	
+	
 	RUN_TEST(test_READER_TPDU_Forge_shouldVerifyDataSize);
 	RUN_TEST(test_READER_TPDU_Forge_shouldCopyHeader);
 	RUN_TEST(test_READER_TPDU_Forge_shouldCopyData);
@@ -114,6 +120,7 @@ void test_READER_TPDU_SendHeader_shouldSendRightFrame(void){
 	uint8_t r1, r2, r3, r4, r5;
 	uint32_t dummyTimeout = 1000;
 	uint8_t pExpectedFrame[5];
+	uint32_t i;
 	
 	
 	srand(time(NULL));
@@ -134,7 +141,12 @@ void test_READER_TPDU_SendHeader_shouldSendRightFrame(void){
 	pExpectedFrame[3] = r4;
 	pExpectedFrame[4] = r5;
 	
-	READER_HAL_SendCharFrame_ExpectWithArrayAndReturn(&dummySettings, 1, READER_HAL_PROTOCOL_T0, pExpectedFrame, 5, 5, dummyTimeout, READER_OK);
+	//READER_HAL_SendCharFrame_ExpectWithArrayAndReturn(&dummySettings, 1, READER_HAL_PROTOCOL_T0, pExpectedFrame, 5, 5, dummyTimeout, READER_OK);
+	for(i=0; i<5; i++){
+		READER_HAL_SendChar_ExpectAndReturn(&dummySettings, READER_HAL_PROTOCOL_T0, pExpectedFrame[i], dummyTimeout, READER_OK);
+		READER_HAL_SendChar_IgnoreArg_pSettings();
+		READER_HAL_SendChar_IgnoreArg_timeout();
+	}
 	
 	retVal = READER_TPDU_SendHeader(&tpduCmd, dummyTimeout, &dummySettings);
 	TEST_ASSERT_TRUE(retVal == READER_OK);
@@ -151,7 +163,7 @@ void test_READER_TPDU_SendDataOneshot_shouldSendRightFrame(void){
 	uint32_t dummyTimeout = 1000;
 	uint32_t i;
 	
-	
+	//mock_reader_hal_basis_Init();
 	/* On prepare un TPDU et on le Forge ...  */
 	srand(time(NULL));
 	
@@ -168,13 +180,22 @@ void test_READER_TPDU_SendDataOneshot_shouldSendRightFrame(void){
 	retVal = READER_TPDU_Forge(&tpduCmd, r1, r2, r3, r4, r5, pTestBuff, READER_TPDU_MAX_DATA);
 	TEST_ASSERT_TRUE(retVal == READER_OK);
 	
-	/* On fait les verifications ...  */
+	/* On fait les verifications ...  */	
+	//for(i=0; i<READER_TPDU_MAX_DATA; i++){
+	//	pExpectedFrame[i] = pTestBuff[i];
+	//}
+	
+	//READER_HAL_SendCharFrame_ExpectWithArrayAndReturn(&dummySettings, 1, READER_HAL_PROTOCOL_T0, pExpectedFrame, READER_TPDU_MAX_DATA, READER_TPDU_MAX_DATA, dummyTimeout, READER_OK);
 	for(i=0; i<READER_TPDU_MAX_DATA; i++){
-		pExpectedFrame[i] = pTestBuff[i];
+		//READER_HAL_SendChar_ExpectAnyArgsAndReturn(READER_OK);
+		READER_HAL_SendChar_ExpectAndReturn(&dummySettings, READER_HAL_PROTOCOL_T0, pTestBuff[i], dummyTimeout, READER_OK);
+		READER_HAL_SendChar_IgnoreArg_pSettings();
+		READER_HAL_SendChar_IgnoreArg_timeout();
 	}
 	
-	READER_HAL_SendCharFrame_ExpectWithArrayAndReturn(&dummySettings, 1, READER_HAL_PROTOCOL_T0, pExpectedFrame, READER_TPDU_MAX_DATA, READER_TPDU_MAX_DATA, dummyTimeout, READER_OK);
-	
+	TEST_ASSERT_EQUAL_UINT32(READER_TPDU_MAX_DATA, i);
+	TEST_ASSERT_EQUAL_UINT32(READER_TPDU_MAX_DATA, tpduCmd.dataField.size);
+
 	retVal = READER_TPDU_SendDataOneshot(&tpduCmd, dummyTimeout, &dummySettings);
 	TEST_ASSERT_TRUE(retVal == READER_OK);
 }
@@ -213,7 +234,8 @@ void test_READER_TPDU_SendDataOneshot_shouldVerifyDataSize(void){
 	tpduCmd.dataField.size += READER_TPDU_MAX_DATA;
 	
 	/* On tente l'envoi et on check la reaction ...  */
-	READER_HAL_SendCharFrame_ExpectAnyArgsAndReturn(READER_OK);
+	//READER_HAL_SendCharFrame_ExpectAnyArgsAndReturn(READER_OK);
+	READER_HAL_SendChar_IgnoreAndReturn(READER_OK);
 	
 	retVal = READER_TPDU_SendDataOneshot(&tpduCmd, dummyTimeout, &dummySettings);
 	TEST_ASSERT_FALSE(retVal == READER_OK);
@@ -400,7 +422,8 @@ void test_READER_TPDU_Send_shouldVerifyDataSize(void){
 	tpduCmd.dataField.size = READER_TPDU_MAX_DATA + 1;
 	tpduCmd.headerField.INS = ins;
 	
-	READER_HAL_SendCharFrame_IgnoreAndReturn(READER_OK);
+	//READER_HAL_SendCharFrame_IgnoreAndReturn(READER_OK);
+	READER_HAL_SendChar_IgnoreAndReturn(READER_OK);
 	READER_HAL_RcvChar_ExpectAnyArgsAndReturn(READER_OK);
 	READER_HAL_RcvChar_ReturnThruPtr_character(&ins);
 	
@@ -555,10 +578,27 @@ void test_READER_TPDU_RcvResponse_shouldTimeout(void){
 	READER_Status retVal;
 	uint32_t timeout = 1000;
 	uint32_t rcvCount = 1;
+	uint8_t dummyData[READER_TPDU_MAX_DATA];
+	uint32_t dataSize;
+	uint32_t i;
 	
 	
-	READER_HAL_RcvCharFrameCount_ExpectAnyArgsAndReturn(READER_TIMEOUT);
-	READER_HAL_RcvCharFrameCount_ReturnThruPtr_rcvCount(&rcvCount);
+	/* On initialise le TPDU Resp avec des donnees aleatoires ...  */
+	srand(time(NULL));
+	tpduResp.SW1 = 0x61;
+	tpduResp.SW2 = (uint8_t)(rand());
+	tpduResp.dataSize = READER_TPDU_MAX_DATA;
+	for(i=0; i< READER_TPDU_MAX_DATA; i++){
+		tpduResp.dataBytes[i] = (uint8_t)(rand());
+	}
+	
+	//READER_HAL_RcvCharFrameCount_ExpectAnyArgsAndReturn(READER_TIMEOUT);
+	//READER_HAL_RcvCharFrameCount_ReturnThruPtr_rcvCount(&rcvCount);
+	
+	dataSize = MAX(1, READER_TPDU_MAX_DATA);
+	dataSize = dataSize -1;
+	emulate_RcvCharFrame(dummyData, dataSize);
+	READER_HAL_RcvChar_ExpectAnyArgsAndReturn(READER_TIMEOUT);
 	
 	retVal = READER_TPDU_RcvResponse(&tpduResp, READER_TPDU_MAX_DATA, timeout, &dummySettings);
 	TEST_ASSERT_TRUE(retVal == READER_TIMEOUT);
@@ -578,12 +618,15 @@ void test_READER_TPDU_RcvResponse_shouldRetrieveCorrectData(void){
 	
 	
 	/* On Mock l'appel a READER_HAL_RcvCharFrameCount() ...  */
-	READER_HAL_RcvCharFrameCount_ExpectAndReturn(&dummySettings, READER_HAL_PROTOCOL_T0, NULL, expectedRespBytesSize, NULL, timeout, READER_OK);
-	READER_HAL_RcvCharFrameCount_IgnoreArg_pSettings();
-	READER_HAL_RcvCharFrameCount_IgnoreArg_frame();
-	READER_HAL_RcvCharFrameCount_IgnoreArg_rcvCount();
-	READER_HAL_RcvCharFrameCount_ReturnArrayThruPtr_frame(expectedRespBytes, expectedRespBytesSize);
-	READER_HAL_RcvCharFrameCount_ReturnThruPtr_rcvCount(&expectedRespBytesSize);
+	//READER_HAL_RcvCharFrameCount_ExpectAndReturn(&dummySettings, READER_HAL_PROTOCOL_T0, NULL, expectedRespBytesSize, NULL, timeout, READER_OK);
+	//READER_HAL_RcvCharFrameCount_IgnoreArg_pSettings();
+	//READER_HAL_RcvCharFrameCount_IgnoreArg_frame();
+	//READER_HAL_RcvCharFrameCount_IgnoreArg_rcvCount();
+	//READER_HAL_RcvCharFrameCount_ReturnArrayThruPtr_frame(expectedRespBytes, expectedRespBytesSize);
+	//READER_HAL_RcvCharFrameCount_ReturnThruPtr_rcvCount(&expectedRespBytesSize);
+	
+	emulate_RcvCharFrame(expectedRespBytes, expectedRespBytesSize);
+
 	
 	/* On prepare les Mocks pour la reception du SW1SW2 ...  */
 	READER_HAL_RcvChar_ExpectAnyArgsAndReturn(READER_OK);
@@ -609,22 +652,19 @@ void test_READER_TPDU_RcvResponse_shouldDetectIfSWInsteadOfData_Case1(void){
 	READER_HAL_CommSettings dummySettings;
 	READER_Status retVal;
 	uint8_t expectedRespBytes[] = {0x00, 0x01, 0x02, 0x03, 0x04, 0x05};
-	uint32_t expectedRespBytesSize = sizeof(expectedRespBytes);
+	uint32_t expectedRespBytesSize = 6;
 	uint32_t reallyRcvdBytesSize = 2;
 	uint8_t reallyRcvdBytes[] = {0x90, 0x00};  /* Correspondent a SW1 et SW1 que l'ont recoit a la place des donnees */
 	uint32_t timeout = 1000;
 	
 	
-	/* On Mock m'appel a READER_HAL_RcvCharFrameCount(). On simule la reception de SW1SW2 a la place des data attendues */
-	READER_HAL_RcvCharFrameCount_ExpectAndReturn(&dummySettings, READER_HAL_PROTOCOL_T0, NULL, expectedRespBytesSize, NULL, timeout, READER_TIMEOUT);
-	READER_HAL_RcvCharFrameCount_IgnoreArg_pSettings();
-	READER_HAL_RcvCharFrameCount_IgnoreArg_frame();
-	READER_HAL_RcvCharFrameCount_IgnoreArg_rcvCount();
-	READER_HAL_RcvCharFrameCount_ReturnArrayThruPtr_frame(reallyRcvdBytes, reallyRcvdBytesSize);
-	READER_HAL_RcvCharFrameCount_ReturnThruPtr_rcvCount(&reallyRcvdBytesSize);
-	
-	/* On Mock es eventuels appels a READER_HAL_RcvChar() ...  */
-	READER_HAL_RcvChar_IgnoreAndReturn(READER_TIMEOUT);
+
+	READER_HAL_RcvChar_ExpectAnyArgsAndReturn(READER_OK);
+	READER_HAL_RcvChar_ReturnThruPtr_character(reallyRcvdBytes);
+	READER_HAL_RcvChar_ExpectAnyArgsAndReturn(READER_OK);
+	READER_HAL_RcvChar_ReturnThruPtr_character(reallyRcvdBytes+1);
+	READER_HAL_RcvChar_ExpectAnyArgsAndReturn(READER_TIMEOUT);
+
 	
 	/* On effectue l'appel de la fonction que l'on veut tester, on verifie la reponse ...  */
 	retVal = READER_TPDU_RcvResponse(&tpduResp, expectedRespBytesSize, timeout, &dummySettings);
@@ -642,23 +682,16 @@ void test_READER_TPDU_RcvResponse_shouldDetectIfSWInsteadOfData_Case2(void){
 	READER_HAL_CommSettings dummySettings;
 	READER_Status retVal;
 	uint8_t expectedRespBytes[] = {0x00, 0x01};
-	uint32_t expectedRespBytesSize = sizeof(expectedRespBytes);
+	uint32_t expectedRespBytesSize = 2;
 	uint32_t reallyRcvdBytesSize = 2;
 	uint8_t reallyRcvdBytes[] = {0x6A, 0x82};  /* Correspondent a SW1 et SW1 que l'ont recoit a la place des donnees */
 	uint32_t timeout = 1000;
 	
 	
-	/* On Mock m'appel a READER_HAL_RcvCharFrameCount(). On simule la reception de SW1SW2 a la place des data attendues */
-	READER_HAL_RcvCharFrameCount_ExpectAndReturn(&dummySettings, READER_HAL_PROTOCOL_T0, NULL, expectedRespBytesSize, NULL, timeout, READER_OK);
-	READER_HAL_RcvCharFrameCount_IgnoreArg_pSettings();
-	READER_HAL_RcvCharFrameCount_IgnoreArg_frame();
-	READER_HAL_RcvCharFrameCount_IgnoreArg_rcvCount();
-	READER_HAL_RcvCharFrameCount_ReturnArrayThruPtr_frame(reallyRcvdBytes, reallyRcvdBytesSize);
-	READER_HAL_RcvCharFrameCount_ReturnThruPtr_rcvCount(&reallyRcvdBytesSize);
+	emulate_RcvCharFrame(reallyRcvdBytes, reallyRcvdBytesSize);
 	
 	/* On Mock es eventuels appels a READER_HAL_RcvChar() ...  */
 	READER_HAL_RcvChar_ExpectAnyArgsAndReturn(READER_TIMEOUT);
-	READER_HAL_RcvChar_IgnoreAndReturn(READER_TIMEOUT);
 	
 	/* On effectue l'appel de la fonction que l'on veut tester, on verifie la reponse ...  */
 	retVal = READER_TPDU_RcvResponse(&tpduResp, expectedRespBytesSize, timeout, &dummySettings);
@@ -683,12 +716,14 @@ void test_READER_TPDU_RcvResponse_shouldDetectIfSWInsteadOfData_Case3(void){
 	
 	
 	/* On Mock m'appel a READER_HAL_RcvCharFrameCount(). On simule la reception de SW1SW2 a la place des data attendues */
-	READER_HAL_RcvCharFrameCount_ExpectAndReturn(&dummySettings, READER_HAL_PROTOCOL_T0, NULL, expectedRespBytesSize, NULL, timeout, READER_OK);
-	READER_HAL_RcvCharFrameCount_IgnoreArg_pSettings();
-	READER_HAL_RcvCharFrameCount_IgnoreArg_frame();
-	READER_HAL_RcvCharFrameCount_IgnoreArg_rcvCount();
-	READER_HAL_RcvCharFrameCount_ReturnArrayThruPtr_frame(reallyRcvdBytes, reallyRcvdBytesSize);
-	READER_HAL_RcvCharFrameCount_ReturnThruPtr_rcvCount(&reallyRcvdBytesSize);
+	//READER_HAL_RcvCharFrameCount_ExpectAndReturn(&dummySettings, READER_HAL_PROTOCOL_T0, NULL, expectedRespBytesSize, NULL, timeout, READER_OK);
+	//READER_HAL_RcvCharFrameCount_IgnoreArg_pSettings();
+	//READER_HAL_RcvCharFrameCount_IgnoreArg_frame();
+	//READER_HAL_RcvCharFrameCount_IgnoreArg_rcvCount();
+	//READER_HAL_RcvCharFrameCount_ReturnArrayThruPtr_frame(reallyRcvdBytes, reallyRcvdBytesSize);
+	//READER_HAL_RcvCharFrameCount_ReturnThruPtr_rcvCount(&reallyRcvdBytesSize);
+	
+	emulate_RcvCharFrame(reallyRcvdBytes, reallyRcvdBytesSize);
 	
 	/* On Mock les eventuels appels a READER_HAL_RcvChar() ...  */
 	READER_HAL_RcvChar_ExpectAnyArgsAndReturn(READER_OK);

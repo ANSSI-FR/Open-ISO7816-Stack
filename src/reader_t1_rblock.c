@@ -50,7 +50,7 @@ READER_T1_ACKType READER_T1_GetBlockACKType(READER_T1_Block *pBlock){
 	if((currentPCB & 0x0F) == 0x00){
 		return READER_T1_ACKTYPE_ACK;
 	}
-	else if(((currentPCB & 0x0E) == 0x00) && ((currentPCB & 0xFE) == 0x01)){
+	else if((currentPCB & 0x0F) == 0x01){
 		return READER_T1_ACKTYPE_NACK_CRCLRC;
 	}
 	else{

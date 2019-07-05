@@ -5,6 +5,7 @@
 #include "unity.h"
 
 
+void emulate_RcvCharFrame(uint8_t *data, uint32_t dataSize);
 
 
 

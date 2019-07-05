@@ -4,7 +4,7 @@ RUBY=ruby
 
 
 
-HEADERS_TO_MOCK=reader_hal.h
+HEADERS_TO_MOCK=reader_hal_basis.h
 HEADERS_TO_MOCK+= reader_periph.h
 HEADERS_TO_MOCK+= reader_hal_comm_settings.h
 
@@ -58,7 +58,7 @@ INCS+= -I$(DIR_READER_SRC)
 INCS+= -I$(DIR_CMOCK_SRC)
 INCS+= -I$(DIR_MOCKS_SRCS)
 
-DEFS= -DTEST
+DEFS= -DTEST -DCMOCK_MEM_DYNAMIC
 
 
 #CFLAGS+= -Wall

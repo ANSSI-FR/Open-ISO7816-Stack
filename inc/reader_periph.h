@@ -6,7 +6,7 @@
 
 #include "reader_utils.h"
 #include "reader.h"
-#include "reader_hal_comm_settings.h"
+//#include "reader_hal_comm_settings.h"
 
 
 #ifndef TEST
