@@ -792,6 +792,11 @@ void test_READER_T1_SetBlockType_shouldCheckTypeCorrectness(void){
 	READER_T1_Block block;
 	READER_Status retVal;
 	
+	retVal = READER_T1_ForgeBlock(&block, READER_T1_LRC);
+	TEST_ASSERT_TRUE(retVal == READER_OK);
+	
+	retVal = READER_T1_SetBlockType(&block, READER_T1_SBLOCK);
+	TEST_ASSERT_TRUE(retVal == READER_OK);
 	
 	retVal = READER_T1_SetBlockType(&block, (uint32_t)(0xFFFFFFFF));
 	TEST_ASSERT_FALSE(retVal == READER_OK);
