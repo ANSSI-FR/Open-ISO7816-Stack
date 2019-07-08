@@ -35,6 +35,9 @@ void test_READER_BLOCK_all(void){
 	RUN_TEST(test_READER_T1_GetBlockACKType_shouldWork);
 	RUN_TEST(test_READER_T1_RcvBlock_IBlockShouldWork);
 	RUN_TEST(test_READER_T1_RcvBlock_shouldCheckMaxSize);
+	RUN_TEST(test_READER_T1_RcvBlock_shouldTimeout_case1);
+	RUN_TEST(test_READER_T1_RcvBlock_shouldTimeout_case2);
+	RUN_TEST(test_READER_T1_RcvBlock_shouldTimeout_case3);
 }
 
 
@@ -569,4 +572,82 @@ void test_READER_T1_RcvBlock_shouldCheckMaxSize(void){
 	/* On effectue une reception et on regarde le comportement de la fonction ...  */
 	retVal = READER_T1_RcvBlock(&block, READER_T1_LRC, timeout, 1, &tickstart, &dummySettings);
 	TEST_ASSERT_FALSE(retVal == READER_OK);
+}
+
+
+
+void test_READER_T1_RcvBlock_shouldTimeout_case1(void){
+	READER_T1_Block block;
+	READER_HAL_CommSettings dummySettings;
+	READER_Status retVal;
+	uint32_t timeout = 1000;
+	uint32_t tickstart;
+	
+	
+	/* On simule in timeout des la reception du 1er caractere ...  */
+	READER_HAL_RcvChar_ExpectAnyArgsAndReturn(READER_TIMEOUT);
+	
+	/* On verifie le comportement de la fonction ...  */
+	retVal = READER_T1_RcvBlock(&block, READER_T1_LRC, timeout, 0, &tickstart, &dummySettings);
+	TEST_ASSERT_TRUE(retVal == READER_TIMEOUT);
+}
+
+
+void test_READER_T1_RcvBlock_shouldTimeout_case2(void){
+	READER_T1_Block block;
+	READER_HAL_CommSettings dummySettings;
+	READER_Status retVal;
+	uint32_t timeout = 1000;
+	uint32_t tickstart;
+	uint8_t character = 0x00;
+	
+	
+	
+	/* On simule un timeout a la reception du deuxiemme caratere du header ...  */
+	READER_HAL_RcvChar_ExpectAnyArgsAndReturn(READER_OK);
+	READER_HAL_RcvChar_ReturnThruPtr_character(&character);
+	
+	READER_HAL_RcvChar_ExpectAnyArgsAndReturn(READER_TIMEOUT);
+	
+	/* On verifie le comportement de la fonction ...  */
+	retVal = READER_T1_RcvBlock(&block, READER_T1_LRC, timeout, 0, &tickstart, &dummySettings);
+	TEST_ASSERT_TRUE(retVal == READER_TIMEOUT);
+}
+
+
+void test_READER_T1_RcvBlock_shouldTimeout_case3(void){
+	READER_T1_Block block;
+	READER_HAL_CommSettings dummySettings;
+	READER_Status retVal;
+	uint32_t timeout = 1000;
+	uint32_t tickstart;
+	uint8_t nad = 0x00;
+	uint8_t pcb = 0x00;
+	uint8_t len = 0x03;
+	uint8_t data1 = 0xFF;
+	uint8_t data2 = 0xFF;
+	
+	
+	/* On simule le cas ou on recoit moins de donnees que indique dans le champs LEN du Block ...  */
+	READER_HAL_RcvChar_ExpectAnyArgsAndReturn(READER_OK);
+	READER_HAL_RcvChar_ReturnThruPtr_character(&nad);
+	
+	READER_HAL_RcvChar_ExpectAnyArgsAndReturn(READER_OK);
+	READER_HAL_RcvChar_ReturnThruPtr_character(&pcb);
+	
+	READER_HAL_RcvChar_ExpectAnyArgsAndReturn(READER_OK);
+	READER_HAL_RcvChar_ReturnThruPtr_character(&len);
+	
+	READER_HAL_RcvChar_ExpectAnyArgsAndReturn(READER_OK);
+	READER_HAL_RcvChar_ReturnThruPtr_character(&data1);
+	
+	READER_HAL_RcvChar_ExpectAnyArgsAndReturn(READER_OK);
+	READER_HAL_RcvChar_ReturnThruPtr_character(&data2);
+	
+	READER_HAL_RcvChar_ExpectAnyArgsAndReturn(READER_TIMEOUT);
+	
+	
+	/* On verifie le comportement de la fonction ...  */
+	retVal = READER_T1_RcvBlock(&block, READER_T1_LRC, timeout, 0, &tickstart, &dummySettings);
+	TEST_ASSERT_TRUE(retVal == READER_TIMEOUT);	
 }

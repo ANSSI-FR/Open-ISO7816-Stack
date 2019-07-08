@@ -32,6 +32,9 @@ void test_READER_T1_SetExpectedBlockSeqNumber_shouldWork(void);
 void test_READER_T1_GetBlockACKType_shouldWork(void);
 void test_READER_T1_RcvBlock_IBlockShouldWork(void);
 void test_READER_T1_RcvBlock_shouldCheckMaxSize(void);
+void test_READER_T1_RcvBlock_shouldTimeout_case1(void);
+void test_READER_T1_RcvBlock_shouldTimeout_case2(void);
+void test_READER_T1_RcvBlock_shouldTimeout_case3(void);
 
 
 #endif
