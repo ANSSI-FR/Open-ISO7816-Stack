@@ -799,10 +799,16 @@ READER_Status READER_T1_CheckBlockIntegrity(READER_T1_Block *pBlock, READER_T1_R
 
 READER_Status READER_T1_CopyBlock(READER_T1_Block *pBlockDest, READER_T1_Block *pBlockSource){
 	uint32_t i;
+	uint8_t len;
 
 	/* Ici, on peut encore optimiser la fonction en ne copiant que les LEN donnees */
-	for(i=0; i<READER_T1_BLOCK_MAX_DATA_SIZE+6; i++){
+	for(i=0; i<READER_T1_BLOCK_MAX_TOTAL_LENGTH; i++){
 		pBlockDest->blockFrame[i] = pBlockSource->blockFrame[i];
+	}
+	
+	len = READER_T1_GetBlockLEN(pBlockSource);
+	if(len > READER_T1_BLOCK_MAX_DATA_SIZE){
+		return READER_ERR;
 	}
 	
 	pBlockDest->RedundancyType = pBlockSource->RedundancyType;

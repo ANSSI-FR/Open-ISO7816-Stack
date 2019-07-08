@@ -20,6 +20,7 @@
 #define READER_T1_BLOCKFRAME_LEN_POSITION      (uint32_t)(2)       /* Voir ISO7816-3 section 11.3.1   */
 #define READER_T1_BLOCKFRAME_INF_POSITION      (uint32_t)(3)       /* Voir ISO7816-3 section 11.3.1   */
 #define READER_T1_CRC_POLY                     (uint32_t)(0x91)
+#define READER_T1_BLOCK_MAX_TOTAL_LENGTH       (uint32_t)(READER_T1_BLOCK_MAX_DATA_SIZE + READER_T1_BLOCK_EPILOGUE_MAXSIZE + READER_T1_BLOCK_PROLOGUE_SIZE)
 
 
 
@@ -60,7 +61,7 @@ enum READER_T1_BlockType{
 
 typedef struct READER_T1_Block READER_T1_Block;
 struct READER_T1_Block{
-	uint8_t blockFrame[READER_T1_BLOCK_MAX_DATA_SIZE + 6];  /* INF +NAD +PCB +LEN +CRC/LRC*/
+	uint8_t blockFrame[READER_T1_BLOCK_MAX_TOTAL_LENGTH];  /* INF +NAD +PCB +LEN +CRC/LRC*/
 	READER_T1_RedundancyType RedundancyType;
 };
 
