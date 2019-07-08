@@ -38,6 +38,7 @@ void test_READER_BLOCK_all(void){
 	RUN_TEST(test_READER_T1_RcvBlock_shouldTimeout_case1);
 	RUN_TEST(test_READER_T1_RcvBlock_shouldTimeout_case2);
 	RUN_TEST(test_READER_T1_RcvBlock_shouldTimeout_case3);
+	RUN_TEST(test_READER_T1_CheckBlockIntegrity_shouldDetectBitFlip);
 }
 
 
@@ -650,4 +651,24 @@ void test_READER_T1_RcvBlock_shouldTimeout_case3(void){
 	/* On verifie le comportement de la fonction ...  */
 	retVal = READER_T1_RcvBlock(&block, READER_T1_LRC, timeout, 0, &tickstart, &dummySettings);
 	TEST_ASSERT_TRUE(retVal == READER_TIMEOUT);	
+}
+
+
+void test_READER_T1_CheckBlockIntegrity_shouldDetectBitFlip(void){
+	READER_T1_Block block;
+	READER_Status retVal;
+	uint8_t blockData[] = {0x00, 0x01, 0x02};
+	uint8_t blockDataSize = 3;
+	
+	
+	retVal = READER_T1_ForgeIBlock(&block, blockData, blockDataSize, READER_T1_SEQNUM_ZERO, READER_T1_MBIT_ZERO, READER_T1_LRC);
+	TEST_ASSERT_TRUE(retVal == READER_OK);
+	
+	retVal = READER_T1_CheckBlockIntegrity(&block, READER_T1_LRC);
+	TEST_ASSERT_TRUE(retVal == READER_OK);
+	
+	block.blockFrame[READER_T1_BLOCKFRAME_INF_POSITION + 1] = block.blockFrame[READER_T1_BLOCKFRAME_INF_POSITION + 1] ^ 0b00000001;
+	
+	retVal = READER_T1_CheckBlockIntegrity(&block, READER_T1_LRC);
+	TEST_ASSERT_FALSE(retVal == READER_OK);
 }
