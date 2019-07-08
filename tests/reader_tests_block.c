@@ -44,6 +44,7 @@ void test_READER_BLOCK_all(void){
 	RUN_TEST(test_READER_T1_CopyBlockData_shouldCheckMaxSize);
 	RUN_TEST(test_READER_T1_SetBlockLEN_shouldCheckSize);
 	RUN_TEST(test_READER_T1_SetBlockType_shouldCheckTypeCorrectness);
+	RUN_TEST(test_READER_T1_SetBlockRedundancyType_shouldCheckTypeCorrectness);
 }
 
 
@@ -796,5 +797,21 @@ void test_READER_T1_SetBlockType_shouldCheckTypeCorrectness(void){
 	TEST_ASSERT_FALSE(retVal == READER_OK);
 	
 	retVal = READER_T1_SetBlockType(&block, (uint32_t)(0xFFFFFF00));
+	TEST_ASSERT_FALSE(retVal == READER_OK);
+}
+
+
+void test_READER_T1_SetBlockRedundancyType_shouldCheckTypeCorrectness(void){
+	READER_T1_Block block;
+	READER_Status retVal;
+	
+	
+	retVal = READER_T1_SetBlockRedundancyType(&block, READER_T1_LRC);
+	TEST_ASSERT_TRUE(retVal == READER_OK);
+	
+	retVal = READER_T1_SetBlockRedundancyType(&block, READER_T1_CRC);
+	TEST_ASSERT_TRUE(retVal == READER_OK);
+	
+	retVal = READER_T1_SetBlockRedundancyType(&block, (uint32_t)(0xFF00FF00));
 	TEST_ASSERT_FALSE(retVal == READER_OK);
 }
