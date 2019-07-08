@@ -40,8 +40,8 @@ void test_READER_BLOCK_all(void){
 	RUN_TEST(test_READER_T1_RcvBlock_shouldTimeout_case3);
 	RUN_TEST(test_READER_T1_CheckBlockIntegrity_shouldDetectBitFlip);
 	RUN_TEST(test_READER_T1_SendBlock_shouldWork);
-	RUN_TEST(test_READER_T1_CopyBlockData_shouldWork);
-	RUN_TEST(test_READER_T1_CopyBlockData_shouldCheckMaxSize);
+	RUN_TEST(test_READER_T1_CopyBlock_shouldWork);
+	RUN_TEST(test_READER_T1_CopyBlock_shouldCheckMaxSize);
 	RUN_TEST(test_READER_T1_SetBlockLEN_shouldCheckSize);
 	RUN_TEST(test_READER_T1_SetBlockType_shouldCheckTypeCorrectness);
 	RUN_TEST(test_READER_T1_SetBlockRedundancyType_shouldCheckTypeCorrectness);
@@ -722,7 +722,7 @@ void test_READER_T1_SendBlock_shouldWork(void){
 
 
 
-void test_READER_T1_CopyBlockData_shouldWork(void){
+void test_READER_T1_CopyBlock_shouldWork(void){
 	READER_T1_Block blockSrc, blockDst;
 	READER_Status retVal;
 	uint8_t data[READER_T1_BLOCK_MAX_DATA_SIZE];
@@ -749,7 +749,7 @@ void test_READER_T1_CopyBlockData_shouldWork(void){
 }
 
 
-void test_READER_T1_CopyBlockData_shouldCheckMaxSize(void){
+void test_READER_T1_CopyBlock_shouldCheckMaxSize(void){
 	READER_T1_Block blockSrc, blockDst;
 	READER_Status retVal;
 	uint8_t data[READER_T1_BLOCK_MAX_DATA_SIZE];
@@ -823,4 +823,5 @@ void test_READER_T1_SetBlockRedundancyType_shouldCheckTypeCorrectness(void){
 	retVal = READER_T1_SetBlockRedundancyType(&block, (uint32_t)(0xFF00FF00));
 	TEST_ASSERT_FALSE(retVal == READER_OK);
 }
+
 
