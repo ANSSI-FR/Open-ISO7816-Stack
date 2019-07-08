@@ -52,6 +52,11 @@ void test_READER_T1_CheckIBlock_shouldWork(void);
 void test_READER_T1_SetBlockACKType_shouldCheckTypeCorrectness(void);
 void test_READER_T1_SetExpectedBlockSeqNumber_shouldCheckTypeCorrectness(void);
 void test_READER_T1_CheckRBlock_shouldWork(void);
+void test_READER_T1_SetBlockSType_shouldCheckTypeCorrectness(void);
+void test_READER_T1_SetBlockSPayload_shouldWork(void);
+void test_READER_T1_CheckSBlock_shouldWork(void);
+void test_READER_T1_IsSBlockRequest_shouldWork(void);
+void test_READER_T1_IsSBlockResponse_shouldWork(void);
 
 
 #endif
