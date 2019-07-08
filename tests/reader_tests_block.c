@@ -39,6 +39,7 @@ void test_READER_BLOCK_all(void){
 	RUN_TEST(test_READER_T1_RcvBlock_shouldTimeout_case2);
 	RUN_TEST(test_READER_T1_RcvBlock_shouldTimeout_case3);
 	RUN_TEST(test_READER_T1_CheckBlockIntegrity_shouldDetectBitFlip);
+	RUN_TEST(test_READER_T1_SendBlock_shouldWork);
 }
 
 
@@ -671,4 +672,45 @@ void test_READER_T1_CheckBlockIntegrity_shouldDetectBitFlip(void){
 	
 	retVal = READER_T1_CheckBlockIntegrity(&block, READER_T1_LRC);
 	TEST_ASSERT_FALSE(retVal == READER_OK);
+}
+
+
+
+void test_READER_T1_SendBlock_shouldWork(void){
+	READER_T1_Block block;
+	READER_HAL_CommSettings dummySettings;
+	READER_Status retVal;
+	uint8_t data[READER_T1_BLOCK_MAX_DATA_SIZE];
+	uint32_t dataSize = READER_T1_BLOCK_MAX_DATA_SIZE;
+	uint8_t prologue[READER_T1_BLOCK_PROLOGUE_SIZE];
+	uint8_t lrc;
+	uint32_t timeout = 1000;
+	uint32_t tickstart;
+	uint32_t i;
+	
+	
+	/* Preparation de donnees aleatoires ...  */
+	srand(time(NULL));
+	for(i=0; i<dataSize; i++){
+		data[i] = (uint8_t)(rand());
+	}
+	
+	/* Fabrication d'un I-Block avec ces donnees ...  */
+	retVal = READER_T1_ForgeIBlock(&block, data, dataSize, READER_T1_SEQNUM_ONE, READER_T1_MBIT_ONE, READER_T1_LRC);
+	TEST_ASSERT_TRUE(retVal == READER_OK);
+	
+	/* On paramettre les donnees que l'on s'attend a etre envoyees ...  */
+	prologue[READER_T1_BLOCKFRAME_NAD_POSITION] = block.blockFrame[READER_T1_BLOCKFRAME_NAD_POSITION];
+	prologue[READER_T1_BLOCKFRAME_PCB_POSITION] = block.blockFrame[READER_T1_BLOCKFRAME_PCB_POSITION];
+	prologue[READER_T1_BLOCKFRAME_LEN_POSITION] = block.blockFrame[READER_T1_BLOCKFRAME_LEN_POSITION];
+	
+	lrc = READER_T1_ComputeBlockLRC(&block);
+	
+	set_expected_CharFrame(prologue, READER_T1_BLOCK_PROLOGUE_SIZE);
+	set_expected_CharFrame(data, dataSize);
+	set_expected_CharFrame(&lrc, 1);
+	
+	/* On effecture l'envoi ...  */
+	retVal = READER_T1_SendBlock(&block, timeout, 0, &tickstart, &dummySettings);
+	TEST_ASSERT_TRUE(retVal == READER_OK);
 }

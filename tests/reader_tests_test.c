@@ -21,3 +21,17 @@ void emulate_RcvCharFrame(uint8_t *data, uint32_t dataSize){
 		READER_HAL_RcvChar_ReturnThruPtr_character(data+i);
 	}
 }
+
+
+void set_expected_CharFrame(uint8_t *expectedBytes, uint32_t size){
+	READER_HAL_CommSettings dummySettings;
+	uint32_t timeout = 1000;
+	uint32_t i;
+	
+	for(i=0; i<size; i++){
+		READER_HAL_SendChar_ExpectAndReturn(&dummySettings, READER_HAL_PROTOCOL_T1, expectedBytes[i], timeout, READER_OK);
+		READER_HAL_SendChar_IgnoreArg_pSettings();
+		READER_HAL_SendChar_IgnoreArg_protocol();
+		READER_HAL_SendChar_IgnoreArg_timeout();
+	}
+}
