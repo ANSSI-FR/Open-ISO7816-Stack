@@ -6,6 +6,7 @@
 #include "reader_t1_block.h"
 
 #include "reader_tests_block.h"
+#include "reader_tests_test.h"
 
 #include <time.h>
 #include <stdio.h>
@@ -45,6 +46,8 @@ void test_READER_BLOCK_all(void){
 	RUN_TEST(test_READER_T1_SetBlockLEN_shouldCheckSize);
 	RUN_TEST(test_READER_T1_SetBlockType_shouldCheckTypeCorrectness);
 	RUN_TEST(test_READER_T1_SetBlockRedundancyType_shouldCheckTypeCorrectness);
+	RUN_TEST(test_READER_T1_CopyBlockData_shouldWork);
+	RUN_TEST(test_READER_T1_CopyBlockData_shouldCheckMaxSize);
 }
 
 
@@ -825,3 +828,59 @@ void test_READER_T1_SetBlockRedundancyType_shouldCheckTypeCorrectness(void){
 }
 
 
+
+void test_READER_T1_CopyBlockData_shouldWork(void){
+	READER_T1_Block block;
+	READER_Status retVal;
+	uint8_t data[READER_T1_BLOCK_MAX_DATA_SIZE];
+	uint32_t dataSize = READER_T1_BLOCK_MAX_DATA_SIZE;
+	uint8_t destDataBuff[READER_T1_BLOCK_MAX_DATA_SIZE];
+	uint8_t destDataBuffSize = READER_T1_BLOCK_MAX_DATA_SIZE;
+	uint32_t i;
+	
+	
+	/* Preparation de donnees aleatoires ...  */
+	srand(time(NULL));
+	for(i=0; i<dataSize; i++){
+		data[i] = (uint8_t)(rand());
+	}
+	
+	/* Fabrication d'un I-Block avec ces donnees ...  */
+	retVal = READER_T1_ForgeIBlock(&block, data, dataSize, READER_T1_SEQNUM_ONE, READER_T1_MBIT_ONE, READER_T1_LRC);
+	TEST_ASSERT_TRUE(retVal == READER_OK);
+	
+	
+	/* On copie les Data du Block ...  */
+	retVal = READER_T1_CopyBlockData(&block, destDataBuff, destDataBuffSize);
+	TEST_ASSERT_TRUE(retVal == READER_OK);
+	
+	/* On verifie que les Data des deux Blocks sont identiques ...  */
+	TEST_ASSERT_EQUAL_UINT8_ARRAY(block.blockFrame + READER_T1_BLOCKFRAME_INF_POSITION, destDataBuff, dataSize);
+}
+
+
+void test_READER_T1_CopyBlockData_shouldCheckMaxSize(void){
+	READER_T1_Block block;
+	READER_Status retVal;
+	uint8_t data[READER_T1_BLOCK_MAX_DATA_SIZE];
+	uint32_t dataSize = READER_T1_BLOCK_MAX_DATA_SIZE;
+	uint8_t destDataBuff[READER_T1_BLOCK_MAX_DATA_SIZE-1];
+	uint8_t destDataBuffSize = READER_T1_BLOCK_MAX_DATA_SIZE-1;
+	uint32_t i;
+	
+	
+	/* Preparation de donnees aleatoires ...  */
+	srand(time(NULL));
+	for(i=0; i<dataSize; i++){
+		data[i] = (uint8_t)(rand());
+	}
+	
+	/* Fabrication d'un I-Block avec ces donnees ...  */
+	retVal = READER_T1_ForgeIBlock(&block, data, dataSize, READER_T1_SEQNUM_ONE, READER_T1_MBIT_ONE, READER_T1_LRC);
+	TEST_ASSERT_TRUE(retVal == READER_OK);
+	
+	
+	/* On copie les Data du Block ...  */
+	retVal = READER_T1_CopyBlockData(&block, destDataBuff, destDataBuffSize);
+	TEST_ASSERT_FALSE(retVal == READER_OK);
+}
