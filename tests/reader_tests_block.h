@@ -39,6 +39,8 @@ void test_READER_T1_CheckBlockIntegrity_shouldDetectBitFlip(void);
 void test_READER_T1_SendBlock_shouldWork(void);
 void test_READER_T1_CopyBlockData_shouldWork(void);
 void test_READER_T1_CopyBlockData_shouldCheckMaxSize(void);
+void test_READER_T1_SetBlockLEN_shouldCheckSize(void);
+void test_READER_T1_SetBlockType_shouldCheckTypeCorrectness(void);
 
 
 #endif
