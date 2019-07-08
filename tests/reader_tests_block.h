@@ -37,6 +37,8 @@ void test_READER_T1_RcvBlock_shouldTimeout_case2(void);
 void test_READER_T1_RcvBlock_shouldTimeout_case3(void);
 void test_READER_T1_CheckBlockIntegrity_shouldDetectBitFlip(void);
 void test_READER_T1_SendBlock_shouldWork(void);
+void test_READER_T1_CopyBlockData_shouldWork(void);
+void test_READER_T1_CopyBlockData_shouldCheckMaxSize(void);
 
 
 #endif

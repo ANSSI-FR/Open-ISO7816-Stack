@@ -40,6 +40,8 @@ void test_READER_BLOCK_all(void){
 	RUN_TEST(test_READER_T1_RcvBlock_shouldTimeout_case3);
 	RUN_TEST(test_READER_T1_CheckBlockIntegrity_shouldDetectBitFlip);
 	RUN_TEST(test_READER_T1_SendBlock_shouldWork);
+	RUN_TEST(test_READER_T1_CopyBlockData_shouldWork);
+	RUN_TEST(test_READER_T1_CopyBlockData_shouldCheckMaxSize);
 }
 
 
@@ -713,4 +715,51 @@ void test_READER_T1_SendBlock_shouldWork(void){
 	/* On effecture l'envoi ...  */
 	retVal = READER_T1_SendBlock(&block, timeout, 0, &tickstart, &dummySettings);
 	TEST_ASSERT_TRUE(retVal == READER_OK);
+}
+
+
+
+void test_READER_T1_CopyBlockData_shouldWork(void){
+	READER_T1_Block blockSrc, blockDst;
+	READER_Status retVal;
+	uint8_t data[READER_T1_BLOCK_MAX_DATA_SIZE];
+	uint32_t dataSize = READER_T1_BLOCK_MAX_DATA_SIZE;
+	uint32_t i;
+	
+	
+	/* Preparation de donnees aleatoires ...  */
+	srand(time(NULL));
+	for(i=0; i<dataSize; i++){
+		data[i] = (uint8_t)(rand());
+	}
+	
+	/* Fabrication d'un I-Block avec ces donnees ...  */
+	retVal = READER_T1_ForgeIBlock(&blockSrc, data, dataSize, READER_T1_SEQNUM_ONE, READER_T1_MBIT_ONE, READER_T1_LRC);
+	TEST_ASSERT_TRUE(retVal == READER_OK);
+	
+	/* On copie le Block ...  */
+	retVal = READER_T1_CopyBlock(&blockDst, &blockSrc);
+	TEST_ASSERT_TRUE(retVal == READER_OK);
+	
+	/* On verifie que les deux Blocks sont identiques ...  */
+	TEST_ASSERT_EQUAL_UINT8_ARRAY(blockSrc.blockFrame, blockDst.blockFrame, READER_T1_BLOCK_PROLOGUE_SIZE + READER_T1_BLOCK_MAX_DATA_SIZE + 1);
+}
+
+
+void test_READER_T1_CopyBlockData_shouldCheckMaxSize(void){
+	READER_T1_Block blockSrc, blockDst;
+	READER_Status retVal;
+	uint8_t data[READER_T1_BLOCK_MAX_DATA_SIZE];
+	uint32_t dataSize = READER_T1_BLOCK_MAX_DATA_SIZE;
+	uint32_t len32 = READER_T1_BLOCK_MAX_DATA_SIZE + 1;
+	
+	
+	if(len32 > 0xFF){
+		TEST_IGNORE();
+	}
+	
+	blockSrc.blockFrame[READER_T1_BLOCKFRAME_LEN_POSITION] = (uint8_t)(len32);
+	
+	retVal = READER_T1_CopyBlock(&blockDst, &blockSrc);
+	TEST_ASSERT_TRUE(retVal == READER_ERR);
 }
