@@ -811,6 +811,9 @@ void test_READER_T1_SetBlockRedundancyType_shouldCheckTypeCorrectness(void){
 	READER_Status retVal;
 	
 	
+	retVal = READER_T1_ForgeBlock(&block, READER_T1_LRC);
+	TEST_ASSERT_TRUE(retVal == READER_OK);
+	
 	retVal = READER_T1_SetBlockRedundancyType(&block, READER_T1_LRC);
 	TEST_ASSERT_TRUE(retVal == READER_OK);
 	
