@@ -44,6 +44,8 @@ void test_READER_T1_SetBlockType_shouldCheckTypeCorrectness(void);
 void test_READER_T1_SetBlockRedundancyType_shouldCheckTypeCorrectness(void);
 void test_READER_T1_CopyBlockData_shouldWork(void);
 void test_READER_T1_CopyBlockData_shouldCheckMaxSize(void);
+void test_READER_T1_SetBlockSeqNumber_shouldCheckTypeCorrectness(void);
+void test_READER_T1_SetBlockMBit_shouldCheckTypeCorrectness(void);
 
 
 #endif
