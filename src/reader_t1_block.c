@@ -366,7 +366,7 @@ READER_T1_BlockType READER_T1_GetBlockType(READER_T1_Block *pBlock){
 		return READER_T1_SBLOCK;
 	}
 	else{
-		return READER_T1_BLOCK_ERR;
+		return READER_T1_SBLOCK;
 	}
 }
 

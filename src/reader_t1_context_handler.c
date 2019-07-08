@@ -955,9 +955,6 @@ READER_Status READER_T1_CONTEXT_GetLastSentType(READER_T1_ContextHandler *pConte
 	/* On recupere le Type du dernier Block Envoye */
 	bType = READER_T1_GetBlockType(pLastBlock);
 	
-	if(bType == READER_T1_BLOCK_ERR){
-		return READER_ERR;
-	}
 	
 	*pType = bType;
 
@@ -986,9 +983,6 @@ READER_Status READER_T1_CONTEXT_GetLastRcvdType(READER_T1_ContextHandler *pConte
 	/* On recupere le Type du dernier Block Recu                      */
 	bType = READER_T1_GetBlockType(pLastBlock);
 	
-	if(bType == READER_T1_BLOCK_ERR){
-		return READER_ERR;
-	}
 	
 	*pType = bType;
 

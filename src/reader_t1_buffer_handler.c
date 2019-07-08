@@ -522,16 +522,14 @@ READER_Status READER_T1_BUFFER_StripControlBlocks(READER_T1_ContextHandler *pCon
 		if((retVal != READER_OK) && (retVal != READER_EMPTY)) return retVal;        /* Si on a une erreur autre que Buffer vide, alors on quitte de suite. */
 		                                                                            /* A partir de la, retVal vaut sois READER_OK, sois READER_EMPTY ...   */
 		if(retVal != READER_EMPTY){                                                 
-			bType = READER_T1_GetBlockType(&tmpBlock);                              
+			bType = READER_T1_GetBlockType(&tmpBlock); 
+			
+			if(bType == READER_T1_IBLOCK){
+				retVal2 = READER_T1_BUFFER_Stack(pContext, &tmpBlock);
+				if(retVal2 != READER_OK) return retVal2;
+			}                                
 		}
-		else{
-			bType = READER_T1_BLOCK_ERR;
-		}
-		
-		if(bType == READER_T1_IBLOCK){
-			retVal2 = READER_T1_BUFFER_Stack(pContext, &tmpBlock);
-			if(retVal2 != READER_OK) return retVal2;
-		}                                                                           
+		                                                                    
 	}while((bType != READER_T1_IBLOCK) && (retVal != READER_EMPTY));                /* ie : on s'arrete si on a un I-Block, ou si c'est vide               */
 	
 	

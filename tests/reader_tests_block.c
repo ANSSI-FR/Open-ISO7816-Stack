@@ -823,3 +823,4 @@ void test_READER_T1_SetBlockRedundancyType_shouldCheckTypeCorrectness(void){
 	retVal = READER_T1_SetBlockRedundancyType(&block, (uint32_t)(0xFF00FF00));
 	TEST_ASSERT_FALSE(retVal == READER_OK);
 }
+

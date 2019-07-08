@@ -188,9 +188,6 @@ READER_Status READER_T1_CONTROL_IsIBlockACK(READER_T1_ContextHandler *pContext, 
 	}
 	
 	/* On examine le type du dernier Block envoye ...                                         */
-	if(bType == READER_T1_BLOCK_ERR){
-		return READER_ERR;
-	}
 	
 	if(bType != READER_T1_IBLOCK){
 		return READER_NO;
