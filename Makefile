@@ -80,7 +80,7 @@ DEPS=$(addprefix $(DEPDIR)/,$(SRCS:.c=.d))
 
 
 
-.PHONY: all dirs clean upload library tests test
+.PHONY: all dirs clean upload library tests test report
 
 
 
@@ -111,7 +111,10 @@ tests:
 	$(MAKE) --file $(MAKEFILE_TESTS) all
 	
 test:tests
-	./$(TESTDIR)/out/test.elf
+	$(MAKE) --file $(MAKEFILE_TESTS) test
+	
+report:
+	$(MAKE) --file $(MAKEFILE_TESTS) report
 
 
 $(OUTDIR)/$(OUTPUT_BIN):$(OUTDIR)/$(OUTPUT_ELF)

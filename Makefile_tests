@@ -1,6 +1,8 @@
 CC=gcc
 LD=gcc
 RUBY=ruby
+LCOV=lcov
+GENHTML=genhtml
 
 
 
@@ -36,6 +38,8 @@ DIR_DEP=$(DIR_TESTS)/dep
 DIR_OBJ=$(DIR_TESTS)/obj
 DIR_LIB=$(DIR_TESTS)/lib
 DIR_TEST_OBJ=$(DIR_TESTS)/testobj
+DIR_COV=$(DIR_TESTS)/cov
+
 
 UNITY_OBJ=unity.o
 CMOCK_OBJ=cmock.o
@@ -69,6 +73,7 @@ CFLAGS+= -O0
 CFLAGS+= $(DEFS)
 CFLAGS+= $(INCS)
 CFLAGS+= -g
+CFLAGS+= -fprofile-arcs -ftest-coverage
 
 
 
@@ -93,7 +98,7 @@ TEST_OBJS=$(addprefix $(DIR_TEST_OBJ)/,$(TEST_SRCS:.c=.o))
 
 
 
-.PHONY: all dirs clean
+.PHONY: all dirs clean test report
 
 .PRECIOUS:$(MOCKS_SRCS)
 
@@ -102,9 +107,18 @@ TEST_OBJS=$(addprefix $(DIR_TEST_OBJ)/,$(TEST_SRCS:.c=.o))
 all:dirs $(DIR_OUT)/$(OUTPUT_ELF)
 
 
+test:
+	./$(DIR_OUT)/$(OUTPUT_ELF)
+	
+
+report:
+	$(LCOV) --directory $(DIR_OBJ) -c -o $(DIR_COV)/lconv.info
+	$(GENHTML) -o $(DIR_COV)/cov_report -t "COV REPORT" $(DIR_COV)/lconv.info
+
 	
 clean:
 	rm --verbose -rf $(DIR_OUT) 
+	rm --verbose -rf $(DIR_COV) 
 	rm --verbose -rf $(DIR_DEP)
 	rm --verbose -rf $(DIR_OBJ)
 	rm --verbose -rf $(DIR_LIB)
@@ -116,6 +130,7 @@ clean:
 
 dirs:
 	mkdir --verbose --parents $(DIR_TESTS)
+	mkdir --verbose --parents $(DIR_COV)
 	mkdir --verbose --parents $(DIR_MOCKS)
 	mkdir --verbose --parents $(DIR_MOCKS_SRCS)
 	mkdir --verbose --parents $(DIR_MOCKS_OBJS)
