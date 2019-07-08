@@ -50,6 +50,10 @@ void test_READER_BLOCK_all(void){
 	RUN_TEST(test_READER_T1_CopyBlockData_shouldCheckMaxSize);
 	RUN_TEST(test_READER_T1_SetBlockSeqNumber_shouldCheckTypeCorrectness);
 	RUN_TEST(test_READER_T1_SetBlockMBit_shouldCheckTypeCorrectness);
+	RUN_TEST(test_READER_T1_CheckIBlock_shouldWork);
+	RUN_TEST(test_READER_T1_SetBlockACKType_shouldCheckTypeCorrectness);
+	RUN_TEST(test_READER_T1_SetExpectedBlockSeqNumber_shouldCheckTypeCorrectness);
+	RUN_TEST(test_READER_T1_CheckRBlock_shouldWork);
 }
 
 
@@ -925,5 +929,104 @@ void test_READER_T1_SetBlockMBit_shouldCheckTypeCorrectness(void){
 	TEST_ASSERT_FALSE(retVal == READER_OK);
 	
 	retVal = READER_T1_ForgeIBlock(&block, data, dataSize, READER_T1_SEQNUM_ZERO, (uint32_t)(0x0000FFFF), READER_T1_LRC);
+	TEST_ASSERT_FALSE(retVal == READER_OK);
+}
+
+
+void test_READER_T1_CheckIBlock_shouldWork(void){
+	READER_T1_Block block;
+	READER_Status retVal;
+	uint8_t data[READER_T1_BLOCK_MAX_DATA_SIZE];
+	uint32_t dataSize = READER_T1_BLOCK_MAX_DATA_SIZE;
+	
+	
+	retVal = READER_T1_ForgeIBlock(&block, data, dataSize, READER_T1_SEQNUM_ZERO, READER_T1_MBIT_ZERO, READER_T1_LRC);
+	TEST_ASSERT_TRUE(retVal == READER_OK);
+	
+	retVal = READER_T1_CheckIBlock(&block);
+	TEST_ASSERT_TRUE(retVal == READER_OK);
+	
+	retVal = READER_T1_ForgeSBlock(&block, READER_T1_STYPE_RESYNCH_REQU, READER_T1_LRC);
+	TEST_ASSERT_TRUE(retVal == READER_OK);
+	
+	retVal = READER_T1_CheckIBlock(&block);
+	TEST_ASSERT_FALSE(retVal == READER_OK);
+	
+	retVal = READER_T1_ForgeRBlock(&block, READER_T1_ACKTYPE_NACK, READER_T1_EXPSEQNUM_ONE, READER_T1_LRC);
+	TEST_ASSERT_TRUE(retVal == READER_OK);
+	
+	retVal = READER_T1_CheckIBlock(&block);
+	TEST_ASSERT_FALSE(retVal == READER_OK);
+}
+
+
+void test_READER_T1_SetBlockACKType_shouldCheckTypeCorrectness(void){
+	READER_T1_Block block;
+	READER_Status retVal;
+	
+	
+	retVal = READER_T1_ForgeRBlock(&block, READER_T1_ACKTYPE_ACK, READER_T1_EXPSEQNUM_ONE, READER_T1_LRC);
+	TEST_ASSERT_TRUE(retVal == READER_OK);
+	
+	retVal = READER_T1_ForgeRBlock(&block, READER_T1_ACKTYPE_NACK, READER_T1_EXPSEQNUM_ONE, READER_T1_LRC);
+	TEST_ASSERT_TRUE(retVal == READER_OK);
+	
+	retVal = READER_T1_ForgeRBlock(&block, READER_T1_ACKTYPE_NACK_CRCLRC, READER_T1_EXPSEQNUM_ONE, READER_T1_LRC);
+	TEST_ASSERT_TRUE(retVal == READER_OK);
+	
+	retVal = READER_T1_ForgeRBlock(&block, (uint32_t)(0x0000FFFF), READER_T1_EXPSEQNUM_ONE, READER_T1_LRC);
+	TEST_ASSERT_FALSE(retVal == READER_OK);
+	
+	retVal = READER_T1_ForgeRBlock(&block, (uint32_t)(0xF0F0F0F0), READER_T1_EXPSEQNUM_ONE, READER_T1_LRC);
+	TEST_ASSERT_FALSE(retVal == READER_OK);
+}
+
+
+
+void test_READER_T1_SetExpectedBlockSeqNumber_shouldCheckTypeCorrectness(void){
+	READER_T1_Block block;
+	READER_Status retVal;
+	
+	
+	retVal = READER_T1_ForgeRBlock(&block, READER_T1_ACKTYPE_ACK, READER_T1_EXPSEQNUM_ONE, READER_T1_LRC);
+	TEST_ASSERT_TRUE(retVal == READER_OK);
+	
+	retVal = READER_T1_ForgeRBlock(&block, READER_T1_ACKTYPE_NACK, READER_T1_EXPSEQNUM_ZERO, READER_T1_LRC);
+	TEST_ASSERT_TRUE(retVal == READER_OK);
+	
+	retVal = READER_T1_ForgeRBlock(&block, READER_T1_ACKTYPE_NACK_CRCLRC, (uint32_t)(0xF0F0F0F0), READER_T1_LRC);
+	TEST_ASSERT_FALSE(retVal == READER_OK);
+	
+	retVal = READER_T1_ForgeRBlock(&block, READER_T1_ACKTYPE_ACK, (uint32_t)(0xFFFF0000), READER_T1_LRC);
+	TEST_ASSERT_FALSE(retVal == READER_OK);
+	
+	retVal = READER_T1_ForgeRBlock(&block, READER_T1_ACKTYPE_ACK, (uint32_t)(0xFF00FF00), READER_T1_LRC);
+	TEST_ASSERT_FALSE(retVal == READER_OK);
+}
+
+
+void test_READER_T1_CheckRBlock_shouldWork(void){
+	READER_T1_Block block;
+	READER_Status retVal;
+	uint8_t data[READER_T1_BLOCK_MAX_DATA_SIZE];
+	uint32_t dataSize = READER_T1_BLOCK_MAX_DATA_SIZE;
+	
+	
+	retVal = READER_T1_ForgeRBlock(&block, READER_T1_ACKTYPE_ACK, READER_T1_EXPSEQNUM_ONE, READER_T1_LRC);
+	TEST_ASSERT_TRUE(retVal == READER_OK);
+	
+	retVal = READER_T1_CheckRBlock(&block);
+	TEST_ASSERT_TRUE(retVal == READER_OK);
+	
+	retVal = READER_T1_ForgeSBlock(&block, READER_T1_STYPE_RESYNCH_REQU, READER_T1_LRC);
+	TEST_ASSERT_TRUE(retVal == READER_OK);
+	
+	retVal = READER_T1_CheckRBlock(&block);
+	TEST_ASSERT_FALSE(retVal == READER_OK);
+	
+	retVal = READER_T1_ForgeIBlock(&block, data, dataSize, READER_T1_SEQNUM_ZERO, READER_T1_MBIT_ZERO, READER_T1_LRC);
+	TEST_ASSERT_TRUE(retVal == READER_OK);
+	
+	retVal = READER_T1_CheckRBlock(&block);
 	TEST_ASSERT_FALSE(retVal == READER_OK);
 }
