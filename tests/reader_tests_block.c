@@ -31,6 +31,8 @@ void test_READER_BLOCK_all(void){
 	RUN_TEST(test_READER_T1_SetBlockSType_shouldIFSResponseWork);
 	RUN_TEST(test_READER_T1_SetBlockSType_shouldWTXRequestWork);
 	RUN_TEST(test_READER_T1_SetBlockSType_shouldWTXResponseWork);
+	RUN_TEST(test_READER_T1_SetBlockSType_shouldABORTRequestWork);
+	RUN_TEST(test_READER_T1_SetBlockSType_shouldABORTResponseWork);
 	RUN_TEST(test_READER_T1_GetBlockPCB_shouldWork);
 	RUN_TEST(test_READER_T1_SetExpectedBlockSeqNumber_shouldWork);
 	RUN_TEST(test_READER_T1_GetBlockACKType_shouldWork);
@@ -417,6 +419,50 @@ void test_READER_T1_SetBlockSType_shouldWTXResponseWork(void){
 
 	blockPCB = READER_T1_GetBlockPCB(&block);
 	TEST_ASSERT_EQUAL_UINT8(0b00100011, blockPCB&0b00111111);       /* Voir ISO7816-3 section 11.3.2.2 */
+}
+
+
+void test_READER_T1_SetBlockSType_shouldABORTRequestWork(void){
+	READER_T1_Block block;
+	READER_T1_SBlockType sBlockType;
+	READER_T1_BlockType bType;
+	READER_Status retVal;
+	uint8_t blockPCB;
+	
+	
+	retVal = READER_T1_ForgeSBlock(&block, READER_T1_STYPE_ABORT_REQU, READER_T1_LRC);
+	TEST_ASSERT_TRUE(retVal == READER_OK);
+	
+	bType = READER_T1_GetBlockType(&block);
+	TEST_ASSERT_TRUE(bType == READER_T1_SBLOCK);
+	
+	sBlockType = READER_T1_GetBlockSType(&block);
+	TEST_ASSERT_TRUE(sBlockType == READER_T1_STYPE_ABORT_REQU);
+
+	blockPCB = READER_T1_GetBlockPCB(&block);
+	TEST_ASSERT_EQUAL_UINT8(0b00000010, blockPCB&0b00111111);       /* Voir ISO7816-3 section 11.3.2.2 */
+}
+
+
+void test_READER_T1_SetBlockSType_shouldABORTResponseWork(void){
+	READER_T1_Block block;
+	READER_T1_SBlockType sBlockType;
+	READER_T1_BlockType bType;
+	READER_Status retVal;
+	uint8_t blockPCB;
+	
+	
+	retVal = READER_T1_ForgeSBlock(&block, READER_T1_STYPE_ABORT_RESP, READER_T1_LRC);
+	TEST_ASSERT_TRUE(retVal == READER_OK);
+	
+	bType = READER_T1_GetBlockType(&block);
+	TEST_ASSERT_TRUE(bType == READER_T1_SBLOCK);
+	
+	sBlockType = READER_T1_GetBlockSType(&block);
+	TEST_ASSERT_TRUE(sBlockType == READER_T1_STYPE_ABORT_RESP);
+
+	blockPCB = READER_T1_GetBlockPCB(&block);
+	TEST_ASSERT_EQUAL_UINT8(0b00100010, blockPCB&0b00111111);       /* Voir ISO7816-3 section 11.3.2.2 */
 }
 
 
