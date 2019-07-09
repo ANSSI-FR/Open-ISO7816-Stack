@@ -16,6 +16,8 @@ void test_READER_TPDU_Forge_shouldCopyData(void);
 void test_READER_TPDU_SendHeader_shouldSendRightFrame(void);
 void test_READER_TPDU_SendDataOneshot_shouldSendRightFrame(void);
 void test_READER_TPDU_SendDataOneshot_shouldVerifyDataSize(void);
+void test_READER_TPDU_Send_shouldWork(void);
+void test_READER_TPDU_Send_shoulWaitOnNullByte(void);
 void test_READER_TPDU_IsACK_shouldWork(void);
 void test_READER_TPDU_IsXoredACK_shouldWork(void);
 void test_READER_TPDU_IsNullByte_shouldWork(void);

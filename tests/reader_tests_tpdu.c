@@ -27,6 +27,8 @@ void test_READER_TPDU_all(void){
 	RUN_TEST(test_READER_TPDU_SendHeader_shouldSendRightFrame);
 	RUN_TEST(test_READER_TPDU_SendDataOneshot_shouldSendRightFrame);
 	RUN_TEST(test_READER_TPDU_SendDataOneshot_shouldVerifyDataSize);
+	RUN_TEST(test_READER_TPDU_Send_shouldWork);
+	RUN_TEST(test_READER_TPDU_Send_shoulWaitOnNullByte);
 	RUN_TEST(test_READER_TPDU_IsACK_shouldWork);
 	RUN_TEST(test_READER_TPDU_IsXoredACK_shouldWork);
 	RUN_TEST(test_READER_TPDU_IsNullByte_shouldWork);
@@ -595,6 +597,7 @@ void test_READER_TPDU_RcvResponse_shouldTimeout(void){
 	//READER_HAL_RcvCharFrameCount_ExpectAnyArgsAndReturn(READER_TIMEOUT);
 	//READER_HAL_RcvCharFrameCount_ReturnThruPtr_rcvCount(&rcvCount);
 	
+	/* On simule un timeout sur le dernier caractere recu ...  */
 	dataSize = MAX(1, READER_TPDU_MAX_DATA);
 	dataSize = dataSize -1;
 	emulate_RcvCharFrame(dummyData, dataSize);
@@ -737,4 +740,132 @@ void test_READER_TPDU_RcvResponse_shouldDetectIfSWInsteadOfData_Case3(void){
 	TEST_ASSERT_EQUAL_UINT8(reallyRcvdBytes[0], tpduResp.SW1);
 	TEST_ASSERT_EQUAL_UINT8(reallyRcvdBytes[1], tpduResp.SW2);
 	TEST_ASSERT_EQUAL_UINT32(0, tpduResp.dataSize);
+}
+
+
+
+void test_READER_TPDU_Send_shouldWork(void){
+	READER_TPDU_Command tpduCmd;
+	READER_HAL_CommSettings dummySettings;
+	READER_Status retVal;
+	uint32_t timeout = 1000;
+	uint8_t cla = 0x00;
+	uint8_t ins = 0xA4;
+	uint8_t p1 = 0x04;
+	uint8_t p2 = 0x00;
+	uint8_t p3 = 0x0D;
+	uint8_t data[0x0D];
+	uint8_t ack = ins;
+	uint32_t i;
+	
+	
+	/* On initialise des donneees aleatoires a envoyer ...  */
+	srand(time(NULL));
+	for(i=0; i<0x0D; i++){
+		data[i] = (uint8_t)(rand());
+	}
+	
+	/* On paramettre les caracteres que l'on s'attend a etre envoyes et on emule les caracteres recus ...  */
+	READER_HAL_SendChar_ExpectAndReturn(&dummySettings, READER_HAL_PROTOCOL_T0, cla, timeout, READER_OK);
+	READER_HAL_SendChar_IgnoreArg_pSettings();
+	READER_HAL_SendChar_IgnoreArg_timeout();
+	
+	READER_HAL_SendChar_ExpectAndReturn(&dummySettings, READER_HAL_PROTOCOL_T0, ins, timeout, READER_OK);
+	READER_HAL_SendChar_IgnoreArg_pSettings();
+	READER_HAL_SendChar_IgnoreArg_timeout();
+	
+	READER_HAL_SendChar_ExpectAndReturn(&dummySettings, READER_HAL_PROTOCOL_T0, p1, timeout, READER_OK);
+	READER_HAL_SendChar_IgnoreArg_pSettings();
+	READER_HAL_SendChar_IgnoreArg_timeout();
+	
+	READER_HAL_SendChar_ExpectAndReturn(&dummySettings, READER_HAL_PROTOCOL_T0, p2, timeout, READER_OK);
+	READER_HAL_SendChar_IgnoreArg_pSettings();
+	READER_HAL_SendChar_IgnoreArg_timeout();
+	
+	READER_HAL_SendChar_ExpectAndReturn(&dummySettings, READER_HAL_PROTOCOL_T0, p3, timeout, READER_OK);
+	READER_HAL_SendChar_IgnoreArg_pSettings();
+	READER_HAL_SendChar_IgnoreArg_timeout();
+	
+	
+	READER_HAL_RcvChar_ExpectAnyArgsAndReturn(READER_OK);
+	READER_HAL_RcvChar_ReturnThruPtr_character(&ack);
+	
+	
+	set_expected_CharFrame(data, 0x0D);
+	
+	
+	/* On execute la fonction a tester ...  */
+	retVal = READER_TPDU_Forge(&tpduCmd, cla, ins, p1, p2, p3, data, 0x0D);
+	TEST_ASSERT_TRUE(retVal == READER_OK);
+	
+	retVal = READER_TPDU_Send(&tpduCmd, timeout, &dummySettings);
+	TEST_ASSERT_TRUE(retVal == READER_OK);
+}
+
+
+
+void test_READER_TPDU_Send_shoulWaitOnNullByte(void){
+	READER_TPDU_Command tpduCmd;
+	READER_HAL_CommSettings dummySettings;
+	READER_Status retVal;
+	uint32_t timeout = 1000;
+	uint8_t cla = 0x00;
+	uint8_t ins = 0xA4;
+	uint8_t p1 = 0x04;
+	uint8_t p2 = 0x00;
+	uint8_t p3 = 0x0D;
+	uint8_t data[0x0D];
+	uint8_t nullByte = 0x60;   /* Null byte ...  */
+	uint8_t ack = ins;
+	uint32_t i;
+	
+	
+	/* On initialise des donneees aleatoires a envoyer ...  */
+	srand(time(NULL));
+	for(i=0; i<0x0D; i++){
+		data[i] = (uint8_t)(rand());
+	}
+	
+	/* On paramettre les caracteres que l'on s'attend a etre envoyes et on emule les caracteres recus ...  */
+	READER_HAL_SendChar_ExpectAndReturn(&dummySettings, READER_HAL_PROTOCOL_T0, cla, timeout, READER_OK);
+	READER_HAL_SendChar_IgnoreArg_pSettings();
+	READER_HAL_SendChar_IgnoreArg_timeout();
+	
+	READER_HAL_SendChar_ExpectAndReturn(&dummySettings, READER_HAL_PROTOCOL_T0, ins, timeout, READER_OK);
+	READER_HAL_SendChar_IgnoreArg_pSettings();
+	READER_HAL_SendChar_IgnoreArg_timeout();
+	
+	READER_HAL_SendChar_ExpectAndReturn(&dummySettings, READER_HAL_PROTOCOL_T0, p1, timeout, READER_OK);
+	READER_HAL_SendChar_IgnoreArg_pSettings();
+	READER_HAL_SendChar_IgnoreArg_timeout();
+	
+	READER_HAL_SendChar_ExpectAndReturn(&dummySettings, READER_HAL_PROTOCOL_T0, p2, timeout, READER_OK);
+	READER_HAL_SendChar_IgnoreArg_pSettings();
+	READER_HAL_SendChar_IgnoreArg_timeout();
+	
+	READER_HAL_SendChar_ExpectAndReturn(&dummySettings, READER_HAL_PROTOCOL_T0, p3, timeout, READER_OK);
+	READER_HAL_SendChar_IgnoreArg_pSettings();
+	READER_HAL_SendChar_IgnoreArg_timeout();
+	
+	
+	READER_HAL_RcvChar_ExpectAnyArgsAndReturn(READER_OK);
+	READER_HAL_RcvChar_ReturnThruPtr_character(&nullByte);
+	
+	READER_HAL_RcvChar_ExpectAnyArgsAndReturn(READER_OK);
+	READER_HAL_RcvChar_ReturnThruPtr_character(&nullByte);
+	
+	READER_HAL_RcvChar_ExpectAnyArgsAndReturn(READER_OK);
+	READER_HAL_RcvChar_ReturnThruPtr_character(&ack);
+	
+	
+	set_expected_CharFrame(data, 0x0D);
+	
+	
+	/* On execute la fonction a tester ...  */
+	retVal = READER_TPDU_Forge(&tpduCmd, cla, ins, p1, p2, p3, data, 0x0D);
+	TEST_ASSERT_TRUE(retVal == READER_OK);
+	
+	retVal = READER_TPDU_Send(&tpduCmd, timeout, &dummySettings);
+	TEST_ASSERT_TRUE(retVal == READER_OK);
+	
 }
