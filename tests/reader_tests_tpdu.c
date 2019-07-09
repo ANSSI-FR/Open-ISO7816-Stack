@@ -45,7 +45,11 @@ void test_READER_TPDU_all(void){
 	RUN_TEST(test_READER_TPDU_RcvSW_shouldDetectIncorrectSW1);
 	RUN_TEST(test_READER_TPDU_RcvResponse_shouldVerifyExpectedSize);
 	RUN_TEST(test_READER_TPDU_RcvSW_shouldReturnCorrectData);
-	RUN_TEST(test_READER_TPDU_RcvResponse_shouldTimeout);
+	RUN_TEST(test_READER_TPDU_RcvResponse_shouldTimeout_case1);
+	RUN_TEST(test_READER_TPDU_RcvResponse_shouldTimeout_case2);
+	RUN_TEST(test_READER_TPDU_RcvResponse_shouldTimeout_case3);
+	RUN_TEST(test_READER_TPDU_RcvResponse_shouldTimeout_case4);
+	RUN_TEST(test_READER_TPDU_RcvResponse_shouldTimeout_case5);
 	RUN_TEST(test_READER_TPDU_RcvResponse_shouldRetrieveCorrectData);
 	RUN_TEST(test_READER_TPDU_RcvResponse_shouldDetectIfSWInsteadOfData_Case1);
 	RUN_TEST(test_READER_TPDU_RcvResponse_shouldDetectIfSWInsteadOfData_Case2);
@@ -574,7 +578,7 @@ void test_READER_TPDU_RcvResponse_shouldVerifyExpectedSize(void){
 }
 
 
-void test_READER_TPDU_RcvResponse_shouldTimeout(void){
+void test_READER_TPDU_RcvResponse_shouldTimeout_case1(void){
 	READER_HAL_CommSettings dummySettings;
 	READER_TPDU_Response tpduResp;
 	READER_Status retVal;
@@ -606,6 +610,95 @@ void test_READER_TPDU_RcvResponse_shouldTimeout(void){
 	retVal = READER_TPDU_RcvResponse(&tpduResp, READER_TPDU_MAX_DATA, timeout, &dummySettings);
 	TEST_ASSERT_TRUE(retVal == READER_TIMEOUT);
 }
+
+
+
+void test_READER_TPDU_RcvResponse_shouldTimeout_case2(void){
+	READER_HAL_CommSettings dummySettings;
+	READER_TPDU_Response tpduResp;
+	READER_Status retVal;
+	uint32_t timeout = 1000;
+	uint8_t character = 0x00;
+	
+	
+	READER_HAL_RcvChar_ExpectAnyArgsAndReturn(READER_OK);
+	READER_HAL_RcvChar_ReturnThruPtr_character(&character);
+	
+	READER_HAL_RcvChar_ExpectAnyArgsAndReturn(READER_TIMEOUT);
+	
+	retVal = READER_TPDU_RcvResponse(&tpduResp, READER_TPDU_MAX_DATA, timeout, &dummySettings);
+	TEST_ASSERT_TRUE(retVal == READER_TIMEOUT);
+}
+
+
+void test_READER_TPDU_RcvResponse_shouldTimeout_case3(void){
+	READER_HAL_CommSettings dummySettings;
+	READER_TPDU_Response tpduResp;
+	READER_Status retVal;
+	uint8_t data[] = {0xAA};
+	uint8_t dataSize = 1;
+	uint32_t timeout = 1000;
+	
+	
+	/* On simule la reception des caracteres ...  */
+	emulate_RcvCharFrame(data, dataSize);     /* La reception des data se passe corerctement   (mais on a une seule carac data) ...  */
+	
+	READER_HAL_RcvChar_ExpectAnyArgsAndReturn(READER_TIMEOUT);  /* On simule un timeout sur le SW1 ...  */
+	
+	
+	/* On simule un timeout sur la reception du SW ...  */
+	retVal = READER_TPDU_RcvResponse(&tpduResp, dataSize, timeout, &dummySettings);
+	TEST_ASSERT_TRUE(retVal == READER_TIMEOUT);
+}
+
+
+void test_READER_TPDU_RcvResponse_shouldTimeout_case4(void){
+	READER_HAL_CommSettings dummySettings;
+	READER_TPDU_Response tpduResp;
+	READER_Status retVal;
+	uint8_t data[] = {0xAA, 0xBB};
+	uint8_t dataSize = 2;
+	uint32_t timeout = 1000;
+	
+	
+	/* On simule le cas ou on a recu uniquement deux carac de data puis timeout sur SW1 ... ressemble a la carte qui envoie SW1SW2 a la place des data, mais ici le premier carac des data n'est pas assimilable a un SW1 ...  */
+	/* On simule la reception des caracteres ...  */
+	emulate_RcvCharFrame(data, dataSize);     /* La reception des data se passe corerctement   (mais on a une seule carac data) ...  */
+	
+	READER_HAL_RcvChar_ExpectAnyArgsAndReturn(READER_TIMEOUT);  /* On simule un timeout sur le SW1 ...  */
+	
+	
+	/* On simule un timeout sur la reception du SW ...  */
+	retVal = READER_TPDU_RcvResponse(&tpduResp, dataSize, timeout, &dummySettings);
+	TEST_ASSERT_TRUE(retVal == READER_TIMEOUT);
+}
+
+
+void test_READER_TPDU_RcvResponse_shouldTimeout_case5(void){
+	READER_HAL_CommSettings dummySettings;
+	READER_TPDU_Response tpduResp;
+	READER_Status retVal;
+	uint8_t data[] = {};
+	uint8_t dataSize = 0;
+	uint8_t characterNotSW1 = 0xAB;
+	uint32_t timeout = 1000;
+	
+	
+	/* On simule la reception des caracteres ...  */
+	//emulate_RcvCharFrame(data, dataSize);   
+	
+	READER_HAL_RcvChar_ExpectAnyArgsAndReturn(READER_OK);
+	READER_HAL_RcvChar_ReturnThruPtr_character(&characterNotSW1);
+	
+	READER_HAL_RcvChar_IgnoreAndReturn(READER_OK);
+	
+	
+	/* On simule un timeout sur la reception du SW ...  */
+	retVal = READER_TPDU_RcvResponse(&tpduResp, dataSize, timeout, &dummySettings);
+	TEST_ASSERT_FALSE(retVal == READER_OK);
+}
+
+
 
 
 void test_READER_TPDU_RcvResponse_shouldRetrieveCorrectData(void){
