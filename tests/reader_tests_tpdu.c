@@ -53,7 +53,7 @@ void test_READER_TPDU_all(void){
 	RUN_TEST(test_READER_TPDU_RcvResponse_shouldRetrieveCorrectData);
 	RUN_TEST(test_READER_TPDU_RcvResponse_shouldDetectIfSWInsteadOfData_Case1);
 	RUN_TEST(test_READER_TPDU_RcvResponse_shouldDetectIfSWInsteadOfData_Case2);
-	//RUN_TEST(test_READER_TPDU_RcvResponse_shouldDetectIfSWInsteadOfData_Case3);
+	RUN_TEST(test_READER_TPDU_RcvResponse_shouldDetectIfSWInsteadOfData_Case3);
 }
 
 
@@ -798,7 +798,7 @@ void test_READER_TPDU_RcvResponse_shouldDetectIfSWInsteadOfData_Case2(void){
 	TEST_ASSERT_EQUAL_UINT32(0, tpduResp.dataSize);
 }
 
-/* Ce cas ne devrait pas exister, voir ISO7816-3 section 12.2.3, case 2S.3 */
+
 /* Ici, on simule le cas ou ou attends une reponse avec un octet de donnees, mais la carte renvoie uniquement SW1SW2 et pas de donnees ...  */
 void test_READER_TPDU_RcvResponse_shouldDetectIfSWInsteadOfData_Case3(void){
 	READER_TPDU_Response tpduResp;
@@ -806,29 +806,18 @@ void test_READER_TPDU_RcvResponse_shouldDetectIfSWInsteadOfData_Case3(void){
 	READER_Status retVal;
 	uint8_t expectedRespBytes[] = {0x61};      /* Pour durcir le test on faot expres de mettre un byte qui peut etre assimile a un SW1. */
 	uint32_t expectedRespBytesSize = 1;
-	uint32_t reallyRcvdBytesSize = 1;
+	uint32_t reallyRcvdBytesSize = 2;
 	uint8_t reallyRcvdBytes[] = {0x6A, 0x82};  /* Correspondent a SW1 et SW1 que l'ont recoit a la place des donnees. */
 	uint32_t timeout = 1000;
 	
 	
-	/* On Mock m'appel a READER_HAL_RcvCharFrameCount(). On simule la reception de SW1SW2 a la place des data attendues */
-	//READER_HAL_RcvCharFrameCount_ExpectAndReturn(&dummySettings, READER_HAL_PROTOCOL_T0, NULL, expectedRespBytesSize, NULL, timeout, READER_OK);
-	//READER_HAL_RcvCharFrameCount_IgnoreArg_pSettings();
-	//READER_HAL_RcvCharFrameCount_IgnoreArg_frame();
-	//READER_HAL_RcvCharFrameCount_IgnoreArg_rcvCount();
-	//READER_HAL_RcvCharFrameCount_ReturnArrayThruPtr_frame(reallyRcvdBytes, reallyRcvdBytesSize);
-	//READER_HAL_RcvCharFrameCount_ReturnThruPtr_rcvCount(&reallyRcvdBytesSize);
-	
 	emulate_RcvCharFrame(reallyRcvdBytes, reallyRcvdBytesSize);
 	
-	/* On Mock les eventuels appels a READER_HAL_RcvChar() ...  */
-	READER_HAL_RcvChar_ExpectAnyArgsAndReturn(READER_OK);
-	READER_HAL_RcvChar_ReturnThruPtr_character(reallyRcvdBytes+1);
-	READER_HAL_RcvChar_ExpectAnyArgsAndReturn(READER_TIMEOUT);
+	READER_HAL_RcvChar_IgnoreAndReturn(READER_TIMEOUT);
 	
 	/* On effectue l'appel de la fonction que l'on veut tester, on verifie la reponse ...  */
 	retVal = READER_TPDU_RcvResponse(&tpduResp, expectedRespBytesSize, timeout, &dummySettings);
-	TEST_ASSERT_TRUE(retVal == READER_TIMEOUT);
+	TEST_ASSERT_TRUE(retVal == READER_TIMEOUT_GOT_ONLY_SW);
 	
 	TEST_ASSERT_EQUAL_UINT8(reallyRcvdBytes[0], tpduResp.SW1);
 	TEST_ASSERT_EQUAL_UINT8(reallyRcvdBytes[1], tpduResp.SW2);
