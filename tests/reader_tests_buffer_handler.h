@@ -11,7 +11,17 @@
 void test_READER_BUFFER_all(void);
 
 
-
+void test_READER_T1_BUFFER_Init_shouldSetInitValues(void);
+void test_READER_T1_BUFFER_Clear_shouldReinitValues(void);
+void test_READER_T1_BUFFER_SetLength_shouldWork(void);
+void test_T1_BUFFER_SetLength_shoulCheckMaxSize(void);
+void test_READER_T1_BUFFER_IncLength_shouldWork(void);
+void test_READER_T1_BUFFER_IncLength_shouldCheckMaxSize(void);
+void test_READER_T1_BUFFER_DecLength_shouldWork(void);
+void test_READER_T1_BUFFER_DecLength_shouldCheckMinSize(void);
+void test_READER_T1_BUFFER_PlacesLeft_shouldWork(void);
+void test_READER_T1_BUFFER_IsFull_shouldWork(void);
+void test_READER_T1_BUFFER_IsEmpty_shouldWork(void);
 
 
 
