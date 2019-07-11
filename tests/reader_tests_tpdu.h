@@ -39,6 +39,8 @@ void test_READER_TPDU_RcvResponse_shouldTimeout_case2(void);
 void test_READER_TPDU_RcvResponse_shouldTimeout_case3(void);
 void test_READER_TPDU_RcvResponse_shouldTimeout_case4(void);
 void test_READER_TPDU_RcvResponse_shouldTimeout_case5(void);
+void test_READER_TPDU_RcvResponse_shouldTimeout_case6(void);
+void test_READER_TPDU_RcvResponse_shouldTimeout_case7(void);
 void test_READER_TPDU_RcvResponse_shouldRetrieveCorrectData(void);
 void test_READER_TPDU_RcvResponse_shouldDetectIfSWInsteadOfData_Case1(void);
 void test_READER_TPDU_RcvResponse_shouldDetectIfSWInsteadOfData_Case2(void);

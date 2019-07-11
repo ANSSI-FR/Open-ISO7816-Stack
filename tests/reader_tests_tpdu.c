@@ -50,6 +50,8 @@ void test_READER_TPDU_all(void){
 	RUN_TEST(test_READER_TPDU_RcvResponse_shouldTimeout_case3);
 	RUN_TEST(test_READER_TPDU_RcvResponse_shouldTimeout_case4);
 	RUN_TEST(test_READER_TPDU_RcvResponse_shouldTimeout_case5);
+	RUN_TEST(test_READER_TPDU_RcvResponse_shouldTimeout_case6);
+	RUN_TEST(test_READER_TPDU_RcvResponse_shouldTimeout_case7);
 	RUN_TEST(test_READER_TPDU_RcvResponse_shouldRetrieveCorrectData);
 	RUN_TEST(test_READER_TPDU_RcvResponse_shouldDetectIfSWInsteadOfData_Case1);
 	RUN_TEST(test_READER_TPDU_RcvResponse_shouldDetectIfSWInsteadOfData_Case2);
@@ -949,4 +951,58 @@ void test_READER_TPDU_Send_shoulWaitOnNullByte(void){
 	retVal = READER_TPDU_Send(&tpduCmd, timeout, &dummySettings);
 	TEST_ASSERT_TRUE(retVal == READER_OK);
 	
+}
+
+
+void test_READER_TPDU_RcvResponse_shouldTimeout_case6(void){
+	READER_HAL_CommSettings dummySettings;
+	READER_TPDU_Response tpduResp;
+	READER_Status retVal;
+	uint8_t expectedDataSize = 2;
+	uint8_t characterNotSW1 = 0xAB;
+	uint8_t characterSW2 = 0xCD;
+	uint32_t timeout = 1000;
+	
+	
+	/* On se met dans le cas ou on recoit uniquement SW1SW2 alors que on attendait 2 octets de donnees. Le SW1 recu est incorrect, devrait etre detecte par la fonction ...  */ 
+	
+	READER_HAL_RcvChar_ExpectAnyArgsAndReturn(READER_OK);
+	READER_HAL_RcvChar_ReturnThruPtr_character(&characterNotSW1);
+	
+	READER_HAL_RcvChar_ExpectAnyArgsAndReturn(READER_OK);
+	READER_HAL_RcvChar_ReturnThruPtr_character(&characterSW2);
+	
+	READER_HAL_RcvChar_ExpectAnyArgsAndReturn(READER_TIMEOUT);
+	
+	
+	/* On simule un timeout sur la reception du SW ...  */
+	retVal = READER_TPDU_RcvResponse(&tpduResp, expectedDataSize, timeout, &dummySettings);
+	TEST_ASSERT_TRUE(retVal == READER_TIMEOUT);
+}
+
+
+void test_READER_TPDU_RcvResponse_shouldTimeout_case7(void){
+	READER_HAL_CommSettings dummySettings;
+	READER_TPDU_Response tpduResp;
+	READER_Status retVal;
+	uint8_t expectedDataSize = 1;
+	uint8_t characterNotSW1 = 0xAB;
+	uint8_t characterSW2 = 0xCD;
+	uint32_t timeout = 1000;
+	
+	
+	/* On se met dans le cas ou on recoit uniquement SW1SW2 alors que on attendait 1 octet dee donnees. Le SW1 recu est incorrect, devrait etre detecte par la fonction (on est dans le cas timeout sur SW2) ...  */ 
+	
+	READER_HAL_RcvChar_ExpectAnyArgsAndReturn(READER_OK);
+	READER_HAL_RcvChar_ReturnThruPtr_character(&characterNotSW1);
+	
+	READER_HAL_RcvChar_ExpectAnyArgsAndReturn(READER_OK);
+	READER_HAL_RcvChar_ReturnThruPtr_character(&characterSW2);
+	
+	READER_HAL_RcvChar_ExpectAnyArgsAndReturn(READER_TIMEOUT);
+	
+	
+	/* On simule un timeout sur la reception du SW ...  */
+	retVal = READER_TPDU_RcvResponse(&tpduResp, expectedDataSize, timeout, &dummySettings);
+	TEST_ASSERT_TRUE(retVal == READER_TIMEOUT);
 }
