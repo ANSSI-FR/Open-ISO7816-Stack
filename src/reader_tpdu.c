@@ -313,9 +313,9 @@ READER_Status READER_TPDU_RcvResponse(READER_TPDU_Response *pResp, uint32_t expe
 	}
 	else if((retVal == READER_TIMEOUT_ON_SW2)){
 		
-		if((pResp->dataSize) < 1){
-			return READER_TIMEOUT;
-		}
+		//if((pResp->dataSize) < 1){ //Ne peiut pas se produire
+		//	return READER_TIMEOUT;
+		//}
 		
 		pResp->SW1 = pResp->dataBytes[(pResp->dataSize)-1];
 		pResp->SW2 = rcvdSW1;
