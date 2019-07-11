@@ -812,8 +812,7 @@ void test_READER_TPDU_RcvResponse_shouldDetectIfSWInsteadOfData_Case3(void){
 	
 	
 	emulate_RcvCharFrame(reallyRcvdBytes, reallyRcvdBytesSize);
-	
-	READER_HAL_RcvChar_IgnoreAndReturn(READER_TIMEOUT);
+	READER_HAL_RcvChar_ExpectAnyArgsAndReturn(READER_TIMEOUT);
 	
 	/* On effectue l'appel de la fonction que l'on veut tester, on verifie la reponse ...  */
 	retVal = READER_TPDU_RcvResponse(&tpduResp, expectedRespBytesSize, timeout, &dummySettings);

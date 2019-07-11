@@ -181,6 +181,10 @@ READER_Status READER_TPDU_RcvSW(uint8_t *SW1, uint8_t *SW2, uint32_t timeout, RE
 	READER_Status retVal;
 	uint8_t byte1, byte2;
 	
+	
+	/* Pour des raisons de simplicite on eleve la verification de la validite du SW1 de cette fonction.  */
+	/* Cette verification devra se faire a l'exterieur de cette fonction ...  */
+	
 	/* On attend SW1 en prenant en compte les null bytes ... */
 	do{
 		retVal = READER_HAL_RcvChar(pSettings, READER_HAL_PROTOCOL_T0, &byte1, timeout);
@@ -251,6 +255,7 @@ READER_Status READER_TPDU_RcvResponse(READER_TPDU_Response *pResp, uint32_t expe
 	READER_Status retVal;
 	uint32_t rcvdCount;
 	uint8_t rcvdSW1, rcvdSW2;
+
 	
 	/* Une TPDU Response ne peut pas contenir plus de 256 caracteres. */
 	if(expectedDataSize > READER_TPDU_MAX_DATA){
