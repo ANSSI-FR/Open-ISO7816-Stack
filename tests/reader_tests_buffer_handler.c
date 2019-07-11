@@ -31,6 +31,13 @@ void test_READER_BUFFER_all(void){
 	RUN_TEST(test_READER_T1_BUFFER_PlacesLeft_shouldWork);
 	RUN_TEST(test_READER_T1_BUFFER_IsFull_shouldWork);
 	RUN_TEST(test_READER_T1_BUFFER_IsEmpty_shouldWork);
+	RUN_TEST(test_READER_T1_BUFFER_Stack_stackAndDequeueShouldWorkWithSBlock_case1);
+	RUN_TEST(test_READER_T1_BUFFER_Stack_stackAndDequeueShouldWorkWithSBlock_case2);
+	RUN_TEST(test_READER_T1_BUFFER_Enqueue_enqueueAndDequeueShouldWorkWithSBlock_case1);
+	RUN_TEST(test_READER_T1_BUFFER_Enqueue_enqueueAndDequeueShouldWorkWithSBlock_case2);
+	RUN_TEST(test_READER_T1_BUFFER_Dequeue_shouldCheckIfEmpty);
+	RUN_TEST(test_READER_T1_BUFFER_Stack_shouldCheckIfFull);
+	RUN_TEST(test_READER_T1_BUFFER_Enqueue_shouldCheckIfFull);
 }
 
 
@@ -330,4 +337,204 @@ void test_READER_T1_BUFFER_IsEmpty_shouldWork(void){
 	retVal = READER_T1_BUFFER_IsEmpty(&context, &bufferStatus);
 	TEST_ASSERT_TRUE(retVal == READER_OK);
 	TEST_ASSERT_TRUE(bufferStatus == READER_T1_BUFFER_NOTEMPTY);
+}
+
+
+void test_READER_T1_BUFFER_Stack_stackAndDequeueShouldWorkWithSBlock_case1(void){
+	READER_T1_ContextHandler context;
+	READER_T1_Block block1, block2;
+	READER_Status retVal;
+	
+	
+	if(READER_T1_CONTEXT_STATICBUFF_MAXSIZE < 1){
+		TEST_IGNORE();
+	}
+	
+	retVal = READER_T1_BUFFER_Init(&context);
+	TEST_ASSERT_TRUE(retVal == READER_OK);
+	
+	retVal = READER_T1_ForgeSBlock(&block1, READER_T1_STYPE_IFS_REQU, READER_T1_LRC);
+	TEST_ASSERT_TRUE(retVal == READER_OK);
+	
+	retVal = READER_T1_BUFFER_Stack(&context, &block1);
+	TEST_ASSERT_TRUE(retVal == READER_OK);
+	
+	retVal = READER_T1_BUFFER_Dequeue(&context, &block2);
+	TEST_ASSERT_TRUE(retVal == READER_OK);
+	
+	TEST_ASSERT_EQUAL_UINT8_ARRAY(block1.blockFrame, block2.blockFrame, READER_T1_BLOCK_MAX_TOTAL_LENGTH);
+	TEST_ASSERT_EQUAL_UINT32(block1.RedundancyType, block2.RedundancyType);
+}
+
+
+void test_READER_T1_BUFFER_Stack_stackAndDequeueShouldWorkWithSBlock_case2(void){
+	READER_T1_ContextHandler context;
+	READER_T1_Block block1, block2, block3;
+	READER_Status retVal;
+	
+	
+	/* On stack deux Blocks, on regarde lequel sort en premier ...  */
+	
+	if(READER_T1_CONTEXT_STATICBUFF_MAXSIZE < 2){
+		TEST_IGNORE();
+	}
+	
+	retVal = READER_T1_BUFFER_Init(&context);
+	TEST_ASSERT_TRUE(retVal == READER_OK);
+	
+	retVal = READER_T1_ForgeSBlock(&block1, READER_T1_STYPE_IFS_REQU, READER_T1_LRC);
+	TEST_ASSERT_TRUE(retVal == READER_OK);
+	
+	retVal = READER_T1_BUFFER_Stack(&context, &block1);
+	TEST_ASSERT_TRUE(retVal == READER_OK);
+	
+	retVal = READER_T1_ForgeRBlock(&block2, READER_T1_ACKTYPE_ACK, READER_T1_EXPSEQNUM_ONE, READER_T1_LRC);
+	TEST_ASSERT_TRUE(retVal == READER_OK);
+	
+	retVal = READER_T1_BUFFER_Stack(&context, &block2);
+	TEST_ASSERT_TRUE(retVal == READER_OK);
+	
+	retVal = READER_T1_BUFFER_Dequeue(&context, &block3);
+	TEST_ASSERT_TRUE(retVal == READER_OK);
+	
+	TEST_ASSERT_EQUAL_UINT8_ARRAY(block2.blockFrame, block3.blockFrame, READER_T1_BLOCK_MAX_TOTAL_LENGTH);
+	TEST_ASSERT_EQUAL_UINT32(block2.RedundancyType, block3.RedundancyType);
+}
+
+
+void test_READER_T1_BUFFER_Enqueue_enqueueAndDequeueShouldWorkWithSBlock_case1(void){
+	READER_T1_ContextHandler context;
+	READER_T1_Block block1, block2;
+	READER_Status retVal;
+	
+	
+	if(READER_T1_CONTEXT_STATICBUFF_MAXSIZE < 1){
+		TEST_IGNORE();
+	}
+	
+	retVal = READER_T1_BUFFER_Init(&context);
+	TEST_ASSERT_TRUE(retVal == READER_OK);
+	
+	retVal = READER_T1_ForgeSBlock(&block1, READER_T1_STYPE_IFS_REQU, READER_T1_LRC);
+	TEST_ASSERT_TRUE(retVal == READER_OK);
+	
+	retVal = READER_T1_BUFFER_Enqueue(&context, &block1);
+	TEST_ASSERT_TRUE(retVal == READER_OK);
+	
+	retVal = READER_T1_BUFFER_Dequeue(&context, &block2);
+	TEST_ASSERT_TRUE(retVal == READER_OK);
+	
+	TEST_ASSERT_EQUAL_UINT8_ARRAY(block1.blockFrame, block2.blockFrame, READER_T1_BLOCK_MAX_TOTAL_LENGTH);
+	TEST_ASSERT_EQUAL_UINT32(block1.RedundancyType, block2.RedundancyType);
+}
+
+
+
+void test_READER_T1_BUFFER_Enqueue_enqueueAndDequeueShouldWorkWithSBlock_case2(void){
+	READER_T1_ContextHandler context;
+	READER_T1_Block block1, block2, block3;
+	READER_Status retVal;
+	
+	
+	/* On enfile deux blocks et on regarde si c'est le bon qui sort ...  */
+	
+	
+	if(READER_T1_CONTEXT_STATICBUFF_MAXSIZE < 2){
+		TEST_IGNORE();
+	}
+	
+	retVal = READER_T1_BUFFER_Init(&context);
+	TEST_ASSERT_TRUE(retVal == READER_OK);
+	
+	retVal = READER_T1_ForgeSBlock(&block1, READER_T1_STYPE_IFS_REQU, READER_T1_LRC);
+	TEST_ASSERT_TRUE(retVal == READER_OK);
+	
+	retVal = READER_T1_BUFFER_Enqueue(&context, &block1);
+	TEST_ASSERT_TRUE(retVal == READER_OK);
+	
+	retVal = READER_T1_ForgeRBlock(&block2, READER_T1_ACKTYPE_ACK, READER_T1_EXPSEQNUM_ONE, READER_T1_LRC);
+	TEST_ASSERT_TRUE(retVal == READER_OK);
+	
+	retVal = READER_T1_BUFFER_Enqueue(&context, &block2);
+	TEST_ASSERT_TRUE(retVal == READER_OK);
+	
+	retVal = READER_T1_BUFFER_Dequeue(&context, &block3);
+	TEST_ASSERT_TRUE(retVal == READER_OK);
+	
+	TEST_ASSERT_EQUAL_UINT8_ARRAY(block1.blockFrame, block3.blockFrame, READER_T1_BLOCK_MAX_TOTAL_LENGTH);
+	TEST_ASSERT_EQUAL_UINT32(block1.RedundancyType, block3.RedundancyType);
+}
+
+
+void test_READER_T1_BUFFER_Dequeue_shouldCheckIfEmpty(void){
+	READER_T1_ContextHandler context;
+	READER_T1_Block block;
+	READER_Status retVal;
+	
+	
+	if(READER_T1_CONTEXT_STATICBUFF_MAXSIZE < 1){
+		TEST_IGNORE();
+	}
+	
+	retVal = READER_T1_BUFFER_Init(&context);
+	TEST_ASSERT_TRUE(retVal == READER_OK);
+	
+	retVal = READER_T1_BUFFER_Dequeue(&context, &block);
+	TEST_ASSERT_TRUE(retVal == READER_EMPTY);
+}
+
+
+void test_READER_T1_BUFFER_Stack_shouldCheckIfFull(void){
+	READER_T1_ContextHandler context;
+	READER_T1_Block block;
+	READER_Status retVal;
+	uint32_t i;
+	
+	
+	if(READER_T1_CONTEXT_STATICBUFF_MAXSIZE < 1){
+		TEST_IGNORE();
+	}
+	
+	retVal = READER_T1_BUFFER_Init(&context);
+	TEST_ASSERT_TRUE(retVal == READER_OK);
+	
+	retVal = READER_T1_ForgeSBlock(&block, READER_T1_STYPE_WTX_REQU, READER_T1_LRC);
+	TEST_ASSERT_TRUE(retVal == READER_OK);
+	
+	for(i=0; i<READER_T1_CONTEXT_STATICBUFF_MAXSIZE; i++){
+		retVal = READER_T1_BUFFER_Stack(&context, &block);
+		TEST_ASSERT_TRUE(retVal == READER_OK);
+	}
+	
+	retVal = READER_T1_BUFFER_Stack(&context, &block);
+	TEST_ASSERT_TRUE(retVal == READER_FULL);
+	
+}
+
+
+void test_READER_T1_BUFFER_Enqueue_shouldCheckIfFull(void){
+	READER_T1_ContextHandler context;
+	READER_T1_Block block;
+	READER_Status retVal;
+	uint32_t i;
+	
+	
+	if(READER_T1_CONTEXT_STATICBUFF_MAXSIZE < 1){
+		TEST_IGNORE();
+	}
+	
+	retVal = READER_T1_BUFFER_Init(&context);
+	TEST_ASSERT_TRUE(retVal == READER_OK);
+	
+	retVal = READER_T1_ForgeSBlock(&block, READER_T1_STYPE_WTX_REQU, READER_T1_LRC);
+	TEST_ASSERT_TRUE(retVal == READER_OK);
+	
+	for(i=0; i<READER_T1_CONTEXT_STATICBUFF_MAXSIZE; i++){
+		retVal = READER_T1_BUFFER_Enqueue(&context, &block);
+		TEST_ASSERT_TRUE(retVal == READER_OK);
+	}
+	
+	retVal = READER_T1_BUFFER_Enqueue(&context, &block);
+	TEST_ASSERT_TRUE(retVal == READER_FULL);
+	
 }

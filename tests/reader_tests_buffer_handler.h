@@ -22,6 +22,15 @@ void test_READER_T1_BUFFER_DecLength_shouldCheckMinSize(void);
 void test_READER_T1_BUFFER_PlacesLeft_shouldWork(void);
 void test_READER_T1_BUFFER_IsFull_shouldWork(void);
 void test_READER_T1_BUFFER_IsEmpty_shouldWork(void);
+void test_READER_T1_BUFFER_Stack_stackAndDequeueShouldWorkWithSBlock_case1(void);
+void test_READER_T1_BUFFER_Stack_stackAndDequeueShouldWorkWithSBlock_case2(void);
+void test_READER_T1_BUFFER_Enqueue_enqueueAndDequeueShouldWorkWithSBlock_case1(void);
+void test_READER_T1_BUFFER_Enqueue_enqueueAndDequeueShouldWorkWithSBlock_case2(void);
+void test_READER_T1_BUFFER_Dequeue_shouldCheckIfEmpty(void);
+void test_READER_T1_BUFFER_Stack_shouldCheckIfFull(void);
+void test_READER_T1_BUFFER_Enqueue_shouldCheckIfFull(void);
+
+
 
 
 
