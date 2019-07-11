@@ -42,7 +42,7 @@ void test_READER_TPDU_all(void){
 	RUN_TEST(test_READER_TPDU_RcvSW_shouldTimeoutOnSW1);
 	RUN_TEST(test_READER_TPDU_RcvSW_shouldTimeoutOnSW2);
 	RUN_TEST(test_READER_TPDU_RcvSW_shouldWaitOnNullByte);
-	RUN_TEST(test_READER_TPDU_RcvSW_shouldDetectIncorrectSW1);
+	//RUN_TEST(test_READER_TPDU_RcvSW_shouldDetectIncorrectSW1); // (On ne realis eplus ce test, depuis le commit  98a44abd95e37ff833a4701eeb7b5ada6fc17ad0 on considere que cette verification doit etre realisee a l'exterieur de la fnction).
 	RUN_TEST(test_READER_TPDU_RcvResponse_shouldVerifyExpectedSize);
 	RUN_TEST(test_READER_TPDU_RcvSW_shouldReturnCorrectData);
 	RUN_TEST(test_READER_TPDU_RcvResponse_shouldTimeout_case1);
