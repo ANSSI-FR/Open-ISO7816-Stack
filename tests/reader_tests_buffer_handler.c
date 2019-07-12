@@ -29,6 +29,7 @@ void test_READER_BUFFER_all(void){
 	RUN_TEST(test_READER_T1_BUFFER_DecLength_shouldWork);	
 	RUN_TEST(test_READER_T1_BUFFER_DecLength_shouldCheckMinSize);
 	RUN_TEST(test_READER_T1_BUFFER_PlacesLeft_shouldWork);
+	RUN_TEST(test_READER_T1_BUFFER_PlacesLeft_shouldWorkWhenFull);
 	RUN_TEST(test_READER_T1_BUFFER_IsFull_shouldWork);
 	RUN_TEST(test_READER_T1_BUFFER_IsEmpty_shouldWork);
 	RUN_TEST(test_READER_T1_BUFFER_Stack_stackAndDequeueShouldWorkWithSBlock_case1);
@@ -263,6 +264,35 @@ void test_READER_T1_BUFFER_PlacesLeft_shouldWork(void){
 	retVal = READER_T1_BUFFER_PlacesLeft(&context, &places);
 	TEST_ASSERT_TRUE(retVal == READER_OK);
 	TEST_ASSERT_EQUAL_UINT32(READER_T1_CONTEXT_STATICBUFF_MAXSIZE-1, places);
+}
+
+
+void test_READER_T1_BUFFER_PlacesLeft_shouldWorkWhenFull(void){
+	READER_T1_ContextHandler context;
+	READER_T1_Block block;
+	READER_Status retVal;
+	uint32_t places;
+	uint32_t i;
+	
+	
+	retVal = READER_T1_BUFFER_Init(&context);
+	TEST_ASSERT_TRUE(retVal == READER_OK);
+	
+	if(READER_T1_CONTEXT_STATICBUFF_MAXSIZE < 1){
+		TEST_IGNORE();
+	}
+	
+	retVal = READER_T1_ForgeSBlock(&block, READER_T1_STYPE_RESYNCH_REQU, READER_T1_LRC);
+	TEST_ASSERT_TRUE(retVal == READER_OK);
+	
+	for(i=0; i<READER_T1_CONTEXT_STATICBUFF_MAXSIZE; i++){
+		retVal = READER_T1_BUFFER_Enqueue(&context, &block);
+		TEST_ASSERT_TRUE(retVal == READER_OK);
+	}
+	
+	retVal = READER_T1_BUFFER_PlacesLeft(&context, &places);
+	TEST_ASSERT_TRUE(retVal == READER_OK);
+	TEST_ASSERT_EQUAL_UINT32(0, places);
 }
 
 
