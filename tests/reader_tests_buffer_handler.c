@@ -374,6 +374,8 @@ void test_READER_T1_BUFFER_Stack_stackAndDequeueShouldWorkWithSBlock_case1(void)
 	READER_T1_ContextHandler context;
 	READER_T1_Block block1, block2;
 	READER_Status retVal;
+	uint8_t dataLEN;
+	uint8_t corrCodeLength;
 	
 	
 	if(READER_T1_CONTEXT_STATICBUFF_MAXSIZE < 1){
@@ -385,6 +387,8 @@ void test_READER_T1_BUFFER_Stack_stackAndDequeueShouldWorkWithSBlock_case1(void)
 	
 	retVal = READER_T1_ForgeSBlock(&block1, READER_T1_STYPE_IFS_REQU, READER_T1_LRC);
 	TEST_ASSERT_TRUE(retVal == READER_OK);
+	dataLEN = READER_T1_GetBlockLEN(&block1);
+	corrCodeLength = READER_T1_GetBlockRedundancyLen(&block1);
 	
 	retVal = READER_T1_BUFFER_Stack(&context, &block1);
 	TEST_ASSERT_TRUE(retVal == READER_OK);
@@ -392,7 +396,7 @@ void test_READER_T1_BUFFER_Stack_stackAndDequeueShouldWorkWithSBlock_case1(void)
 	retVal = READER_T1_BUFFER_Dequeue(&context, &block2);
 	TEST_ASSERT_TRUE(retVal == READER_OK);
 	
-	TEST_ASSERT_EQUAL_UINT8_ARRAY(block1.blockFrame, block2.blockFrame, READER_T1_BLOCK_MAX_TOTAL_LENGTH);
+	TEST_ASSERT_EQUAL_UINT8_ARRAY(block1.blockFrame, block2.blockFrame, READER_T1_BLOCK_PROLOGUE_SIZE + dataLEN + corrCodeLength);
 	TEST_ASSERT_EQUAL_UINT32(block1.RedundancyType, block2.RedundancyType);
 }
 
@@ -401,6 +405,8 @@ void test_READER_T1_BUFFER_Stack_stackAndDequeueShouldWorkWithSBlock_case2(void)
 	READER_T1_ContextHandler context;
 	READER_T1_Block block1, block2, block3;
 	READER_Status retVal;
+	uint8_t dataLEN;
+	uint8_t corrCodeLength;
 	
 	
 	/* On stack deux Blocks, on regarde lequel sort en premier ...  */
@@ -420,6 +426,8 @@ void test_READER_T1_BUFFER_Stack_stackAndDequeueShouldWorkWithSBlock_case2(void)
 	
 	retVal = READER_T1_ForgeRBlock(&block2, READER_T1_ACKTYPE_ACK, READER_T1_EXPSEQNUM_ONE, READER_T1_LRC);
 	TEST_ASSERT_TRUE(retVal == READER_OK);
+	dataLEN = READER_T1_GetBlockLEN(&block2);
+	corrCodeLength = READER_T1_GetBlockRedundancyLen(&block2);
 	
 	retVal = READER_T1_BUFFER_Stack(&context, &block2);
 	TEST_ASSERT_TRUE(retVal == READER_OK);
@@ -427,7 +435,7 @@ void test_READER_T1_BUFFER_Stack_stackAndDequeueShouldWorkWithSBlock_case2(void)
 	retVal = READER_T1_BUFFER_Dequeue(&context, &block3);
 	TEST_ASSERT_TRUE(retVal == READER_OK);
 	
-	TEST_ASSERT_EQUAL_UINT8_ARRAY(block2.blockFrame, block3.blockFrame, READER_T1_BLOCK_MAX_TOTAL_LENGTH);
+	TEST_ASSERT_EQUAL_UINT8_ARRAY(block2.blockFrame, block3.blockFrame, READER_T1_BLOCK_PROLOGUE_SIZE + dataLEN + corrCodeLength);
 	TEST_ASSERT_EQUAL_UINT32(block2.RedundancyType, block3.RedundancyType);
 }
 
@@ -436,6 +444,8 @@ void test_READER_T1_BUFFER_Enqueue_enqueueAndDequeueShouldWorkWithSBlock_case1(v
 	READER_T1_ContextHandler context;
 	READER_T1_Block block1, block2;
 	READER_Status retVal;
+	uint8_t dataLEN;
+	uint8_t corrCodeLength;
 	
 	
 	if(READER_T1_CONTEXT_STATICBUFF_MAXSIZE < 1){
@@ -447,6 +457,8 @@ void test_READER_T1_BUFFER_Enqueue_enqueueAndDequeueShouldWorkWithSBlock_case1(v
 	
 	retVal = READER_T1_ForgeSBlock(&block1, READER_T1_STYPE_IFS_REQU, READER_T1_LRC);
 	TEST_ASSERT_TRUE(retVal == READER_OK);
+	dataLEN = READER_T1_GetBlockLEN(&block1);
+	corrCodeLength = READER_T1_GetBlockRedundancyLen(&block1);
 	
 	retVal = READER_T1_BUFFER_Enqueue(&context, &block1);
 	TEST_ASSERT_TRUE(retVal == READER_OK);
@@ -454,7 +466,7 @@ void test_READER_T1_BUFFER_Enqueue_enqueueAndDequeueShouldWorkWithSBlock_case1(v
 	retVal = READER_T1_BUFFER_Dequeue(&context, &block2);
 	TEST_ASSERT_TRUE(retVal == READER_OK);
 	
-	TEST_ASSERT_EQUAL_UINT8_ARRAY(block1.blockFrame, block2.blockFrame, READER_T1_BLOCK_MAX_TOTAL_LENGTH);
+	TEST_ASSERT_EQUAL_UINT8_ARRAY(block1.blockFrame, block2.blockFrame, READER_T1_BLOCK_PROLOGUE_SIZE + dataLEN + corrCodeLength);
 	TEST_ASSERT_EQUAL_UINT32(block1.RedundancyType, block2.RedundancyType);
 }
 
@@ -464,6 +476,8 @@ void test_READER_T1_BUFFER_Enqueue_enqueueAndDequeueShouldWorkWithSBlock_case2(v
 	READER_T1_ContextHandler context;
 	READER_T1_Block block1, block2, block3;
 	READER_Status retVal;
+	uint8_t dataLEN;
+	uint8_t corrCodeLength;
 	
 	
 	/* On enfile deux blocks et on regarde si c'est le bon qui sort ...  */
@@ -478,6 +492,8 @@ void test_READER_T1_BUFFER_Enqueue_enqueueAndDequeueShouldWorkWithSBlock_case2(v
 	
 	retVal = READER_T1_ForgeSBlock(&block1, READER_T1_STYPE_IFS_REQU, READER_T1_LRC);
 	TEST_ASSERT_TRUE(retVal == READER_OK);
+	dataLEN = READER_T1_GetBlockLEN(&block1);
+	corrCodeLength = READER_T1_GetBlockRedundancyLen(&block1);
 	
 	retVal = READER_T1_BUFFER_Enqueue(&context, &block1);
 	TEST_ASSERT_TRUE(retVal == READER_OK);
@@ -491,7 +507,7 @@ void test_READER_T1_BUFFER_Enqueue_enqueueAndDequeueShouldWorkWithSBlock_case2(v
 	retVal = READER_T1_BUFFER_Dequeue(&context, &block3);
 	TEST_ASSERT_TRUE(retVal == READER_OK);
 	
-	TEST_ASSERT_EQUAL_UINT8_ARRAY(block1.blockFrame, block3.blockFrame, READER_T1_BLOCK_MAX_TOTAL_LENGTH);
+	TEST_ASSERT_EQUAL_UINT8_ARRAY(block1.blockFrame, block3.blockFrame, READER_T1_BLOCK_PROLOGUE_SIZE + dataLEN + corrCodeLength);
 	TEST_ASSERT_EQUAL_UINT32(block1.RedundancyType, block3.RedundancyType);
 }
 
