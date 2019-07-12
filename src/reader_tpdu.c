@@ -15,17 +15,17 @@ extern uint32_t globalWaitTimeMili;
 
 
 
-READER_Status READER_TPDU_Execute(READER_TPDU_Command *pTpdu, READER_TPDU_Response *pResp, uint32_t timeout, READER_HAL_CommSettings *pSettings){
-	READER_Status retVal;
-	
-	retVal = READER_TPDU_Send(pTpdu, timeout, pSettings);
-	if(retVal != READER_OK) return retVal;
-	
-	retVal = READER_TPDU_RcvResponse(pResp, 256, timeout, pSettings);
-	if(retVal != READER_OK) return retVal;
-	
-	return READER_OK;
-}
+//READER_Status READER_TPDU_Execute(READER_TPDU_Command *pTpdu, READER_TPDU_Response *pResp, uint32_t timeout, READER_HAL_CommSettings *pSettings){
+//	READER_Status retVal;
+//	
+//	retVal = READER_TPDU_Send(pTpdu, timeout, pSettings);
+//	if(retVal != READER_OK) return retVal;
+//	
+//	retVal = READER_TPDU_RcvResponse(pResp, 256, timeout, pSettings);
+//	if(retVal != READER_OK) return retVal;
+//	
+//	return READER_OK;
+//}
 
 
 /**
@@ -227,18 +227,18 @@ READER_Status READER_TPDU_RcvSW(uint8_t *SW1, uint8_t *SW2, uint32_t timeout, RE
  * \param Ne (N expected) Nombre d'octets attendus dans la réponse.
  * \param timeout Pour l'instant non décidé si c'est le timeout pour chaque carac ou pour toute le frame. !!!!!!!!
  */
-READER_Status READER_TPDU_RcvDataField(uint8_t *buffer, uint32_t Ne, uint32_t timeout, READER_HAL_CommSettings *pSettings){
-	READER_Status retVal;
-	
-	if(Ne != 0){
-		retVal = READER_HAL_RcvCharFrame(pSettings, READER_HAL_PROTOCOL_T0, buffer, Ne, timeout);
-	}
-	else{
-		retVal = READER_OK;
-	}
-	
-	return retVal;
-}
+//READER_Status READER_TPDU_RcvDataField(uint8_t *buffer, uint32_t Ne, uint32_t timeout, READER_HAL_CommSettings *pSettings){
+//	READER_Status retVal;
+//	
+//	if(Ne != 0){
+//		retVal = READER_HAL_RcvCharFrame(pSettings, READER_HAL_PROTOCOL_T0, buffer, Ne, timeout);
+//	}
+//	else{
+//		retVal = READER_OK;
+//	}
+//	
+//	return retVal;
+//}
 
 
 
@@ -430,24 +430,24 @@ READER_Status READER_TPDU_IsProcedureByte(uint8_t byte, uint8_t INS){
 }
 
 
-READER_Status READER_TPDU_WaitProcedureByte(uint8_t *procedureByte, uint8_t INS, uint32_t timeout, READER_HAL_CommSettings *pSettings){
-	uint8_t byte;
-	READER_Status retVal;
-	
-	
-	retVal = READER_HAL_RcvChar(pSettings, READER_HAL_PROTOCOL_T0, &byte, timeout);
-	if(retVal != READER_OK){
-		return retVal;
-	}
-	
-	if(READER_TPDU_IsProcedureByte(byte, INS)){
-		*procedureByte = byte;
-		return READER_OK;
-	}
-	else{
-		return READER_ERR;
-	}
-}
+//READER_Status READER_TPDU_WaitProcedureByte(uint8_t *procedureByte, uint8_t INS, uint32_t timeout, READER_HAL_CommSettings *pSettings){
+//	uint8_t byte;
+//	READER_Status retVal;
+//	
+//	
+//	retVal = READER_HAL_RcvChar(pSettings, READER_HAL_PROTOCOL_T0, &byte, timeout);
+//	if(retVal != READER_OK){
+//		return retVal;
+//	}
+//	
+//	if(READER_TPDU_IsProcedureByte(byte, INS)){
+//		*procedureByte = byte;
+//		return READER_OK;
+//	}
+//	else{
+//		return READER_ERR;
+//	}
+//}
 
 /**
  * \fn READER_Status READER_TPDU_WaitACK(uint8_t INS, uint8_t *ACKType, uint32_t timeout)
