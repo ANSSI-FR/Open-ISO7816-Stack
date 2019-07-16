@@ -11,6 +11,8 @@
 void test_READER_T1_APDU_all(void);
 
 
+void test_T1_ExampleA21_Case3S(void);
+
 
 
 #endif
