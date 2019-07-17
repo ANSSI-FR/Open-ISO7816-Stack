@@ -674,7 +674,7 @@ READER_Status READER_T1_CONTEXT_GetLastIBlockRcvd(READER_T1_ContextHandler *pCon
 	//if(bType != READER_T1_IBLOCK){
 	//	return READER_ERR;
 	//}
-	retVal = READER_T1_CheckIBlock(&(pContext->lastIBlockRcvd);
+	retVal = READER_T1_CheckIBlock(&(pContext->lastIBlockRcvd));
 	if(retVal != READER_OK) return retVal;
 	
 	/* Si tout est bon, on positionne le pointeur sur le dernier I-Block recu qui se trouve dans le Contexte ...  */
