@@ -299,11 +299,21 @@ void test_T1_ExampleA22_ValidWTXRequFromCardWhileSendingCommand(void){
 	uint8_t buff[] = {0x75, 0x36, 0x41, 0x70, 0x70};
 	uint32_t Ne = 5;
 	uint32_t Nc = 5;
+	uint32_t previousMultiplier, currentMultiplier, currentBWTMilli, previousBWTMilli;
 	
 	/* On doit verifier que : */
 	/*      Le lecteur repond correctement a la S-Request */
 	/*      Le lecteur applique correctepent en interne la WTX request */
 	/*      Le ecteur recupere la reponse correcte au I-Block precedement envoye */
+	
+	
+	/* On recupere l'etat avant l'application de la requette ...  */
+	retVal = READER_T1_CONTEXT_GetCurrentBWTMultiplier(&context, &previousMultiplier);
+	TEST_ASSERT_TRUE(retVal == READER_OK);
+	
+	retVal = READER_T1_CONTEXT_GetCurrentBWTMilli(&context, &previousBWTMilli);
+	TEST_ASSERT_TRUE(retVal == READER_OK);
+	
 	
 	if((Ne >= 0x000000FF) || (Nc >= 0x000000FF)){
 		TEST_IGNORE();
@@ -341,5 +351,15 @@ void test_T1_ExampleA22_ValidWTXRequFromCardWhileSendingCommand(void){
 	TEST_ASSERT_EQUAL_UINT8_ARRAY(rcvdBytes2+3, apduResp.dataBytes, 5);
 	TEST_ASSERT_EQUAL_UINT8(0x90, apduResp.SW1);
 	TEST_ASSERT_EQUAL_UINT8(0x00, apduResp.SW2);
+	
+	/* On verifie que le WTX a bien ete applique ...  */
+	retVal = READER_T1_CONTEXT_GetCurrentBWTMultiplier(&context, &currentMultiplier);
+	TEST_ASSERT_TRUE(retVal == READER_OK);
+	
+	retVal = READER_T1_CONTEXT_GetCurrentBWTMilli(&context, &currentBWTMilli);
+	TEST_ASSERT_TRUE(retVal == READER_OK);
+	
+	TEST_ASSERT_EQUAL_UINT32(2*previousMultiplier, currentMultiplier);
+	TEST_ASSERT_EQUAL_UINT32(2*previousBWTMilli, currentBWTMilli);
 }
 
