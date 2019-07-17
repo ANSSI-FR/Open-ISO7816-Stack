@@ -167,9 +167,10 @@ READER_Status READER_T1_CONTROL_IsRBlockError(READER_T1_ContextHandler *pContext
 /* Retourne READER_OK si ce I-Block indique une erreur. READER_NO si il n'indique pas d'erreur. Autre valeur si la fonction a rencontre une erreur. */
 READER_Status READER_T1_CONTROL_IsIBlockACK(READER_T1_ContextHandler *pContext, READER_T1_Block *pBlock){
 	READER_Status retVal;
-	READER_T1_BlockType bType;
+	//READER_T1_BlockType bType;
 	READER_T1_Block *pTmpBlock;
-	READER_T1_MBit mBit;
+	//READER_T1_MBit mBit;
+	READER_T1_SeqNumber seqNumSent, seqNumRcvd;
 	
 	
 	/* On procede de la maniere suivante (non detaille spec) :                                */
@@ -179,35 +180,65 @@ READER_Status READER_T1_CONTROL_IsIBlockACK(READER_T1_ContextHandler *pContext, 
 	/*      3) Le numero de sequence du Block recu est correct                                */
 	
 	
-	/* On recupere le type du dernier Block envoye (et on verifie en meme temps si il existe) */
-	retVal = READER_T1_CONTEXT_GetLastSentType(pContext, &bType);
-	if((retVal != READER_OK) && (retVal != READER_DOESNT_EXIST)) return retVal;
+	/* On verifie que l'on a bien un I-Block en entree ...  */
+	retVal = READER_T1_CheckIBlock(pBlock);
+	if(retVal != READER_OK) return retVal;
 	
+	/* On verifie que le dernier I-Block envoye existe (si il n'existe pas avoir ce block recu n'aquitte rien dutout) ...  */
+	retVal = READER_T1_CONTEXT_LastIBlockSentExists(pContext);
+	if((retVal != READER_OK) && (retVal != READER_DOESNT_EXIST)){
+		return retVal;
+	}
 	if(retVal == READER_DOESNT_EXIST){
 		return READER_NO;
 	}
 	
+	/* On recupere le dernier I-Block envoye ...  */
+	retVal = READER_T1_CONTEXT_GetLastIBlockSent(pContext, &pTmpBlock);
+	if(retVal != READER_OK) return retVal;
+	
+	/* On recupere me numero de sequence du dernier I-Block envoye et du dernier recu ...  */
+	seqNumSent = READER_T1_GetBlockSeqNumber(pTmpBlock);
+	seqNumRcvd = READER_T1_GetBlockSeqNumber(pBlock);
+	
+	/* Voir ISO7816-3 section 11.6.2.1 ...  */
+	if(seqNumSent != seqNumRcvd){
+		return READER_OK;
+	}
+	else{
+		return READER_NO;
+	}
+	
+	
+	/* On recupere le type du dernier Block envoye (et on verifie en meme temps si il existe) */
+	//retVal = READER_T1_CONTEXT_GetLastSentType(pContext, &bType);
+	//if((retVal != READER_OK) && (retVal != READER_DOESNT_EXIST)) return retVal;
+	//
+	//if(retVal == READER_DOESNT_EXIST){
+	//	return READER_NO;
+	//}
+	
 	/* On examine le type du dernier Block envoye ...                                         */
 	
-	if(bType != READER_T1_IBLOCK){
-		return READER_NO;
-	}
+	//if(bType != READER_T1_IBLOCK){
+	//	return READER_NO;
+	//}
 	
 	/* On regarde le M-Bit du dernier I-Block qu'on a envoye           */
-	retVal = READER_T1_CONTEXT_GetLastSent(pContext, &pTmpBlock);
-	if(retVal != READER_OK) return retVal;
-	
-	mBit = READER_T1_GetBlockMBit(pTmpBlock);
-	
-	if(mBit == READER_T1_MBIT_ONE){
-		return READER_NO;
-	}
+	//retVal = READER_T1_CONTEXT_GetLastSent(pContext, &pTmpBlock);
+	//if(retVal != READER_OK) return retVal;
+	//
+	//mBit = READER_T1_GetBlockMBit(pTmpBlock);
+	//
+	//if(mBit == READER_T1_MBIT_ONE){
+	//	return READER_NO;
+	//}
 	
 	/* On verifie que le numero de sequence du I-Block recu est correct  */
-	retVal = READER_T1_CONTROL_IsSeqNumValid(pContext, pBlock);
-	if(retVal != READER_OK) return retVal;
+	//retVal = READER_T1_CONTROL_IsSeqNumValid(pContext, pBlock);
+	//if(retVal != READER_OK) return retVal;
 	
-	return READER_OK;
+	//return READER_OK;
 }
 
 
