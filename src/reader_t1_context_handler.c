@@ -734,7 +734,12 @@ READER_Status READER_T1_CONTEXT_GetLastIBlockRcvdSeqSum(READER_T1_ContextHandler
 	
 	/* On recupere le dernier I-Block recu                                   */
 	retVal = READER_T1_CONTEXT_GetLastIBlockRcvd(pContext, &pLastBlock);
-	if(retVal != READER_OK) return retVal;
+	if((retVal != READER_OK) && (retVal != READER_DOESNT_EXIST)){
+		return retVal;
+	}
+	if(retVal == READER_DOESNT_EXIST){
+		return READER_DOESNT_EXIST;
+	}
 	
 	/* On recupere le numero de sequence                                     */
 	tmpSeqNum = READER_T1_GetBlockSeqNumber(pLastBlock);
