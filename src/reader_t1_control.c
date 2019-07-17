@@ -170,7 +170,8 @@ READER_Status READER_T1_CONTROL_IsIBlockACK(READER_T1_ContextHandler *pContext, 
 	//READER_T1_BlockType bType;
 	READER_T1_Block *pTmpBlock;
 	//READER_T1_MBit mBit;
-	READER_T1_SeqNumber seqNumSent, seqNumRcvd;
+	uint32_t seqNum1, seqNum2;
+	READER_T1_SeqNumber seqNum;
 	
 	
 	/* On procede de la maniere suivante (non detaille spec) :                                */
@@ -179,7 +180,7 @@ READER_Status READER_T1_CONTROL_IsIBlockACK(READER_T1_ContextHandler *pContext, 
 	/*      2) Le M-Bit de ce Block est 0 (le device ne faisait pas/plus de chainage)         */
 	/*      3) Le numero de sequence du Block recu est correct                                */
 	
-	
+	/* Voir ISO7816-3 section 11.6.2.1 ...  */
 	/* On verifie que l'on a bien un I-Block en entree ...  */
 	retVal = READER_T1_CheckIBlock(pBlock);
 	if(retVal != READER_OK) return retVal;
@@ -193,16 +194,29 @@ READER_Status READER_T1_CONTROL_IsIBlockACK(READER_T1_ContextHandler *pContext, 
 		return READER_NO;
 	}
 	
-	/* On recupere le dernier I-Block envoye ...  */
-	retVal = READER_T1_CONTEXT_GetLastIBlockSent(pContext, &pTmpBlock);
-	if(retVal != READER_OK) return retVal;
+	/* On recupere le numero de sequence du dernier I-Block recu ...  */
+	retVal = READER_T1_CONTEXT_GetLastIBlockRcvdSeqSum(pContext, &seqNum1);
+	if((retVal != READER_OK) && (retVal != READER_DOESNT_EXIST)){
+		return retVal;
+	}
+	if(retVal == READER_DOESNT_EXIST){
+		return READER_OK;
+	}
 	
-	/* On recupere me numero de sequence du dernier I-Block envoye et du dernier recu ...  */
-	seqNumSent = READER_T1_GetBlockSeqNumber(pTmpBlock);
-	seqNumRcvd = READER_T1_GetBlockSeqNumber(pBlock);
+	/* On recupere le numero de sequence du I-Block que l'on est train de recevoir ...  */
+	seqNum = READER_T1_GetBlockSeqNumber(pBlock);
+	if(seqNum == READER_T1_SEQNUM_ZERO){
+		seqNum2 = 0;
+	}
+	else if(seqNum == READER_T1_SEQNUM_ONE){
+		seqNum = 1;
+	}
+	else{
+		return READER_ERR;
+	}
 	
-	/* Voir ISO7816-3 section 11.6.2.1 ...  */
-	if(seqNumSent != seqNumRcvd){
+	/* On compare les numeros de sequence. Voir ISO7816-3 section 11.6.2.1 ...  */
+	if(seqNum1 != seqNum2){
 		return READER_OK;
 	}
 	else{
