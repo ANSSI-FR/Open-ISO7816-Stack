@@ -981,6 +981,9 @@ READER_Status READER_T1_CONTROL_ApplySBlockResponseRcvd(READER_T1_ContextHandler
 	retVal = READER_T1_CONTEXT_ClearSBlockRequestsCounter(pContext);
 	if(retVal != READER_OK) return retVal;
 	
+	/* On RAZ le Flag isSBlockExpected ...  */
+	retVal = READER_T1_CONTEXT_SetNoSBlockExpectedResponse(pContext);
+	if(retVal != READER_OK) return retVal;
 	
 	/* On applique la demande du S-Block ... */
 	if(rcvdSBlockType == READER_T1_STYPE_ABORT_RESP){
