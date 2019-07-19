@@ -20,6 +20,7 @@ void test_T1_ExampleA21_Case4S_RcvOnlySW(void);
 void test_T1_ExampleA22_ValidWTXRequFromCardWhileSendingCommand(void);
 void test_T1_ExampleA23_Scenario3_ValidIFSRequFromCardWhileSendingCommand(void);
 void test_T1_ExampleA23_Scenario4_IFSRequFromDeviceAcceptedByCard(void);
+void test_T1_ExampleA24_Scenario5_DeviceTransmitsChain(void);
 
 
 
