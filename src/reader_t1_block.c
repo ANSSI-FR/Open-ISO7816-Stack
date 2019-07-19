@@ -680,19 +680,28 @@ READER_Status READER_T1_RcvBlock(READER_T1_Block *pBlock, READER_T1_RedundancyTy
 	/* Il s'agit du premier caractere du Prologue                                               */
 	/* Le extraTimeout est calcule a plus haut niveau ...                                       */
 	retVal = READER_HAL_RcvCharFrameCount(pSettings, READER_HAL_PROTOCOL_T1, buffPrologue, 1, &count, currentCWT + extraTimeout);
-	if(retVal != READER_OK) return retVal;
+	if((retVal != READER_OK) && (retVal != READER_TIMEOUT)){
+		return retVal;
+	}
+	if(retVal == READER_TIMEOUT){
+		return READER_TIMEOUT;
+	}
 	
 	if(count != 1){
-		return READER_ERR;
+		return READER_TIMEOUT;
 	}
 	
 	/* Ensuite on recupere les deux suivants du prologue ...                                    */
 
 	retVal = READER_HAL_RcvCharFrameCount(pSettings, READER_HAL_PROTOCOL_T1, buffPrologue +1, READER_T1_BLOCK_PROLOGUE_SIZE-1, &count, currentCWT);
-	if(retVal != READER_OK) return retVal;
-	
+	if((retVal != READER_OK) && (retVal != READER_TIMEOUT)){
+		return retVal;
+	}
+	if(retVal == READER_TIMEOUT){
+		return READER_TIMEOUT;
+	}
 	if(count != READER_T1_BLOCK_PROLOGUE_SIZE -1){
-		return READER_ERR;
+		return READER_TIMEOUT;
 	}
 	
 	
@@ -718,8 +727,15 @@ READER_Status READER_T1_RcvBlock(READER_T1_Block *pBlock, READER_T1_RedundancyTy
 	//if(count == 6){
 	//	READER_PERIPH_ErrHandler();
 	//}
-	if(retVal != READER_OK) return retVal;
-	if(count != buffSize) return READER_ERR;
+	if((retVal != READER_OK) && (retVal != READER_TIMEOUT)){
+		return retVal;
+	}
+	if(retVal == READER_TIMEOUT){
+		return READER_TIMEOUT;
+	}
+	if(count != buffSize){
+		return READER_ERR;
+	}
 	
 	/* On mets a jour la date du leading edge du dernier caractere du Block ...  */
 	*pTickstart = tickstart;

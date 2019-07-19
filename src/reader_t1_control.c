@@ -579,6 +579,7 @@ READER_Status READER_T1_CONTROL_RcvBlock(READER_T1_ContextHandler *pContext, REA
 	if(retVal == READER_TIMEOUT){
 		retVal = READER_T1_ERR_DealWithError(pContext, 0);
 		if(retVal != READER_OK) return retVal;
+		return READER_OK;
 	}
 	
 	/* On verifie que le Block recu ne depase pas le MAX IFSD que l'on peut accepter cote device ... */
