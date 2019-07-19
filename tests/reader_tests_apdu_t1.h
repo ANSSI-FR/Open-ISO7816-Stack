@@ -21,6 +21,10 @@ void test_T1_ExampleA22_ValidWTXRequFromCardWhileSendingCommand(void);
 void test_T1_ExampleA23_Scenario3_ValidIFSRequFromCardWhileSendingCommand(void);
 void test_T1_ExampleA23_Scenario4_IFSRequFromDeviceAcceptedByCard(void);
 void test_T1_ExampleA24_Scenario5_DeviceTransmitsChain(void);
+void test_T1_ExampleA24_Scenario6_CardTransmitsChain(void);
+void test_T1_ExampleA31_Scenario8(void);
+void test_T1_ExampleA31_Scenario9_CaseErrorOnLRC(void);
+void test_T1_ExampleA31_Scenario9_CaseTimeout(void);
 
 
 
