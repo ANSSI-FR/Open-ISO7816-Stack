@@ -798,7 +798,7 @@ READER_Status READER_T1_CONTROL_ApplyRBlockRcvd(READER_T1_ContextHandler *pConte
 	/* Si ce R-Block n'est pas un ACK ...                                  */
 	else{
 		/* On regarde le numero de sequence du R-Block et du dernier I-Block qu'on a envoye ...  */
-		tmpSeqNumRBlock = READER_T1_GetBlockSeqNumber(pBlock);
+		tmpSeqNumRBlock = READER_T1_GetExpectedBlockSeqNumber(pBlock);
 		if(tmpSeqNumRBlock == READER_T1_SEQNUM_ONE){
 			seqNumRBlock = 1;
 		}
