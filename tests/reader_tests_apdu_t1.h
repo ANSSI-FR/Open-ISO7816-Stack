@@ -25,6 +25,11 @@ void test_T1_ExampleA24_Scenario6_CardTransmitsChain(void);
 void test_T1_ExampleA31_Scenario8(void);
 void test_T1_ExampleA31_Scenario9_CaseErrorOnLRC(void);
 void test_T1_ExampleA31_Scenario9_CaseTimeout(void);
+void test_T1_ExampleA31_Scenario10(void);
+void test_T1_ExampleA31_Scenario11_CaseLRCError(void);
+void test_T1_ExampleA31_Scenario11_CaseTimeoutOn112(void);
+void test_T1_ExampleA31_Scenario12(void);
+void test_T1_ExampleA31_Scenario13(void);
 
 
 
