@@ -39,6 +39,13 @@ void test_READER_T1_APDU_all(void){
 	RUN_TEST(test_T1_ExampleA31_Scenario11_CaseTimeoutOn112);
 	RUN_TEST(test_T1_ExampleA31_Scenario12);
 	RUN_TEST(test_T1_ExampleA31_Scenario13);
+	RUN_TEST(test_T1_ExampleA32_Scenario14);
+	RUN_TEST(test_T1_ExampleA32_Scenario15);
+	RUN_TEST(test_T1_ExampleA33_Scenario16);
+	RUN_TEST(test_T1_ExampleA33_Scenario18);
+	RUN_TEST(test_T1_ExampleA33_Scenario19);
+	RUN_TEST(test_T1_ExampleA33_Scenario20);
+	RUN_TEST(test_T1_ExampleA34_Scenario21);
 }
 
 
@@ -1203,4 +1210,501 @@ void test_T1_ExampleA31_Scenario13(void){
 	TEST_ASSERT_EQUAL_UINT8(0x00, apduResp.SW2);
 }
 
+
+
+void test_T1_ExampleA32_Scenario14(void){
+	READER_APDU_Command apduCmd;
+	READER_APDU_Response apduResp;
+	READER_T1_ContextHandler context;
+	READER_HAL_CommSettings settings;
+	READER_Status retVal;
+	uint8_t buff[] = {0x75, 0x36, 0x41, 0x70, 0x70, 0xFF, 0xFF, 0x00, 0x00, 0x00, 0x00, 0x00, 0xFF, 0xFF, 0x00, 0x00, 0xFF, 0x00, 0xFF, 0x00, 0xFF, 0x00};
+	uint32_t Ne = 5;
+	uint32_t Nc = 5;
+	uint32_t prevBWT, currentBWT;
+	
+	
+	
+	if((Ne >= 0x000000FF) || (Nc >= 0x000000FF)){
+		TEST_IGNORE();
+	}
+	if(READER_T1_MIN_IFSD_ACCEPTED > 10){
+		TEST_IGNORE();
+	}
+	
+	/* On forge un APDU ...  */
+	retVal = READER_APDU_Forge(&apduCmd, 0x00, 0xA4, 0x04, 0x00, Nc, buff, Ne);
+	TEST_ASSERT_TRUE(retVal == READER_OK);
+	
+	/* On initialise l'environnement ...  */
+	READER_HAL_InitWithDefaults(&settings);
+	READER_HAL_DoColdReset();
+	
+	retVal = READER_T1_APDU_Init(&context, &settings);
+	TEST_ASSERT_TRUE(retVal == READER_OK);
+	
+	retVal = READER_T1_CONTEXT_GetCurrentBWTMilli(&context, &prevBWT);
+	TEST_ASSERT_TRUE(retVal == READER_OK);
+	
+	/* On prepare les Mocks ...   */	
+	uint8_t expectedSentFrame1[] = {0x00, 0b00000000, 11, 0x00, 0xA4, 0x04, 0x00, (uint8_t)(Nc), 0x75, 0x36, 0x41, 0x70, 0x70, (uint8_t)(Ne), 0xA9}; /* I-Block 1 */
+	uint8_t rcvdBytes1[] = {0x00, 0b11000011, 1, 2, ~0xC0};  /* S-Block WTX Request mais errone ...  */  
+	
+	set_expected_CharFrame(expectedSentFrame1, 15);
+	emulate_RcvCharFrame(rcvdBytes1, 5);
+	
+	uint8_t expectedSentFrame2[] = {0x00, 0b10000001, 0, 0b10000001};   /* On s'attend a ce que le device envoie R(0) */
+	uint8_t rcvdBytes2[] = {0x00, 0b11000011, 1, 2, 0xC0};           /* La carte retourne  S-Block WTX Request mais correct cette fois */
+	
+	set_expected_CharFrame(expectedSentFrame2, 4);
+	emulate_RcvCharFrame(rcvdBytes2, 5);
+	
+	uint8_t expectedSentFrame3[] = {0x00, 0b11100011, 1, 2, 0xE0};   /* On s'attend a ce que le device envoie WTX Response */
+	uint8_t rcvdBytes3[] = {0x00, 0b00000000, 7, 0x75, 0x74, 0x77, 0x74, 0x75, 0x90, 0x00, 0xE0};   /* I-Blok Response de la carte ...  */  /* La carte retourne R(1) correct cette fois-ci ...  */
+	
+	set_expected_CharFrame(expectedSentFrame3, 5);
+	emulate_RcvCharFrame(rcvdBytes3, 11);
+	
+	
+	/* On execute l'APDU et on verfie le resultat ...  */
+	retVal = READER_T1_APDU_Execute(&context, &apduCmd, &apduResp);
+	TEST_ASSERT_TRUE(retVal == READER_OK);
+	
+	TEST_ASSERT_EQUAL_UINT32(Ne, apduResp.dataSize);
+	TEST_ASSERT_EQUAL_UINT8_ARRAY(rcvdBytes3+3, apduResp.dataBytes, Ne);
+	TEST_ASSERT_EQUAL_UINT8(0x90, apduResp.SW1);
+	TEST_ASSERT_EQUAL_UINT8(0x00, apduResp.SW2);
+	
+	/* On verifie que le WTX a  bien ete applique ... */
+	retVal = READER_T1_CONTEXT_GetCurrentBWTMilli(&context, &currentBWT);
+	TEST_ASSERT_TRUE(retVal == READER_OK);
+	
+	TEST_ASSERT_EQUAL_UINT32(2*prevBWT, currentBWT);
+}
+
+
+void test_T1_ExampleA32_Scenario15(void){
+	READER_APDU_Command apduCmd;
+	READER_APDU_Response apduResp;
+	READER_T1_ContextHandler context;
+	READER_HAL_CommSettings settings;
+	READER_Status retVal;
+	uint8_t buff[] = {0x75, 0x36, 0x41, 0x70, 0x70, 0xFF, 0xFF, 0x00, 0x00, 0x00, 0x00, 0x00, 0xFF, 0xFF, 0x00, 0x00, 0xFF, 0x00, 0xFF, 0x00, 0xFF, 0x00};
+	uint32_t Ne = 5;
+	uint32_t Nc = 5;
+	uint32_t prevBWT, currentBWT;
+	
+	
+	
+	if((Ne >= 0x000000FF) || (Nc >= 0x000000FF)){
+		TEST_IGNORE();
+	}
+	if(READER_T1_MIN_IFSD_ACCEPTED > 10){
+		TEST_IGNORE();
+	}
+	
+	/* On forge un APDU ...  */
+	retVal = READER_APDU_Forge(&apduCmd, 0x00, 0xA4, 0x04, 0x00, Nc, buff, Ne);
+	TEST_ASSERT_TRUE(retVal == READER_OK);
+	
+	/* On initialise l'environnement ...  */
+	READER_HAL_InitWithDefaults(&settings);
+	READER_HAL_DoColdReset();
+	
+	retVal = READER_T1_APDU_Init(&context, &settings);
+	TEST_ASSERT_TRUE(retVal == READER_OK);
+	
+	retVal = READER_T1_CONTEXT_GetCurrentBWTMilli(&context, &prevBWT);
+	TEST_ASSERT_TRUE(retVal == READER_OK);
+	
+	/* On prepare les Mocks ...   */	
+	uint8_t expectedSentFrame1[] = {0x00, 0b00000000, 11, 0x00, 0xA4, 0x04, 0x00, (uint8_t)(Nc), 0x75, 0x36, 0x41, 0x70, 0x70, (uint8_t)(Ne), 0xA9}; /* I-Block 1 */
+	uint8_t rcvdBytes1[] = {0x00, 0b11000011, 1, 2, ~0xC0};  /* S-Block WTX Request mais errone ...  */  
+	
+	set_expected_CharFrame(expectedSentFrame1, 15);
+	emulate_RcvCharFrame(rcvdBytes1, 5);
+	
+	uint8_t expectedSentFrame2[] = {0x00, 0b10000001, 0, 0b10000001};   /* On s'attend a ce que le device envoie R(0) */
+	uint8_t rcvdBytes2[] = {0x00, 0b11000011, 1, 2, 0xC0};           /* La carte retourne  S-Block WTX Request mais correct cette fois */
+	
+	set_expected_CharFrame(expectedSentFrame2, 4);
+	emulate_RcvCharFrame(rcvdBytes2, 5);
+	
+	uint8_t expectedSentFrame3[] = {0x00, 0b11100011, 1, 2, 0xE0};   /* On s'attend a ce que le device envoie WTX Response */
+	uint8_t rcvdBytes3[] = {0x00, 0b00000000, 7, 0x75, 0x74, 0x77, 0x74, 0x75, 0x90, 0x00, 0xE0};   /* I-Blok Response de la carte ...  */  /* La carte retourne R(1) correct cette fois-ci ...  */
+	
+	set_expected_CharFrame(expectedSentFrame3, 5);
+	emulate_RcvCharFrame(rcvdBytes3, 11);
+	
+	
+	/* On execute l'APDU et on verfie le resultat ...  */
+	retVal = READER_T1_APDU_Execute(&context, &apduCmd, &apduResp);
+	TEST_ASSERT_TRUE(retVal == READER_OK);
+	
+	TEST_ASSERT_EQUAL_UINT32(Ne, apduResp.dataSize);
+	TEST_ASSERT_EQUAL_UINT8_ARRAY(rcvdBytes3+3, apduResp.dataBytes, Ne);
+	TEST_ASSERT_EQUAL_UINT8(0x90, apduResp.SW1);
+	TEST_ASSERT_EQUAL_UINT8(0x00, apduResp.SW2);
+	
+	/* On verifie que le WTX a  bien ete applique ... */
+	retVal = READER_T1_CONTEXT_GetCurrentBWTMilli(&context, &currentBWT);
+	TEST_ASSERT_TRUE(retVal == READER_OK);
+
+	TEST_ASSERT_EQUAL_UINT32(2*prevBWT, currentBWT);
+}
+
+
+void test_T1_ExampleA33_Scenario16(void){
+	READER_APDU_Command apduCmd;
+	READER_APDU_Response apduResp;
+	READER_T1_ContextHandler context;
+	READER_HAL_CommSettings settings;
+	READER_Status retVal;
+	uint8_t buff[] = {0x75, 0x36, 0x41, 0x70, 0x70, 0xFF, 0xFF, 0x00, 0x00, 0x00, 0x00, 0x00, 0xFF, 0xFF, 0x00, 0x00, 0xFF, 0x00, 0xFF, 0x00, 0xFF, 0x00};
+	uint32_t Ne = 5;
+	uint32_t Nc = 5;
+	uint32_t currentIFS;
+	
+	
+	
+	if((Ne >= 0x000000FF) || (Nc >= 0x000000FF)){
+		TEST_IGNORE();
+	}
+	if(READER_T1_MIN_IFSD_ACCEPTED > 10){
+		TEST_IGNORE();
+	}
+	
+	/* On forge un APDU ...  */
+	retVal = READER_APDU_Forge(&apduCmd, 0x00, 0xA4, 0x04, 0x00, Nc, buff, Ne);
+	TEST_ASSERT_TRUE(retVal == READER_OK);
+	
+	/* On initialise l'environnement ...  */
+	READER_HAL_InitWithDefaults(&settings);
+	READER_HAL_DoColdReset();
+	
+	retVal = READER_T1_APDU_Init(&context, &settings);
+	TEST_ASSERT_TRUE(retVal == READER_OK);
+	
+	
+	/* On prepare les Mocks ...   */	
+	uint8_t expectedSentFrame1[] = {0x00, 0b00000000, 11, 0x00, 0xA4, 0x04, 0x00, (uint8_t)(Nc), 0x75, 0x36, 0x41, 0x70, 0x70, (uint8_t)(Ne), 0xA9}; /* I-Block 1 */
+	uint8_t rcvdBytes1[] = {0x00, 0b11000001, 1, 16, 0xD0^0xFF};  /* S-Block IFS Request mais errone ...  */  
+	
+	set_expected_CharFrame(expectedSentFrame1, 15);
+	emulate_RcvCharFrame(rcvdBytes1, 5);
+	
+	uint8_t expectedSentFrame2[] = {0x00, 0b10000001, 0, 0b10000001};   /* On s'attend a ce que le device envoie R(0) */
+	uint8_t rcvdBytes2[] = {0x00, 0b11000001, 1, 16, 0xD0};           /* La carte retourne  S-Block IFS Request mais correct cette fois */
+	
+	set_expected_CharFrame(expectedSentFrame2, 4);
+	emulate_RcvCharFrame(rcvdBytes2, 5);
+	
+	uint8_t expectedSentFrame3[] = {0x00, 0b11100001, 1, 16, 0xF0};   /* On s'attend a ce que le device envoie IFS Response */
+	uint8_t rcvdBytes3[] = {0x00, 0b00000000, 7, 0x75, 0x74, 0x77, 0x74, 0x75, 0x90, 0x00, 0xE0};   /* I-Blok Response de la carte ...  */  /* La carte retourne R(1) correct cette fois-ci ...  */
+	
+	set_expected_CharFrame(expectedSentFrame3, 5);
+	emulate_RcvCharFrame(rcvdBytes3, 11);
+	
+	
+	/* On execute l'APDU et on verfie le resultat ...  */
+	retVal = READER_T1_APDU_Execute(&context, &apduCmd, &apduResp);
+	TEST_ASSERT_TRUE(retVal == READER_OK);
+	
+	TEST_ASSERT_EQUAL_UINT32(Ne, apduResp.dataSize);
+	TEST_ASSERT_EQUAL_UINT8_ARRAY(rcvdBytes3+3, apduResp.dataBytes, Ne);
+	TEST_ASSERT_EQUAL_UINT8(0x90, apduResp.SW1);
+	TEST_ASSERT_EQUAL_UINT8(0x00, apduResp.SW2);
+	
+	/* On verifie que le IFS a  bien ete applique ... */
+	retVal = READER_T1_CONTEXT_GetCurrentIFSC(&context, &currentIFS);
+	TEST_ASSERT_TRUE(retVal == READER_OK);
+
+	TEST_ASSERT_EQUAL_UINT32(16, currentIFS);
+}
+
+
+void test_T1_ExampleA33_Scenario18(void){
+	READER_APDU_Command apduCmd;
+	READER_APDU_Response apduResp;
+	READER_T1_ContextHandler context;
+	READER_HAL_CommSettings settings;
+	READER_Status retVal;
+	uint8_t buff[] = {0x75, 0x36, 0x41, 0x70, 0x70, 0xFF, 0xFF, 0x00, 0x00, 0x00, 0x00, 0x00, 0xFF, 0xFF, 0x00, 0x00, 0xFF, 0x00, 0xFF, 0x00, 0xFF, 0x00};
+	uint32_t Ne = 5;
+	uint32_t Nc = 5;
+	uint32_t currentIFS;
+	
+	
+	
+	if((Ne >= 0x000000FF) || (Nc >= 0x000000FF)){
+		TEST_IGNORE();
+	}
+	if(READER_T1_MIN_IFSD_ACCEPTED > 10){
+		TEST_IGNORE();
+	}
+	
+	/* On forge un APDU ...  */
+	retVal = READER_APDU_Forge(&apduCmd, 0x00, 0xA4, 0x04, 0x00, Nc, buff, Ne);
+	TEST_ASSERT_TRUE(retVal == READER_OK);
+	
+	/* On initialise l'environnement ...  */
+	READER_HAL_InitWithDefaults(&settings);
+	READER_HAL_DoColdReset();
+	
+	retVal = READER_T1_APDU_Init(&context, &settings);
+	TEST_ASSERT_TRUE(retVal == READER_OK);
+	
+	
+	/* On prepare les Mocks ...   */	
+	uint8_t expectedSentFrame1[] = {0x00, 0b00000000, 11, 0x00, 0xA4, 0x04, 0x00, (uint8_t)(Nc), 0x75, 0x36, 0x41, 0x70, 0x70, (uint8_t)(Ne), 0xA9}; /* I-Block 1 */
+	uint8_t rcvdBytes1[] = {0x00, 0b11000001, 1, 16, 0xD0};  /* S-Block IFS Request ...  */  
+	
+	set_expected_CharFrame(expectedSentFrame1, 15);
+	emulate_RcvCharFrame(rcvdBytes1, 5);
+	
+	uint8_t expectedSentFrame2[] = {0x00, 0b11100001, 1, 16, 0xF0};   /* On s'attend a ce que le device envoie IFS Response ... */
+	uint8_t rcvdBytes2[] = {0x00, 0b11000001, 1, 16, 0xD0};           /* La carte retourne  S-Block IFS Request */
+	
+	set_expected_CharFrame(expectedSentFrame2, 5);
+	emulate_RcvCharFrame(rcvdBytes2, 5);
+	
+	uint8_t expectedSentFrame3[] = {0x00, 0b11100001, 1, 16, 0xF0};   /* On s'attend a ce que le device envoie IFS Response */
+	uint8_t rcvdBytes3[] = {0x00, 0b00000000, 7, 0x75, 0x74, 0x77, 0x74, 0x75, 0x90, 0x00, 0xE0};   /* I-Blok Response de la carte ...  */  /* La carte retourne R(1) correct cette fois-ci ...  */
+	
+	set_expected_CharFrame(expectedSentFrame3, 5);
+	emulate_RcvCharFrame(rcvdBytes3, 11);
+	
+	
+	/* On execute l'APDU et on verfie le resultat ...  */
+	retVal = READER_T1_APDU_Execute(&context, &apduCmd, &apduResp);
+	TEST_ASSERT_TRUE(retVal == READER_OK);
+	
+	TEST_ASSERT_EQUAL_UINT32(Ne, apduResp.dataSize);
+	TEST_ASSERT_EQUAL_UINT8_ARRAY(rcvdBytes3+3, apduResp.dataBytes, Ne);
+	TEST_ASSERT_EQUAL_UINT8(0x90, apduResp.SW1);
+	TEST_ASSERT_EQUAL_UINT8(0x00, apduResp.SW2);
+	
+	/* On verifie que le IFS a  bien ete applique ... */
+	retVal = READER_T1_CONTEXT_GetCurrentIFSC(&context, &currentIFS);
+	TEST_ASSERT_TRUE(retVal == READER_OK);
+
+	TEST_ASSERT_EQUAL_UINT32(16, currentIFS);
+}
+
+
+void test_T1_ExampleA33_Scenario19(void){
+	READER_APDU_Command apduCmd;
+	READER_APDU_Response apduResp;
+	READER_T1_ContextHandler context;
+	READER_HAL_CommSettings settings;
+	READER_Status retVal;
+	uint8_t buff[] = {0x75, 0x36, 0x41, 0x70, 0x70, 0xFF, 0xFF, 0x00, 0x00, 0x00, 0x00, 0x00, 0xFF, 0xFF, 0x00, 0x00, 0xFF, 0x00, 0xFF, 0x00, 0xFF, 0x00};
+	uint32_t Ne = 5;
+	uint32_t Nc = 5;
+	uint32_t currentIFS;
+	
+	
+	
+	if((Ne >= 0x000000FF) || (Nc >= 0x000000FF)){
+		TEST_IGNORE();
+	}
+	if(READER_T1_MIN_IFSD_ACCEPTED > 10){
+		TEST_IGNORE();
+	}
+	
+	/* On forge un APDU ...  */
+	retVal = READER_APDU_Forge(&apduCmd, 0x00, 0xA4, 0x04, 0x00, Nc, buff, Ne);
+	TEST_ASSERT_TRUE(retVal == READER_OK);
+	
+	/* On initialise l'environnement ...  */
+	READER_HAL_InitWithDefaults(&settings);
+	READER_HAL_DoColdReset();
+	
+	retVal = READER_T1_APDU_Init(&context, &settings);
+	TEST_ASSERT_TRUE(retVal == READER_OK);
+	
+	
+	/* On prepare les Mocks ...   */	
+	uint8_t expectedSentFrame1[] = {0x00, 0b00000000, 11, 0x00, 0xA4, 0x04, 0x00, (uint8_t)(Nc), 0x75, 0x36, 0x41, 0x70, 0x70, (uint8_t)(Ne), 0xA9}; /* I-Block 1 */
+	uint8_t rcvdBytes1[] = {0x00, 0b11000001, 1, 16, 0xD0};  /* S-Block IFS Request ...  */  
+	
+	set_expected_CharFrame(expectedSentFrame1, 15);
+	emulate_RcvCharFrame(rcvdBytes1, 5);
+	
+	uint8_t expectedSentFrame2[] = {0x00, 0b11100001, 1, 16, 0xF0};   /* On s'attend a ce que le device envoie IFS Response ... */
+	uint8_t rcvdBytes2[] = {0x00, 0b00000000, 7, 0x75, 0x74, 0x77, 0x74, 0x75, 0x90, 0x00, 0xE0^0xFF};  /* La carte retourne  I-Blcok mais errone ...  */
+	
+	set_expected_CharFrame(expectedSentFrame2, 5);
+	emulate_RcvCharFrame(rcvdBytes2, 11);
+	
+	uint8_t expectedSentFrame3[] = {0x00, 0b10000001, 0, 0b10000001};   /* On s'attend a ce que le device envoie R(0) */
+	uint8_t rcvdBytes3[] = {0x00, 0b00000000, 7, 0x75, 0x74, 0x77, 0x74, 0x75, 0x90, 0x00, 0xE0};   /* I-Blcok Response correct de la carte ...  */  /* La carte retourne R(1) correct cette fois-ci ...  */
+	
+	set_expected_CharFrame(expectedSentFrame3, 4);
+	emulate_RcvCharFrame(rcvdBytes3, 11);
+	
+	
+	/* On execute l'APDU et on verfie le resultat ...  */
+	retVal = READER_T1_APDU_Execute(&context, &apduCmd, &apduResp);
+	TEST_ASSERT_TRUE(retVal == READER_OK);
+	
+	TEST_ASSERT_EQUAL_UINT32(Ne, apduResp.dataSize);
+	TEST_ASSERT_EQUAL_UINT8_ARRAY(rcvdBytes3+3, apduResp.dataBytes, Ne);
+	TEST_ASSERT_EQUAL_UINT8(0x90, apduResp.SW1);
+	TEST_ASSERT_EQUAL_UINT8(0x00, apduResp.SW2);
+	
+	/* On verifie que le IFS a  bien ete applique ... */
+	retVal = READER_T1_CONTEXT_GetCurrentIFSC(&context, &currentIFS);
+	TEST_ASSERT_TRUE(retVal == READER_OK);
+
+	TEST_ASSERT_EQUAL_UINT32(16, currentIFS);
+}
+
+
+void test_T1_ExampleA33_Scenario20(void){
+	READER_APDU_Command apduCmd;
+	READER_APDU_Response apduResp;
+	READER_T1_ContextHandler context;
+	READER_HAL_CommSettings settings;
+	READER_Status retVal;
+	uint8_t buff[] = {0x75, 0x36, 0x41, 0x70, 0x70, 0xFF, 0xFF, 0x00, 0x00, 0x00, 0x00, 0x00, 0xFF, 0xFF, 0x00, 0x00, 0xFF, 0x00, 0xFF, 0x00, 0xFF, 0x00};
+	uint32_t Ne = 5;
+	uint32_t Nc = 5;
+	uint32_t currentIFS;
+	
+	
+	
+	if((Ne >= 0x000000FF) || (Nc >= 0x000000FF)){
+		TEST_IGNORE();
+	}
+	if(READER_T1_MIN_IFSD_ACCEPTED > 10){
+		TEST_IGNORE();
+	}
+	
+	/* On forge un APDU ...  */
+	retVal = READER_APDU_Forge(&apduCmd, 0x00, 0xA4, 0x04, 0x00, Nc, buff, Ne);
+	TEST_ASSERT_TRUE(retVal == READER_OK);
+	
+	/* On initialise l'environnement ...  */
+	READER_HAL_InitWithDefaults(&settings);
+	READER_HAL_DoColdReset();
+	
+	retVal = READER_T1_APDU_Init(&context, &settings);
+	TEST_ASSERT_TRUE(retVal == READER_OK);
+	
+	
+	/* On prepare les Mocks ...   */	
+	uint8_t expectedSentFrame1[] = {0x00, 0b00000000, 11, 0x00, 0xA4, 0x04, 0x00, (uint8_t)(Nc), 0x75, 0x36, 0x41, 0x70, 0x70, (uint8_t)(Ne), 0xA9}; /* I-Block 1 */
+	uint8_t rcvdBytes1[] = {0x00, 0b11000001, 1, 16, 0xD0};  /* S-Block IFS Request ...  */  
+	
+	set_expected_CharFrame(expectedSentFrame1, 15);
+	emulate_RcvCharFrame(rcvdBytes1, 5);
+	
+	uint8_t expectedSentFrame2[] = {0x00, 0b11100001, 1, 16, 0xF0};   /* On s'attend a ce que le device envoie IFS Response ... */
+	uint8_t rcvdBytes2[] = {0x00, 0b00000000, 7, 0x75, 0x74, 0x77, 0x74, 0x75, 0x90, 0x00, 0xE0^0xFF};  /* La carte retourne  I-Blcok mais errone ...  */
+	
+	set_expected_CharFrame(expectedSentFrame2, 5);
+	emulate_RcvCharFrame(rcvdBytes2, 11);
+	
+	uint8_t expectedSentFrame3[] = {0x00, 0b10000001, 0, 0b10000001};   /* On s'attend a ce que le device envoie R(0) */
+	uint8_t rcvdBytes3[] = {0x00, 0b10010001, 0, 0b10010001}; /* La carte retourne R(1) correct  ...  */
+	
+	set_expected_CharFrame(expectedSentFrame3, 4);
+	emulate_RcvCharFrame(rcvdBytes3, 4);
+	
+	uint8_t expectedSentFrame4[] = {0x00, 0b10000001, 0, 0b10000001};   /* On s'attend a ce que le device envoie R(0) */
+	uint8_t rcvdBytes4[] = {0x00, 0b00000000, 7, 0x75, 0x74, 0x77, 0x74, 0x75, 0x90, 0x00, 0xE0}; /* La carte retourne I-Block Response correct  ...  */
+	
+	set_expected_CharFrame(expectedSentFrame4, 4);
+	emulate_RcvCharFrame(rcvdBytes4, 11);
+	
+	
+	/* On execute l'APDU et on verfie le resultat ...  */
+	retVal = READER_T1_APDU_Execute(&context, &apduCmd, &apduResp);
+	TEST_ASSERT_TRUE(retVal == READER_OK);
+	
+	TEST_ASSERT_EQUAL_UINT32(Ne, apduResp.dataSize);
+	TEST_ASSERT_EQUAL_UINT8_ARRAY(rcvdBytes4+3, apduResp.dataBytes, Ne);
+	TEST_ASSERT_EQUAL_UINT8(0x90, apduResp.SW1);
+	TEST_ASSERT_EQUAL_UINT8(0x00, apduResp.SW2);
+	
+	/* On verifie que le IFS a  bien ete applique ... */
+	retVal = READER_T1_CONTEXT_GetCurrentIFSC(&context, &currentIFS);
+	TEST_ASSERT_TRUE(retVal == READER_OK);
+
+	TEST_ASSERT_EQUAL_UINT32(16, currentIFS);
+}
+
+
+void test_T1_ExampleA34_Scenario21(void){
+	READER_APDU_Command apduCmd;
+	READER_APDU_Response apduResp;
+	READER_T1_ContextHandler context;
+	READER_HAL_CommSettings settings;
+	READER_Status retVal;
+	uint8_t buff[] = {0x75, 0x36, 0x41, 0x70, 0x70, 0xFF, 0xFF, 0x00, 0x00, 0x00, 0x00, 0x00, 0xFF, 0xFF, 0x00, 0x00, 0xFF, 0x00, 0xFF, 0x00, 0xFF, 0x00};
+	uint32_t Ne = 5;
+	uint32_t Nc = 5;
+	uint32_t currentIFS;
+	
+	
+	
+	if((Ne >= 0x000000FF) || (Nc >= 0x000000FF)){
+		TEST_IGNORE();
+	}
+	if(READER_T1_MIN_IFSC_ACCEPTED > 5){
+		TEST_IGNORE();
+	}
+	
+	/* On forge un APDU ...  */
+	retVal = READER_APDU_Forge(&apduCmd, 0x00, 0xA4, 0x04, 0x00, Nc, buff, Ne);
+	TEST_ASSERT_TRUE(retVal == READER_OK);
+	
+	/* On initialise l'environnement ...  */
+	READER_HAL_InitWithDefaults(&settings);
+	READER_HAL_DoColdReset();
+	
+	retVal = READER_T1_APDU_Init(&context, &settings);
+	TEST_ASSERT_TRUE(retVal == READER_OK);
+	
+	/* On force le Device a forger des I-Blocks avec 5 de data max ...  */
+	retVal = READER_T1_CONTEXT_SetCurrentIFSC(&context, 5);
+	TEST_ASSERT_TRUE(retVal == READER_OK);
+	
+	
+	/* On prepare les Mocks ...   */	
+	uint8_t expectedSentFrame1[] = {0x00, 0b00100000, 5, 0x00, 0xA4, 0x04, 0x00, (uint8_t)(Nc), 0x80}; /* I-Block 1 */
+	uint8_t rcvdBytes1[] = {0x00, 0b10010000, 0, 0b10010000^0xFF};  /* R-Block ACK chainage de la carte mais errone ...  */  
+	
+	set_expected_CharFrame(expectedSentFrame1, 9);
+	emulate_RcvCharFrame(rcvdBytes1, 4);
+	
+	uint8_t expectedSentFrame2[] = {0x00, 0b10000001, 0, 0b10000001};   /* On s'attend a ce que le device envoie R(0) */
+	uint8_t rcvdBytes2[] = {0x00, 0b10010000, 0, 0b10010000};  /* R-Block ACK chainage de la carte correct ...  */  
+	
+	set_expected_CharFrame(expectedSentFrame2, 4);
+	emulate_RcvCharFrame(rcvdBytes2, 4);
+	
+	uint8_t expectedSentFrame3[] = {0x00, 0b01100000, 5, 0x75, 0x36, 0x41, 0x70, 0x70, 0x67};  /* On s'attend a I-Block 2 */
+	uint8_t rcvdBytes3[] = {0x00, 0b10000000, 0, 0b10000000}; /* La carte retourne R(0) ACK correct  ...  */
+	
+	set_expected_CharFrame(expectedSentFrame3, 9);
+	emulate_RcvCharFrame(rcvdBytes3, 4);
+	
+	uint8_t expectedSentFrame4[] = {0x00, 0b00000000, 1, (uint8_t)(Ne), 0x04};  /* On s'attend a I-Block 3 */
+	uint8_t rcvdBytes4[] = {0x00, 0b00000000, 7, 0x75, 0x74, 0x77, 0x74, 0x75, 0x90, 0x00, 0xE0}; /* La carte retourne I-Block Response correct  ...  */
+	
+	set_expected_CharFrame(expectedSentFrame4, 5);
+	emulate_RcvCharFrame(rcvdBytes4, 11);
+	
+	
+	/* On execute l'APDU et on verfie le resultat ...  */
+	retVal = READER_T1_APDU_Execute(&context, &apduCmd, &apduResp);
+	TEST_ASSERT_TRUE(retVal == READER_OK);
+	
+	TEST_ASSERT_EQUAL_UINT32(Ne, apduResp.dataSize);
+	TEST_ASSERT_EQUAL_UINT8_ARRAY(rcvdBytes4+3, apduResp.dataBytes, Ne);
+	TEST_ASSERT_EQUAL_UINT8(0x90, apduResp.SW1);
+	TEST_ASSERT_EQUAL_UINT8(0x00, apduResp.SW2);
+}
 

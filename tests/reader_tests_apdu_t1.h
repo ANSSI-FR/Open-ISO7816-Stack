@@ -30,7 +30,13 @@ void test_T1_ExampleA31_Scenario11_CaseLRCError(void);
 void test_T1_ExampleA31_Scenario11_CaseTimeoutOn112(void);
 void test_T1_ExampleA31_Scenario12(void);
 void test_T1_ExampleA31_Scenario13(void);
-
+void test_T1_ExampleA32_Scenario14(void);
+void test_T1_ExampleA32_Scenario15(void);
+void test_T1_ExampleA33_Scenario16(void);
+void test_T1_ExampleA33_Scenario18(void);
+void test_T1_ExampleA33_Scenario19(void);
+void test_T1_ExampleA33_Scenario20(void);
+void test_T1_ExampleA34_Scenario21(void);
 
 
 
