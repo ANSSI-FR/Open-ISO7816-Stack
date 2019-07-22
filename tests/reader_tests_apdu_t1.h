@@ -37,7 +37,8 @@ void test_T1_ExampleA33_Scenario18(void);
 void test_T1_ExampleA33_Scenario19(void);
 void test_T1_ExampleA33_Scenario20(void);
 void test_T1_ExampleA34_Scenario21(void);
-
+void test_T1_ExampleA34_Scenario23(void);
+void test_T1_ExampleA34_Scenario24(void);
 
 
 
