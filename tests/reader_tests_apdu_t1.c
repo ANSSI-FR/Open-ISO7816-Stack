@@ -815,7 +815,7 @@ void test_T1_ExampleA31_Scenario9_CaseErrorOnLRC(void){
 	
 	/* On prepare les Mocks ...   */	
 	uint8_t expectedSentFrame1[] = {0x00, 0b00000000, 11, 0x00, 0xA4, 0x04, 0x00, (uint8_t)(Nc), 0x75, 0x36, 0x41, 0x70, 0x70, (uint8_t)(Ne), 0xA9}; /* I-Block 1 */
-	uint8_t rcvdBytes1[] = {0x00, 0b00000000, 7, 0x75, 0x74, 0x77, 0x74, 0x75, 0x90, 0x00, ~0xE0};  /* I-Block de reponse avec erreur volontaire de CRC/LRC ...  */  
+	uint8_t rcvdBytes1[] = {0x00, 0b00000000, 7, 0x75, 0x74, 0x77, 0x74, 0x75, 0x90, 0x00, 0xE0^0xFF};  /* I-Block de reponse avec erreur volontaire de CRC/LRC ...  */  
 	
 	set_expected_CharFrame(expectedSentFrame1, 15);
 	emulate_RcvCharFrame(rcvdBytes1, 11);
@@ -928,7 +928,7 @@ void test_T1_ExampleA31_Scenario10(void){
 	
 	/* On prepare les Mocks ...   */	
 	uint8_t expectedSentFrame1[] = {0x00, 0b00000000, 11, 0x00, 0xA4, 0x04, 0x00, (uint8_t)(Nc), 0x75, 0x36, 0x41, 0x70, 0x70, (uint8_t)(Ne), 0xA9}; /* I-Block 1 */
-	uint8_t rcvdBytes1[] = {0x00, 0b10000001, 0, ~0b10000001};  /* R-Block qui indique erreur checksum qui a lui meme une erreur CRC ...  */  
+	uint8_t rcvdBytes1[] = {0x00, 0b10000001, 0, 0b10000001^0xFF};  /* R-Block qui indique erreur checksum qui a lui meme une erreur CRC ...  */  
 	
 	set_expected_CharFrame(expectedSentFrame1, 15);
 	emulate_RcvCharFrame(rcvdBytes1, 4);
@@ -989,7 +989,7 @@ void test_T1_ExampleA31_Scenario11_CaseLRCError(void){
 	
 	/* On prepare les Mocks ...   */	
 	uint8_t expectedSentFrame1[] = {0x00, 0b00000000, 11, 0x00, 0xA4, 0x04, 0x00, (uint8_t)(Nc), 0x75, 0x36, 0x41, 0x70, 0x70, (uint8_t)(Ne), 0xA9}; /* I-Block 1 */
-	uint8_t rcvdBytes1[] = {0x00, 0b00000000, 7, 0x75, 0x74, 0x77, 0x74, 0x75, 0x90, 0x00, ~0xE0};  /* On repond un I-Block mais errone ...  */  
+	uint8_t rcvdBytes1[] = {0x00, 0b00000000, 7, 0x75, 0x74, 0x77, 0x74, 0x75, 0x90, 0x00, 0xE0^0xFF};  /* On repond un I-Block mais errone ...  */  
 	
 	set_expected_CharFrame(expectedSentFrame1, 15);
 	emulate_RcvCharFrame(rcvdBytes1, 11);
@@ -1050,7 +1050,7 @@ void test_T1_ExampleA31_Scenario11_CaseTimeoutOn112(void){
 	
 	/* On prepare les Mocks ...   */	
 	uint8_t expectedSentFrame1[] = {0x00, 0b00000000, 11, 0x00, 0xA4, 0x04, 0x00, (uint8_t)(Nc), 0x75, 0x36, 0x41, 0x70, 0x70, (uint8_t)(Ne), 0xA9}; /* I-Block 1 */
-	uint8_t rcvdBytes1[] = {0x00, 0b00000000, 7, 0x75, 0x74, 0x77, 0x74, 0x75, 0x90, 0x00, ~0xE0};  /* On repond un I-Block mais errone ...  */  
+	uint8_t rcvdBytes1[] = {0x00, 0b00000000, 7, 0x75, 0x74, 0x77, 0x74, 0x75, 0x90, 0x00, 0xE0^0xFF};  /* On repond un I-Block mais errone ...  */  
 	
 	set_expected_CharFrame(expectedSentFrame1, 15);
 	//emulate_RcvCharFrame(rcvdBytes1, 11);
@@ -1117,13 +1117,13 @@ void test_T1_ExampleA31_Scenario12(void){
 	
 	/* On prepare les Mocks ...   */	
 	uint8_t expectedSentFrame1[] = {0x00, 0b00000000, 11, 0x00, 0xA4, 0x04, 0x00, (uint8_t)(Nc), 0x75, 0x36, 0x41, 0x70, 0x70, (uint8_t)(Ne), 0xA9}; /* I-Block 1 */
-	uint8_t rcvdBytes1[] = {0x00, 0b00000000, 7, 0x75, 0x74, 0x77, 0x74, 0x75, 0x90, 0x00, ~0xE0};  /* On repond un I-Block mais errone ...  */  
+	uint8_t rcvdBytes1[] = {0x00, 0b00000000, 7, 0x75, 0x74, 0x77, 0x74, 0x75, 0x90, 0x00, 0xE0^0xFF};  /* On repond un I-Block mais errone ...  */  
 	
 	set_expected_CharFrame(expectedSentFrame1, 15);
 	emulate_RcvCharFrame(rcvdBytes1, 11);
 	
 	uint8_t expectedSentFrame2[] = {0x00, 0b10000001, 0, 0b10000001};   /* On s'attend a ce que le device envoie R(0) */
-	uint8_t rcvdBytes2[] = {0x00, 0b10010001, 0, ~0b10010001};           /* La carte retourne R(1) lui meme errone */
+	uint8_t rcvdBytes2[] = {0x00, 0b10010001, 0, 0b10010001^0xFF};           /* La carte retourne R(1) lui meme errone */
 	
 	set_expected_CharFrame(expectedSentFrame2, 4);
 	emulate_RcvCharFrame(rcvdBytes2, 4);
@@ -1179,13 +1179,13 @@ void test_T1_ExampleA31_Scenario13(void){
 	
 	/* On prepare les Mocks ...   */	
 	uint8_t expectedSentFrame1[] = {0x00, 0b00000000, 11, 0x00, 0xA4, 0x04, 0x00, (uint8_t)(Nc), 0x75, 0x36, 0x41, 0x70, 0x70, (uint8_t)(Ne), 0xA9}; /* I-Block 1 */
-	uint8_t rcvdBytes1[] = {0x00, 0b00000000, 7, 0x75, 0x74, 0x77, 0x74, 0x75, 0x90, 0x00, ~0xE0};  /* On repond un I-Block mais errone ...  */  
+	uint8_t rcvdBytes1[] = {0x00, 0b00000000, 7, 0x75, 0x74, 0x77, 0x74, 0x75, 0x90, 0x00, 0xE0^0xFF};  /* On repond un I-Block mais errone ...  */  
 	
 	set_expected_CharFrame(expectedSentFrame1, 15);
 	emulate_RcvCharFrame(rcvdBytes1, 11);
 	
 	uint8_t expectedSentFrame2[] = {0x00, 0b10000001, 0, 0b10000001};   /* On s'attend a ce que le device envoie R(0) */
-	uint8_t rcvdBytes2[] = {0x00, 0b10010001, 0, ~0b10010001};           /* La carte retourne R(1) lui meme errone */
+	uint8_t rcvdBytes2[] = {0x00, 0b10010001, 0, 0b10010001^0xFF};           /* La carte retourne R(1) lui meme errone */
 	
 	set_expected_CharFrame(expectedSentFrame2, 4);
 	emulate_RcvCharFrame(rcvdBytes2, 4);
@@ -1250,7 +1250,7 @@ void test_T1_ExampleA32_Scenario14(void){
 	
 	/* On prepare les Mocks ...   */	
 	uint8_t expectedSentFrame1[] = {0x00, 0b00000000, 11, 0x00, 0xA4, 0x04, 0x00, (uint8_t)(Nc), 0x75, 0x36, 0x41, 0x70, 0x70, (uint8_t)(Ne), 0xA9}; /* I-Block 1 */
-	uint8_t rcvdBytes1[] = {0x00, 0b11000011, 1, 2, ~0xC0};  /* S-Block WTX Request mais errone ...  */  
+	uint8_t rcvdBytes1[] = {0x00, 0b11000011, 1, 2, 0xC0^0xFF};  /* S-Block WTX Request mais errone ...  */  
 	
 	set_expected_CharFrame(expectedSentFrame1, 15);
 	emulate_RcvCharFrame(rcvdBytes1, 5);
@@ -1321,7 +1321,7 @@ void test_T1_ExampleA32_Scenario15(void){
 	
 	/* On prepare les Mocks ...   */	
 	uint8_t expectedSentFrame1[] = {0x00, 0b00000000, 11, 0x00, 0xA4, 0x04, 0x00, (uint8_t)(Nc), 0x75, 0x36, 0x41, 0x70, 0x70, (uint8_t)(Ne), 0xA9}; /* I-Block 1 */
-	uint8_t rcvdBytes1[] = {0x00, 0b11000011, 1, 2, ~0xC0};  /* S-Block WTX Request mais errone ...  */  
+	uint8_t rcvdBytes1[] = {0x00, 0b11000011, 1, 2, 0xC0^0xFF};  /* S-Block WTX Request mais errone ...  */  
 	
 	set_expected_CharFrame(expectedSentFrame1, 15);
 	emulate_RcvCharFrame(rcvdBytes1, 5);
