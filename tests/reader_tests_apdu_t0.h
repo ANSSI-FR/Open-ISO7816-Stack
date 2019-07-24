@@ -11,6 +11,11 @@
 void test_READER_T0_APDU_all(void);
 
 
+void test_T0_Case1_shouldWork(void);
+void test_T0_Case1_shouldWaitOnNullByte(void);
+void test_T0_Case1_shouldTimeout(void);
+void test_T0_Case1_shouldDetectIncorrectSW1(void);
+
 
 
 
