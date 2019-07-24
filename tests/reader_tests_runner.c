@@ -4,6 +4,7 @@
 #include "reader_tests_block.h"
 #include "reader_tests_buffer_handler.h"
 #include "reader_tests_apdu_t1.h"
+#include "reader_tests_apdu_t0.h"
 
 #include "mock_reader_hal_basis.h"
 #include "mock_reader_hal_comm_settings.h"
