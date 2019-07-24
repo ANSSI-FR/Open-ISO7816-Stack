@@ -15,6 +15,17 @@ void test_T0_Case1_shouldWork(void);
 void test_T0_Case1_shouldWaitOnNullByte(void);
 void test_T0_Case1_shouldTimeout(void);
 void test_T0_Case1_shouldDetectIncorrectSW1(void);
+void test_T0_Case2S1_shouldWork(void);
+void test_T0_Case2S2_shouldWork(void);
+void test_T0_Case2S3_shouldWork_Case1(void);
+void test_T0_Case2S3_shouldWork_Case2(void);
+void test_T0_Case3S_shouldWork(void);
+void test_T0_Case4S1_shouldWork(void);
+void test_T0_Case4S2_Case2S1_shouldWork(void);
+void test_T0_Case4S2_Case2S2_shouldWork(void);
+void test_T0_Case4S2_Case2S3_Case1_shouldWork(void);
+void test_T0_Case4S2_Case2S3_Case2_shouldWork(void);
+
 
 
 
