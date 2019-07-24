@@ -63,6 +63,7 @@ int main(int argc, char *argv[]){
 	test_READER_BLOCK_all();
 	test_READER_BUFFER_all();
 	test_READER_T1_APDU_all();
+	test_READER_T0_APDU_all();
 	
 	return UNITY_END();
 }
