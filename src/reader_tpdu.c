@@ -332,7 +332,7 @@ READER_Status READER_TPDU_RcvResponse(READER_TPDU_Response *pResp, uint32_t expe
 	
 	/* Si le caractere cense etre un SW1 n'en est pas un ... */
 	if(READER_TPDU_IsSW1(pResp->SW1) != READER_OK){
-		return READER_ERR;
+		return READER_INCORRECT_SW1;
 	}
 	
 	
