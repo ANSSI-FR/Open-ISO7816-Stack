@@ -468,11 +468,11 @@ READER_Status READER_TPDU_WaitACK(uint8_t INS, uint8_t *ACKType, uint32_t timeou
 	
 	if(retVal != READER_OK) return retVal;
 	
-	if(READER_TPDU_IsXoredACK(byte, INS)){
+	if(READER_TPDU_IsXoredACK(byte, INS) == READER_OK){
 		*ACKType = READER_TPDU_ACK_XORED;
 		return READER_OK;
 	}
-	else if(READER_TPDU_IsACK(byte, INS)){
+	else if(READER_TPDU_IsACK(byte, INS) == READER_OK){
 		*ACKType = READER_TPDU_ACK_NORMAL;
 		return READER_OK;
 	}
