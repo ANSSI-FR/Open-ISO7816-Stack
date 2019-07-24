@@ -151,6 +151,13 @@ READER_Status READER_APDU_Forge(READER_APDU_Command *pApduCmd, uint8_t CLA, uint
 	pApduCmd->body.Nc     =  Nc;
 	pApduCmd->body.Ne     =  Ne;
 	
+	if((pData == NULL) && (Nc != 0)){
+		return READER_ERR;
+	}
+	else if(pData == NULL){
+		return READER_OK;
+	}
+	
 	for(i=0; i<Nc; i++){
 		pApduCmd->body.dataBytes[i] = pData[i];
 	}
