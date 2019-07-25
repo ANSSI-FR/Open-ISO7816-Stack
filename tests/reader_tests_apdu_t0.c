@@ -177,9 +177,10 @@ void test_T0_Case1_shouldDetectIncorrectSW1(void){
 	uint8_t rcvdBytes[] = {0x10, 0x00};                        /* ACK et SW1SW2 */
 	
 	set_expected_CharFrame(expectedSentFrame, 5);
-	emulate_RcvCharFrame(rcvdBytes, 2);
+	READER_HAL_RcvChar_ExpectAnyArgsAndReturn(READER_OK);
+	READER_HAL_RcvChar_ReturnThruPtr_character(rcvdBytes);
 	
-	/* On execute l'APDU et on verifie e bon fonctionnement ...  */
+	/* On execute l'APDU et on verifie le bon fonctionnement ...  */
 	retVal = READER_T0_APDU_Execute(&context, &apduCmd, &apduResp);
 	TEST_ASSERT_TRUE(retVal != READER_OK);
 }

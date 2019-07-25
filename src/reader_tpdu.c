@@ -475,7 +475,8 @@ READER_Status READER_TPDU_WaitACK(uint8_t INS, uint32_t *pACKType, uint8_t *pSW1
 	do{
 		retVal = READER_HAL_RcvChar(pSettings, READER_HAL_PROTOCOL_T0, &byte, timeout);
 		
-	} while( (retVal==READER_OK) && !(READER_TPDU_IsSW1(byte)) && !(READER_TPDU_IsACK(byte, INS)) && !(READER_TPDU_IsXoredACK(byte, INS)));
+	} while( (retVal==READER_OK) && (READER_TPDU_IsNullByte(byte) == READER_OK));
+	//} while( (retVal==READER_OK) && !(READER_TPDU_IsSW1(byte)) && !(READER_TPDU_IsACK(byte, INS)) && !(READER_TPDU_IsXoredACK(byte, INS)));
 	
 	if(retVal != READER_OK){
 		return retVal;
@@ -507,7 +508,7 @@ READER_Status READER_TPDU_WaitACK(uint8_t INS, uint32_t *pACKType, uint8_t *pSW1
 		return READER_OK;
 	}
 	else{
-		return READER_ERR;
+		return READER_INVALID_PROCEDURE_BYTE;
 	}
 }
 
