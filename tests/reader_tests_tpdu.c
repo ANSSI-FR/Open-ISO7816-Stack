@@ -358,7 +358,7 @@ void test_READER_TPDU_WaitACK_shouldDetectINS(void){
 		retVal = READER_TPDU_WaitACK(ins, &ACKType, &SW1, &SW2, timeout, &dummySettings); 
 		
 		TEST_ASSERT_TRUE(retVal == READER_OK);
-		TEST_ASSERT_EQUAL_UINT8(READER_TPDU_ACK_NORMAL, ACKType);
+		TEST_ASSERT_EQUAL_UINT32(READER_TPDU_ACK_NORMAL, ACKType);
 	}
 }
 
@@ -411,7 +411,7 @@ void test_READER_TPDU_WaitACK_shouldDetectXoredINS(void){
 		retVal = READER_TPDU_WaitACK(ins, &ACKType, &SW1, &SW2, timeout, &dummySettings); 
 		
 		TEST_ASSERT_TRUE(retVal == READER_OK);
-		TEST_ASSERT_EQUAL_UINT8(READER_TPDU_ACK_XORED, ACKType);
+		TEST_ASSERT_EQUAL_UINT32(READER_TPDU_ACK_XORED, ACKType);
 	}
 }
 
@@ -452,7 +452,7 @@ void test_READER_TPDU_WaitACK_shouldWaitOnNullByte(void){
 	retVal = READER_TPDU_WaitACK(ins, &ACKType, &SW1, &SW2, timeout, &dummySettings);
 	
 	TEST_ASSERT_TRUE(retVal == READER_OK);
-	TEST_ASSERT_EQUAL_UINT8(READER_TPDU_ACK_NORMAL, ACKType);
+	TEST_ASSERT_EQUAL_UINT32(READER_TPDU_ACK_NORMAL, ACKType);
 }
 
 
