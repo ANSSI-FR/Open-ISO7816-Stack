@@ -35,6 +35,7 @@ void test_READER_TPDU_all(void){
 	RUN_TEST(test_READER_TPDU_IsSW1_shouldWork);
 	RUN_TEST(test_READER_TPDU_IsProcedureByte_shouldWork);
 	RUN_TEST(test_READER_TPDU_WaitACK_shouldDetectINS);
+	RUN_TEST(test_READER_TPDU_WaitACK_shouldDetectIfSWInsteadOfACK);
 	RUN_TEST(test_READER_TPDU_WaitACK_shouldDetectXoredINS);
 	RUN_TEST(test_READER_TPDU_WaitACK_shouldTimeout);
 	RUN_TEST(test_READER_TPDU_WaitACK_shouldWaitOnNullByte);
@@ -359,6 +360,36 @@ void test_READER_TPDU_WaitACK_shouldDetectINS(void){
 		TEST_ASSERT_TRUE(retVal == READER_OK);
 		TEST_ASSERT_EQUAL_UINT8(READER_TPDU_ACK_NORMAL, ACKType);
 	}
+}
+
+
+void test_READER_TPDU_WaitACK_shouldDetectIfSWInsteadOfACK(void){
+	READER_HAL_CommSettings dummySettings;
+	READER_Status retVal;
+	uint8_t byte1 = 0x6A;
+	uint8_t byte2 = 0x82;
+	uint8_t nullByte = 0x60;
+	uint8_t ins = 0xA4;
+	uint8_t SW1, SW2;
+	uint32_t ACKType;
+	uint32_t timeout = 1000;
+	
+	
+	READER_HAL_RcvChar_ExpectAnyArgsAndReturn(READER_OK);
+	READER_HAL_RcvChar_ReturnThruPtr_character(&nullByte);
+	
+	READER_HAL_RcvChar_ExpectAnyArgsAndReturn(READER_OK);
+	READER_HAL_RcvChar_ReturnThruPtr_character(&byte1);
+	
+	READER_HAL_RcvChar_ExpectAnyArgsAndReturn(READER_OK);
+	READER_HAL_RcvChar_ReturnThruPtr_character(&byte2);
+	
+	retVal = READER_TPDU_WaitACK(ins, &ACKType, &SW1, &SW2, timeout, &dummySettings); 
+	
+	TEST_ASSERT_TRUE(retVal == READER_OK);
+	TEST_ASSERT_EQUAL_UINT32(READER_TPDU_ACK_SW1, ACKType);
+	TEST_ASSERT_EQUAL_UINT8(byte1, SW1);
+	TEST_ASSERT_EQUAL_UINT8(byte2, SW2);
 }
 
 
