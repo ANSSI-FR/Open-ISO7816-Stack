@@ -296,10 +296,10 @@ void test_T0_Case2S3_shouldWork_Case1(void){
 	emulate_RcvCharFrame(rcvdBytes, 2);
 	
 	uint8_t expectedSentFrame2[] = {0x00, 0xA4, 0x04, 0x00, 3};     /* TPDU : CLA INS P1 P2 P3=SW2 */
-	uint8_t rcvdBytes2[] = {0x45, 0x75, 0x74, 0x90, 0x00};          /* 3o Data et SW1SW2 */
+	uint8_t rcvdBytes2[] = {0xA4, 0x45, 0x75, 0x74, 0x90, 0x00};          /* 3o Data et SW1SW2 */
 	
 	set_expected_CharFrame(expectedSentFrame2, 5);
-	emulate_RcvCharFrame(rcvdBytes2, 5);
+	emulate_RcvCharFrame(rcvdBytes2, 6);
 	
 	/* On execute l'APDU et on verifie le bon fonctionnement ...  */
 	retVal = READER_T0_APDU_Execute(&context, &apduCmd, &apduResp);
@@ -343,10 +343,10 @@ void test_T0_Case2S3_shouldWork_Case2(void){
 	emulate_RcvCharFrame(rcvdBytes, 2);
 	
 	uint8_t expectedSentFrame2[] = {0x00, 0xA4, 0x04, 0x00, 6};     /* TPDU : CLA INS P1 P2 P3=SW2 */
-	uint8_t rcvdBytes2[] = {0x45, 0x75, 0x74, 0x77, 0x74, 0x75, 0x90, 0x00};          /* 6o Data et SW1SW2 */
+	uint8_t rcvdBytes2[] = {0xA4, 0x45, 0x75, 0x74, 0x77, 0x74, 0x75, 0x90, 0x00};          /* 6o Data et SW1SW2 */
 	
 	set_expected_CharFrame(expectedSentFrame2, 5);
-	emulate_RcvCharFrame(rcvdBytes2, 8);
+	emulate_RcvCharFrame(rcvdBytes2, 9);
 	
 	/* On execute l'APDU et on verifie le bon fonctionnement ...  */
 	retVal = READER_T0_APDU_Execute(&context, &apduCmd, &apduResp);
