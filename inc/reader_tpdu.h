@@ -20,8 +20,10 @@
 
 #define READER_TPDU_HEADER_SIZE         (uint32_t)(0x00000005)
 #define READER_TPDU_DUMMY_FALSE_INS     (uint32_t)(0x00000061)
+
 #define READER_TPDU_ACK_NORMAL          (uint32_t)(0x00000001)
 #define READER_TPDU_ACK_XORED           (uint32_t)(0x00000002)
+#define READER_TPDU_ACK_SW1             (uint32_t)(0x00000003)
 
 
 
@@ -66,7 +68,7 @@ struct READER_TPDU_Response{
 
 //READER_Status READER_TPDU_Execute(READER_TPDU_Command *pTpdu, READER_TPDU_Response *pResp, uint32_t timeout, READER_HAL_CommSettings *pSettings);
 
-READER_Status READER_TPDU_Send(READER_TPDU_Command *tpdu, uint32_t timeout, READER_HAL_CommSettings *pSettings);
+READER_Status READER_TPDU_Send(READER_TPDU_Command *tpdu, READER_TPDU_Response *pTpduResp, uint32_t timeout, READER_HAL_CommSettings *pSettings);
 READER_Status READER_TPDU_SendHeader(READER_TPDU_Command *tpdu, uint32_t timeout, READER_HAL_CommSettings *pSettings);
 READER_Status READER_TPDU_SendDataOneshot(READER_TPDU_Command *tpdu, uint32_t timeout, READER_HAL_CommSettings *pSettings);
 READER_Status READER_TPDU_SendDataSliced(READER_TPDU_Command *tpdu, uint32_t timeout, READER_HAL_CommSettings *pSettings);
@@ -76,7 +78,7 @@ READER_Status READER_TPDU_RcvSW(uint8_t *SW1, uint8_t *SW2, uint32_t timeout, RE
 READER_Status READER_TPDU_RcvResponse(READER_TPDU_Response *pResp, uint32_t expectedDataSize, uint32_t timeout, READER_HAL_CommSettings *pSettings);
 
 //READER_Status READER_TPDU_WaitProcedureByte(uint8_t *procedureByte, uint8_t INS, uint32_t timeout, READER_HAL_CommSettings *pSettings);
-READER_Status READER_TPDU_WaitACK(uint8_t INS, uint8_t *ACKType, uint32_t timeout, READER_HAL_CommSettings *pSettings);
+READER_Status READER_TPDU_WaitACK(uint8_t INS, uint32_t *ACKType, uint8_t *pSW1, uint8_t *pSW2, uint32_t timeout, READER_HAL_CommSettings *pSettings);
 
 READER_Status READER_TPDU_IsACK(uint8_t byte, uint8_t INS);
 READER_Status READER_TPDU_IsXoredACK(uint8_t byte, uint8_t INS);

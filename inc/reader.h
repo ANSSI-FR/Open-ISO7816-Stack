@@ -31,7 +31,8 @@ enum READER_Status{
 	READER_LESS_DATA_THAN_EXPECTED  = (uint32_t)(0x00000011),
 	READER_TIMEOUT_ON_SW1           = (uint32_t)(0x00000012),
 	READER_TIMEOUT_ON_SW2           = (uint32_t)(0x00000013),
-	READER_INCORRECT_SW1            = (uint32_t)(0x00000014)
+	READER_INCORRECT_SW1            = (uint32_t)(0x00000014),
+	READER_GOT_SW1                  = (uint32_t)(0x00000015)
 };
 
 

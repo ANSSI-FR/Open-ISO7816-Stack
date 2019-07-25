@@ -104,12 +104,14 @@ READER_Status READER_T0_APDU_ExecuteCase1(READER_T0_ContextHandler *pContext, RE
 	if(retVal != READER_OK) return retVal;
 	
 	/* On envoie cet TPDU */
-	retVal = READER_TPDU_Send(&tpduCmd, timeout, pSettings);
-	if(retVal != READER_OK) return retVal;
+	retVal = READER_TPDU_Send(&tpduCmd, &tpduResp, timeout, pSettings);
+	if((retVal != READER_OK) && (retVal != READER_GOT_SW1)) return retVal;
 	
 	/* On recupere le reponse */
-	retVal = READER_TPDU_RcvResponse(&tpduResp, 0, timeout, pSettings);
-	if(retVal != READER_OK) return retVal;	
+	if(retVal != READER_GOT_SW1){
+		retVal = READER_TPDU_RcvResponse(&tpduResp, 0, timeout, pSettings);
+		if(retVal != READER_OK) return retVal;
+	}
 	
 	/* On map la reponse TPDU sur la reponse APDU */
 	retVal = READER_T0_APDU_MapTpduRespToApdu(pContext, &tpduResp, pApduResp);
@@ -153,12 +155,14 @@ READER_Status READER_T0_APDU_ExecuteCase2S(READER_T0_ContextHandler *pContext, R
 	if(retVal != READER_OK) return retVal;
 	
 	/* On envoie la requette TPDU */
-	retVal = READER_TPDU_Send(&tpduCmd, timeout, pSettings);
-	if(retVal != READER_OK) return retVal;
+	retVal = READER_TPDU_Send(&tpduCmd, &tpduResp, timeout, pSettings);
+	if((retVal != READER_OK) && (retVal != READER_GOT_SW1)) return retVal;
 	
 	/* On recupere le TPDU response */
-	retVal = READER_TPDU_RcvResponse(&tpduResp, Ne, timeout, pSettings);
-	if((retVal != READER_OK) && (retVal != READER_TIMEOUT_GOT_ONLY_SW)) return retVal;
+	if(retVal != READER_GOT_SW1){
+		retVal = READER_TPDU_RcvResponse(&tpduResp, Ne, timeout, pSettings);
+		if((retVal != READER_OK) && (retVal != READER_TIMEOUT_GOT_ONLY_SW)) return retVal;
+	}
 	
 	/* Case 2S.2 Process Aborted, Ne definitely not accepted        */
 	if((tpduResp.SW1 == 0x67) && (tpduResp.SW2 == 0x00)){
@@ -181,11 +185,13 @@ READER_Status READER_T0_APDU_ExecuteCase2S(READER_T0_ContextHandler *pContext, R
 		);
 		if(retVal != READER_OK) return retVal;
 	
-		retVal = READER_TPDU_Send(&tpduCmd, timeout, pSettings);
-		if(retVal != READER_OK) return retVal;
+		retVal = READER_TPDU_Send(&tpduCmd, &tpduResp, timeout, pSettings);
+		if((retVal != READER_OK) && (retVal != READER_GOT_SW1)) return retVal;
 		
-		retVal = READER_TPDU_RcvResponse(&tpduResp, (Ne<Na)?Ne:Na, timeout, pSettings);    /* Voir ISO7816-3 section 12.2.3 case 2S.3 */
-		if(retVal != READER_OK) return retVal;
+		if(retVal != READER_GOT_SW1){
+			retVal = READER_TPDU_RcvResponse(&tpduResp, (Ne<Na)?Ne:Na, timeout, pSettings);    /* Voir ISO7816-3 section 12.2.3 case 2S.3 */
+			if(retVal != READER_OK) return retVal;
+		}
 		
 		retVal = READER_T0_APDU_MapTpduRespToApdu(pContext, &tpduResp, pApduResp);
 		if(retVal != READER_OK) return READER_ERR;
@@ -237,12 +243,14 @@ READER_Status READER_T0_APDU_ExecuteCase3S(READER_T0_ContextHandler *pContext, R
 	if(retVal != READER_OK) return retVal;
 	
 	/* On envoie la requette TPDU */
-	retVal = READER_TPDU_Send(&tpduCmd, timeout, pSettings);
-	if(retVal != READER_OK) return retVal;
+	retVal = READER_TPDU_Send(&tpduCmd, &tpduResp, timeout, pSettings);
+	if((retVal != READER_OK) && (retVal != READER_GOT_SW1)) return retVal;
 	
 	/* On recupere la reponse. On attend pas de donnees en retour, juste SW */
-	retVal = READER_TPDU_RcvResponse(&tpduResp, 0, timeout, pSettings);
-	if(retVal != READER_OK) return retVal;
+	if(retVal != READER_GOT_SW1){
+		retVal = READER_TPDU_RcvResponse(&tpduResp, 0, timeout, pSettings);
+		if(retVal != READER_OK) return retVal;
+	}
 	
 	/* On mape la reponse APDU sur la reponse TPDU */
 	retVal = READER_T0_APDU_MapTpduRespToApdu(pContext, &tpduResp, pApduResp);
@@ -300,12 +308,14 @@ READER_Status READER_T0_APDU_ExecuteCase3E(READER_T0_ContextHandler *pContext, R
 	
 	
 	/* On envoie la requette TPDU */
-	retVal = READER_TPDU_Send(&tpduCmd, timeout, pSettings);
-	if(retVal != READER_OK) return retVal;
+	retVal = READER_TPDU_Send(&tpduCmd, &tpduResp, timeout, pSettings);
+	if((retVal != READER_OK) && (retVal != READER_GOT_SW1)) return retVal;
 	
 	/* On recupere la reponse. On attend pas de donnees en retour, juste SW */
-	retVal = READER_TPDU_RcvResponse(&tpduResp, 0, timeout, pSettings);
-	if(retVal != READER_OK) return retVal;
+	if(retVal != READER_GOT_SW1){
+		retVal = READER_TPDU_RcvResponse(&tpduResp, 0, timeout, pSettings);
+		if(retVal != READER_OK) return retVal;
+	}
 	
 	/* On regarde le SW de la reponse et on en déduit si la carte supporte ou non l'instruction ENVELOPE                 */
 	/* Si la carte ne supporte pas ENVELOPE                                                                              */
@@ -329,12 +339,14 @@ READER_Status READER_T0_APDU_ExecuteCase3E(READER_T0_ContextHandler *pContext, R
 			if(retVal != READER_OK) return retVal;
 			
 			/* On envoie la requette TPDU */
-			retVal = READER_TPDU_Send(&tpduCmd, timeout, pSettings);
-			if(retVal != READER_OK) return retVal;
+			retVal = READER_TPDU_Send(&tpduCmd, &tpduResp, timeout, pSettings);
+			if((retVal != READER_OK) && (retVal != READER_GOT_SW1)) return retVal;
 			
 			/* On recupere la reponse. On attend pas de donnees en retour, juste SW */
-			retVal = READER_TPDU_RcvResponse(&tpduResp, 0, timeout, pSettings);
-			if(retVal != READER_OK) return retVal;
+			if(retVal != READER_GOT_SW1){
+				retVal = READER_TPDU_RcvResponse(&tpduResp, 0, timeout, pSettings);
+				if(retVal != READER_OK) return retVal;
+			}
 			
 			if((tpduResp.SW1 != 0x90) || (tpduResp.SW2 != 0x00)){  /* A propri la commande ENVELOPE est mal passée */
 				return READER_ERR;  /* A determiner si vraiment on renvoi un erreur a cet endroit */
@@ -349,12 +361,14 @@ READER_Status READER_T0_APDU_ExecuteCase3E(READER_T0_ContextHandler *pContext, R
 		if(retVal != READER_OK) return retVal;
 		
 		/* On envoie la requette TPDU */
-		retVal = READER_TPDU_Send(&tpduCmd, timeout, pSettings);
-		if(retVal != READER_OK) return retVal;
+		retVal = READER_TPDU_Send(&tpduCmd, &tpduResp, timeout, pSettings);
+		if((retVal != READER_OK) && (retVal != READER_GOT_SW1)) return retVal;
 		
 		/* On recupere la reponse. On attend pas de donnees en retour, juste SW */
-		retVal = READER_TPDU_RcvResponse(&tpduResp, 0, timeout, pSettings);
-		if(retVal != READER_OK) return retVal;
+		if(retVal != READER_GOT_SW1){
+			retVal = READER_TPDU_RcvResponse(&tpduResp, 0, timeout, pSettings);
+			if(retVal != READER_OK) return retVal;
+		}
 		
 		if((tpduResp.SW1 != 0x90) || (tpduResp.SW2 != 0x00)){  /* A propri la commande ENVELOPE est mal passée */
 			return READER_ERR;  /* A determiner si vraiment on renvoi un erreur a cet endroit */
@@ -365,18 +379,20 @@ READER_Status READER_T0_APDU_ExecuteCase3E(READER_T0_ContextHandler *pContext, R
 		if(retVal != READER_OK) return retVal;
 		
 		/* On envoie la requette TPDU */
-		retVal = READER_TPDU_Send(&tpduCmd, timeout, pSettings);
-		if(retVal != READER_OK) return retVal;
+		retVal = READER_TPDU_Send(&tpduCmd, &tpduResp, timeout, pSettings);
+		if((retVal != READER_OK) && (retVal != READER_GOT_SW1)) return retVal;
 		
 		/* On recupere la reponse. On attend pas de donnees en retour, juste SW */
-		retVal = READER_TPDU_RcvResponse(&tpduResp, 0, timeout, pSettings);
-		if(retVal != READER_OK) return retVal;
+		if(retVal != READER_GOT_SW1){
+			retVal = READER_TPDU_RcvResponse(&tpduResp, 0, timeout, pSettings);
+			if(retVal != READER_OK) return retVal;
+		}
 		
 		/* Le SW de la derniere commande ENVELOPE vide est la SW de la commande globale */
 		/* Donc on mape le dernier TPDU response sur le APDU response          */
 		retVal = READER_T0_APDU_MapTpduRespToApdu(pContext, &tpduResp, pApduResp);
 		if(retVal != READER_OK) return READER_ERR;
-	}                                                                                                                   
+	}                                                                                                                
 	/* Si on a recu un SW qui correspond pas a la sequence prevue par le protocole                                       */
 	else{
 		return READER_ERR;
@@ -416,13 +432,14 @@ READER_Status READER_T0_APDU_ExecuteCase2E(READER_T0_ContextHandler *pContext, R
 	if(retVal != READER_OK) return retVal;
 	
 	/* On envoie la requette TPDU */
-	retVal = READER_TPDU_Send(&tpduCmd, timeout, pSettings);
-	if(retVal != READER_OK) return retVal;
+	retVal = READER_TPDU_Send(&tpduCmd, &tpduResp, timeout, pSettings);
+	if((retVal != READER_OK) && (retVal != READER_GOT_SW1)) return retVal;
 	
 	/* On recupere la reponse */
-	retVal = READER_TPDU_RcvResponse(&tpduResp, 256, timeout, pSettings);
-	if((retVal != READER_OK) && (retVal != READER_TIMEOUT_GOT_ONLY_SW)) return retVal;
-	
+	if(retVal != READER_GOT_SW1){
+		retVal = READER_TPDU_RcvResponse(&tpduResp, 256, timeout, pSettings);
+		if((retVal != READER_OK) && (retVal != READER_TIMEOUT_GOT_ONLY_SW)) return retVal;
+	}
 	
 	
 	/* On verifie la reponse de la carte */
@@ -437,11 +454,13 @@ READER_Status READER_T0_APDU_ExecuteCase2E(READER_T0_ContextHandler *pContext, R
 		retVal = READER_TPDU_Forge(&tpduCmd, pApduCmd->header.CLA, pApduCmd->header.INS, pApduCmd->header.P1, pApduCmd->header.P2, READER_APDU_NeToLe(Na), NULL, 0);
 		if(retVal != READER_OK) return retVal;
 	
-		retVal = READER_TPDU_Send(&tpduCmd, timeout, pSettings);
-		if(retVal != READER_OK) return retVal;
+		retVal = READER_TPDU_Send(&tpduCmd, &tpduResp, timeout, pSettings);
+		if((retVal != READER_OK) && (retVal != READER_GOT_SW1)) return retVal;
 		
-		retVal = READER_TPDU_RcvResponse(&tpduResp, (Ne<Na)?Ne:Na, timeout, pSettings);    /* Voir ISO7816-3 section 12.2.3 case 2S.3 */
-		if(retVal != READER_OK) return retVal;
+		if(retVal != READER_GOT_SW1){
+			retVal = READER_TPDU_RcvResponse(&tpduResp, (Ne<Na)?Ne:Na, timeout, pSettings);    /* Voir ISO7816-3 section 12.2.3 case 2S.3 */
+			if(retVal != READER_OK) return retVal;
+		}
 		
 		retVal = READER_T0_APDU_MapTpduRespToApdu(pContext, &tpduResp, pApduResp);
 		if(retVal != READER_OK) return READER_ERR;
@@ -466,12 +485,13 @@ READER_Status READER_T0_APDU_ExecuteCase2E(READER_T0_ContextHandler *pContext, R
 			
 			
 			/* Execution de la commande  */
-			retVal = READER_TPDU_Send(&tpduCmd, timeout, pSettings);
-			if(retVal != READER_OK) return retVal;
+			retVal = READER_TPDU_Send(&tpduCmd, &tpduResp, timeout, pSettings);
+			if((retVal != READER_OK) && (retVal != READER_GOT_SW1)) return retVal;
 		
-			retVal = READER_TPDU_RcvResponse(&tpduResp, Nx, timeout, pSettings);    /* Voir ISO7816-3 section 12.2.3 case 2S.3 */
-			if(retVal != READER_OK) return retVal;
-			
+			if(retVal != READER_GOT_SW1){
+				retVal = READER_TPDU_RcvResponse(&tpduResp, Nx, timeout, pSettings);    /* Voir ISO7816-3 section 12.2.3 case 2S.3 */
+				if(retVal != READER_OK) return retVal;
+			}
 			
 			
 			/* Selon le status word du GET RESPONSE ... */
@@ -534,14 +554,15 @@ READER_Status READER_T0_APDU_ExecuteCase4S(READER_T0_ContextHandler *pContext, R
 	if(retVal != READER_OK) return retVal;
 	
 	/* On envoie le TPDU */
-	retVal = READER_TPDU_Send(&tpduCmd, timeout, pSettings);
-	if(retVal != READER_OK) return retVal;
+	retVal = READER_TPDU_Send(&tpduCmd, &tpduResp, timeout, pSettings);
+	if((retVal != READER_OK) && (retVal != READER_GOT_SW1)) return retVal;
 	
 	
 	/* On attend en reponse juste un SW (avant d'envoyer le GET RESPONSE) */
-	retVal = READER_TPDU_RcvResponse(&tpduResp, 0, timeout, pSettings);
-	if(retVal != READER_OK) return retVal;
-	
+	if(retVal != READER_GOT_SW1){
+		retVal = READER_TPDU_RcvResponse(&tpduResp, 0, timeout, pSettings);
+		if(retVal != READER_OK) return retVal;
+	}
 	
 	/* Selon le SW du premier TPDU response */
 	/* Cas 4S.1 */

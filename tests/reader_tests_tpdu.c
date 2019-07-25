@@ -344,7 +344,9 @@ void test_READER_TPDU_IsProcedureByte_shouldWork(void){
 void test_READER_TPDU_WaitACK_shouldDetectINS(void){
 	READER_HAL_CommSettings dummySettings;
 	READER_Status retVal;
-	uint8_t ACKType, ins;
+	uint8_t ins;
+	uint8_t SW1, SW2;
+	uint32_t ACKType;
 	uint32_t timeout = 1000;
 	
 	
@@ -352,7 +354,7 @@ void test_READER_TPDU_WaitACK_shouldDetectINS(void){
 		READER_HAL_RcvChar_ExpectAnyArgsAndReturn(READER_OK);
 		READER_HAL_RcvChar_ReturnThruPtr_character(&ins);
 		
-		retVal = READER_TPDU_WaitACK(ins, &ACKType, timeout, &dummySettings); 
+		retVal = READER_TPDU_WaitACK(ins, &ACKType, &SW1, &SW2, timeout, &dummySettings); 
 		
 		TEST_ASSERT_TRUE(retVal == READER_OK);
 		TEST_ASSERT_EQUAL_UINT8(READER_TPDU_ACK_NORMAL, ACKType);
@@ -363,7 +365,9 @@ void test_READER_TPDU_WaitACK_shouldDetectINS(void){
 void test_READER_TPDU_WaitACK_shouldDetectXoredINS(void){
 	READER_HAL_CommSettings dummySettings;
 	READER_Status retVal;
-	uint8_t ACKType, ins, xIns;
+	uint8_t ins, xIns;
+	uint8_t SW1, SW2;
+	uint32_t ACKType;
 	uint32_t timeout = 1000;
 	
 	
@@ -373,7 +377,7 @@ void test_READER_TPDU_WaitACK_shouldDetectXoredINS(void){
 		READER_HAL_RcvChar_ExpectAnyArgsAndReturn(READER_OK);
 		READER_HAL_RcvChar_ReturnThruPtr_character(&xIns);
 		
-		retVal = READER_TPDU_WaitACK(ins, &ACKType, timeout, &dummySettings); 
+		retVal = READER_TPDU_WaitACK(ins, &ACKType, &SW1, &SW2, timeout, &dummySettings); 
 		
 		TEST_ASSERT_TRUE(retVal == READER_OK);
 		TEST_ASSERT_EQUAL_UINT8(READER_TPDU_ACK_XORED, ACKType);
@@ -384,14 +388,15 @@ void test_READER_TPDU_WaitACK_shouldDetectXoredINS(void){
 void test_READER_TPDU_WaitACK_shouldTimeout(void){
 	READER_HAL_CommSettings dummySettings;
 	READER_Status retVal;
-	uint8_t ACKType;
+	uint32_t ACKType;
 	uint8_t ins = 0x04;
+	uint8_t SW1, SW2;
 	uint32_t timeout = 1000;
 	
 	
 	READER_HAL_RcvChar_ExpectAnyArgsAndReturn(READER_TIMEOUT);
 	
-	retVal = READER_TPDU_WaitACK(ins, &ACKType, timeout, &dummySettings);
+	retVal = READER_TPDU_WaitACK(ins, &ACKType, &SW1, &SW2, timeout, &dummySettings);
 	TEST_ASSERT_TRUE(retVal == READER_TIMEOUT);
 }
 
@@ -399,9 +404,10 @@ void test_READER_TPDU_WaitACK_shouldTimeout(void){
 void test_READER_TPDU_WaitACK_shouldWaitOnNullByte(void){
 	READER_HAL_CommSettings dummySettings;
 	READER_Status retVal;
-	uint8_t ACKType;
+	uint32_t ACKType;
 	uint8_t ins = 0x04;
 	uint8_t nullByte = 0x60;
+	uint8_t SW1, SW2;
 	uint32_t timeout = 1000;
 	
 	
@@ -412,7 +418,7 @@ void test_READER_TPDU_WaitACK_shouldWaitOnNullByte(void){
 	READER_HAL_RcvChar_ExpectAnyArgsAndReturn(READER_OK);
 	READER_HAL_RcvChar_ReturnThruPtr_character(&ins);
 	
-	retVal = READER_TPDU_WaitACK(ins, &ACKType, timeout, &dummySettings);
+	retVal = READER_TPDU_WaitACK(ins, &ACKType, &SW1, &SW2, timeout, &dummySettings);
 	
 	TEST_ASSERT_TRUE(retVal == READER_OK);
 	TEST_ASSERT_EQUAL_UINT8(READER_TPDU_ACK_NORMAL, ACKType);
@@ -421,6 +427,7 @@ void test_READER_TPDU_WaitACK_shouldWaitOnNullByte(void){
 
 void test_READER_TPDU_Send_shouldVerifyDataSize(void){
 	READER_TPDU_Command tpduCmd;
+	READER_TPDU_Response tpduResp;
 	READER_HAL_CommSettings dummySettings;
 	READER_Status retVal;
 	uint32_t timeout = 1000;
@@ -435,8 +442,9 @@ void test_READER_TPDU_Send_shouldVerifyDataSize(void){
 	READER_HAL_RcvChar_ExpectAnyArgsAndReturn(READER_OK);
 	READER_HAL_RcvChar_ReturnThruPtr_character(&ins);
 	
-	retVal = READER_TPDU_Send(&tpduCmd, timeout, &dummySettings);
+	retVal = READER_TPDU_Send(&tpduCmd, &tpduResp, timeout, &dummySettings);
 	TEST_ASSERT_FALSE(retVal == READER_OK);
+	TEST_ASSERT_FALSE(retVal == READER_GOT_SW1);
 }
 
 
@@ -829,6 +837,7 @@ void test_READER_TPDU_RcvResponse_shouldDetectIfSWInsteadOfData_Case3(void){
 
 void test_READER_TPDU_Send_shouldWork(void){
 	READER_TPDU_Command tpduCmd;
+	READER_TPDU_Response tpduResp;
 	READER_HAL_CommSettings dummySettings;
 	READER_Status retVal;
 	uint32_t timeout = 1000;
@@ -881,7 +890,7 @@ void test_READER_TPDU_Send_shouldWork(void){
 	retVal = READER_TPDU_Forge(&tpduCmd, cla, ins, p1, p2, p3, data, 0x0D);
 	TEST_ASSERT_TRUE(retVal == READER_OK);
 	
-	retVal = READER_TPDU_Send(&tpduCmd, timeout, &dummySettings);
+	retVal = READER_TPDU_Send(&tpduCmd, &tpduResp, timeout, &dummySettings);
 	TEST_ASSERT_TRUE(retVal == READER_OK);
 }
 
@@ -889,6 +898,7 @@ void test_READER_TPDU_Send_shouldWork(void){
 
 void test_READER_TPDU_Send_shoulWaitOnNullByte(void){
 	READER_TPDU_Command tpduCmd;
+	READER_TPDU_Response tpduResp;
 	READER_HAL_CommSettings dummySettings;
 	READER_Status retVal;
 	uint32_t timeout = 1000;
@@ -948,7 +958,7 @@ void test_READER_TPDU_Send_shoulWaitOnNullByte(void){
 	retVal = READER_TPDU_Forge(&tpduCmd, cla, ins, p1, p2, p3, data, 0x0D);
 	TEST_ASSERT_TRUE(retVal == READER_OK);
 	
-	retVal = READER_TPDU_Send(&tpduCmd, timeout, &dummySettings);
+	retVal = READER_TPDU_Send(&tpduCmd, &tpduResp, timeout, &dummySettings);
 	TEST_ASSERT_TRUE(retVal == READER_OK);
 	
 }

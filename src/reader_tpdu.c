@@ -35,37 +35,46 @@ extern uint32_t globalWaitTimeMili;
  * \param *tpdu Pointeur sur une structure de type READER_TPDU_Command. Cette structure contient le TPDU complet (header et champ de données).
  * \param timeout Valeur du timeout à appliquer lors de l'envoi de chacun des caractères. Indiquer la valeur READER_HAL_USE_ISO_WT pour utiliser le Wait Time (WT) tel que défini dans la norme ISO en guise de timeout. Indiquer toute autre valeur différente de READER_HAL_USE_ISO_WT pour un timeout personalisé (en milisecondes).
  */
-READER_Status READER_TPDU_Send(READER_TPDU_Command *tpdu, uint32_t timeout, READER_HAL_CommSettings *pSettings){
+READER_Status READER_TPDU_Send(READER_TPDU_Command *pTpduCmd, READER_TPDU_Response *pTpduResp, uint32_t timeout, READER_HAL_CommSettings *pSettings){
 	READER_Status retVal;
-	uint8_t ACKType;
+	uint32_t ACKType;
+	uint8_t SW1, SW2;
 	
 	/* Envoi du header TPDU */
-	retVal = READER_TPDU_SendHeader(tpdu, timeout, pSettings);
+	retVal = READER_TPDU_SendHeader(pTpduCmd, timeout, pSettings);
 	if(retVal != READER_OK) return retVal;
 	
 	
 	/* Attente d'une reponse ACK ... */
-	retVal = READER_TPDU_WaitACK(tpdu->headerField.INS, &ACKType, timeout, pSettings);
+	retVal = READER_TPDU_WaitACK(pTpduCmd->headerField.INS, &ACKType, &SW1, &SW2, timeout, pSettings);
 	if(retVal != READER_OK) return retVal;
 	
+	/* Si jamais on a recu un SW1, ca veut dire qu'il n'y aura plus rien a recevoir, on forge un TPDU avec SW et sans donnees ...  */
+	if(ACKType == READER_TPDU_ACK_SW1){
+		pTpduResp->SW1 = SW1;
+		pTpduResp->SW2 = SW2;
+		pTpduResp->dataSize = 0;
+		
+		return READER_GOT_SW1;
+	}
 	
 	/* Si la requette TPDU ne contient pas de donnees alors on s'arrete la ... */
-	if(tpdu->dataField.size == 0){
+	if(pTpduCmd->dataField.size == 0){
 		return READER_OK;
 	}
 	
-	if(tpdu->dataField.size > READER_TPDU_MAX_DATA){
+	if(pTpduCmd->dataField.size > READER_TPDU_MAX_DATA){
 		return READER_ERR;
 	}
 	
 	
 	/* Le la requette TPDU contient des donnees alors envoi du champs de donnees selon le type de ACK recu */
 	if(ACKType == READER_TPDU_ACK_NORMAL){
-		retVal = READER_TPDU_SendDataOneshot(tpdu, timeout, pSettings);
+		retVal = READER_TPDU_SendDataOneshot(pTpduCmd, timeout, pSettings);
 		if(retVal != READER_OK) return retVal;
 	}
 	else if(ACKType == READER_TPDU_ACK_XORED){
-		retVal = READER_TPDU_SendDataSliced(tpdu, timeout, pSettings);
+		retVal = READER_TPDU_SendDataSliced(pTpduCmd, timeout, pSettings);
 		if(retVal != READER_OK) return retVal;
 	}
 	else{
@@ -128,7 +137,7 @@ READER_Status READER_TPDU_SendDataOneshot(READER_TPDU_Command *tpdu, uint32_t ti
 
 READER_Status READER_TPDU_SendDataSliced(READER_TPDU_Command *tpdu, uint32_t timeout, READER_HAL_CommSettings *pSettings){
 	uint32_t i = 0;
-	uint8_t ACKType;
+	uint32_t ACKType;
 	READER_Status retVal;
 	READER_TPDU_DataField *tpduDataField;
 	
@@ -148,7 +157,7 @@ READER_Status READER_TPDU_SendDataSliced(READER_TPDU_Command *tpdu, uint32_t tim
 		retVal = READER_HAL_SendChar(pSettings, READER_HAL_PROTOCOL_T0, tpduDataField->data[i], timeout);
 		if(retVal != READER_OK) return retVal;
 		
-		retVal = READER_TPDU_WaitACK(tpdu->headerField.INS, &ACKType, timeout, pSettings);
+		retVal = READER_TPDU_WaitACK(tpdu->headerField.INS, &ACKType, NULL, NULL, timeout, pSettings);
 		if(retVal != READER_OK) return retVal;
 		
 		i++;
@@ -457,23 +466,44 @@ READER_Status READER_TPDU_IsProcedureByte(uint8_t byte, uint8_t INS){
  * \param *ACKType Pointeur sur une variable de type uint8_t. Si un ACK est reçu sans erreur alors la fonction écrira dans cette variable le type d'ACK reçu. Il peut être de deux types : READER_TPDU_ACK_NORMAL ou READER_TPDU_ACK_XORED. Voir ISO7816-E section 10.3.3.
  * \param timeout Valeur de timeout en milisecondes pour recevoir l'ACK. Indiquer la valeur READER_HAL_USE_ISO_WT pour utiliser le Wait Time (WT) tel que défini dans la norme ISO en guise de timeout. Indiquer toute autre valeur différente de READER_HAL_USE_ISO_WT pour un timeout personalisé (en milisecondes).
  */
-READER_Status READER_TPDU_WaitACK(uint8_t INS, uint8_t *ACKType, uint32_t timeout, READER_HAL_CommSettings *pSettings){
+READER_Status READER_TPDU_WaitACK(uint8_t INS, uint32_t *pACKType, uint8_t *pSW1, uint8_t *pSW2, uint32_t timeout, READER_HAL_CommSettings *pSettings){
 	READER_Status retVal;
 	uint8_t byte;
+	uint8_t dummy;
+	
 	
 	do{
 		retVal = READER_HAL_RcvChar(pSettings, READER_HAL_PROTOCOL_T0, &byte, timeout);
-		//HAL_UART_Transmit_IT(&uartHandleStruct, &byte, 0x01);  // DEBUG !!!
-	} while( (retVal==READER_OK) && (READER_TPDU_IsNullByte(byte)) && !(READER_TPDU_IsACK(byte, INS)) && !(READER_TPDU_IsXoredACK(byte, INS)));
+		
+	} while( (retVal==READER_OK) && !(READER_TPDU_IsSW1(byte)) && !(READER_TPDU_IsACK(byte, INS)) && !(READER_TPDU_IsXoredACK(byte, INS)));
 	
-	if(retVal != READER_OK) return retVal;
+	if(retVal != READER_OK){
+		return retVal;
+	}
 	
-	if(READER_TPDU_IsXoredACK(byte, INS) == READER_OK){
-		*ACKType = READER_TPDU_ACK_XORED;
+	if((pSW1 == NULL) || (pSW2 == NULL)){
+		pSW1 = &dummy;
+		pSW2 = &dummy;
+	}
+	
+	if(READER_TPDU_IsSW1(byte) == READER_OK){
+		*pACKType = READER_TPDU_ACK_SW1;
+		*pSW1 = byte;
+		
+		retVal = READER_HAL_RcvChar(pSettings, READER_HAL_PROTOCOL_T0, &byte, timeout);
+		if((retVal != READER_OK) && (retVal != READER_TIMEOUT)) return retVal;
+		if(retVal == READER_TIMEOUT) return READER_TIMEOUT_ON_SW2;
+		
+		*pSW2 = byte;
+		
+		return READER_OK;
+	}	
+	else if(READER_TPDU_IsXoredACK(byte, INS) == READER_OK){
+		*pACKType = READER_TPDU_ACK_XORED;
 		return READER_OK;
 	}
 	else if(READER_TPDU_IsACK(byte, INS) == READER_OK){
-		*ACKType = READER_TPDU_ACK_NORMAL;
+		*pACKType = READER_TPDU_ACK_NORMAL;
 		return READER_OK;
 	}
 	else{
