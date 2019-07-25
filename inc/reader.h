@@ -32,7 +32,8 @@ enum READER_Status{
 	READER_TIMEOUT_ON_SW1           = (uint32_t)(0x00000012),
 	READER_TIMEOUT_ON_SW2           = (uint32_t)(0x00000013),
 	READER_INCORRECT_SW1            = (uint32_t)(0x00000014),
-	READER_GOT_SW1                  = (uint32_t)(0x00000015)
+	READER_GOT_SW1                  = (uint32_t)(0x00000015),
+	READER_INVALID_PROCEDURE_BYTE   = (uint32_t)(0x00000016)
 };
 
 

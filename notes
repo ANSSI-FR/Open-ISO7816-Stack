@@ -9,3 +9,5 @@ Il se passe quoi si on envoie a la carte un S-Block REsponse alors que il n'éta
 
 
 A la reception d'un TPDU response quand est ce que c'est un timeout et quand est ce que c'est des donnees raccourcies avec SW1SW2 ?
+
+Envoi simultané de une S-Block Request en simultané de chaque coté ?
