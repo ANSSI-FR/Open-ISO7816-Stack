@@ -189,8 +189,13 @@ READER_Status READER_T0_APDU_ExecuteCase2S(READER_T0_ContextHandler *pContext, R
 		if((retVal != READER_OK) && (retVal != READER_GOT_SW1)) return retVal;
 		
 		if(retVal != READER_GOT_SW1){
-			retVal = READER_TPDU_RcvResponse(&tpduResp, (Ne<Na)?Ne:Na, timeout, pSettings);    /* Voir ISO7816-3 section 12.2.3 case 2S.3 */
+			/* 2S3 Dans tous les cas, au niveau TPDU, on en recupere Na Bytes .. */
+			retVal = READER_TPDU_RcvResponse(&tpduResp, Na, timeout, pSettings);    /* Voir ISO7816-3 section 12.2.3 case 2S.3 */
 			if(retVal != READER_OK) return retVal;
+			
+			if(Ne<Na){
+				tpduResp.dataSize = Ne;
+			}
 		}
 		
 		retVal = READER_T0_APDU_MapTpduRespToApdu(pContext, &tpduResp, pApduResp);
