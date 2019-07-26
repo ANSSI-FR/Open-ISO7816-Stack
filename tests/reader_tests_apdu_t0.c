@@ -337,7 +337,7 @@ void test_T0_Case2S3_shouldWork_Case2(void){
 	
 	/* On prepare les Mocks ...   */
 	uint8_t expectedSentFrame[] = {0x00, 0xA4, 0x04, 0x00, 5};     /* TPDU : CLA INS P1 P2 P3=Le */
-	uint8_t rcvdBytes[] = {0x6C, 0x03};                            /* SW1SW2 */
+	uint8_t rcvdBytes[] = {0x6C, 0x06};                            /* SW1SW2 */
 	
 	set_expected_CharFrame(expectedSentFrame, 5);
 	emulate_RcvCharFrame(rcvdBytes, 2);
@@ -460,6 +460,7 @@ void test_T0_Case4S2_Case2S1_shouldWork(void){
 	READER_Status retVal;
 	uint8_t buff1[] = {0x45, 0x75, 0x74, 0x77, 0x74, 0x75, 0x36, 0x41, 0x70, 0x70};
 	uint8_t buff2[] = {0x55, 0x85, 0x84, 0x87, 0x84, 0x85, 0x46, 0x51, 0x80, 0x80};
+	uint32_t timeout = 1000;
 	
 	
 	/* VOIR ISO7816-3 Section 12.2.4 ...  */
@@ -490,10 +491,25 @@ void test_T0_Case4S2_Case2S1_shouldWork(void){
 	emulate_RcvCharFrame(rcvdBytes2, 2);
 	
 	uint8_t expectedSentFrame3[] = {0x00, 0xC0, 0x04, 0x00, 6};
-	uint8_t rcvdBytes3[] = {0x55, 0x85, 0x84, 0x87, 0x84, 0x85, 0x90, 0x00};                                  
+	uint8_t rcvdBytes3[] = {0xC0, 0x55, 0x85, 0x84, 0x87, 0x84, 0x85, 0x90, 0x00};                                  
 	
-	set_expected_CharFrame(expectedSentFrame3, 5);
-	emulate_RcvCharFrame(rcvdBytes3, 8);
+	//set_expected_CharFrame(expectedSentFrame3, 5);
+	READER_HAL_SendChar_ExpectAnyArgsAndReturn(READER_OK);
+	
+	READER_HAL_SendChar_ExpectAndReturn(&settings, READER_HAL_PROTOCOL_T0, expectedSentFrame3[1], timeout, READER_OK);
+	READER_HAL_SendChar_IgnoreArg_pSettings();
+	READER_HAL_SendChar_IgnoreArg_protocol();
+	READER_HAL_SendChar_IgnoreArg_timeout();
+	
+	READER_HAL_SendChar_ExpectAnyArgsAndReturn(READER_OK);
+	READER_HAL_SendChar_ExpectAnyArgsAndReturn(READER_OK);
+	
+	READER_HAL_SendChar_ExpectAndReturn(&settings, READER_HAL_PROTOCOL_T0, expectedSentFrame3[4], timeout, READER_OK);
+	READER_HAL_SendChar_IgnoreArg_pSettings();
+	READER_HAL_SendChar_IgnoreArg_protocol();
+	READER_HAL_SendChar_IgnoreArg_timeout();
+	
+	emulate_RcvCharFrame(rcvdBytes3, 9);
 	
 	
 	/* On execute l'APDU et on verifie le bon fonctionnement ...  */
@@ -515,6 +531,7 @@ void test_T0_Case4S2_Case2S2_shouldWork(void){
 	READER_Status retVal;
 	uint8_t buff1[] = {0x45, 0x75, 0x74, 0x77, 0x74, 0x75, 0x36, 0x41, 0x70, 0x70};
 	uint8_t buff2[] = {0x55, 0x85, 0x84, 0x87, 0x84, 0x85, 0x46, 0x51, 0x80, 0x80};
+	uint32_t timeout = 1000;
 	
 	
 	/* VOIR ISO7816-3 Section 12.2.4 ...  */
@@ -547,7 +564,21 @@ void test_T0_Case4S2_Case2S2_shouldWork(void){
 	uint8_t expectedSentFrame3[] = {0x00, 0xC0, 0x04, 0x00, 6};
 	uint8_t rcvdBytes3[] = {0x67, 0x00};                                  
 	
-	set_expected_CharFrame(expectedSentFrame3, 5);
+	//set_expected_CharFrame(expectedSentFrame3, 5);
+	READER_HAL_SendChar_ExpectAnyArgsAndReturn(READER_OK);
+	
+	READER_HAL_SendChar_ExpectAndReturn(&settings, READER_HAL_PROTOCOL_T0, expectedSentFrame3[1], timeout, READER_OK);
+	READER_HAL_SendChar_IgnoreArg_pSettings();
+	READER_HAL_SendChar_IgnoreArg_protocol();
+	READER_HAL_SendChar_IgnoreArg_timeout();
+	
+	READER_HAL_SendChar_ExpectAnyArgsAndReturn(READER_OK);
+	READER_HAL_SendChar_ExpectAnyArgsAndReturn(READER_OK);
+	
+	READER_HAL_SendChar_ExpectAndReturn(&settings, READER_HAL_PROTOCOL_T0, expectedSentFrame3[4], timeout, READER_OK);
+	READER_HAL_SendChar_IgnoreArg_pSettings();
+	READER_HAL_SendChar_IgnoreArg_protocol();
+	READER_HAL_SendChar_IgnoreArg_timeout();
 	emulate_RcvCharFrame(rcvdBytes3, 2);
 	
 	
@@ -569,6 +600,7 @@ void test_T0_Case4S2_Case2S3_Case1_shouldWork(void){
 	READER_Status retVal;
 	uint8_t buff1[] = {0x45, 0x75, 0x74, 0x77, 0x74, 0x75, 0x36, 0x41, 0x70, 0x70};
 	uint8_t buff2[] = {0x55, 0x85, 0x84, 0x87, 0x84, 0x85, 0x46, 0x51, 0x80, 0x80};
+	uint32_t timeout = 1000;
 	
 	
 	/* VOIR ISO7816-3 Section 12.2.4 ...  */
@@ -601,14 +633,44 @@ void test_T0_Case4S2_Case2S3_Case1_shouldWork(void){
 	uint8_t expectedSentFrame3[] = {0x00, 0xC0, 0x04, 0x00, 6};
 	uint8_t rcvdBytes3[] = {0x6C, 0x03};                                  
 	
-	set_expected_CharFrame(expectedSentFrame3, 5);
+	//set_expected_CharFrame(expectedSentFrame3, 5);
+	READER_HAL_SendChar_ExpectAnyArgsAndReturn(READER_OK);
+	
+	READER_HAL_SendChar_ExpectAndReturn(&settings, READER_HAL_PROTOCOL_T0, expectedSentFrame3[1], timeout, READER_OK);
+	READER_HAL_SendChar_IgnoreArg_pSettings();
+	READER_HAL_SendChar_IgnoreArg_protocol();
+	READER_HAL_SendChar_IgnoreArg_timeout();
+	
+	READER_HAL_SendChar_ExpectAnyArgsAndReturn(READER_OK);
+	READER_HAL_SendChar_ExpectAnyArgsAndReturn(READER_OK);
+	
+	READER_HAL_SendChar_ExpectAndReturn(&settings, READER_HAL_PROTOCOL_T0, expectedSentFrame3[4], timeout, READER_OK);
+	READER_HAL_SendChar_IgnoreArg_pSettings();
+	READER_HAL_SendChar_IgnoreArg_protocol();
+	READER_HAL_SendChar_IgnoreArg_timeout();
+	
 	emulate_RcvCharFrame(rcvdBytes3, 2);
 	
 	uint8_t expectedSentFrame4[] = {0x00, 0xC0, 0x04, 0x00, 3};
-	uint8_t rcvdBytes4[] = {0x55, 0x85, 0x84, 0x90, 0x00};                                  
+	uint8_t rcvdBytes4[] = {0xC0, 0x55, 0x85, 0x84, 0x90, 0x00};                                  
 	
-	set_expected_CharFrame(expectedSentFrame4, 5);
-	emulate_RcvCharFrame(rcvdBytes4, 5);
+	//set_expected_CharFrame(expectedSentFrame4, 5);
+	READER_HAL_SendChar_ExpectAnyArgsAndReturn(READER_OK);
+	
+	READER_HAL_SendChar_ExpectAndReturn(&settings, READER_HAL_PROTOCOL_T0, expectedSentFrame4[1], timeout, READER_OK);
+	READER_HAL_SendChar_IgnoreArg_pSettings();
+	READER_HAL_SendChar_IgnoreArg_protocol();
+	READER_HAL_SendChar_IgnoreArg_timeout();
+	
+	READER_HAL_SendChar_ExpectAnyArgsAndReturn(READER_OK);
+	READER_HAL_SendChar_ExpectAnyArgsAndReturn(READER_OK);
+	
+	READER_HAL_SendChar_ExpectAndReturn(&settings, READER_HAL_PROTOCOL_T0, expectedSentFrame4[4], timeout, READER_OK);
+	READER_HAL_SendChar_IgnoreArg_pSettings();
+	READER_HAL_SendChar_IgnoreArg_protocol();
+	READER_HAL_SendChar_IgnoreArg_timeout();
+	
+	emulate_RcvCharFrame(rcvdBytes4, 6);
 	
 	
 	/* On execute l'APDU et on verifie le bon fonctionnement ...  */
@@ -630,13 +692,14 @@ void test_T0_Case4S2_Case2S3_Case2_shouldWork(void){
 	READER_Status retVal;
 	uint8_t buff1[] = {0x45, 0x75, 0x74, 0x77, 0x74, 0x75, 0x36, 0x41, 0x70, 0x70};
 	uint8_t buff2[] = {0x55, 0x85, 0x84, 0x87, 0x84, 0x85, 0x46, 0x51, 0x80, 0x80};
+	uint32_t timeout = 1000;
 	
 	
 	/* VOIR ISO7816-3 Section 12.2.4 ...  */
 	/* Case 4S2 process completed ...     */
 	
 	/* On forge un APDU ...  */
-	retVal = READER_APDU_Forge(&apduCmd, 0x00, 0xA4, 0x04, 0x00, 5, buff1, 6);
+	retVal = READER_APDU_Forge(&apduCmd, 0x00, 0xA4, 0x04, 0x00, 5, buff1, 5);
 	TEST_ASSERT_TRUE(retVal == READER_OK);
 	
 	/* On initialise l'environnement ...  */
@@ -659,17 +722,47 @@ void test_T0_Case4S2_Case2S3_Case2_shouldWork(void){
 	set_expected_CharFrame(expectedSentFrame2, 5);
 	emulate_RcvCharFrame(rcvdBytes2, 2);
 	
-	uint8_t expectedSentFrame3[] = {0x00, 0xC0, 0x04, 0x00, 6};
+	uint8_t expectedSentFrame3[] = {0x00, 0xC0, 0x04, 0x00, 5};
 	uint8_t rcvdBytes3[] = {0x6C, 0x06};                                  
 	
-	set_expected_CharFrame(expectedSentFrame3, 5);
+	//set_expected_CharFrame(expectedSentFrame3, 5);
+	READER_HAL_SendChar_ExpectAnyArgsAndReturn(READER_OK);
+	
+	READER_HAL_SendChar_ExpectAndReturn(&settings, READER_HAL_PROTOCOL_T0, expectedSentFrame3[1], timeout, READER_OK);
+	READER_HAL_SendChar_IgnoreArg_pSettings();
+	READER_HAL_SendChar_IgnoreArg_protocol();
+	READER_HAL_SendChar_IgnoreArg_timeout();
+	
+	READER_HAL_SendChar_ExpectAnyArgsAndReturn(READER_OK);
+	READER_HAL_SendChar_ExpectAnyArgsAndReturn(READER_OK);
+	
+	READER_HAL_SendChar_ExpectAndReturn(&settings, READER_HAL_PROTOCOL_T0, expectedSentFrame3[4], timeout, READER_OK);
+	READER_HAL_SendChar_IgnoreArg_pSettings();
+	READER_HAL_SendChar_IgnoreArg_protocol();
+	READER_HAL_SendChar_IgnoreArg_timeout();
+	
 	emulate_RcvCharFrame(rcvdBytes3, 2);
 	
 	uint8_t expectedSentFrame4[] = {0x00, 0xC0, 0x04, 0x00, 6};
-	uint8_t rcvdBytes4[] = {0x55, 0x85, 0x84, 0x87, 0x84, 0x85, 0x90, 0x00};                                  
+	uint8_t rcvdBytes4[] = {0xC0, 0x55, 0x85, 0x84, 0x87, 0x84, 0x85, 0x90, 0x00};                                  
 	
-	set_expected_CharFrame(expectedSentFrame4, 5);
-	emulate_RcvCharFrame(rcvdBytes4, 8);
+	//set_expected_CharFrame(expectedSentFrame4, 5);
+	READER_HAL_SendChar_ExpectAnyArgsAndReturn(READER_OK);
+	
+	READER_HAL_SendChar_ExpectAndReturn(&settings, READER_HAL_PROTOCOL_T0, expectedSentFrame4[1], timeout, READER_OK);
+	READER_HAL_SendChar_IgnoreArg_pSettings();
+	READER_HAL_SendChar_IgnoreArg_protocol();
+	READER_HAL_SendChar_IgnoreArg_timeout();
+	
+	READER_HAL_SendChar_ExpectAnyArgsAndReturn(READER_OK);
+	READER_HAL_SendChar_ExpectAnyArgsAndReturn(READER_OK);
+	
+	READER_HAL_SendChar_ExpectAndReturn(&settings, READER_HAL_PROTOCOL_T0, expectedSentFrame4[4], timeout, READER_OK);
+	READER_HAL_SendChar_IgnoreArg_pSettings();
+	READER_HAL_SendChar_IgnoreArg_protocol();
+	READER_HAL_SendChar_IgnoreArg_timeout();
+	
+	emulate_RcvCharFrame(rcvdBytes4, 9);
 	
 	
 	/* On execute l'APDU et on verifie le bon fonctionnement ...  */

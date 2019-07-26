@@ -328,13 +328,6 @@ void test_T1_ExampleA22_ValidWTXRequFromCardWhileSendingCommand(void){
 	/*      Le ecteur recupere la reponse correcte au I-Block precedement envoye */
 	
 	
-	/* On recupere l'etat avant l'application de la requette ...  */
-	retVal = READER_T1_CONTEXT_GetCurrentBWTMultiplier(&context, &previousMultiplier);
-	TEST_ASSERT_TRUE(retVal == READER_OK);
-	
-	retVal = READER_T1_CONTEXT_GetCurrentBWTMilli(&context, &previousBWTMilli);
-	TEST_ASSERT_TRUE(retVal == READER_OK);
-	
 	
 	if((Ne >= 0x000000FF) || (Nc >= 0x000000FF)){
 		TEST_IGNORE();
@@ -349,6 +342,13 @@ void test_T1_ExampleA22_ValidWTXRequFromCardWhileSendingCommand(void){
 	READER_HAL_DoColdReset();
 	
 	retVal = READER_T1_APDU_Init(&context, &settings);
+	TEST_ASSERT_TRUE(retVal == READER_OK);
+	
+	/* On recupere l'etat avant l'application de la requette ...  */
+	retVal = READER_T1_CONTEXT_GetCurrentBWTMultiplier(&context, &previousMultiplier);
+	TEST_ASSERT_TRUE(retVal == READER_OK);
+	
+	retVal = READER_T1_CONTEXT_GetCurrentBWTMilli(&context, &previousBWTMilli);
 	TEST_ASSERT_TRUE(retVal == READER_OK);
 	
 	/* On prepare les Mocks ...   */

@@ -637,7 +637,9 @@ void test_READER_TPDU_RcvResponse_shouldTimeout_case1(void){
 	tpduResp.dataSize = READER_TPDU_MAX_DATA;
 	for(i=0; i< READER_TPDU_MAX_DATA; i++){
 		tpduResp.dataBytes[i] = (uint8_t)(rand());
+		dummyData[i] = (uint8_t)(rand());
 	}
+	
 	
 	//READER_HAL_RcvCharFrameCount_ExpectAnyArgsAndReturn(READER_TIMEOUT);
 	//READER_HAL_RcvCharFrameCount_ReturnThruPtr_rcvCount(&rcvCount);
@@ -731,8 +733,8 @@ void test_READER_TPDU_RcvResponse_shouldTimeout_case5(void){
 	READER_HAL_RcvChar_ExpectAnyArgsAndReturn(READER_OK);
 	READER_HAL_RcvChar_ReturnThruPtr_character(&characterNotSW1);
 	
-	READER_HAL_RcvChar_IgnoreAndReturn(READER_OK);
-	
+	READER_HAL_RcvChar_ExpectAnyArgsAndReturn(READER_OK);
+	READER_HAL_RcvChar_ReturnThruPtr_character(&characterNotSW1);
 	
 	/* On simule un timeout sur la reception du SW ...  */
 	retVal = READER_TPDU_RcvResponse(&tpduResp, dataSize, timeout, &dummySettings);
