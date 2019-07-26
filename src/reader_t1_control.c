@@ -986,7 +986,10 @@ READER_Status READER_T1_CONTROL_ApplySBlockResponseRcvd(READER_T1_ContextHandler
 	retVal = READER_T1_CONTEXT_SetNoSBlockExpectedResponse(pContext);
 	if(retVal != READER_OK) return retVal;
 	
+	
+	
 	/* On applique la demande du S-Block ... */
+	rcvdSBlockType = READER_T1_GetBlockSType(pBlock);
 	if(rcvdSBlockType == READER_T1_STYPE_ABORT_RESP){
 		retVal = READER_T1_CONTROL_ApplySBlockAbort(pContext, pBlock);
 		if(retVal != READER_OK) return retVal;
