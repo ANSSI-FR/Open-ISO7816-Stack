@@ -62,7 +62,7 @@ INCS+= -I$(DIR_READER_SRC)
 INCS+= -I$(DIR_CMOCK_SRC)
 INCS+= -I$(DIR_MOCKS_SRCS)
 
-DEFS= -DTEST -DCMOCK_MEM_DYNAMIC
+DEFS= -DTEST -DCMOCK_MEM_DYNAMIC -UCMOCK_MEM_STATIC
 
 
 #CFLAGS+= -Wall
@@ -109,13 +109,11 @@ all:dirs $(DIR_OUT)/$(OUTPUT_ELF)
 
 test:
 	./$(DIR_OUT)/$(OUTPUT_ELF)
-	
 
 report:
 	$(LCOV) --directory $(DIR_OBJ) -c -o $(DIR_COV)/lconv.info
 	$(GENHTML) -o $(DIR_COV)/cov_report -t "COV REPORT" $(DIR_COV)/lconv.info
 
-	
 clean:
 	rm --verbose -rf $(DIR_OUT) 
 	rm --verbose -rf $(DIR_COV) 
@@ -146,15 +144,13 @@ dirs:
 $(DIR_OUT)/$(OUTPUT_ELF):$(OBJS) $(MOCKS_OBJS) $(DIR_LIB)/$(UNITY_OBJ) $(DIR_LIB)/$(CMOCK_OBJ) $(TEST_OBJS)
 	$(LD) $(CFLAGS) $(LDFLAGS) $^ -o $@
 
-
-
 $(DIR_TEST_OBJ)/%.o:$(DIR_TESTS)/%.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
 
 $(DIR_LIB)/$(UNITY_OBJ):$(DIR_UNITY_SRC)/unity.c $(DIR_UNITY_SRC)/unity.h $(DIR_UNITY_SRC)/unity_internals.h
 	$(CC) $(CFLAGS) -c $< -o $@
-	
+
 $(DIR_LIB)/$(CMOCK_OBJ):$(DIR_CMOCK_SRC)/cmock.c $(DIR_CMOCK_SRC)/cmock.h $(DIR_CMOCK_SRC)/cmock_internals.h
 	$(CC) $(CFLAGS) -c $< -o $@
 
@@ -163,15 +159,13 @@ $(DIR_LIB)/$(CMOCK_OBJ):$(DIR_CMOCK_SRC)/cmock.c $(DIR_CMOCK_SRC)/cmock.h $(DIR_
 $(DIR_MOCKS_OBJS)/%.o:$(DIR_MOCKS_SRCS)/%.c $(HEADERS_TO_MOCK_PATHS)
 	$(CC) $(CFLAGS) -c $< -o $@
 
-	
 $(DIR_MOCKS_SRCS)/%.c:$(HEADERS_TO_MOCK_PATHS)
 	$(RUBY) $(CMOCK_SCRIPT) -o$(CMOCK_CONFIG) $(DIR_READER_INC)/$(basename $(notdir $(subst mock_,,$@))).h
 
 
 $(DIR_OBJ)/%.o:$(DIR_READER_SRC)/%.c $(DIR_DEP)/%.d
 	$(CC) $(CFLAGS) -c -MD -MT $*.o -MF $(DIR_DEP)/$*.d $< -o $@
-	
-	
+
 $(DIR_OBJ)/%.o:$(DIR_DEP)/%.d
 	$(CC) $(CFLAGS) -c -MD -MT $*.o -MF $(DIR_DEP)/$*.d $< -o $@
 
@@ -180,6 +174,4 @@ $(DIR_OBJ)/%.o:$(DIR_DEP)/%.d
 $(DIR_DEP)/%.d: ;
 
 
-	
 -include $(DEPS)
-
