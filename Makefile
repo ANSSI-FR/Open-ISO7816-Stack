@@ -32,6 +32,7 @@ OUTPUT_ELF=$(OUTPUT_NAME).elf
 OUTPUT_HEX=$(OUTPUT_NAME).hex
 OUTPUT_MAP=$(OUTPUT_NAME).map
 OUTPUT_LST=$(OUTPUT_NAME).lst
+OUTPUT_AR=lib$(OUTPUT_NAME).a
 
 CPU_CIBLE=cortex-m4
 UC_CIBLE=STM32F407xx
@@ -80,12 +81,15 @@ DEPS=$(addprefix $(DEPDIR)/,$(SRCS:.c=.d))
 
 
 
-.PHONY: all dirs clean upload library tests test report
+.PHONY: all dirs clean upload library tests test report reader
 
 
 
 all:dirs library $(OUTDIR)/$(OUTPUT_ELF) $(OUTDIR)/$(OUTPUT_BIN) $(OUTDIR)/$(OUTPUT_HEX)
 
+
+reader:all
+	$(AR) -r $(OUTPUT_AR) $(subst $(OBJDIR)/main.o,,$(OBJS))
 
 upload:all
 	$(STLINK)/st-flash write $(OUTDIR)/$(OUTPUT_BIN) 0x8000000
@@ -97,6 +101,7 @@ clean:
 	rm -rf $(OBJDIR)
 	$(MAKE) clean -C $(LIBDIR)
 	$(MAKE) --file $(MAKEFILE_TESTS) clean
+	rm $(OUTPUT_AR)
 
 
 dirs:
@@ -127,7 +132,7 @@ $(OUTDIR)/$(OUTPUT_HEX):$(OUTDIR)/$(OUTPUT_ELF)
 
 #ajout $(DEPS) en dependances ??
 $(OUTDIR)/$(OUTPUT_ELF):$(OBJS)
-	$(CC) $(CFLAGS) $^ -o $@ $(LDFLAGS)
+	$(LD) $(CFLAGS) $^ -o $@ $(LDFLAGS)
 	
 	
 
