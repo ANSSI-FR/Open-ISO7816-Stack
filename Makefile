@@ -132,7 +132,7 @@ $(OUTDIR)/$(OUTPUT_HEX):$(OUTDIR)/$(OUTPUT_ELF)
 
 #ajout $(DEPS) en dependances ??
 $(OUTDIR)/$(OUTPUT_ELF):$(OBJS)
-	$(LD) $(CFLAGS) $^ -o $@ $(LDFLAGS)
+	$(CC) $(CFLAGS) $^ -o $@ $(LDFLAGS)
 	
 	
 
