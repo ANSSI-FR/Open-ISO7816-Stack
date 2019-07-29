@@ -2,9 +2,6 @@
 #include "reader_t1.h"
 
 
-#include "reader_hal_comm_settings.h"
-
-
 #ifndef __READER_T1_CONTEXT_HANDLER_H__
 #define __READER_T1_CONTEXT_HANDLER_H__
 

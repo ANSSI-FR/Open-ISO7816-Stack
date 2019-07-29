@@ -1,12 +1,9 @@
-
 #include "reader_t1.h"
-#include "reader_hal.h"
-#include "reader_hal_comm_settings.h"
+
 
 
 #ifndef __READER_T1_ERROR_HANDLING_H__
 #define __READER_T1_ERROR_HANDLING_H__
-
 
 
 

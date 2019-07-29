@@ -1,6 +1,4 @@
 
-#include "reader_hal.h"
-
 
 #ifndef __READER_APDU_H__
 #define __READER_APDU_H__

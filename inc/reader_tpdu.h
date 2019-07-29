@@ -3,9 +3,6 @@
 #include <stdint.h>
 
 
-#include "reader_hal_comm_settings.h"
-
-
 
 #ifndef __READER_TPDU_H__
 #define __READER_TPDU_H__

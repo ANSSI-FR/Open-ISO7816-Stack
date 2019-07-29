@@ -1,4 +1,3 @@
-#include "reader_hal.h"
 #include "reader_t1.h"
 
 
