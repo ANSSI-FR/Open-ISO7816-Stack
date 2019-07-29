@@ -1,5 +1,6 @@
 //#include "reader_hal_.h"
 #include "reader_hal_basis.h"
+#include "reader_periph.h"
 #include "stm32f4xx_hal.h"
 
 
@@ -296,6 +297,6 @@ void READER_HAL_Delay(uint32_t tMili){
 }
 
 uint32_t READER_HAL_GetTick(void){
-	return HAL_GetTick();
+	return (uint32_t)HAL_GetTick();
 }
 

@@ -9,10 +9,10 @@
 
 #include "reader_hal.h"
 #include "reader_hal_basis.h"
-//#include "stm32f4xx_hal.h"
+#include "reader_periph.h"
 
 
-
+/* Ce code est independant du materiel !!  */
 
 
 
