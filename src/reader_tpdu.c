@@ -1,3 +1,10 @@
+/**
+ * \file reader_tpdu.c
+ * \author Boris
+ * \brief This file contains the source code of all the functions that are dealing with TPDUs.
+ */
+
+
 #include "reader_tpdu.h"
 #include "reader.h"
 #include "reader_hal.h"
@@ -14,26 +21,14 @@ extern uint32_t globalWaitTimeMili;
 
 
 
-
-//READER_Status READER_TPDU_Execute(READER_TPDU_Command *pTpdu, READER_TPDU_Response *pResp, uint32_t timeout, READER_HAL_CommSettings *pSettings){
-//	READER_Status retVal;
-//	
-//	retVal = READER_TPDU_Send(pTpdu, timeout, pSettings);
-//	if(retVal != READER_OK) return retVal;
-//	
-//	retVal = READER_TPDU_RcvResponse(pResp, 256, timeout, pSettings);
-//	if(retVal != READER_OK) return retVal;
-//	
-//	return READER_OK;
-//}
-
-
 /**
- * \fn READER_Status READER_TPDU_Send(READER_TPDU_Command *tpdu, uint32_t timeout)
- * \brief Cette fonction permet d'envoyer une commande TPDU. Cependant elle ne sert pas a attendre la réponse. La fonction envoie le header, attend l'ACK, puis envoie le champs de données (si il y en a un).
- * \return Valeur de type READER_Status. READER_OK si l'exécution s'est correctement déroulée. Toute autre valeur suggère une erreur.
- * \param *tpdu Pointeur sur une structure de type READER_TPDU_Command. Cette structure contient le TPDU complet (header et champ de données).
- * \param timeout Valeur du timeout à appliquer lors de l'envoi de chacun des caractères. Indiquer la valeur READER_HAL_USE_ISO_WT pour utiliser le Wait Time (WT) tel que défini dans la norme ISO en guise de timeout. Indiquer toute autre valeur différente de READER_HAL_USE_ISO_WT pour un timeout personalisé (en milisecondes).
+ * \fn READER_Status READER_TPDU_Send(READER_TPDU_Command *pTpduCmd, READER_TPDU_Response *pTpduResp, uint32_t timeout, READER_HAL_CommSettings *pSettings)
+ * \brief This function is used to send a TPDU command to the card.
+ * \return The function returns an execution code of type READER_Status that indicates if the function behaved as expected or not.
+ * \param *pTpduCmd is a pointer on a READER_TPDU_Command structure that contains the TPDU command to be sent.
+ * \param *pTpduResp is a pointer on a READER_TPDU_Response structure that can receive a TPDU Response in the case of a premature TPDU Response.
+ * \param timeout is an uint32_t value that contains the timeout value to be used by the underlying emission and reception functions.
+ * \param *pSettings is a pointer on a READER_HAL_CommSettings structures that should already be fed with the low level communication parameters. 
  */
 READER_Status READER_TPDU_Send(READER_TPDU_Command *pTpduCmd, READER_TPDU_Response *pTpduResp, uint32_t timeout, READER_HAL_CommSettings *pSettings){
 	READER_Status retVal;

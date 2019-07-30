@@ -1,3 +1,11 @@
+/**
+ * \file reader_tpdu.h
+ * \author Boris
+ * \brief This file contains the typedefs and the prototypes of all the functions that are dealing with TPDUs.
+ */
+
+
+
 #include "reader.h"
 #include "reader_hal.h"
 #include <stdint.h>
@@ -12,7 +20,7 @@
 #ifdef TEST
 	#define READER_TPDU_MAX_DATA            (uint32_t)(256)
 #else
-	#define READER_TPDU_MAX_DATA            (uint32_t)(256)             /* Valeur MAX = 256, voir spec */
+	#define READER_TPDU_MAX_DATA            (uint32_t)(256)
 #endif
 
 #define READER_TPDU_HEADER_SIZE         (uint32_t)(0x00000005)
@@ -23,43 +31,67 @@
 #define READER_TPDU_ACK_SW1             (uint32_t)(0x00000003)
 
 
+/**
+ * \def READER_TPDU_MAX_DATA
+ * Defines the maximum number of characters that can be hold into an READER_TPDU_Command or READER_TPDU_Response structure.
+ * The ISO7816-3 specification indicates 256 as a maximum value.
+ * When the Reader library is being used, in each TPDU (Command or Response) structure, READER_TPDU_MAX_DATA bytes of memory are statically allocated in the stack (even if ess data bytes are used).
+ * The developper can change the READER_TPDU_MAX_DATA value in order to reduce the memory footprint.
+ */
+ 
+ /**
+  * \def READER_TPDU_HEADER_SIZE
+  * Is the size in characters of a TPDU object header.
+  */
 
 
 
+/**
+ * \struct struct READER_TPDU_Command
+ * This stucture describes a the Header of a TPDU Command object as described in the ISO7816-3 section 10.
+ */
 typedef struct READER_TPDU_Header READER_TPDU_Header;
 struct READER_TPDU_Header{
-	uint8_t CLA;
-	uint8_t INS;
-	uint8_t P1;
-	uint8_t P2;
-	uint8_t P3;
+	uint8_t CLA;  /*!< CLA field of the TPDU header as described in ISO7816-3 section 10.3.2. */ 
+	uint8_t INS;  /*!< INS field of the TPDU header as described in ISO7816-3 section 10.3.2. */
+	uint8_t P1;   /*!< P1 field of the TPDU header as described in ISO7816-3 section 10.3.2.  */
+	uint8_t P2;   /*!< P2 field of the TPDU header as described in ISO7816-3 section 10.3.2.  */
+	uint8_t P3;   /*!< P3 field of the TPDU header as described in ISO7816-3 section 10.3.2.  */
 };
 
 
+/**
+ * \struct struct READER_TPDU_Command
+ * This stucture describes a the Data Field of a TPDU Command object as described in the ISO7816-3 section 10.
+ */
 typedef struct READER_TPDU_DataField READER_TPDU_DataField;
 struct READER_TPDU_DataField{
-	uint32_t size;
-	uint8_t data[READER_TPDU_MAX_DATA];
+	uint32_t size;                            /*!<  Stores the current number of bytes contained in the data Field of this same structure.  */
+	uint8_t data[READER_TPDU_MAX_DATA];       /*!< Stores the Data Field of the TPDU. The data characters are represented as an array of unsigned bytes. This array is statically allocated to the maximum size of the Data Field (256 characters)  */
 };
 
 
+/**
+ * \struct struct READER_TPDU_Command
+ * This stucture describes a TPDU Command object as described in the ISO7816-3 section 10.
+ */
 typedef struct READER_TPDU_Command READER_TPDU_Command;
 struct READER_TPDU_Command{
-	READER_TPDU_Header headerField;
-	READER_TPDU_DataField dataField;
+	READER_TPDU_Header headerField;      /*!< Is a structure of READER_TPDU_Header type. It is an object representing the Header of a TPDU Command. */   
+	READER_TPDU_DataField dataField;     /*!< Is a structure of READER_TPDU_DataField type. It is an object representing the Data Field of a TPDU Command. */   
 };
 
 
 /**
  * \struct struct READER_TPDU_Response
- * \brief Cette structure permet de stocker les informations relatives à un "TPDU Response"
+ * This stucture describes a TPDU Response object as described in the ISO7816-3 section 10.
  */
 typedef struct READER_TPDU_Response READER_TPDU_Response;
 struct READER_TPDU_Response{
-	uint8_t SW1;                                                                  /* !< Stocke la valeur de la première partie du Status Word (SW1) */   
-	uint8_t SW2;                                                                  /* !< Stocke la valeur de la deuxième partie du Status Word (SW2) */ 
-	uint8_t dataBytes[READER_TPDU_MAX_DATA];  /* 256 est la taille max d'une reponse TPDU */       /* !< Tabelau d'octets permettant de stocker les caractères reçus. Un "TPDU Response" fait au plus 256 caractères. */    
-	uint32_t dataSize;                                                            /* !< Stocke la quantité de données reçues. */
+	uint8_t SW1;                                 /*!< Stores the value of the first part (8 first bits) of the Status Word (SW1). */   
+	uint8_t SW2;                                 /*!< Stores the value of the second part (bits 9 to 16) of the Status Word  (SW2). */ 
+	uint8_t dataBytes[READER_TPDU_MAX_DATA];     /*!< Stores the Data Field of the TPDU. The data characters are represented as an array of unsigned bytes. This array is statically allocated to the maximum size of the Data Field (256 characters). */    
+	uint32_t dataSize;                           /*!< Stores the number of characters actuelly contained into the dataBytes member. */
 };
 
 
