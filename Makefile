@@ -89,7 +89,7 @@ all:dirs library $(OUTDIR)/$(OUTPUT_ELF) $(OUTDIR)/$(OUTPUT_BIN) $(OUTDIR)/$(OUT
 
 
 reader:all
-	$(AR) -r $(OUTPUT_AR) $(subst $(OBJDIR)/main.o,,$(OBJS))
+	$(AR) -r $(OUTPUT_AR) $(subst $(OBJDIR)/main.o,,$(OBJS)) $(LIBDIR)/obj/*.o
 
 upload:all
 	$(STLINK)/st-flash write $(OUTDIR)/$(OUTPUT_BIN) 0x8000000
