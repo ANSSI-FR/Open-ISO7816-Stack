@@ -26,7 +26,7 @@ LDFILE=STM32F407VGTx_FLASH.ld
 
 
 
-OUTPUT_NAME=test
+OUTPUT_NAME=reader
 OUTPUT_BIN=$(OUTPUT_NAME).bin
 OUTPUT_ELF=$(OUTPUT_NAME).elf
 OUTPUT_HEX=$(OUTPUT_NAME).hex
@@ -101,7 +101,7 @@ clean:
 	rm -rf $(OBJDIR)
 	$(MAKE) clean -C $(LIBDIR)
 	$(MAKE) --file $(MAKEFILE_TESTS) clean
-	rm $(OUTPUT_AR)
+	rm -f $(OUTPUT_AR)
 
 
 dirs:
