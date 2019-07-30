@@ -81,7 +81,8 @@ READER_APDU_ProtocolCase READER_APDU_GetProtocolCase(READER_APDU_Command *pApduC
 READER_Status READER_APDU_Forge(READER_APDU_Command *pApduCmd, uint8_t CLA, uint8_t INS, uint8_t P1, uint8_t P2, uint32_t Nc, uint8_t *pData, uint32_t Ne);
 READER_Status READER_APDU_CopyCommand(READER_APDU_Command *pSourceApdu, READER_APDU_Command *pDestApdu);
 READER_Status READER_APDU_CopyResponse(READER_APDU_Response *pSourceApdu, READER_APDU_Response *pDestApdu);
-
+READER_Status READER_APDU_ExtractRespSW(READER_APDU_Response *pApduResp, uint8_t *pSW1, uint8_t *pSW2);
+READER_Status READER_APDU_ExtractRespDataPtr(READER_APDU_Response *pApduResp, uint8_t **ppData, uint32_t *pDataSize);
 
 uint16_t READER_APDU_NcToLc(uint16_t Nc);
 uint16_t READER_APDU_NeToLe(uint16_t Ne);

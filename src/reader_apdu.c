@@ -191,3 +191,22 @@ uint16_t READER_APDU_LeToNe(uint16_t Le){
 		return Le;
 	}
 }
+
+
+
+READER_Status READER_APDU_ExtractRespSW(READER_APDU_Response *pApduResp, uint8_t *pSW1, uint8_t *pSW2){
+	*pSW1 = pApduResp->SW1;
+	*pSW2 = pApduResp->SW2;
+	
+	return READER_OK;
+}
+
+
+READER_Status READER_APDU_ExtractRespDataPtr(READER_APDU_Response *pApduResp, uint8_t **ppData, uint32_t *pDataSize){
+	*ppData = pApduResp->dataBytes;
+	*pDataSize = pApduResp->dataSize;
+	
+	return READER_OK;
+}
+
+
