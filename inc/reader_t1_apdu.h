@@ -6,12 +6,12 @@
  */
 
 
-#include "reader_t1.h"
-
-
-
 #ifndef __READER_T1_APDU_H__
 #define __READER_T1_APDU_H__
+
+
+#include "reader_t1.h"
+
 
 
 

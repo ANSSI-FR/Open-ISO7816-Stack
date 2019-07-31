@@ -222,7 +222,7 @@ void READER_HAL_ErrHandler(void){
 
 /**
  * \fn READER_Status READER_HAL_DoColdReset(void)
- * \brief Cette fonction réalise la procédure de "Cold Reset" définie dans la norme ISO7816-3 section 6.2.2.
+ * Cette fonction réalise la procédure de "Cold Reset" définie dans la norme ISO7816-3 section 6.2.2.
  */
 READER_Status READER_HAL_DoColdReset(void){
 	READER_Status retVal;

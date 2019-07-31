@@ -1,10 +1,15 @@
-#include "reader_t1.h"
+/**
+* \file reader_t1_buffer_handler.h
+* \author Boris
+* This file provide the prototypes and type definitions to the functions operating on the Block buffer.
+*/
 
 
 
 #ifndef __READER_T1_BUFFER_HANDLER_H__
 #define __READER_T1_BUFFER_HANDLER_H__
 
+#include "reader_t1.h"
 
 
 

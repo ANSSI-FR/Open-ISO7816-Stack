@@ -5,15 +5,13 @@
  */
 
 
+#ifndef __READER_TPDU_H__
+#define __READER_TPDU_H__
+
 
 #include "reader.h"
 #include "reader_hal.h"
 #include <stdint.h>
-
-
-
-#ifndef __READER_TPDU_H__
-#define __READER_TPDU_H__
 
 
 

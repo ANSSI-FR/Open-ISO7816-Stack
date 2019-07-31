@@ -1,3 +1,9 @@
+/**
+* \file reader_t1_blocks.h
+* \author Boris
+*/
+
+
 #ifndef __READER_T1_BLOCKS__
 #define __READER_T1_BLOCKS__
 

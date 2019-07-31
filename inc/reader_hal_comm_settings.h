@@ -1,3 +1,11 @@
+/**
+ * \file reader_hal_comm_settings.h
+ * \author Boris
+ * This file contains the prototypes and the typdefs to deal with the low level communication settings.
+ */
+
+
+
 #ifndef __READER_HAL_COMM_SETTINGS_H__
 #define __READER_HAL_COMM_SETTINGS_H__
 
@@ -15,12 +23,19 @@
 #define READER_HAL_DEFAULT_GT         (uint32_t)(12)
 
 
+
+/**
+ * \struct READER_HAL_CommSettings
+ * This structure contains all the low level communication settings that are needed by the abstraction layer to work propelly.
+ * These parameters are defined in ISO7816-3 section 7.1.
+ * Warning : the values in this structure should not by modified otherwise than by the intended accessors.
+ */
 typedef struct READER_HAL_CommSettings READER_HAL_CommSettings;
 struct READER_HAL_CommSettings{
-	uint32_t f;
-	uint32_t Fi;
-	uint32_t Di;
-	uint32_t GT;
+	uint32_t f;     /*!< f is the frequency currently used on the shared CLK line between the reader device and the card. */
+	uint32_t Fi;    /*!< Fi is the clock rate conversion integer as defined in ISO7816-3 section 7.1. */
+	uint32_t Di;    /*!< Di is the baud rate adjustement integer as defined in ISO7816-3 section 7.1. */
+	uint32_t GT;    /*!< GT is the Guard Time between two characters as defined in ISO7816-3 section 7.2. */
 };
 
 

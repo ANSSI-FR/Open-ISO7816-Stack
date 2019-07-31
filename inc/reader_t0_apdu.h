@@ -7,17 +7,15 @@
 
 
 
+#ifndef __READER_T0_APDU_H__
+#define __READER_T0_APDU_H__
+
+
 #include "reader.h"
 #include "reader_apdu.h"
 #include "reader_tpdu.h"
 #include "reader_atr.h"
 #include "reader_t0_context_handler.h"
-
-
-
-#ifndef __READER_T0_APDU_H__
-#define __READER_T0_APDU_H__
-
 
 
 

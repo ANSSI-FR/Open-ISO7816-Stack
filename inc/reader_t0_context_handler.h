@@ -1,3 +1,11 @@
+/**
+ * \file reader_t0_context_handler.h
+ * \author Boris
+ * This file contains the prototypes and the type definitions needed to deal with the T=0 protocol communication context.
+ */
+
+
+
 #ifndef __READER_HAL_CONTEXT_HANDLER_H__
 #define __READER_HAL_CONTEXT_HANDLER_H__
 

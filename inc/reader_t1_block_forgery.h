@@ -1,10 +1,15 @@
-#include "reader_t1.h"
+/**
+* \file reader_t1_block_forgery.h
+* \author Boris
+*/
 
 
 #ifndef __READER_T1_BLOCK_FORGERY_H__
 #define __READER_T1_BLOCK_FORGERY_H__
 
 
+
+#include "reader_t1.h"
 
 
 

@@ -1,9 +1,8 @@
-#include "reader_t1.h"
-
-
-
 #ifndef __READER_T1_ERROR_HANDLING_H__
 #define __READER_T1_ERROR_HANDLING_H__
+
+
+#include "reader_t1.h"
 
 
 

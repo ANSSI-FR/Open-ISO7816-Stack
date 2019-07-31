@@ -1,3 +1,10 @@
+/**
+ * \file reader_hal_basis.h
+ * \author Boris
+ * This file contains the prototypes of the primitives that are interacting with hardware.
+ */
+
+
 #ifndef __READER_HAL_BASIS_H__
 #define __READER_HAL_BASIS_H__
 

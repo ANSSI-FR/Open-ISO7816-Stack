@@ -1,7 +1,7 @@
 /**
  * \file reader.h
  * \author Boris
- * \brief This file contains the definition of the READER_Status type.
+ * This file contains the definition of the READER_Status type.
  */
 
 

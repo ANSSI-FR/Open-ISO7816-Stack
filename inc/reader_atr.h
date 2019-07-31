@@ -1,10 +1,18 @@
+/**
+ * \file reader_atr.h
+ * \author Boris
+ * This file contains the prototypes of the functions to deal with ATR.
+ */
+ 
+ 
+#ifndef __READER_ATR_H__
+#define __READER_ATR_H__
+
+
 #include <stdint.h>
 #include "reader_hal.h"
 #include "reader_t1.h"
 
-
-#ifndef __READER_ATR_H__
-#define __READER_ATR_H__
 
 
 

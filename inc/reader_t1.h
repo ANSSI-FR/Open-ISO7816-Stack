@@ -1,3 +1,9 @@
+/**
+ * \file reader.h
+ * \author Boris
+ */
+
+
 #ifndef __READER_T1_H__
 #define __READER_T1_H__
 

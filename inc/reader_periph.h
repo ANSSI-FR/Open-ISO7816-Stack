@@ -1,12 +1,16 @@
+/**
+ * \file reader_periph.h
+ * \author Boris
+ */
+
+
+
 #ifndef __READER_PERIPH_H__
 #define __READER_PERIPH_H__
 
 
-
-
 #include "reader_utils.h"
 #include "reader.h"
-//#include "reader_hal_comm_settings.h"
 
 
 #ifndef TEST

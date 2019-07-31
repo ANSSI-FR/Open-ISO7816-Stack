@@ -1,22 +1,27 @@
-#include "reader_hal.h"
-#include "reader_t1.h"
-
-
-
+/**
+* \file reader_t1_block.h
+* \author Boris
+* This file contains the prototypes and the type definitions needed to deal with T=1 Block objects.
+*/
 
 #ifndef __READER_T1_BLOCK_H__
 #define __READER_T1_BLOCK_H__
 
 
 
+#include "reader_hal.h"
+#include "reader_t1.h"
 
-#define READER_T1_BLOCK_MAX_DATA_SIZE          (uint32_t)(254)     /* Attention, doit etre superieur a current IFSC, max=254 (Voir ISO7816-3 section 11.3.2.3), peut etre reduit pour reduire significativement l'emprunte memeoir edu programme.  */
+
+
+
+#define READER_T1_BLOCK_MAX_DATA_SIZE          (uint32_t)(254) 
 #define READER_T1_BLOCK_PROLOGUE_SIZE          (uint32_t)(3)
 #define READER_T1_BLOCK_EPILOGUE_MAXSIZE       (uint32_t)(2)
-#define READER_T1_BLOCKFRAME_NAD_POSITION      (uint32_t)(0)       /* Voir ISO7816-3 section 11.3.1   */
-#define READER_T1_BLOCKFRAME_PCB_POSITION      (uint32_t)(1)       /* Voir ISO7816-3 section 11.3.1   */
-#define READER_T1_BLOCKFRAME_LEN_POSITION      (uint32_t)(2)       /* Voir ISO7816-3 section 11.3.1   */
-#define READER_T1_BLOCKFRAME_INF_POSITION      (uint32_t)(3)       /* Voir ISO7816-3 section 11.3.1   */
+#define READER_T1_BLOCKFRAME_NAD_POSITION      (uint32_t)(0)
+#define READER_T1_BLOCKFRAME_PCB_POSITION      (uint32_t)(1)
+#define READER_T1_BLOCKFRAME_LEN_POSITION      (uint32_t)(2)
+#define READER_T1_BLOCKFRAME_INF_POSITION      (uint32_t)(3)
 #define READER_T1_CRC_POLY                     (uint32_t)(0x91)
 #define READER_T1_BLOCK_MAX_TOTAL_LENGTH       (uint32_t)(READER_T1_BLOCK_MAX_DATA_SIZE + READER_T1_BLOCK_EPILOGUE_MAXSIZE + READER_T1_BLOCK_PROLOGUE_SIZE)
 
@@ -27,41 +32,86 @@
 #define READER_T1_BLOCK_INITIAL_LEN            (uint8_t)(0x00)
 
 
+/**
+* \def READER_T1_BLOCK_MAX_DATA_SIZE
+* READER_T1_BLOCK_MAX_DATA_SIZE is the maximum number of data bytes that are accepted by the reader into one Block. 
+* This value defines the number of bytes that are statically allocated in the stack into the READER_T1_Block data structure.
+* The developper can lower this value in order to reduce the memory footprint. 
+* Warning : This length have to be greater than the current IFSC (defined in READER_T1_ContextHandler).
+* The maximum data length is defined to be 254 in ISO7816-3 section 11.3.2.3. 
+*/
 
+/**
+* \def READER_T1_BLOCK_PROLOGUE_SIZE
+* READER_T1_BLOCK_PROLOGUE_SIZE is the size of the Block prologue as defined in ISO7816-3 section 11.3.1. 
+*/
+ 
+ 
+ /**
+ * \def READER_T1_BLOCKFRAME_NAD_POSITION
+ * READER_T1_BLOCKFRAME_NAD_POSITION is the index of NAD character into the blockFrame defined in READER_T1_Block.
+ */
+ 
+  /**
+ * \def READER_T1_BLOCKFRAME_PCB_POSITION
+ * READER_T1_BLOCKFRAME_PCB_POSITION is the index of PCB character into the blockFrame defined in READER_T1_Block.
+ */
+ 
+  /**
+ * \def READER_T1_BLOCKFRAME_LEN_POSITION
+ * READER_T1_BLOCKFRAME_LEN_POSITION is the index of LEN character into the blockFrame defined in READER_T1_Block.
+ */
+ 
+  /**
+ * \def READER_T1_BLOCKFRAME_INF_POSITION
+ * READER_T1_BLOCKFRAME_INF_POSITION is the index of the beginning of the data field into the blockFrame defined in READER_T1_Block.
+ */
+
+
+/**
+ * \def READER_T1_BLOCK_MAX_TOTAL_LENGTH
+ * READER_T1_BLOCK_MAX_TOTAL_LENGTH is the maximum length of the blockFrame defined into READER_T1_Block.
+ * This maximum length takes in account READER_T1_BLOCK_MAX_DATA_SIZE (the maximul size of the data field) and all the meta data (NAD, PCB, LEN, CRC/LRC ... ).
+ */
+
+
+/**
+ * \enum READER_T1_RedundancyType
+ * This type is used to encode the type of correction code that is currently in use.
+ */
 typedef enum READER_T1_RedundancyType READER_T1_RedundancyType;
 enum READER_T1_RedundancyType{
-	READER_T1_CRC                      = (uint32_t)(0x00000000),
-	READER_T1_LRC                      = (uint32_t)(0x00000001)      
+	READER_T1_CRC                      = (uint32_t)(0x00000000),   /*!< Longitudial correction code. */
+	READER_T1_LRC                      = (uint32_t)(0x00000001)    /*!< Cyclic redundancy code.      */  
 };
 
 
 
 
+/**
+ * \enum READER_T1_BlockType
+ * This type is used to encode the type of a Block as described in ISO7816-3 at section 11.3.1.
+ */
 typedef enum READER_T1_BlockType READER_T1_BlockType;
 enum READER_T1_BlockType{
-	READER_T1_SBLOCK                   = (uint32_t)(0x00000000),
-	READER_T1_RBLOCK                   = (uint32_t)(0x00000001),
-	READER_T1_IBLOCK                   = (uint32_t)(0x00000002),
-	READER_T1_BLOCK_ERR                = (uint32_t)(0x00000003)
+	READER_T1_SBLOCK                   = (uint32_t)(0x00000000),  /*!< To describe an S-Block. */
+	READER_T1_RBLOCK                   = (uint32_t)(0x00000001),  /*!< To describe an R-Block. */
+	READER_T1_IBLOCK                   = (uint32_t)(0x00000002),  /*!< To describe an I-Block. */
+	READER_T1_BLOCK_ERR                = (uint32_t)(0x00000003)   /*!< To notify an error. */
 };
 
 
-//typedef struct READER_T1_Block READER_T1_Block;
-//struct READER_T1_Block{
-//	uint8_t NAD;
-//	uint8_t PCB;
-//	uint8_t LEN;
-//	uint8_t data[READER_T1_BLOC_MAX_DATA_SIZE];
-//	READER_T1_RedundancyType RedundancyType;
-//	uint8_t LRC;
-//	uint16_t CRC;
-//};
 
+/**
+ * \struct READER_T1_Block
+ * This struture represents a Block object as described in ISO7816-3 section 11.3.1. 
+ */
 typedef struct READER_T1_Block READER_T1_Block;
 struct READER_T1_Block{
-	uint8_t blockFrame[READER_T1_BLOCK_MAX_TOTAL_LENGTH];  /* INF +NAD +PCB +LEN +CRC/LRC*/
-	READER_T1_RedundancyType RedundancyType;
+	uint8_t blockFrame[READER_T1_BLOCK_MAX_TOTAL_LENGTH];  /*!< The block is represented as an array of characters. These characters are INF +NAD +PCB +LEN  followed by the data bytes and CRC/LRC */
+	READER_T1_RedundancyType RedundancyType;               /*!< The type of correction code used in this Block. */
 };
+
 
 
 READER_Status READER_T1_SetBlockSAD(READER_T1_Block *pBlock, uint8_t blockSAD);

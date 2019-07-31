@@ -1,3 +1,10 @@
+/**
+ * \file reader_t1_block.c
+ * \author Boris
+ * This file contains the code of the functions that are dealing with T=1 Block objects.
+ */
+
+
 #include "reader_t1_block.h"
 #include "reader_hal.h"
 
@@ -345,9 +352,9 @@ uint8_t READER_T1_GetBlockPCB(READER_T1_Block *pBlock){
 
 /**
  * \fn READER_T1_BlockType READER_T1_GetBlockType(READER_T1_Block *pBlock)
- * \brief Cette fonction permet de connaitre le type d'un Block tel (tel que décrit dans ISO7816-3 section 11.3.2.2). I-Block, R-Block ou S-Block.
  * \param *pBlock est un pointeur sur une structure de type READER_T1_BLOCK.
  * \return La fonction retourne une valeur de type READER_T1_BlockType selon le type de Block. Attention, cette valeur est erronée si la stucture Block n'a jamais été initailisée. (En principe un init est fait au moment de la construction du Block avec  READER_T1_ForgeBlock())
+ * Cette fonction permet de connaitre le type d'un Block tel (tel que décrit dans ISO7816-3 section 11.3.2.2). I-Block, R-Block ou S-Block.
  */
 READER_T1_BlockType READER_T1_GetBlockType(READER_T1_Block *pBlock){
 	/* Voir ISO7816-3 section 11.3.2.2 */
@@ -374,11 +381,12 @@ READER_T1_BlockType READER_T1_GetBlockType(READER_T1_Block *pBlock){
 
 /**
  * \fn uint8_t READER_T1_GetBlockLEN(READER_T1_Block *pBlock)
- * \brief Cette fonction permet de récupérer le champ LEN d'un Block. Le champs LEN est décrit dans ISO7816-3 section 11.3.1.
- * Ici, on ne calcule pas cette valeur, il s'agit d'un accesseur sur cette valeur dans la stucture Block.
  * \param *pBlock est un pointeur sur une stucture de type READER_T1_BLOCK.
  * \return La fonction retourne un entier uint8_t. La valeur de cet entier est le champ LEN tel que décrit ISO7816-3 section 11.3.2.3.
  * Attention, si la strucure Block n'a jamais été initialisée, cette valeur est erronée. (En principe un init est fait au moment de la construction du Block avec  READER_T1_ForgeBlock())
+ * 
+ * Cette fonction permet de récupérer le champ LEN d'un Block. Le champs LEN est décrit dans ISO7816-3 section 11.3.1.
+ * Ici, on ne calcule pas cette valeur, il s'agit d'un accesseur sur cette valeur dans la stucture Block.
  */
 uint8_t READER_T1_GetBlockLEN(READER_T1_Block *pBlock){
 	uint8_t *pCurrentLEN;
@@ -493,10 +501,10 @@ uint16_t READER_T1_ComputeBlockCRC(READER_T1_Block *pBlock){
 
 /**
  * \fn uint32_t READER_T1_GetBlockTotalSize(READER_T1_Block *pBlock)
- * \brief Cette fonction calcule le nombre d'octets necessaires pour représeter le block tel que décrit dans ISO7816-3 section 11.3.1.
- * Il s'agt ici de la taille totale, c'est a dire :  len(Prologue field) + len(Information field) + len(Epilogue field)
  * \param *pBlock est un pointeur sur une stucture Block : READER_T1_BLOCK.
  * \return La fonction retourne un entier uint32_t. La valeur de cet entier est le nombre d'octets necessaires pour représenter le Block.
+ *  Cette fonction calcule le nombre d'octets necessaires pour représeter le block tel que décrit dans ISO7816-3 section 11.3.1.
+ * Il s'agt ici de la taille totale, c'est a dire :  len(Prologue field) + len(Information field) + len(Epilogue field)
  */
 uint32_t READER_T1_GetBlockTotalSize(READER_T1_Block *pBlock){
 	READER_T1_RedundancyType checkType;
@@ -521,10 +529,10 @@ uint32_t READER_T1_GetBlockTotalSize(READER_T1_Block *pBlock){
 
 /**
  * \fn READER_T1_GetBlockSizeWithoutCheck(READER_T1_Block *pBlock)
- * \brief Cette fonction calcule le nombre d'octets necessaires pour représeter le block privé de son Epilogue field, tel que décrit dans ISO7816-3 section 11.3.1.
- * la fonction calcule : len(Prologue field) + len(Information field).
  * \param *pBlock est un pointeur sur une stucture Block : READER_T1_BLOCK.
  * \return La fonction retourne un entier uint32_t. La valeur de cet entier est le nombre d'octets necessaires pour représenter le Block (sans compte le Epilogue field).
+ * Cette fonction calcule le nombre d'octets necessaires pour représeter le block privé de son Epilogue field, tel que décrit dans ISO7816-3 section 11.3.1.
+ * la fonction calcule : len(Prologue field) + len(Information field).
  */
 uint32_t READER_T1_GetBlockSizeWithoutCheck(READER_T1_Block *pBlock){
 	uint8_t dataLEN;
@@ -586,7 +594,7 @@ READER_Status READER_T1_UpdateBlockChecksum(READER_T1_Block *pBlock){
 
 /**
  * \fn READER_Status READER_T1_ForgeBlock(READER_T1_Block *pBlock, READER_T1_RedundancyType rType)
- * \brief Cette fonction permet de construire un Block vierge. La fonction prends un pointeur sur un structure Block qui n'est pas initialisée, la fonction initialise ce Block de sorte à ce qu'il puisse être utilisé par les autres fonctions.
+ * Cette fonction permet de construire un Block vierge. La fonction prends un pointeur sur un structure Block qui n'est pas initialisée, la fonction initialise ce Block de sorte à ce qu'il puisse être utilisé par les autres fonctions.
  * \param *pBlock est un pointeur sur une structure de type READER_T1_Block. Il s'agit d'un pointeur sur un espace mémoire déjà alloué et capable de contenir un Block. Ce Block n'est pas initialisé.
  * \param rType est uen valeur de type READER_T1_RedundancyType. Elle indique le type de code correcteur qui va etre utilisé pour ce Block.
  * \return La fonction retourne une valeur de type READER_Status. READER_OK indiue le bon déroulement de la fonction.
@@ -616,7 +624,7 @@ READER_Status READER_T1_ForgeBlock(READER_T1_Block *pBlock, READER_T1_Redundancy
 
 /**
  * \fn READER_Status READER_T1_SendBlock(READER_T1_Block *pBlock, uint32_t currentCWT, uint32_t extraStartDelay, uint32_t *pTickstart)
- * \brief Cette fonction permet de placer une structure de type READER_T1_Block sur le support support de transmission.
+ * Cette fonction permet de placer une structure de type READER_T1_Block sur le support support de transmission.
  * Cette fonction permet l'envoi des octets et assure le respect des délais (WT, GT, BWT, BGT ...). Elle n'a pas conscience du contexte de communication.
  * Elle traduit le niveau logique Block en uen chaine de caractères à envoyer.
  * Elle permet également de remonter de l'information sur l'envoi du Block.
@@ -656,7 +664,7 @@ READER_Status READER_T1_SendBlock(READER_T1_Block *pBlock, uint32_t currentCWT, 
 /* A CORRIGER, DESCRIPTION N'EST PAS A JOUR !!!  ??  */
 /**
  * \fn READER_Status READER_T1_RcvBlock(READER_T1_Block *pBlock, uint32_t timeout)
- * \brief Cette fonction permet de recevoir un Block. La fonction recoit d'abord le prologue du Block, puis à partir des informations qui y sont contenues, elle recoit le reste du Block. Attention cette fonction ne vérifie pas l'intégrité du Block, pas de vérification du checksum.
+ * Cette fonction permet de recevoir un Block. La fonction recoit d'abord le prologue du Block, puis à partir des informations qui y sont contenues, elle recoit le reste du Block. Attention cette fonction ne vérifie pas l'intégrité du Block, pas de vérification du checksum.
  * \return La fonction revoie un code de type READER_Status. Le retour est READER_OK si le Block esr reçu en entier et si le formatage du Block reçu est correct.
  * \param *pBlock Pointeur sur une structure de type READER_T1_Block. Le contenu du Block reçu sera placé à l'intérieur.
  * \param timeout Il s'agit de la valeur du timeout pour chaque caractère en milisecondes.
