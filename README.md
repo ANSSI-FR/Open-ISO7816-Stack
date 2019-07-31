@@ -23,14 +23,14 @@ For the moment the supported devices are :
 
 	- STLINK tool
 	- RUBY (for the tests)
-	- GCC (for the tests)
-	- Compiler for the target
+	- Compiler for your local machine (for the tests)
+	- Cross compiler for your target
 	
 	
 ## Build instructions
 ---------------------
 
-	> git clone git@bouffard.info:/iso7816-reader
+	> git clone git@bouffard.info:iso7816-reader
 	
 ### Building tests
 ------------------
