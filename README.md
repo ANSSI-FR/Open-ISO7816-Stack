@@ -14,125 +14,150 @@ The library supports sending and receiving APDUs using protocols T=0 and T=1.
 The code is designed to be easilly adaptable to a big range of microcontrollers.
 For the moment the supported devices are :
 
-	- STM32F407 
-
-
+- STM32F407 
 
 ## Prerequisites
 ----------------
 
-	- STLINK tool 
-	- RUBY (for the tests)
-	- Compiler for your local machine (for the tests)
-	- Cross compiler for your target
+
+- STLINK tool
+- RUBY (for the tests)
+- Compiler for your local machine (for the tests)
+- Cross compiler for your target
+
 	
 	
 ## Build instructions
 ---------------------
+In a first time, you should clone the code as:
 
+``` shell
 	> git clone git@bouffard.info:iso7816-reader
-	
-### Building tests
-------------------
+```
 
-Tests are used to make shure that after library modification, it still works and follow the rules of the ISO7816-3 standard.
-Before compiling and running the tests, the developper should configure the Makefile_tests in the following way :
-
-	RUBY=ruby  (path to the ruby executable)
-
-Then run the following commands in the library directory :
-
-	> cd Unity
-	> git submodule init
-	> git submodule update
-	
-	> cd ../CMock
-	> git submodule init
-	> git submodule update
-	
-Then, the developper is able to make and run the tests in the following way :
-	
-	> make clean
-	> make tests
-	> make test
-	
-	
 ### Building and linking external projet with the reader library
 ----------------------------------------------------------------
 
 #### Building the static library
+--------------------------------
+In the reader local directory execute the following command:
 
-In the reader local directory execute the following command :
-
+``` shell
 	> make clean
 	> make reader
+```
 	
 A file libreader.a containing the static library is then generated.
 
-
 #### Including the library to your own projet and compiling it
+--------------------------------------------------------------
 
-In order to compile your projet with the reader library you will need to make sure that the static library and all the headers in *reader/inc* are accessible for your projet directory.
-Your projet should include the directive :
+To compile your projet with the reader library, the static library and all the
+headers in *reader/inc* must be accessible by your projet.
 
+Your projet should include reader_lib.h file as:
+
+``` c
 	#include "reader_lib.h"
+```
 	
-To compile your project you can add all the *reader/inc* headers into your project directory or you can indicate their path at the compilation time with the gcc *-I* option by the following way :
+To build your project, all *reader/inc* headers should be indicated at the
+compilation time with the gcc *-I* option by the following way :
 
-	> gcc -Ireader/inc
+``` shell
+	$ gcc -Ireader/inc
+``` 
 	
 When linking your own projet you have to point out the path to the static library :
 
-	> gcc -Lpath/to/staticlib/folder/ -lreader
+``` shell
+	$ ld -Lpath/to/staticlib/folder/ -lreader
+``` 
 
 #### Uploading the binay to the board
+-------------------------------------
 
 Before uploading the developper shoud configure the Makefile in the following way :
 
-	STLINK=~/stlink/build/Release/
-	
-The variable STLINK have to be filled with the path to the directory of the stlink tool.
+``` shell
+	$ export STLINK=~/stlink/build/Release/
+```
 
+The variable STLINK have to be setp with the path to stlink tool directory.
 
-Then, the developper should execute in the command line in the current directory the following commands :
+Then, the developper should execute in the command line in the current directory the following commands:
 
-	> make clean
-	> make all
-	> make upload
+``` shell
+	$ make clean
+	$ make all
+	$ make upload
+```
 	
+### Building tests
+------------------
+
+Tests are implemented to insure that library doe not include code regression.
+They implement the ISO7816-3 standard. Before compiling and running the tests,
+the developper should update the Makefile_tests in the following way if ruby is
+not in the $PATH:
+
+``` shell
+	$ export RUBY=/path/to/ruby  (path to the ruby executable)
+```
+
+Then run the following commands in the library directory:
+
+``` shell
+	$ cd Unity
+	$ git submodule init
+	$ git submodule update
 	
+	$ cd ../CMock
+	$ git submodule init
+	$ git submodule update
+```
+
+Finaly, the developper is able to run the tests in the following way:
+	
+```shell
+	$ make clean
+	$ make tests
+	$ make test
+```
 	
 ## General code organization
+----------------------------
 
-The code is splitted in two main parts.
-The first one is the hardware dependant code. 
-It is an hardware abstraction layer composed of all the functions that are directly interacting with the hardware.
-Typically it is the set of functions purposed to the emission and reception of characters.
-The whole hardware depenent code is located in the files : *reader_hal_basis.c* and *reader_hal_comm_settings.c* in the *./src* directory.
-The orther part is the logic (hardware independant code) state machine to make the ISO7816 protocol work.
+The code is splitted in two main parts. The first one is the hardware dependant
+code. It is an hardware abstraction layer composed of all the functions that are
+directly interacting with the hardware. Typically it is the set of functions
+purposed to the emission and reception of characters. The whole hardware
+depenent code is located in the files : *reader_hal_basis.c* and
+*reader_hal_comm_settings.c* in the *./src* directory. The orther part is the
+logic (hardware independant code) state machine to make the ISO7816 protocol
+work.
 
 ## Features
 	
-| Feature                          | Developpment status | Testing status |
-| -------------------------------- | ------------------- | -------------- |
-| ATR reception and decoding       | Implemented         | Not tested     |
-| PPS Negociation                  | Not implemented     | Not tested     |
-| T=0 Case 1                       | Implemented         | Tested         |
-| T=0 Case 2S                      | Implemented         | Tested         |
-| T=0 Case 3S                      | Implemented         | Tested         |
-| T=0 Case 4S                      | Implemented         | Tested         |
-| T=0 Case 2E                      | Implemented         | Not tested     |
-| T=0 Case 3E                      | Implemented         | Not tested     |
-| T=0 Case 4E                      | Not implemented     | Not tested     |
-| T=1 Normal operation             | Implemented         | Tested         |
-| T=1 Chaning                      | Implemented         | Tested         |
-| T=1 Error handling               | Implemented         | Tested         |
-| T=1 IFS Adjustement              | Implemented         | Tested         |
-| T=1 WTX Adjustement              | Implemented         | Tested         |
-| T=1 ABORT Request                | Implemented         | Not tested     |
-| T=1 RESYNCH Request              | Implemented         | Not tested     |
+| Feature                          | Implemented? | Tested? |
+| -------------------------------- | ------------ | ------- |
+| ATR reception and decoding       | X            |         |
+| PPS Negociation                  |              |         |
+| T=0 Case 1                       | X            | X       |
+| T=0 Case 2S                      | X            | X       |
+| T=0 Case 3S                      | X            | X       |
+| T=0 Case 4S                      | X            | X       |
+| T=0 Case 2E                      | X            |         |
+| T=0 Case 3E                      | X            |         |
+| T=0 Case 4E                      |              |         |
+| T=1 Normal operation             | X            | X       |
+| T=1 Chaning                      | X            | X       |
+| T=1 Error handling               | X            | X       |
+| T=1 IFS Adjustement              | X            | X       |
+| T=1 WTX Adjustement              | X            | X       |
+| T=1 ABORT Request                | X            |         |
+| T=1 RESYNCH Request              | X            |         |
 	
-
 
 ## Using the API
 ----------------
@@ -212,7 +237,7 @@ READER_APDU_ExtractRespDataPtr(&apduResp, &dataPtr, &dataSize);
 ```
 
 	
-### Full example when usign T=0 protocol
+### Full example when using T=0 protocol
 ----------------------------------------
 
 ```c
