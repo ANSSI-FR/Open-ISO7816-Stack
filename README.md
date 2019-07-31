@@ -35,11 +35,12 @@ For the moment the supported devices are :
 ### Building tests
 ------------------
 
+Tests are used to make shure that after library modification, it still works and follow the rules of the ISO7816-3 standard.
 Before compiling and running the tests, the developper should configure the Makefile_tests in the following way :
 
 	RUBY=ruby  (path to the ruby executable)
 
-Then run the following commands :
+Then run the following commands in the library directory :
 
 	> cd Unity
 	> git submodule init
@@ -82,7 +83,7 @@ To compile your project you can add all the *reader/inc* headers into your proje
 	
 When linking your own projet you have to point out the path to the static library :
 
-	> gcc -Lpath/to/staticlib/folder/ -reader
+	> gcc -Lpath/to/staticlib/folder/ -lreader
 
 #### Uploading the binay to the board
 
@@ -144,6 +145,8 @@ READER_HAL_CommSettings settings;
 ```
 
 *settings* is a data structre which contains all the parameters values currently used by READER_HAL hardware abstraction layer used by the library for low level communications (emission and reception of characters). 
+The user should modify directly the values into this structure. It's recommended to use the functions exposed in the file *reader_hal_comm_settings.h*.
+
 
 ```c
 READER_APDU_Command apduCmd;
