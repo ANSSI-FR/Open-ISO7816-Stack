@@ -1,10 +1,13 @@
+/**
+ * \file reader_apdu.c
+ * \author Boris
+ * \brief This file contains the code of all the functions defined in reader_apdu.h that are operating on the READER_APDU_Command and READER_APDU_Response data structures.
+ */
+
+
 #include "reader_tpdu.h"
 #include "reader_hal.h"
 #include "reader_apdu.h"
-
-
-
-
 
 
 
@@ -26,7 +29,7 @@ READER_Status READER_APDU_CheckCmdValidity(READER_APDU_Command *pApduCmd){
 
 /**
  * \fn READER_APDU_ProtocolCase READER_APDU_GetProtocolCase(READER_APDU_Command *pApduCmd)
- * \brief Cette fonction analyse une structure de type READER_APDU_Command et en déduit dans quel "sous cas" du protocole cet APDU appartient. Par exemple 2E, 2S, 3E, 3S, 4E, 4S etc ...
+ * Cette fonction analyse une structure de type READER_APDU_Command et en déduit dans quel "sous cas" du protocole cet APDU appartient. Par exemple 2E, 2S, 3E, 3S, 4E, 4S etc ...
  * \return Retourne une valeur de type READER_APDU_ProtocolCase.
  * \param *pApduCmd Un pointeur sur un structure de type READER_APDU_Command.
  */
@@ -82,7 +85,7 @@ READER_APDU_ProtocolCase READER_APDU_GetProtocolCase(READER_APDU_Command *pApduC
 
 /**
  * \fn READER_Status READER_APDU_CopyCommand(READER_APDU_Command *pSourceApdu, READER_APDU_Command *pDestApdu)
- * \brief Cette fonction permet de copier le contenu d'une commande APDU source dans une commande APDU de destination.
+ * Cette fonction permet de copier le contenu d'une commande APDU source dans une commande APDU de destination.
  * \return Valeur de retour de type READER_Status. READER_OK indique le bon déroulement de la fonction. Toute autre valeur indique une erreur.
  * \param *pSourceApdu est un pointeur sur l'APDU source. Il s'agit d'une structure de type READER_APDU_Command. 
  * \param *pDestApdu est un pointeur sur l'APDU de destination. Il s'agit d'une structure de type READER_APDU_Command.
@@ -108,7 +111,7 @@ READER_Status READER_APDU_CopyCommand(READER_APDU_Command *pSourceApdu, READER_A
 
 /**
  * \fn READER_Status READER_APDU_CopyResponse(READER_APDU_Response *pSourceApdu, READER_APDU_Response *pDestApdu)
- * \brief Cette fonction permet de copier le contenu d'une réponse APDU source dans une réponse APDU de destination.
+ * Cette fonction permet de copier le contenu d'une réponse APDU source dans une réponse APDU de destination.
  * \return Valeur de retour de type READER_Status. READER_OK indique le bon déroulement de la fonction. Toute autre valeur indique une erreur.
  * \param *pSourceApdu est un pointeur sur l'APDU source. Il s'agit d'une structure de type READER_APDU_Response. 
  * \param *pDestApdu est un pointeur sur l'APDU de destination. Il s'agit d'une structure de type READER_APDU_Response.
@@ -130,7 +133,7 @@ READER_Status READER_APDU_CopyResponse(READER_APDU_Response *pSourceApdu, READER
 
 /**
  * \fn READER_Status READER_APDU_Forge(READER_APDU_Command *pApduCmd, uint8_t CLA, uint8_t INS, uint8_t P1, uint8_t P2, uint32_t Nc, uint8_t *pData, uint32_t Ne)
- * \brief Cette fonction permet d'initialiser une structure de type READER_APDU_Command à partir des informations fournies en paramètres.
+ * Cette fonction permet d'initialiser une structure de type READER_APDU_Command à partir des informations fournies en paramètres.
  * \return Valeur de retour de type READER_Status. READER_OK indique le bon déroulement de la fonction. Toute autre valeur indique une erreur.
  * \param *pApduCmd est un pointeur sur la structure de type READER_APDU_Command à initialiser.
  * \param CLA est la classe de l'instruction telle que définie dans la norme ISO7816.
@@ -194,6 +197,16 @@ uint16_t READER_APDU_LeToNe(uint16_t Le){
 
 
 
+/**
+ * \fn READER_Status READER_APDU_ExtractRespSW(READER_APDU_Response *pApduResp, uint8_t *pSW1, uint8_t *pSW2)
+ * \return The function returns an execution code of type READER_Status that indicates if the function behaved as expected or not.
+ * \param *pApduResp is a pointer on a READER_APDU_Response data structure. This structure have to be already filled with a valid APDU Response.
+ * \param *pSW1 is a pointer on a character that will be filled with SW1 by the function.
+ * \param *pSW2 is a pointer on a character that will be filled with SW2 by the function.
+ * This function is used to exctract status word (SW) from a READER_APDU_Response data structure.
+ * This structure have to be already filled with a valid APDU Response.
+ * For example after using READER_T1_APDU_Execute().
+ */
 READER_Status READER_APDU_ExtractRespSW(READER_APDU_Response *pApduResp, uint8_t *pSW1, uint8_t *pSW2){
 	*pSW1 = pApduResp->SW1;
 	*pSW2 = pApduResp->SW2;
@@ -202,6 +215,14 @@ READER_Status READER_APDU_ExtractRespSW(READER_APDU_Response *pApduResp, uint8_t
 }
 
 
+/**
+ * \fn READER_Status READER_APDU_ExtractRespDataPtr(READER_APDU_Response *pApduResp, uint8_t **ppData, uint32_t *pDataSize)
+ * \return The function returns an execution code of type READER_Status that indicates if the function behaved as expected or not.
+ * \param *pApduResp is a pointer on a READER_APDU_Response data structure. This structure have to be already filled with a valid APDU Response.
+ * \param **ppData is a pointer A that points another pointer B that points to a charaters buffer. The function will modify the pointer B in order to make it point on the READER_APDU_Response data field.
+ * \param *pDataSize is a pointer on a variable that will be filled (by the function) with the number of characters into the READER_APDU_Response.
+ * This function is used in order to obtain a pointer onto the data field of a READER_APDU_Response.
+ */
 READER_Status READER_APDU_ExtractRespDataPtr(READER_APDU_Response *pApduResp, uint8_t **ppData, uint32_t *pDataSize){
 	*ppData = pApduResp->dataBytes;
 	*pDataSize = pApduResp->dataSize;

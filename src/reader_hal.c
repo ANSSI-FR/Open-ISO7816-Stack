@@ -1,8 +1,6 @@
 /**
  * \file reader_hal.c
- * \brief Contient le code des fonctions de la couche d'abstraction du matériel du lecteur.
- * \author B. Simunovic
- * \date 28 mars 2018
+ * \author Boris
  */
 
 
@@ -12,14 +10,12 @@
 #include "reader_periph.h"
 
 
-/* Ce code est independant du materiel !!  */
-
-
 
 /**
- * \fn READER_Status READER_HAL_Init(void)
- * \brief Fonction pour initialiser la couche d'abstraction.
- * \return Valeur de type READER_Status. READER_OK si l'exécution s'est correctement déroulée. Toute autre valeur indique une erreur.
+ * \fn READER_Status READER_HAL_InitWithDefaults(READER_HAL_CommSettings *pSettings)
+ * \return The function returns an execution code of type READER_Status that indicates if the function behaved as expected or not.
+ * \param *pSettings is a pointer on a READER_HAL_CommSettings data structure that contains low level communication settings for the hardware abstraction layer.
+ * This function is used i order to initialize the READER_HAL_CommSettings structure pointed by *pSettings to the initial default values as defined in the ISO7816-3 section 8.3.
  */ 
 READER_Status READER_HAL_InitWithDefaults(READER_HAL_CommSettings *pSettings){
 	READER_Status retVal;

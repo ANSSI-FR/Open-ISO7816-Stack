@@ -1,3 +1,12 @@
+/**
+ * \file reader_t0_apdu.h
+ * \author Boris
+ * 
+ * In this file we define all the prototype of the functions used to manipulate APDUs with the T=0 protocol.
+ */
+
+
+
 #include "reader.h"
 #include "reader_apdu.h"
 #include "reader_tpdu.h"

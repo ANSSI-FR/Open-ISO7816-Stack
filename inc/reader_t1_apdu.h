@@ -1,3 +1,11 @@
+/**
+ * \file reader_t1_apdu.h
+ * \author Boris
+ * 
+ * In this file we define all the prototype of the functions used to manipulate APDUs with the T=1 protocol.
+ */
+
+
 #include "reader_t1.h"
 
 

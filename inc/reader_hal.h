@@ -1,17 +1,11 @@
 /**
  * \file reader_hal.h
- * \brief Prototypes de la couche d'abstraction.
- * \author B. Simunovic
- * \date 28 mars 2018
- * 
- * Dans ce fichier son définis les prototypes de fonctions de la couche d'abstraction du matériel du lecteur.
+ * \author Boris
  */
-
 
 
 #ifndef __READER_HAL_H__
 #define __READER_HAL_H__
-
 
 
 #include "reader.h"
@@ -19,10 +13,6 @@
 #include "reader_utils.h"
 #include "reader_atr.h"
 #include <stdint.h>
-
-
-/* Ici, aucune fonction n'interagit avec le hardware ...  */
-
 
 
 

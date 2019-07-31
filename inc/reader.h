@@ -1,3 +1,10 @@
+/**
+ * \file reader.h
+ * \author Boris
+ * \brief This file contains the definition of the READER_Status type.
+ */
+
+
 #ifndef __READER_H__
 #define __READER_H__
 
@@ -8,7 +15,11 @@
 
 
 
-
+/**
+ * \enum READER_Status
+ * This type is used to encode the returned execution code of all the functions of the project.
+ * For each function, this code indicates if the function behaved as expected or not.
+ */
 typedef enum READER_Status READER_Status;
 enum READER_Status{
 	READER_OK                       = (uint32_t)(0x00000001),
