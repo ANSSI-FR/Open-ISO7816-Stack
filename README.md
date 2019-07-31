@@ -21,7 +21,7 @@ For the moment the supported devices are :
 ## Prerequisites
 ----------------
 
-	- STLINK tool
+	- STLINK tool 
 	- RUBY (for the tests)
 	- Compiler for your local machine (for the tests)
 	- Cross compiler for your target
@@ -226,7 +226,7 @@ READER_T0_APDU_Init(&context, &settings);
 /* Executing an APDU when using the protocol T=0 */
 READER_T0_APDU_Execute(&context, &apduCmd, &apduResp);
 ```
-	
+
 	
 ## To Do
 --------
