@@ -10,8 +10,10 @@
 
 
 #include <stdint.h>
-#include "reader_hal.h"
-#include "reader_t1.h"
+//#include "reader_hal.h"
+//#include "reader_t1.h"
+#include "reader.h"
+#include "reader_hal_comm_settings.h"
 
 
 

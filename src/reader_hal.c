@@ -6,7 +6,7 @@
 
 
 #include "reader_hal.h"
-#include "reader_hal_basis.h"
+//#include "reader_hal_basis.h"
 #include "reader_periph.h"
 
 

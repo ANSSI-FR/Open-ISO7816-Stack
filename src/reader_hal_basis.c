@@ -1,3 +1,14 @@
+/**
+ * \file reader_hal_basis.c
+ * \author Boris
+ * Il a ete choisi de decomposer cette HAL en deux parties (en deux niveaux d'abstraction).
+ * Ces deux parties correspondent aux fichiers reader_hal.c et reader_hal_basis.c.
+ * Ce fichier (reader_hal_basis.c) sert a former des primitives pour les fonctions definies dans le fichier reader_hal.c (niveau d'abstraction superieur).
+ * Le but de ce fichier est d'isoler encore plus finement les fonctions reelement dependantes du materiel.
+ * En l'occurence, dans le cas de cette implementation, ce fichier est le seul a inclure la HAL de ST.
+ */
+
+
 //#include "reader_hal_.h"
 #include "reader_hal_basis.h"
 #include "reader_periph.h"

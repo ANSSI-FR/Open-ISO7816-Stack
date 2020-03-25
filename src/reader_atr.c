@@ -1,5 +1,6 @@
 #include "reader_atr.h"
-
+#include "reader_hal.h"
+//#include "reader_hal_comm_settings.h"
 
 
 

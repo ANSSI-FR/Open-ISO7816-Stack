@@ -2,7 +2,9 @@
 #define __READER_T1_SBLOCK_H__
 
 
-#include "reader_t1.h"
+//#include "reader_t1.h"
+#include "reader.h"
+#include "reader_t1_block.h"
 
 
 

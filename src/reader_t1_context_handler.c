@@ -1,4 +1,5 @@
 #include "reader_t1_context_handler.h"
+#include "reader_t1_buffer_handler.h"
 
 
 /* Initialisation de la structure */

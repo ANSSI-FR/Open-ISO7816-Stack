@@ -2,8 +2,9 @@
 #define __READER_T1_RBLOCK_H__
 
 
-#include "reader_t1.h"
-
+//#include "reader_t1.h"
+#include "reader.h"
+#include "reader_t1_block.h"
 
 
 #define READER_T1_RBLOCK_MAXSIZE   (READER_T1_BLOCK_PROLOGUE_SIZE + READER_T1_BLOCK_EPILOGUE_MAXSIZE + 0)

@@ -9,7 +9,13 @@
 
 
 
-#include "reader_t1.h"
+//#include "reader_t1.h"
+#include "reader.h"
+#include "reader_t1_rblock.h"
+#include "reader_t1_iblock.h"
+#include "reader_t1_context_handler.h"
+#include "reader_apdu.h"
+
 
 
 

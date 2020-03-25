@@ -1,5 +1,7 @@
 #include "reader_t1_block_forgery.h"
 
+#include "reader_t1_error_handling.h"
+#include "reader_t1_buffer_handler.h"
 
 
 

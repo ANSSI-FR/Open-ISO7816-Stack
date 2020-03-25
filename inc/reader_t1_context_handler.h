@@ -8,8 +8,12 @@
 #define __READER_T1_CONTEXT_HANDLER_H__
 
 
-#include "reader_hal.h"
-#include "reader_t1.h"
+#include "reader.h"
+//#include "reader_hal.h"
+#include "reader_t1_block.h"
+#include "reader_apdu.h"
+#include "reader_t1_sblock.h"
+//#include "reader_t1.h"
 
 
 
