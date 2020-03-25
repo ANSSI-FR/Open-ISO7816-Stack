@@ -4,6 +4,9 @@
 #include "mock_reader_periph.h"
 
 #include "reader_t1_block.h"
+#include "reader_t1_iblock.h"
+#include "reader_t1_sblock.h"
+#include "reader_t1_rblock.h"
 
 #include "reader_tests_block.h"
 #include "reader_tests_test.h"
