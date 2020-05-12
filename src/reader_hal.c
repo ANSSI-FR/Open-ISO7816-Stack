@@ -227,6 +227,11 @@ void READER_HAL_ErrHandler(void){
 READER_Status READER_HAL_DoColdReset(void){
 	READER_Status retVal;
 	
+	/* On eteint tout avant le cold reset ...  */
+	retVal = READER_HAL_SetPwrLine(READER_HAL_STATE_OFF);     if(retVal != READER_OK) return retVal;
+	retVal = READER_HAL_SetClkLine(READER_HAL_STATE_OFF);     if(retVal != READER_OK) return retVal;
+	retVal = READER_HAL_SetRstLine(READER_HAL_STATE_OFF);     if(retVal != READER_OK) return retVal;
+
 	/* Activation et Cold Reset */
 	READER_HAL_Delay(50);
 	retVal = READER_HAL_SetPwrLine(READER_HAL_STATE_ON);      if(retVal != READER_OK) return retVal;
