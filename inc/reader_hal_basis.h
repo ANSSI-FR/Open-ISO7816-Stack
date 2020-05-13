@@ -48,6 +48,7 @@ enum READER_HAL_Protocol{
 READER_Status READER_HAL_InitHardware(void);
 READER_Status READER_HAL_RcvChar(READER_HAL_CommSettings *pSettings, READER_HAL_Protocol protocol, uint8_t *character, uint32_t timeout);
 READER_Status READER_HAL_SendChar(READER_HAL_CommSettings *pSettings, READER_HAL_Protocol protocol, uint8_t character, uint32_t timeout);
+READER_Status READER_HAL_WaitUntilSendComplete(READER_HAL_CommSettings *pSettings);
 
 
 READER_Status READER_HAL_SetPwrLine(READER_HAL_State state);

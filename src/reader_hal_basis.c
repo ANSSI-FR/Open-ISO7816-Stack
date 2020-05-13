@@ -311,3 +311,16 @@ uint32_t READER_HAL_GetTick(void){
 	return (uint32_t)HAL_GetTick();
 }
 
+
+
+/**
+ * \fn READER_Status READER_HAL_WaitSendComplete(READER_HAL_CommSettings *pSettings)
+ * \brief Waits until a byte send process is over.
+ * \param *pSettings is a pointer a #READER_HAL_CommSettings strcut containing the HAL low level communication parameters.
+ * \return This function returns an #HAL_Status execution code.
+ */
+READER_Status READER_HAL_WaitUntilSendComplete(READER_HAL_CommSettings *pSettings){
+	while(!(USART2->SR & USART_SR_TC));
+	
+	return READER_OK;
+}
