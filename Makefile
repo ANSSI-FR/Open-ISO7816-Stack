@@ -6,7 +6,7 @@ STLINK=~/stlink/build/Release/
 # Target can be stm32f407, stm32f411.
 TARGET=stm32f407
 # Linker script file, has to be changed with target
-LDFILE=STM32F407VGTx_FLASH.ld
+LDFILE=ld/STM32F407VGTx_FLASH.ld
 # Name of the startup file in the startup/ folder (without the .s extension)
 STARTUP_FILE=startup_stm32f407xx
 
