@@ -3,6 +3,17 @@ AR = arm-none-eabi-ar
 OBJCOPY=arm-none-eabi-objcopy
 STLINK=~/stlink/build/Release/
 
+# Target can be stm32f407, stm32f411.
+TARGET=stm32f407
+# Linker script file, has to be changed with target
+LDFILE=STM32F407VGTx_FLASH.ld
+# Name of the startup file in the startup/ folder (without the .s extension)
+STARTUP_FILE=startup_stm32f407xx
+
+CPU_CIBLE=cortex-m4
+
+
+
 MAKEFILE_TESTS=Makefile_tests
 
 INCDIR=inc
@@ -12,17 +23,15 @@ OUTDIR=out
 DEPDIR=dep
 OBJDIR=obj
 TESTDIR=tests
+STARTUPDIR=startup
 
 
-LIB=stm32f407_hal
-HALDIR=$(LIBDIR)/HAL
-CMSISDIR=$(LIBDIR)/CMSIS
-BSPDIR=$(LIBDIR)/BSP
+LIB=$(TARGET)_hal
+HALDIR=$(LIBDIR)/$(TARGET)/HAL
+CMSISDIR=$(LIBDIR)/$(TARGET)/CMSIS
+BSPDIR=$(LIBDIR)/$(TARGET)/BSP
 
 
-
-
-LDFILE=STM32F407VGTx_FLASH.ld
 
 
 
@@ -34,17 +43,14 @@ OUTPUT_MAP=$(OUTPUT_NAME).map
 OUTPUT_LST=$(OUTPUT_NAME).lst
 OUTPUT_AR=lib$(OUTPUT_NAME).a
 
-CPU_CIBLE=cortex-m4
-UC_CIBLE=STM32F407xx
 
 
-DEFS = -D$(UC_CIBLE)
 DEFS+= -DUSE_HAL_DRIVER
 #DEFS+= -DUSE_HAL_GPIO_MODULE
 
 
 INCS= -I$(INCDIR)
-INCS+= -I$(LIBDIR)
+INCS+= -I$(LIBDIR)/$(TARGET)
 INCS+= -I$(HALDIR)/Inc
 INCS+= -I$(HALDIR)/Inc/Legacy
 INCS+= -I$(CMSISDIR)/Include
@@ -75,6 +81,7 @@ LDFLAGS+= -T$(LDFILE)
 
 
 SRCS=$(shell ls $(SRCDIR) | sed -e 's/\.s/\.c/g')
+SRCS+= $(STARTUP_FILE).c
 OBJS=$(addprefix $(OBJDIR)/,$(SRCS:.c=.o))
 DEPS=$(addprefix $(DEPDIR)/,$(SRCS:.c=.d))
 
@@ -140,7 +147,10 @@ $(OBJDIR)/%.o:$(SRCDIR)/%.c $(DEPDIR)/%.d
 	$(CC) $(CFLAGS) -c -MD -MT $*.o -MF $(DEPDIR)/$*.d $< -o $@
 	
 	
-$(OBJDIR)/%.o:$(SRCDIR)/%.s $(DEPDIR)/%.d
+#$(OBJDIR)/%.o:$(SRCDIR)/%.s $(DEPDIR)/%.d
+#	$(CC) $(CFLAGS) -c -MD -MT $*.o -MF $(DEPDIR)/$*.d $< -o $@
+
+$(OBJDIR)/$(STARTUP_FILE).o:$(STARTUPDIR)/$(STARTUP_FILE).s $(DEPDIR)/%.d
 	$(CC) $(CFLAGS) -c -MD -MT $*.o -MF $(DEPDIR)/$*.d $< -o $@
 		
 		
