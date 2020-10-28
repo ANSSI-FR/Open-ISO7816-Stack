@@ -2,13 +2,14 @@ CC=arm-none-eabi-gcc
 AR = arm-none-eabi-ar
 OBJCOPY=arm-none-eabi-objcopy
 STLINK=~/stlink/build/Release/
+STFLASH=st-flash
 
 # Target can be stm32f407, stm32f411.
-TARGET=stm32f407
+TARGET=stm32f411
 # Linker script file, has to be changed with target
-LDFILE=ld/STM32F407VGTx_FLASH.ld
+LDFILE=ld/STM32F411VEHx_FLASH.ld
 # Name of the startup file in the startup/ folder (without the .s extension)
-STARTUP_FILE=startup_stm32f407xx
+STARTUP_FILE=startup_stm32f411xe
 
 CPU_CIBLE=cortex-m4
 
@@ -99,7 +100,7 @@ reader:all
 	$(AR) -r $(OUTPUT_AR) $(subst $(OBJDIR)/main.o,,$(OBJS)) $(LIBDIR)/obj/*.o
 
 upload:all
-	$(STLINK)/st-flash write $(OUTDIR)/$(OUTPUT_BIN) 0x8000000
+	$(STFLASH) write $(OUTDIR)/$(OUTPUT_BIN) 0x8000000
 	
 	
 clean:
