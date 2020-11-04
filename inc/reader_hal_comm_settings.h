@@ -22,6 +22,10 @@
 #define READER_HAL_DEFAULT_FREQ       (uint32_t)(4200000)
 #define READER_HAL_DEFAULT_GT         (uint32_t)(12)
 
+#define READER_HAL_STM32_SYSCLK       (uint32_t)(100000000)
+#define READER_HAL_STM32_APB1_PRESC   (uint32_t)(4)
+#define READER_HAL_STM32_AHB_PRESC    (uint32_t)(1)
+
 
 
 /**

@@ -26,7 +26,7 @@ READER_Status READER_HAL_SetFreq(READER_HAL_CommSettings *pSettings, uint32_t ne
 	
 	
 	/* On recupere la frequence et la baudrate actuel. Peut aussi etre recupere a partir des infos de *currentSettings */
-	oldFreq = READER_UTILS_GetCardFreq(168000000, 1, 4, smartcardHandleStruct.Init.Prescaler);
+	oldFreq = READER_UTILS_GetCardFreq(READER_HAL_STM32_SYSCLK, READER_HAL_STM32_AHB_PRESC, READER_HAL_STM32_APB1_PRESC, smartcardHandleStruct.Init.Prescaler);
 	oldBaudRate = smartcardHandleStruct.Init.BaudRate;
 	newBaudRate = READER_UTILS_ComputeNewBaudRate(oldBaudRate, oldFreq, newFreq);
 	
@@ -69,7 +69,7 @@ READER_Status READER_HAL_SetEtu(READER_HAL_CommSettings *pSettings, uint32_t Fi,
 	//uint32_t WI;
 	
 	/* On recupere les parametres de communication actuels. On aurait aussi pu le faire a partir de la structure globalCurrentSettings */
-	freq = READER_UTILS_GetCardFreq(168000000, 1, 4, smartcardHandleStruct.Init.Prescaler);
+	freq = READER_UTILS_GetCardFreq(READER_HAL_STM32_SYSCLK, READER_HAL_STM32_AHB_PRESC, READER_HAL_STM32_APB1_PRESC, smartcardHandleStruct.Init.Prescaler);
 	
 	/* On calcule le nouveau baudrate qui correspond a la nouvelle config (nouveau etu) */
 	//newBaudRate = freq / (Fi / Di);
@@ -309,22 +309,24 @@ uint32_t READER_HAL_GetDi(READER_HAL_CommSettings *pSettings){
 //	return pSettings->redundancyType;
 //}
 
-
+/*
+ * TODO: Seek the corresponding prescaler values and correct this function.
+ */
 uint32_t READER_HAL_ComputePrescFromFreq(uint32_t freq){
 	switch(freq){
 		case 4200000:
-			return SMARTCARD_PRESCALER_SYSCLK_DIV10;
+			return SMARTCARD_PRESCALER_SYSCLK_DIV6;
 			break;
 		case 3500000:
-			return SMARTCARD_PRESCALER_SYSCLK_DIV12;
+			return SMARTCARD_PRESCALER_SYSCLK_DIV6;
 			break;
 		case 3000000:
-			return SMARTCARD_PRESCALER_SYSCLK_DIV14;
+			return SMARTCARD_PRESCALER_SYSCLK_DIV6;
 			break;
 		case 5250000:
-			return SMARTCARD_PRESCALER_SYSCLK_DIV8;
+			return SMARTCARD_PRESCALER_SYSCLK_DIV6;
 			break;
 		default:
-			return SMARTCARD_PRESCALER_SYSCLK_DIV10;
+			return SMARTCARD_PRESCALER_SYSCLK_DIV6;
 	}
 }
