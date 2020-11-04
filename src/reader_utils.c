@@ -11,6 +11,17 @@ uint32_t READER_UTILS_GetCardFreq(uint32_t SYSCLK, uint32_t AHB, uint32_t APB1, 
 	return (float)SYSCLK / (float)AHB / (float)APB1 / (float)(value_USART_GTPR_PSC * 2);   /* Voir en.DM00031020 section 30.6.7  et en.DM00031020 section 7.2 figure 21 */
 }
 
+
+/**
+ * \fn uint32_t READER_UTILS_ComputeNewBaudRate(uint32_t oldBaudRate, uint32_t oldFreq, uint32_t newFreq)
+ * \param oldBaudRate is the current baudrate value being used to communicate with the smartcard.
+ * \param oldFreq is the current frequency value being used to communicate with the smartcard.
+ * \param newFreq is the new requested value to be used for the communication with the card.
+ * \return This function returns the new baudrate value that should be applied to the USART peripheral in order to keep the same ETU value.
+ * This function is used to compute the new baudrate to be applied to the usart peripheral when a change of card frequency is requested.
+ * The goal is to compute the new baudrate in such a way that the ETU keeps being the same in spite of teh frequency change.
+ * The reason this function exists is that the HAL librairy offered with stm32 targets doesn't offer to configure directly the the ETU, it enables only setting up the baudrate.
+ */
 uint32_t READER_UTILS_ComputeNewBaudRate(uint32_t oldBaudRate, uint32_t oldFreq, uint32_t newFreq){
 	return (uint32_t)(((float)newFreq / (float)oldFreq) * (float)oldBaudRate);
 }
