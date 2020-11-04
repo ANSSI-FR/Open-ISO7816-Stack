@@ -2,7 +2,7 @@ CC=arm-none-eabi-gcc
 AR=arm-none-eabi-ar
 OBJCOPY=arm-none-eabi-objcopy
 
-TARGET=stm32f411
+TARGET=stm32f407
 CPU_CIBLE=cortex-m4
 
 LIBPREFIX=lib
