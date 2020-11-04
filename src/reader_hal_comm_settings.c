@@ -309,24 +309,21 @@ uint32_t READER_HAL_GetDi(READER_HAL_CommSettings *pSettings){
 //	return pSettings->redundancyType;
 //}
 
-/*
- * TODO: Seek the corresponding prescaler values and correct this function.
- */
 uint32_t READER_HAL_ComputePrescFromFreq(uint32_t freq){
 	switch(freq){
 		case 4200000:
-			return SMARTCARD_PRESCALER_SYSCLK_DIV6;
+			return SMARTCARD_PRESCALER_SYSCLK_DIV10;
 			break;
 		case 3500000:
-			return SMARTCARD_PRESCALER_SYSCLK_DIV6;
+			return SMARTCARD_PRESCALER_SYSCLK_DIV12;
 			break;
 		case 3000000:
-			return SMARTCARD_PRESCALER_SYSCLK_DIV6;
+			return SMARTCARD_PRESCALER_SYSCLK_DIV14;
 			break;
 		case 5250000:
-			return SMARTCARD_PRESCALER_SYSCLK_DIV6;
+			return SMARTCARD_PRESCALER_SYSCLK_DIV8;
 			break;
 		default:
-			return SMARTCARD_PRESCALER_SYSCLK_DIV6;
+			return SMARTCARD_PRESCALER_SYSCLK_DIV10;
 	}
 }
