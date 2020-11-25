@@ -1,6 +1,6 @@
-CC=arm-none-eabi-gcc
-AR = arm-none-eabi-ar
-OBJCOPY=arm-none-eabi-objcopy
+CC=/usr/bin/arm-none-eabi-gcc
+AR=/usr/bin/arm-none-eabi-ar
+OBJCOPY=/usr/bin/arm-none-eabi-objcopy
 STLINK=~/stlink/build/Release/
 STFLASH=st-flash
 
