@@ -1,5 +1,5 @@
 CC=/usr/bin/arm-none-eabi-gcc
-AR=a/usr/bin/rm-none-eabi-ar
+AR=/usr/bin/arm-none-eabi-ar
 OBJCOPY=/usr/bin/arm-none-eabi-objcopy
 
 
