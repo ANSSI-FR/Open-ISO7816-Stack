@@ -317,19 +317,19 @@ uint32_t READER_HAL_GetDi(READER_HAL_CommSettings *pSettings){
 uint32_t READER_HAL_ComputePrescFromFreq(uint32_t freq){
 	switch(freq){
 		case 4200000:
-			return SMARTCARD_PRESCALER_SYSCLK_DIV10;
+			return SMARTCARD_PRESCALER_SYSCLK_DIV6;
 			break;
 		case 3500000:
-			return SMARTCARD_PRESCALER_SYSCLK_DIV12;
+			return SMARTCARD_PRESCALER_SYSCLK_DIV6;
 			break;
 		case 3000000:
-			return SMARTCARD_PRESCALER_SYSCLK_DIV14;
+			return SMARTCARD_PRESCALER_SYSCLK_DIV6;
 			break;
 		case 5250000:
-			return SMARTCARD_PRESCALER_SYSCLK_DIV8;
+			return SMARTCARD_PRESCALER_SYSCLK_DIV6;
 			break;
 		default:
-			return SMARTCARD_PRESCALER_SYSCLK_DIV10;
+			return SMARTCARD_PRESCALER_SYSCLK_DIV6;
 	}
 }
 #elif TARGET_STM32F407
