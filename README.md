@@ -1,41 +1,128 @@
 # ISO7816 smartcard reader
 ==========================
 
-## Getting started
+## Introduction
 
-The ISO7816 smartcard reader is a pure C library designed for embedded systems.
-It allows communicating APDUs with a smartcard following the ISO7816-3 specification.
-The library supports sending and receiving APDUs using protocols T=0 and T=1.
+This project aims to provide an open-source implementation of the ISO7816-3 communication protocol from the reader side.
+This protocol is ruling the interactions between a smartcard and a card reader when using its contacts to communicate.
+It is defined by the ISO/IEC 7816-3 specification which can be found [here](https://www.iso.org/standard/38770.html).
 
+This code is designed to be run on an embedded target and is organized according to several abstraction layers, thus allowing you to easily make your own implementation for a target which might not be supported yet.
+The software is written in pure C code and is thoroughly tested to asses its compliance with the protocol specification.
 
-## Target devices
------------------
-
-The code is designed to be easilly adaptable to a big range of microcontrollers.
-For the moment the supported devices are :
-
-- STM32F407 
-
-## Prerequisites
-----------------
+At its higher abstraction level, this librairy provides an API allowing you to send and receive APDUs to/from a smartcard.
+At the same time, the lower level APIs are allowing you to interract directly with the arcanes of the T=0 and T=1 underlying protocols.
 
 
-- STLINK tool
-- RUBY (for the tests)
-- Compiler for your local machine (for the tests)
-- Cross compiler for your target
+## Supported targets
 
-	
-	
-## Build instructions
----------------------
-In a first time, you should clone the code as:
+The currently supported targets are :
+* stm32f407
+* stm32f411
+
+It is recommended to use the developpment boards associated to those components (discovery boards).
+So you won't have to change some settings in the code (especially oscillator frequency provided by the board).
+
+
+
+## Getting project's code and cross-compiling it on your local machine
+
+First, clone project's repository on your local machine :
 
 ``` shell
-	> git clone git@bouffard.info:iso7816-reader
+> git clone git@git.bouffard.info:Apprentissage-Boris/iso7816-reader.git
+> git submodule init
+> git submodule update
 ```
 
-### Building and linking external projet with the reader library
+The project is relying on the following submodules : 
+* *Unity*, is a unit-test framework for testing the project.
+* *CMock*, is a mocking framework used jointly with the unity framework. Usefull for testing parts of code relying on hardware functions.
+
+
+### Installing toolchain and dependencies
+
+You have to install the ARM toolchain and cross-compiler on your local machine.
+Typically can be achieved by doing :
+``` shell
+$ apt-get install arm-none-eabi-*
+```
+
+You need as well to install the ST toolchain for flashing the target (stlink), especially the *st-flash* executable.
+You can get it fron the ST website, or on fedora distributions you can do :
+
+``` shell
+$ dnf install stlink-devel
+```
+
+### Setting-up the Makefile
+
+In the main directory Makefile set the following parameters to the correct values :
+
+``` shell
+CC=arm-none-eabi-gcc
+LD=arm-none-eabi-gcc
+AR=arm-none-eabi-ar
+OBJCOPY=arm-none-eabi-objcopy
+STFLASH=st-flash
+```
+
+Then, do the same for the Makefile in the *./lib* directory :
+
+``` shell
+CC=arm-none-eabi-gcc
+AR = arm-none-eabi-ar
+OBJCOPY=arm-none-eabi-objcopy
+STFLASH=st-flash
+```
+
+### Selecting the target
+
+To select the target for which the firmware has to be compiled you have to follow those steps :
+
+1. In the main directory open the Makefile and uncomment the lines corresponding to your target :
+
+``` shell
+# Target can be stm32f407, stm32f411.
+#TARGET=stm32f411
+#TARGET=stm32f407
+
+# Linker script file, has to be changed with target
+#LDFILE=ld/STM32F411VEHx_FLASH.ld
+#LDFILE=ld/STM32F407VGTx_FLASH.ld
+
+# Name of the startup file in the startup/ folder (without the .s extension)
+#STARTUP_FILE=startup_stm32f411xe
+#STARTUP_FILE=startup_stm32f407xx
+
+# Value of the proprocessor constant (defining the target) given to $(CC) at compile time
+#TARGET_DEFINE=TARGET_STM32F411
+#TARGET_DEFINE=TARGET_STM32F407
+```
+
+2. In the ./lib directory open the Makefile and uncomment the lines corresponding to your target :
+
+``` shell
+# Target can be stm32f407, stm32f411.
+#TARGET=stm32f411
+#TARGET=stm32f407
+
+# Value of the proprocessor constant (defining the target) given to $(CC) at compile time
+#TARGET_DEFINE=TARGET_STM32F411
+#TARGET_DEFINE=TARGET_STM32F407
+```
+
+
+### Compiling and uploading the project to the target
+
+Use the following commands from the main directory to compile the project and upload it to the target.
+
+``` shell
+$ make all
+$ make upload
+```
+
+### Building a static librairy and linking it to another project
 ----------------------------------------------------------------
 
 #### Building the static library
@@ -74,56 +161,116 @@ When linking your own projet you have to point out the path to the static librar
 	$ ld -Lpath/to/staticlib/folder/ -lreader
 ``` 
 
-#### Uploading the binay to the board
--------------------------------------
 
-Before uploading the developper shoud configure the Makefile in the following way :
+
+
+## Developpement informations and contributing
+
+### Testing the code
+
+The reader's code has to pass the tests described in the *./tests* directory.
+Tests are comiled and run on the local developpment machine.
+
+For running the tests, make sure you have the following tools installed on your local machine :
+* gcc
+* lcov
+* ruby (CMock framework needs it for the scripts which are building mock's code)
+* libc of the arm cross-compiler ?
+``` shell
+$ dnf install arm-none-eabi-newlib.noarch
+```
+* genhtml
+
+Eventually setup the path to ruby:
+``` shell
+	$ export RUBY=/path/to/ruby
+```
+
+Set up the following parameters in the *Makefile_tests* file to the correct values according to the setup of your local machine :
 
 ``` shell
-	$ export STLINK=~/stlink/build/Release/
+CC=gcc
+LD=gcc
+RUBY=ruby
+LCOV=lcov
+GCOV=gcov-7
+GENHTML=genhtml
 ```
 
-The variable STLINK have to be setp with the path to stlink tool directory.
 
-Then, the developper should execute in the command line in the current directory the following commands:
+Finally, you can compile all the test executables by doing the following from the main project directory :
+``` shell
+$ make tests
+```
+then, you execute them by typing :
+``` shell
+$ make test
+```
+
+You can obtain a code coverage report by using the following make istruction :
+``` shell
+$ make report
+```
+A report in an HTML format is then available in the *tests/cov* directory.
+
+
+note : for the tests the specfified gcc and gcov versions are gcc-7 and gcov-7. Seems to be compatibility problems with gcc-9 and gcov-9. Still needs to be tested for gcc-8 and gcov-8.
+
+
+### On-target debugging
+
+You need to install *openocd* tool on your local machine, then run the following bash script to run the openocd server.
 
 ``` shell
-	$ make clean
-	$ make all
-	$ make upload
+$ sudo apt-get install openocd
+$ ./start_openocd.sh <target>
 ```
-	
-### Building tests
-------------------
 
-Tests are implemented to insure that library doe not include code regression.
-They implement the ISO7816-3 standard. Before compiling and running the tests,
-the developper should update the Makefile_tests in the following way if ruby is
-not in the $PATH:
+*target* is a value depending on the target you are debugging.
+Possible values are :
+
+*stm32f411
+*stm32f407
+
+
+To manage the openocd server :
+``` shell
+$ telnet localhost 4444
+```
+
+Basic commands : shutdown
+For more commands see : http://openocd.org/doc/html/General-Commands.html
+
+
+Debugger :
 
 ``` shell
-	$ export RUBY=/path/to/ruby  (path to the ruby executable)
+$ sudo apt-get install gdb-multiarch
 ```
+(or arm-none-eabi-gdb)
 
-Then run the following commands in the library directory:
 
+run :
 ``` shell
-	$ cd Unity
-	$ git submodule init
-	$ git submodule update
-	
-	$ cd ../CMock
-	$ git submodule init
-	$ git submodule update
+$ gdb-multiarch out/test.elf
+$ target remote localhost:3333
+$ monitor reset halt
 ```
 
-Finaly, the developper is able to run the tests in the following way:
-	
-```shell
-	$ make clean
-	$ make tests
-	$ make test
-```
+
+
+## Connecting the reader to the smartcard
+
+For the currently supported stm32 targets, the wiring of the smartcard to the reader is always the same.
+The follwing signals have to be wired to the discovery board :
+
+| Smartcard signal   | stm32 port   | stm32 pin number |
+| ------------------ | ------------ | ---------------- |
+| Clock              | PORTA        | GPIO PIN 4       |
+| I/O                | PORTA        | GPIO PIN 2       |
+| Power              | PORTA        | GPIO PIN 6       |
+| Reset              | PORTA        | GPIO PIN 5       |
+| Ground             | Ground       | Ground           |
 	
 ## General code organization
 ----------------------------
@@ -137,7 +284,7 @@ depenent code is located in the files : *reader_hal_basis.c* and
 logic (hardware independant code) state machine to make the ISO7816 protocol
 work.
 
-## Features
+## Currently supported features of the ISO7816-3 protocol
 	
 | Feature                          | Implemented? | Tested? |
 | -------------------------------- | ------------ | ------- |
