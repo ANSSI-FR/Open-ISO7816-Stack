@@ -403,3 +403,13 @@ READER_T0_APDU_Execute(&context, &apduCmd, &apduResp);
 ## To Do
 --------
 
+## Copyright and license
+
+Copyright ANSSI (2017-2021)
+
+This software is licensed under a MIT license. See LICENSE file at the root folder of the project.
+
+## Authors
+
+  * Boris SIMUNOVIC (<mailto:boris.simunovic@ssi.gouv.fr>)
+
