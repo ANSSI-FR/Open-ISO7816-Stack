@@ -296,3 +296,15 @@ READER_T0_APDU_Init(&context, &settings);
 READER_T0_APDU_Execute(&context, &apduCmd, &apduResp);
 ```
 
+
+## Contributing
+
+Pull requests are welcome. See `CONTRIBUTING.md`.
+
+
+## Community
+
+If you’ve found a bug, or have an idea/suggestion/request, file an issue
+here on GitHub.
+
+
