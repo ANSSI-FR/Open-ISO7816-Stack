@@ -1,4 +1,4 @@
-# Open-source ISO7816-3 protocol implementation
+# Open-sourced ISO7816-3 protocol implementation
 
 
 ## Introduction
@@ -307,6 +307,6 @@ Pull requests are welcome. See `CONTRIBUTING.md`.
 ## Community
 
 If you’ve found a bug, or have an idea/suggestion/request, file an issue
-here on GitHub.
+here on GitHub or contact the authors by email.
 
 

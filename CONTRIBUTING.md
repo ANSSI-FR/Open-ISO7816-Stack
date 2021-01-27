@@ -6,7 +6,7 @@
 The code is splitted in two main parts. The first one is the hardware dependant
 code. It is an hardware abstraction layer composed of all the functions that are
 directly interacting with the hardware. Typically it is the set of functions
-purposed to the emission and reception of characters. The whole hardware
+in charge of emission and reception of characters. The whole hardware
 depenent code is located in the files : *reader_hal_basis.c* and
 *reader_hal_comm_settings.c* in the *./src* directory. The orther part is the
 logic (hardware independant code) state machine to make the ISO7816 protocol
@@ -75,9 +75,8 @@ $ ./start_openocd.sh <target>
 
 *target* is a value depending on the target you are debugging.
 Possible values are :
-
-*stm32f411
-*stm32f407
+ * stm32f411
+ * stm32f407
 
 
 To manage the openocd server :
