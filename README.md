@@ -412,4 +412,5 @@ This software is licensed under a MIT license. See LICENSE file at the root fold
 ## Authors
 
   * Boris SIMUNOVIC (<mailto:boris.simunovic@ssi.gouv.fr>)
+  * Guillaume BOUFFARD (<mailto:guillaume.bouffard@ssi.gouv.fr>)
 
