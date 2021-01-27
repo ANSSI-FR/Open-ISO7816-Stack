@@ -1,4 +1,4 @@
-# ISO7816 smartcard reader
+# Open-source ISO7816-3 protocol implementation
 
 
 ## Introduction
@@ -42,9 +42,9 @@ So you won't have to change some settings in the code (especially oscillator fre
 First, clone project's repository on your local machine :
 
 ``` shell
-> git clone git@git.bouffard.info:Apprentissage-Boris/iso7816-reader.git
-> git submodule init
-> git submodule update
+$ git clone git@git.bouffard.info:Apprentissage-Boris/iso7816-reader.git
+$ git submodule init
+$ git submodule update
 ```
 
 The project is relying on the following submodules : 
@@ -134,22 +134,21 @@ $ make all
 $ make upload
 ```
 
-### Building a static librairy and linking it to another project
-----------------------------------------------------------------
+## Building a static librairy and linking it to another project
 
-#### Building the static library
---------------------------------
+### Building the static library
+
 In the reader local directory execute the following command:
 
 ``` shell
-	> make clean
-	> make reader
+$ make clean
+$ make reader
 ```
 	
 A file libreader.a containing the static library is then generated.
 
-#### Including the library to your own projet and compiling it
---------------------------------------------------------------
+### Including the library to your own projet and compiling it
+
 
 To compile your projet with the reader library, the static library and all the
 headers in *reader/inc* must be accessible by your projet.
@@ -157,119 +156,21 @@ headers in *reader/inc* must be accessible by your projet.
 Your projet should include reader_lib.h file as:
 
 ``` c
-	#include "reader_lib.h"
+#include "reader_lib.h"
 ```
 	
 To build your project, all *reader/inc* headers should be indicated at the
 compilation time with the gcc *-I* option by the following way :
 
 ``` shell
-	$ gcc -Ireader/inc
+$ gcc -Ireader/inc
 ``` 
 	
 When linking your own projet you have to point out the path to the static library :
 
 ``` shell
-	$ ld -Lpath/to/staticlib/folder/ -lreader
+$ ld -Lpath/to/staticlib/folder/ -lreader
 ``` 
-
-
-
-
-## Developpement informations and contributing
-
-### Testing the code
-
-The reader's code has to pass the tests described in the *./tests* directory.
-Tests are comiled and run on the local developpment machine.
-
-For running the tests, make sure you have the following tools installed on your local machine :
-* gcc
-* lcov
-* ruby (CMock framework needs it for the scripts which are building mock's code)
-* libc of the arm cross-compiler ?
-``` shell
-$ dnf install arm-none-eabi-newlib.noarch
-```
-* genhtml
-
-Eventually setup the path to ruby:
-``` shell
-	$ export RUBY=/path/to/ruby
-```
-
-Set up the following parameters in the *Makefile_tests* file to the correct values according to the setup of your local machine :
-
-``` shell
-CC=gcc
-LD=gcc
-RUBY=ruby
-LCOV=lcov
-GCOV=gcov-7
-GENHTML=genhtml
-```
-
-
-Finally, you can compile all the test executables by doing the following from the main project directory :
-``` shell
-$ make tests
-```
-then, you execute them by typing :
-``` shell
-$ make test
-```
-
-You can obtain a code coverage report by using the following make istruction :
-``` shell
-$ make report
-```
-A report in an HTML format is then available in the *tests/cov* directory.
-
-
-note : for the tests the specfified gcc and gcov versions are gcc-7 and gcov-7. Seems to be compatibility problems with gcc-9 and gcov-9. Still needs to be tested for gcc-8 and gcov-8.
-
-
-### On-target debugging
-
-You need to install *openocd* tool on your local machine, then run the following bash script to run the openocd server.
-
-``` shell
-$ sudo apt-get install openocd
-$ ./start_openocd.sh <target>
-```
-
-*target* is a value depending on the target you are debugging.
-Possible values are :
-
-*stm32f411
-*stm32f407
-
-
-To manage the openocd server :
-``` shell
-$ telnet localhost 4444
-```
-
-Basic commands : shutdown
-For more commands see : http://openocd.org/doc/html/General-Commands.html
-
-
-Debugger :
-
-``` shell
-$ sudo apt-get install gdb-multiarch
-```
-(or arm-none-eabi-gdb)
-
-
-run :
-``` shell
-$ gdb-multiarch out/test.elf
-$ target remote localhost:3333
-$ monitor reset halt
-```
-
-
 
 ## Connecting the reader to the smartcard
 
@@ -283,18 +184,8 @@ The follwing signals have to be wired to the discovery board :
 | Power              | PORTA        | GPIO PIN 6       |
 | Reset              | PORTA        | GPIO PIN 5       |
 | Ground             | Ground       | Ground           |
-	
-## General code organization
-----------------------------
 
-The code is splitted in two main parts. The first one is the hardware dependant
-code. It is an hardware abstraction layer composed of all the functions that are
-directly interacting with the hardware. Typically it is the set of functions
-purposed to the emission and reception of characters. The whole hardware
-depenent code is located in the files : *reader_hal_basis.c* and
-*reader_hal_comm_settings.c* in the *./src* directory. The orther part is the
-logic (hardware independant code) state machine to make the ISO7816 protocol
-work.
+	
 
 ## Currently supported features of the ISO7816-3 protocol
 	
@@ -319,10 +210,8 @@ work.
 	
 
 ## Using the API
-----------------
 
 ### Data structures
--------------------
 
 ```c
 READER_HAL_CommSettings settings;
@@ -349,7 +238,6 @@ READER_T1_ContextHandler context2;
 
 
 ### Initalizing the API with default parameters values
-------------------------------------------------------
 
 ```c
 /* Initialization of the hardware abstraction layer with default values ...  */
@@ -368,7 +256,6 @@ READER_T1_APDU_Init(&context, &settings);
 ```
 
 ### Executing an APDU
----------------------
 
 ```c
 /* Executing an APDU when using the protocol T=0 */
@@ -381,7 +268,6 @@ READER_T1_APDU_Execute(&context, &apduCmd, &apduResp);
 ```
 	
 ### Extracting informations form the APDU Response structure
-------------------------------------------------------------
 
 ```c
 uint8_t *dataPtr;
@@ -397,7 +283,6 @@ READER_APDU_ExtractRespDataPtr(&apduResp, &dataPtr, &dataSize);
 
 	
 ### Full example when using T=0 protocol
-----------------------------------------
 
 ```c
 /* Initialization of the hardware abstraction layer with default values ...  */
@@ -410,8 +295,4 @@ READER_T0_APDU_Init(&context, &settings);
 /* Executing an APDU when using the protocol T=0 */
 READER_T0_APDU_Execute(&context, &apduCmd, &apduResp);
 ```
-
-	
-## To Do
---------
 
