@@ -1,5 +1,5 @@
 # ISO7816 smartcard reader
-==========================
+
 
 ## Introduction
 
@@ -12,6 +12,18 @@ The software is written in pure C code and is thoroughly tested to asses its com
 
 At its higher abstraction level, this librairy provides an API allowing you to send and receive APDUs to/from a smartcard.
 At the same time, the lower level APIs are allowing you to interract directly with the arcanes of the T=0 and T=1 underlying protocols.
+
+
+## Copyright and license
+
+Copyright ANSSI (2017-2021)
+
+This software is licensed under a MIT license. See LICENSE file at the root folder of the project.
+
+## Authors
+
+  * Boris SIMUNOVIC (<mailto:boris.simunovic@ssi.gouv.fr>)
+  * Guillaume BOUFFARD (<mailto:guillaume.bouffard@ssi.gouv.fr>)
 
 
 ## Supported targets
@@ -402,15 +414,4 @@ READER_T0_APDU_Execute(&context, &apduCmd, &apduResp);
 	
 ## To Do
 --------
-
-## Copyright and license
-
-Copyright ANSSI (2017-2021)
-
-This software is licensed under a MIT license. See LICENSE file at the root folder of the project.
-
-## Authors
-
-  * Boris SIMUNOVIC (<mailto:boris.simunovic@ssi.gouv.fr>)
-  * Guillaume BOUFFARD (<mailto:guillaume.bouffard@ssi.gouv.fr>)
 
