@@ -25,6 +25,8 @@ This software is licensed under a MIT license. See LICENSE file at the root fold
   * Boris SIMUNOVIC (<mailto:boris.simunovic@ssi.gouv.fr>)
   * Guillaume BOUFFARD (<mailto:guillaume.bouffard@ssi.gouv.fr>)
 
+This project has been developed as a part of an internship project supervised by Guillaume BOUFFARD ([ANSSI](https://www.ssi.gouv.fr/)) and carried out by Boris SIMUNOVIC (Grenoble Institute of Technology - [ESISAR](https://esisar.grenoble-inp.fr/))
+
 
 ## Supported targets
 
@@ -218,7 +220,7 @@ READER_HAL_CommSettings settings;
 ```
 
 *settings* is a data structre which contains all the parameters values currently used by READER_HAL hardware abstraction layer used by the library for low level communications (emission and reception of characters). 
-The user should modify directly the values into this structure. It's recommended to use the functions exposed in the file *reader_hal_comm_settings.h*.
+The user should not modify directly the values into this structure. It's recommended to use the functions exposed in the file *reader_hal_comm_settings.h*.
 
 
 ```c
