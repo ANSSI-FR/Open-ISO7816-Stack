@@ -1,6 +1,11 @@
+/**
+ * \file reader_atr.c
+ * \copyright This file is part of the Open-ISO7816-Stack project and is distributed under the MIT license. See LICENSE file in the root directory. 
+ * This file contains functions for dealing with ATR (Answer-To-Reset).
+ */
+
 #include "reader_atr.h"
 #include "reader_hal.h"
-//#include "reader_hal_comm_settings.h"
 
 
 
@@ -227,9 +232,6 @@ READER_Status READER_ATR_InitStruct(READER_ATR_Atr *atr){
 	return READER_OK;
 }
 
-
-
-
 READER_Status READER_ATR_IsInterfacesBytesToRead(uint8_t Y){
 	if(Y != 0){
 		return READER_OK;
@@ -238,7 +240,6 @@ READER_Status READER_ATR_IsInterfacesBytesToRead(uint8_t Y){
 		return READER_NO;
 	}
 }
-
 
 READER_Status READER_ATR_IsTAToRead(uint8_t Y){
 	if(0x0001 & Y){
@@ -249,7 +250,6 @@ READER_Status READER_ATR_IsTAToRead(uint8_t Y){
 	}
 }
 
-
 READER_Status READER_ATR_IsTBToRead(uint8_t Y){
 	if(0x0002 & Y){
 		return READER_OK;
@@ -258,7 +258,6 @@ READER_Status READER_ATR_IsTBToRead(uint8_t Y){
 		return READER_NO;
 	}
 }
-
 
 READER_Status READER_ATR_IsTCToRead(uint8_t Y){
 	if(0x0004 & Y){
@@ -269,7 +268,6 @@ READER_Status READER_ATR_IsTCToRead(uint8_t Y){
 	}
 }
 
-
 READER_Status READER_ATR_IsTDToRead(uint8_t Y){
 	if(0x0008 & Y){
 		return READER_OK;
@@ -279,11 +277,9 @@ READER_Status READER_ATR_IsTDToRead(uint8_t Y){
 	}
 }
 
-
 uint8_t READER_ATR_ComputeY(uint8_t TD){
 	return (TD >> 4) & 0x0F;
 }
-
 
 uint8_t READER_ATR_ComputeT(uint8_t TD){
 	return TD & 0x0F;
@@ -301,14 +297,12 @@ uint32_t READER_ATR_ComputeFi(uint8_t TA1){
 	return (uint32_t)(globalFiConvTable[k]);
 }
 
-
 uint32_t READER_ATR_ComputeFMax(uint8_t TA1){
 	uint8_t k;
 	
 	k = (TA1 >> 4) & 0x0F;
 	return (uint32_t)(globalFMaxConvTable[k]);
 }
-
 
 uint32_t READER_ATR_ComputeDi(uint8_t TA1){
 	uint8_t k;
@@ -320,7 +314,6 @@ uint32_t READER_ATR_ComputeDi(uint8_t TA1){
 READER_ATR_ClockStopIndicator READER_ATR_GetClockStopIndic(uint8_t TA15){
 	return (TA15 >> 6) & 0x03;
 }
-
 
 READER_ATR_ClassIndicator READER_ATR_GetClassIndic(uint8_t TA15){
 	return  TA15 & 0x40;
@@ -338,14 +331,11 @@ READER_ATR_UseOfSPU READER_ATR_GetUseSPU(uint8_t TB15){
 	}
 }
 
-
 void READER_ATR_ErrHandler(void){
 	while(1){
 		
 	}
 }
-
-
 
 READER_Status READER_ATR_CheckTS(uint8_t TS){
 	if(TS == READER_ATR_ENCODING_DIRECT){
@@ -359,7 +349,6 @@ READER_Status READER_ATR_CheckTS(uint8_t TS){
 	}
 }
 
-
 READER_ATR_EncodingConv READER_ATR_GetEncoding(uint8_t TS){
 	if(TS == READER_ATR_ENCODING_DIRECT){
 		return READER_ATR_ENCODING_DIRECT;
@@ -368,9 +357,6 @@ READER_ATR_EncodingConv READER_ATR_GetEncoding(uint8_t TS){
 		return READER_ATR_ENCODING_REVERSE;
 	}
 }
-
-
-
 
 READER_Status READER_ATR_IsT0(READER_ATR_Atr *atr){
 	if(atr->isT0Indicated == READER_ATR_INDICATED){
@@ -381,7 +367,6 @@ READER_Status READER_ATR_IsT0(READER_ATR_Atr *atr){
 	}
 }
 
-
 READER_Status READER_ATR_IsT1(READER_ATR_Atr *atr){
 	if(atr->isT1Indicated == READER_ATR_INDICATED){
 		return READER_OK;
@@ -391,7 +376,6 @@ READER_Status READER_ATR_IsT1(READER_ATR_Atr *atr){
 	}
 }
 
-
 READER_Status READER_ATR_IsT15(READER_ATR_Atr *atr){
 	if(atr->isT15Indicated == READER_ATR_INDICATED){
 		return READER_OK;
@@ -400,7 +384,6 @@ READER_Status READER_ATR_IsT15(READER_ATR_Atr *atr){
 		return READER_NO;
 	}
 }
-
 
 /**
  * \fn READER_Status READER_ATR_ProcessT(READER_ATR_Atr *atr, uint8_t T)
@@ -424,8 +407,6 @@ READER_Status READER_ATR_ProcessT(READER_ATR_Atr *atr, uint8_t T){
 	
 	return READER_OK;
 }
-
-
 
 READER_Status READER_ATR_ProcessTA(READER_ATR_Atr *atr, uint8_t TA, uint32_t i, uint8_t T){	
 	if(i == 1){          /* Global interface Byte */
@@ -452,7 +433,6 @@ READER_Status READER_ATR_ProcessTA(READER_ATR_Atr *atr, uint8_t TA, uint32_t i, 
 	return READER_OK;
 }
 
-
 READER_Status READER_ATR_ProcessTB(READER_ATR_Atr *atr, uint8_t TB, uint32_t i, uint8_t T){
 	if((i == 1) || (i == 2)){
 		return READER_OK;        /* TB1 et TB2 sont deprecated voir section 8.3  ISO7816_3. Ils doivent etre ignores */
@@ -475,7 +455,6 @@ READER_Status READER_ATR_ProcessTB(READER_ATR_Atr *atr, uint8_t TB, uint32_t i, 
 	return READER_OK;
 }
 
-
 READER_Status READER_ATR_ProcessTC(READER_ATR_Atr *atr, uint8_t TC, uint32_t i, uint8_t T){
 	if(i == 1){
 		atr->N = TC;  /* Extra guardtime */
@@ -494,8 +473,6 @@ READER_Status READER_ATR_ProcessTC(READER_ATR_Atr *atr, uint8_t TC, uint32_t i, 
 	
 	return READER_OK;
 }
-
-
 
 /**
  * \fn READER_Status READER_ATR_CheckTCK(uint8_t *rcvdBytesList, uint32_t rcvdBytesCount, uint8_t TCK)
@@ -524,7 +501,6 @@ READER_Status READER_ATR_CheckTCK(uint8_t *rcvdBytesList, uint32_t rcvdBytesCoun
 	}
 }
 
-
 /**
  * \fn READER_Status READER_ATR_AddRcvdByte(uint8_t byte, uint8_t *byteList, uint32_t *byteCount)
  * \brief Cette fonction est utile en interne de la fonction READER_ATR_Receive(). Elle sert a tenir à jour une liste de tous les octets recus pendant l'ATR. Cette liste d'octets est utile pour le calcul du TCK.
@@ -544,74 +520,3 @@ READER_Status READER_ATR_AddRcvdByte(uint8_t byte, uint8_t *byteList, uint32_t *
 	
 	return READER_OK;
 }
-
-
-
-//uint32_t READER_ATR_GetBWI(READER_ATR_Atr *pAtr){
-//	uint8_t byte;
-//	
-//	
-//	byte = pAtr->T1Protocol.TBBytes[0];
-//	
-//	if(byte != READER_ATR_NOT_INDICATED){
-//		return (uint32_t)((byte & 0xF0) >> 4);                           /* Voir ISO7816-3 section 11.4.3 */
-//	}
-//	else{
-//		return READER_DEFAULT_BWI;
-//	}
-//	
-//}
-
-
-//uint32_t READER_ATR_GetRedundancyType(READER_ATR_Atr *pAtr){
-//	/* Voir ISO7816-3 section 11.4.4 */
-//	uint8_t byte;
-//	
-//	
-//	byte = pAtr->T1Protocol.TCBytes[0];
-//	
-//	
-//	if(byte == READER_ATR_NOT_INDICATED){
-//		return READER_DEFAULT_REDUNDANCY_TYPE;  
-//	}
-//	else{
-//		if((byte & 0x01) == 0x00){
-//			return READER_T1_LRC;
-//		}
-//		else{
-//			return READER_T1_CRC;
-//		}
-//	}
-//}
-
-
-//uint32_t READER_ATR_GetIFSC(READER_ATR_Atr *pAtr){
-//	/* Voir ISO7816-3 section 11.4.2 */
-//	uint8_t byte;
-//	
-//	
-//	byte = pAtr->T1Protocol.TABytes[0];
-//	
-//	if(byte == READER_ATR_NOT_INDICATED){
-//		return READER_DEFAULT_IFSC;
-//	}
-//	else{
-//		return (uint32_t)byte;
-//	}
-//}
-
-
-//uint32_t READER_ATR_GetWI(READER_ATR_Atr *pAtr){
-//	/* Voir ISO7816-3 section 10.2 */
-//	uint8_t byte;
-//	
-//	
-//	byte = pAtr->T1Protocol.TCBytes[1];
-//	
-//	if(byte == READER_ATR_NOT_INDICATED){
-//		return READER_DEFAULT_WI;
-//	}
-//	else{
-//		return (uint32_t)byte;
-//	}
-//}

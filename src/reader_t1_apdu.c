@@ -1,8 +1,8 @@
 /**
  * \file reader_t1_apdu.c
- * \author Boris
+ * \copyright This file is part of the Open-ISO7816-Stack project and is distributed under the MIT license. See LICENSE file in the root directory. 
  * 
- * This file contains all the code of the functions used to manipulate APDUs with the T=1 protocol.
+ * This file contains all the code of the functions which are necessary to execute APDU commands when using the T=1 underlying protocol.
  */
 
 
@@ -17,7 +17,7 @@
  * \param *pContext is a pointer on a READER_T1_ContextHandler data structure to be initailized by these funtion.
  * \param *pSettings is a pointer on a READER_HAL_CommSettings data structure that should already be containing the low level communications settings for the hardware abstraction layer.
  * The function have to be called before using APDUs with the T=1 protocol.
- * This function will initialize the T=1 communication context that is stored into *pContext.  
+ * This function will initialize the T=1 communication context that is stored into the *pContext structure.  
  */
 READER_Status READER_T1_APDU_Init(READER_T1_ContextHandler *pContext, READER_HAL_CommSettings *pSettings){
 	READER_Status retVal;
@@ -37,7 +37,7 @@ READER_Status READER_T1_APDU_Init(READER_T1_ContextHandler *pContext, READER_HAL
  * \param *pContext is a pointer on a READER_T1_ContextHandler data structure to be initailized by these funtion.
  * \param *pApduCommand is a pointer to a READER_APDU_Command data structure. It should have been previously filled with an APDU command to be sent to the card. For example with the READER_T0_APDU_Forge() function.
  * \param *pApduResp is a pointer to a READER_APDU_Response data structure. This function will fill it with the response aswered by the card.
- * This function is used to execute an APDU command using the T=1 protocol. This means sending the APDU command to the card and getting back the response of the card.
+ * This function is used to execute an APDU command using the T=1 protocol. It means sending the APDU command to the card and getting back the response (APDU answer).
  */
 READER_Status READER_T1_APDU_Execute(READER_T1_ContextHandler *pContext, READER_APDU_Command *pApduCmd, READER_APDU_Response *pApduResp){
 	READER_Status retVal, retVal2;

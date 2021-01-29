@@ -1,14 +1,12 @@
 /**
  * \file reader_apdu.c
- * \author Boris
- * \brief This file contains the code of all the functions defined in reader_apdu.h that are operating on the READER_APDU_Command and READER_APDU_Response data structures.
+ * \copyright This file is part of the Open-ISO7816-Stack project and is distributed under the MIT license. See LICENSE file in the root directory. 
+ * This file contains functions for operating safely on READER_APDU_Command and READER_APDU_Response data structures.
  */
-
 
 #include "reader_tpdu.h"
 #include "reader_hal.h"
 #include "reader_apdu.h"
-
 
 
 
@@ -26,12 +24,11 @@ READER_Status READER_APDU_CheckCmdValidity(READER_APDU_Command *pApduCmd){
 	return READER_OK;
 }
 
-
 /**
  * \fn READER_APDU_ProtocolCase READER_APDU_GetProtocolCase(READER_APDU_Command *pApduCmd)
- * Cette fonction analyse une structure de type READER_APDU_Command et en déduit dans quel "sous cas" du protocole cet APDU appartient. Par exemple 2E, 2S, 3E, 3S, 4E, 4S etc ...
- * \return Retourne une valeur de type READER_APDU_ProtocolCase.
- * \param *pApduCmd Un pointeur sur un structure de type READER_APDU_Command.
+ * This function analyses an APDU_Command data structures and returns its type (cases 2E, 2S, 3E, 3S, 4E, 4S etc ...).
+ * \return Returns a READER_APDU_ProtocolCase type value representing the APDU type (2E, 2S, 3E, 3S, 4E, 4S etc ...).
+ * \param *pApduCmd pointer on an READER_APDU_Command structure.
  */
 READER_APDU_ProtocolCase READER_APDU_GetProtocolCase(READER_APDU_Command *pApduCmd){
 	uint32_t Nc, Ne;
@@ -80,9 +77,6 @@ READER_APDU_ProtocolCase READER_APDU_GetProtocolCase(READER_APDU_Command *pApduC
 	}
 }
 
-
-
-
 /**
  * \fn READER_Status READER_APDU_CopyCommand(READER_APDU_Command *pSourceApdu, READER_APDU_Command *pDestApdu)
  * Cette fonction permet de copier le contenu d'une commande APDU source dans une commande APDU de destination.
@@ -108,7 +102,6 @@ READER_Status READER_APDU_CopyCommand(READER_APDU_Command *pSourceApdu, READER_A
 	return READER_OK;
 }
 
-
 /**
  * \fn READER_Status READER_APDU_CopyResponse(READER_APDU_Response *pSourceApdu, READER_APDU_Response *pDestApdu)
  * Cette fonction permet de copier le contenu d'une réponse APDU source dans une réponse APDU de destination.
@@ -129,7 +122,6 @@ READER_Status READER_APDU_CopyResponse(READER_APDU_Response *pSourceApdu, READER
 	
 	return READER_OK;
 }
-
 
 /**
  * \fn READER_Status READER_APDU_Forge(READER_APDU_Command *pApduCmd, uint8_t CLA, uint8_t INS, uint8_t P1, uint8_t P2, uint32_t Nc, uint8_t *pData, uint32_t Ne)
@@ -168,7 +160,6 @@ READER_Status READER_APDU_Forge(READER_APDU_Command *pApduCmd, uint8_t CLA, uint
 	return READER_OK;
 }
 
-
 uint16_t READER_APDU_NcToLc(uint16_t Nc){
 	return Nc;
 }
@@ -195,8 +186,6 @@ uint16_t READER_APDU_LeToNe(uint16_t Le){
 	}
 }
 
-
-
 /**
  * \fn READER_Status READER_APDU_ExtractRespSW(READER_APDU_Response *pApduResp, uint8_t *pSW1, uint8_t *pSW2)
  * \return The function returns an execution code of type READER_Status that indicates if the function behaved as expected or not.
@@ -214,7 +203,6 @@ READER_Status READER_APDU_ExtractRespSW(READER_APDU_Response *pApduResp, uint8_t
 	return READER_OK;
 }
 
-
 /**
  * \fn READER_Status READER_APDU_ExtractRespDataPtr(READER_APDU_Response *pApduResp, uint8_t **ppData, uint32_t *pDataSize)
  * \return The function returns an execution code of type READER_Status that indicates if the function behaved as expected or not.
@@ -229,5 +217,3 @@ READER_Status READER_APDU_ExtractRespDataPtr(READER_APDU_Response *pApduResp, ui
 	
 	return READER_OK;
 }
-
-

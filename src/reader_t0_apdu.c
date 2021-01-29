@@ -1,15 +1,12 @@
 /**
  * \file reader_t0_apdu.h
- * \author Boris
- * \brief This file contains the code of all the functions defined in reader_t0_apdu.h. These functions are the ones need to send APDU commands an receive APDU responses when using the protocol T=0.  
+ * \copyright This file is part of the Open-ISO7816-Stack project and is distributed under the MIT license. See LICENSE file in the root directory. 
+ * \brief This file contains the code of all the functions defined in reader_t0_apdu.h. These functions are the ones needed to send APDU commands an receive APDU responses when using the protocol T=0.  
  */
-
-
 
 #include "reader_t0_apdu.h"
 #include "reader_t0_context_handler.h"
 #include "reader_hal_comm_settings.h"
-
 
 
 
@@ -32,15 +29,13 @@ READER_Status READER_T0_APDU_Init(READER_T0_ContextHandler *pContext, READER_HAL
 	return READER_OK;
 }
 
-
-
 /**
  * \fn READER_Status READER_T0_APDU_Execute(READER_T0_ContextHandler *pContext, READER_APDU_Command *pApduCmd, READER_APDU_Response *pApduResp)
  * \return The function returns an execution code of type READER_Status that indicates if the function behaved as expected or not.
  * \param *pContext is a pointer to a READER_T0_ContextHandler data structure. It contains the current T=0 protocol communication state. It should have been previously initialized by the READER_T0_APDU_Init() function.
  * \param *pApduCommand is a pointer to a READER_APDU_Command data structure. It should have been previously filled with an APDU command to be sent to the card. For example with the READER_T0_APDU_Forge() function.
  * \param *pApduResp is a pointer to a READER_APDU_Response data structure. This function will fill it with the response aswered by the card.
- * This function is used to execute an APDU command using the T=0 protocol. This means sending the APDU command to the card and getting back the response of the card.
+ * This function is used to execute an APDU command using the T=0 protocol regardingless to the cases 1, 2, 2E etc ... It means sending the APDU command to the card and getting back the response from the card.
  */
 READER_Status READER_T0_APDU_Execute(READER_T0_ContextHandler *pContext, READER_APDU_Command *pApduCmd, READER_APDU_Response *pApduResp){
 	READER_APDU_ProtocolCase protocolCase;
@@ -85,14 +80,13 @@ READER_Status READER_T0_APDU_Execute(READER_T0_ContextHandler *pContext, READER_
 	}
 }
 
-
 /**
  * \fn READER_Status READER_T0_APDU_ExecuteCase1(READER_T0_ContextHandler *pContext, READER_APDU_Command *pApduCmd, READER_APDU_Response *pApduResp)
- * \return  function returns an execution code of type READER_Status that indicates if the function behaved as expected or not.
+ * \return Returns an execution code of type READER_Status that indicates if the function behaved as expected or not.
  * \param *pContext is a pointer to a READER_T0_ContextHandler data structure. It contains the current T=0 protocol communication state. It should have been previously initialized by the READER_T0_APDU_Init() function.
  * \param *pApduCommand is a pointer to a READER_APDU_Command data structure. It should have been previously filled with an APDU command to be sent to the card. For example with the READER_T0_APDU_Forge() function.
  * \param *pApduResp is a pointer to a READER_APDU_Response data structure. This function will fill it with the response aswered by the card.
- * This function is used to execute an APDU command is the Case 1 described in ISO7816-3 section 12.1.2.
+ * This function is used to execute an APDU command in the Case 1 described in ISO7816-3 section 12.1.2.
  */
 READER_Status READER_T0_APDU_ExecuteCase1(READER_T0_ContextHandler *pContext, READER_APDU_Command *pApduCmd, READER_APDU_Response *pApduResp){
 	/* Voir ISO7816-3 section 12.2.2 */
@@ -142,7 +136,14 @@ READER_Status READER_T0_APDU_ExecuteCase1(READER_T0_ContextHandler *pContext, RE
 	return READER_OK;
 }
 
-
+/**
+ * \fn READER_Status READER_T0_APDU_ExecuteCase2S(READER_T0_ContextHandler *pContext, READER_APDU_Command *pApduCmd, READER_APDU_Response *pApduResp)
+ * \param *pContext is a pointer to a READER_T0_ContextHandler data structure. It contains the current T=0 protocol communication state. It should have been previously initialized by the READER_T0_APDU_Init() function.
+ * \param *pApduCommand is a pointer to a READER_APDU_Command data structure. It should have been previously filled with an APDU command to be sent to the card. For example with the READER_T0_APDU_Forge() function.
+ * \param *pApduResp is a pointer to a READER_APDU_Response data structure. This function will fill it with the response aswered by the card.
+ * \return READER_Status execution code.
+ * This function executes an APDU command in the case 2S. See ISO7816-3 section 12.1.3.
+ */
 READER_Status READER_T0_APDU_ExecuteCase2S(READER_T0_ContextHandler *pContext, READER_APDU_Command *pApduCmd, READER_APDU_Response *pApduResp){
 	/* Voir ISO7816-3 section 12.2.3 */
 	READER_TPDU_Command tpduCmd;
@@ -233,7 +234,14 @@ READER_Status READER_T0_APDU_ExecuteCase2S(READER_T0_ContextHandler *pContext, R
 	return READER_OK;
 }
 
-
+/**
+ * \fn READER_Status READER_T0_APDU_ExecuteCase3S(READER_T0_ContextHandler *pContext, READER_APDU_Command *pApduCmd, READER_APDU_Response *pApduResp)
+ * \param *pContext is a pointer to a READER_T0_ContextHandler data structure. It contains the current T=0 protocol communication state. It should have been previously initialized by the READER_T0_APDU_Init() function.
+ * \param *pApduCommand is a pointer to a READER_APDU_Command data structure. It should have been previously filled with an APDU command to be sent to the card. For example with the READER_T0_APDU_Forge() function.
+ * \param *pApduResp is a pointer to a READER_APDU_Response data structure. This function will fill it with the response aswered by the card.
+ * \return READER_Status execution code.
+ * This function executes an APDU command in the case 3S. See ISO7816-3 section 12.1.4.
+ */
 READER_Status READER_T0_APDU_ExecuteCase3S(READER_T0_ContextHandler *pContext, READER_APDU_Command *pApduCmd, READER_APDU_Response *pApduResp){
 	/* Voir ISO7816-3 section 12.2.4 */
 	READER_TPDU_Command tpduCmd;
@@ -287,7 +295,14 @@ READER_Status READER_T0_APDU_ExecuteCase3S(READER_T0_ContextHandler *pContext, R
 }
 
 
-
+/**
+ * \fn READER_Status READER_T0_APDU_ExecuteCase3E(READER_T0_ContextHandler *pContext, READER_APDU_Command *pApduCmd, READER_APDU_Response *pApduResp)
+ * \param *pContext is a pointer to a READER_T0_ContextHandler data structure. It contains the current T=0 protocol communication state. It should have been previously initialized by the READER_T0_APDU_Init() function.
+ * \param *pApduCommand is a pointer to a READER_APDU_Command data structure. It should have been previously filled with an APDU command to be sent to the card. For example with the READER_T0_APDU_Forge() function.
+ * \param *pApduResp is a pointer to a READER_APDU_Response data structure. This function will fill it with the response aswered by the card.
+ * \return READER_Status execution code.
+ * This function executes an APDU command in the case 3E. See ISO7816-3 section 12.2.7.
+ */
 READER_Status READER_T0_APDU_ExecuteCase3E(READER_T0_ContextHandler *pContext, READER_APDU_Command *pApduCmd, READER_APDU_Response *pApduResp){
 	/* Voir ISO7816-3 section 12.2.7 */
 	READER_TPDU_Command tpduCmd;
@@ -430,7 +445,14 @@ READER_Status READER_T0_APDU_ExecuteCase3E(READER_T0_ContextHandler *pContext, R
 }
 
 
-
+/**
+ * \fn READER_Status READER_T0_APDU_ExecuteCase2E(READER_T0_ContextHandler *pContext, READER_APDU_Command *pApduCmd, READER_APDU_Response *pApduResp)
+ * \param *pContext is a pointer to a READER_T0_ContextHandler data structure. It contains the current T=0 protocol communication state. It should have been previously initialized by the READER_T0_APDU_Init() function.
+ * \param *pApduCommand is a pointer to a READER_APDU_Command data structure. It should have been previously filled with an APDU command to be sent to the card. For example with the READER_T0_APDU_Forge() function.
+ * \param *pApduResp is a pointer to a READER_APDU_Response data structure. This function will fill it with the response aswered by the card.
+ * \return READER_Status execution code.
+ * This function executes an APDU command in the case 2E. See ISO7816-3 section 12.2.6.
+ */
 READER_Status READER_T0_APDU_ExecuteCase2E(READER_T0_ContextHandler *pContext, READER_APDU_Command *pApduCmd, READER_APDU_Response *pApduResp){
 	/* Voir ISO7816-3 section 12.2.6 */
 	READER_TPDU_Command tpduCmd;
@@ -553,7 +575,14 @@ READER_Status READER_T0_APDU_ExecuteCase2E(READER_T0_ContextHandler *pContext, R
 }
 
 
-
+/**
+ * \fn READER_Status READER_T0_APDU_ExecuteCase4S(READER_T0_ContextHandler *pContext, READER_APDU_Command *pApduCmd, READER_APDU_Response *pApduResp)
+ * \param *pContext is a pointer to a READER_T0_ContextHandler data structure. It contains the current T=0 protocol communication state. It should have been previously initialized by the READER_T0_APDU_Init() function.
+ * \param *pApduCommand is a pointer to a READER_APDU_Command data structure. It should have been previously filled with an APDU command to be sent to the card. For example with the READER_T0_APDU_Forge() function.
+ * \param *pApduResp is a pointer to a READER_APDU_Response data structure. This function will fill it with the response aswered by the card.
+ * \return READER_Status execution code.
+ * This function executes an APDU command in the case 4S.
+ */
 READER_Status READER_T0_APDU_ExecuteCase4S(READER_T0_ContextHandler *pContext, READER_APDU_Command *pApduCmd, READER_APDU_Response *pApduResp){
 	READER_TPDU_Command tpduCmd;
 	READER_TPDU_Response tpduResp;
@@ -635,6 +664,14 @@ READER_Status READER_T0_APDU_ExecuteCase4S(READER_T0_ContextHandler *pContext, R
 }
 
 
+/**
+ * \fn READER_Status READER_T0_APDU_ExecuteCase4E(READER_T0_ContextHandler *pContext, READER_APDU_Command *pApduCmd, READER_APDU_Response *pApduResp)
+ * \param *pContext is a pointer to a READER_T0_ContextHandler data structure. It contains the current T=0 protocol communication state. It should have been previously initialized by the READER_T0_APDU_Init() function.
+ * \param *pApduCommand is a pointer to a READER_APDU_Command data structure. It should have been previously filled with an APDU command to be sent to the card. For example with the READER_T0_APDU_Forge() function.
+ * \param *pApduResp is a pointer to a READER_APDU_Response data structure. This function will fill it with the response aswered by the card.
+ * \return READER_Status execution code.
+ * This function executes an APDU command in the case 4E.
+ */
 READER_Status READER_T0_APDU_ExecuteCase4E(READER_T0_ContextHandler *pContext, READER_APDU_Command *pApduCmd, READER_APDU_Response *pApduResp){
 	uint32_t timeout;
 	READER_HAL_CommSettings *pSettings;

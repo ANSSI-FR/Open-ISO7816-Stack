@@ -1,12 +1,10 @@
 /**
  * \file reader_hal.c
- * \author Boris
+ * \copyright This file is part of the Open-ISO7816-Stack project and is distributed under the MIT license. See LICENSE file in the root directory. 
+ * This file is the higher level of the abstraction layer (HAL).
  */
 
-
-
 #include "reader_hal.h"
-//#include "reader_hal_basis.h"
 #include "reader_periph.h"
 
 
@@ -15,7 +13,7 @@
  * \fn READER_Status READER_HAL_InitWithDefaults(READER_HAL_CommSettings *pSettings)
  * \return The function returns an execution code of type READER_Status that indicates if the function behaved as expected or not.
  * \param *pSettings is a pointer on a READER_HAL_CommSettings data structure that contains low level communication settings for the hardware abstraction layer.
- * This function is used i order to initialize the READER_HAL_CommSettings structure pointed by *pSettings to the initial default values as defined in the ISO7816-3 section 8.3.
+ * This function is used in order to initialize the READER_HAL_CommSettings structure pointed by *pSettings to the initial default values as defined in the ISO7816-3 section 8.3.
  */ 
 READER_Status READER_HAL_InitWithDefaults(READER_HAL_CommSettings *pSettings){
 	READER_Status retVal;
@@ -24,29 +22,14 @@ READER_Status READER_HAL_InitWithDefaults(READER_HAL_CommSettings *pSettings){
 	retVal = READER_HAL_InitHardware();
 	if(retVal != READER_OK) return retVal;
 	
-	
-	/* Initialisation du WT, du GT, du Etu (Fi, Di) et de f                                    */
-	/* Attention, important que pour la toute premiere init, F et D soint init en premier      */
-	//retVal = READER_HAL_SetWT(READER_DEFAULT_WT_MILI);                if(retVal != READER_OK) return retVal;
-	/* Attention l'ordre peut etre important, certaines valeurs dependant des autres           */
-	retVal = READER_HAL_SetGT(pSettings, READER_HAL_DEFAULT_GT);                     if(retVal != READER_OK) return retVal;
-	retVal = READER_HAL_SetFi(pSettings, READER_HAL_DEFAULT_FI);                     if(retVal != READER_OK) return retVal;
-	retVal = READER_HAL_SetDi(pSettings, READER_HAL_DEFAULT_DI);                     if(retVal != READER_OK) return retVal;
-	retVal = READER_HAL_SetEtu(pSettings, READER_HAL_DEFAULT_FI, READER_HAL_DEFAULT_DI); if(retVal != READER_OK) return retVal;
-	retVal = READER_HAL_SetFreq(pSettings, READER_HAL_DEFAULT_FREQ);                 if(retVal != READER_OK) return retVal;
-	//retVal = READER_HAL_SetWI(pSettings, READER_DEFAULT_WI);                     if(retVal != READER_OK) return retVal;
-	//retVal = READER_HAL_SetBWI(READER_DEFAULT_BWI);                   if(retVal != READER_OK) return retVal;
-	//retVal = READER_HAL_SetBWT(READER_DEFAULT_BWT);                   if(retVal != READER_OK) return retVal;
-	//retVal = READER_HAL_SetBGT(READER_DEFAULT_BGT);                   if(retVal != READER_OK) return retVal;
-	//retVal = READER_HAL_SetIFSC(READER_DEFAULT_IFSC);                 if(retVal != READER_OK) return retVal;
-	//retVal = READER_HAL_SetIFSD(READER_DEFAULT_IFSD);                 if(retVal != READER_OK) return retVal;
-	//retVal = READER_HAL_SetRedundancyType(pSettings, READER_DEFAULT_REDUNDANCY_TYPE); if(retVal != READER_OK) return retVal;
-	
-	
+	retVal = READER_HAL_SetGT(pSettings, READER_HAL_DEFAULT_GT);                           if(retVal != READER_OK) return retVal;
+	retVal = READER_HAL_SetFi(pSettings, READER_HAL_DEFAULT_FI);                           if(retVal != READER_OK) return retVal;
+	retVal = READER_HAL_SetDi(pSettings, READER_HAL_DEFAULT_DI);                           if(retVal != READER_OK) return retVal;
+	retVal = READER_HAL_SetEtu(pSettings, READER_HAL_DEFAULT_FI, READER_HAL_DEFAULT_DI);   if(retVal != READER_OK) return retVal;
+	retVal = READER_HAL_SetFreq(pSettings, READER_HAL_DEFAULT_FREQ);                       if(retVal != READER_OK) return retVal;
+
 	return READER_OK;
 }
-
-
 
 
 READER_Status READER_HAL_SendCharFrameTickstart(READER_HAL_CommSettings *pSettings, READER_HAL_Protocol protocol, uint8_t *frame, uint32_t frameSize, uint32_t timeout, uint32_t *pTickstart){
@@ -66,7 +49,7 @@ READER_Status READER_HAL_SendCharFrameTickstart(READER_HAL_CommSettings *pSettin
 			characterDelay = (uint32_t)(READER_UTILS_ComputeEtuMiliFloat(READER_HAL_GetFi(pSettings), READER_HAL_GetDi(pSettings), READER_HAL_GetFreq(pSettings)) *10);
 			characterDelay = MAX(1, characterDelay);
 			
-			pTickstart = READER_HAL_GetTick() - characterDelay;  /*  10 etu dans un caractere (10 moments) */
+			pTickstart = READER_HAL_GetTick() - characterDelay;  /*  10 ETU dans un caractere (10 moments) */
 		}
 		
 		/* On fait attention a respecter le Guard Time (GT) entre les caracteres */
@@ -79,6 +62,7 @@ READER_Status READER_HAL_SendCharFrameTickstart(READER_HAL_CommSettings *pSettin
 	/* On attend le flag Transmit Complete */
 	/* Permet de bloquer la fonction pour empecher une eventuelle reception (avant d'avoir transmit complete) */
 	
+	/* TODO: Try to move this piece of code to reader_hal_basis.c or reader_hal_comm_settings.c because it is the only hardware dependent code left in this file. */
 	#ifndef TEST
 		while(!(USART2->SR & USART_SR_TC)){
 			
@@ -91,14 +75,14 @@ READER_Status READER_HAL_SendCharFrameTickstart(READER_HAL_CommSettings *pSettin
 }
 
 
-/* ATTENTION, VERIFIER SI DESCRIPTION TOUJOURS A JOUR ...  */
 /**
- * \fn READER_Status READER_HAL_SendCharFrame(uint8_t *frame, uint32_t frameSize, uint32_t timeout)
- * \brief Cette fonction permet de placer uen chaine d'octets sur la ligne IO. Cette fonction a un comportement bloquant.
- * \return Valeur de type READER_Status. READER_OK si l'exécution s'est correctement déroulée. Toute autre valeur indique uen erreur.
- * \param *frame Pointeur sur la chaine d'octets à envoyer.
- * \param frameSize Taille de la chaine d'octets à envoyer.
- * \param timeout Valeur du timeout en milisecondes à utiliser. Si cette valeur est READER_HAL_USE_ISO_WT alors le timeout utilisé sera celui spécifié dans la norme ISO.
+ * \fn READER_Status READER_HAL_SendCharFrame(READER_HAL_CommSettings *pSettings, READER_HAL_Protocol protocol, uint8_t *frame, uint32_t frameSize, uint32_t timeout)
+ * \brief This function pushes an array of bytes on the transmission line. Blocking mode function.
+ * \return READER_Status execution code. READER_OK indicates successful execution. Any other value is an error.
+ * \param *pSettings is a pointer on a READER_HAL_CommSettings data structure. It has to be previously initialized and has to contain correct comminication parameters.
+ * \param *frame Pointer over a byte array of characters to be sent.
+ * \param frameSize number of bytes to be sent.
+ * \param timeout Timeout value to be used (in milliseconds). If set to READER_HAL_USE_ISO_WT then, the default value as defined in ISO7816-3 is going to be used.
  */
 READER_Status READER_HAL_SendCharFrame(READER_HAL_CommSettings *pSettings, READER_HAL_Protocol protocol, uint8_t *frame, uint32_t frameSize, uint32_t timeout){
 	READER_Status retVal;
@@ -204,20 +188,12 @@ READER_Status READER_HAL_RcvCharFrame(READER_HAL_CommSettings *pSettings, READER
 }
 
 
-
-
-
-
-
-
 void READER_HAL_ErrHandler(void){
 	//while(1){
 	//	HAL_GPIO_TogglePin(GPIOD, GPIO_PIN_14);
 	//	HAL_Delay(100);
 	//}
 }
-
-
 
 
 /**
@@ -242,4 +218,3 @@ READER_Status READER_HAL_DoColdReset(void){
 	
 	return READER_OK;
 }
-
