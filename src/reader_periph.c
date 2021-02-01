@@ -1,3 +1,11 @@
+/**
+ * \file reader_periph.c
+ * \copyright This file is part of the Open-ISO7816-Stack project and is distributed under the MIT license. See LICENSE file in the root directory. 
+ * This file provides code for initializing all the hardware peripherals being in charge of providing signals to the smartcard.
+ * It includes I/O, CLK, RST, VCC.
+ */
+
+
 #include "stm32f4xx_hal.h"
 #include "reader_periph.h"
 #include "reader_utils.h"
@@ -8,6 +16,11 @@
 extern SMARTCARD_HandleTypeDef smartcardHandleStruct;
 
 
+/**
+ * \fn READER_PERIPH_InitIOLine(void)
+ * \return READER_Status execution code. READER_OK indicates successful execution. Any other value is an error.
+ * Initializes the GPIO peripheral in charge of the I/O transmission line.
+ */
 READER_Status READER_PERIPH_InitIOLine(void){
 	GPIO_InitTypeDef gpioInitStruct;
 	
@@ -24,7 +37,11 @@ READER_Status READER_PERIPH_InitIOLine(void){
 }
 
 
-
+/**
+ * \fn READER_PERIPH_InitClkLine(void)
+ * \return READER_Status execution code. READER_OK indicates successful execution. Any other value is an error.
+ * Initializes the GPIO peripheral in charge of providing the CLK signal to the smartcard.
+ */
 READER_Status READER_PERIPH_InitClkLine(void){
 	GPIO_InitTypeDef gpioInitStruct;
 	
@@ -41,7 +58,11 @@ READER_Status READER_PERIPH_InitClkLine(void){
 }
 
 
-
+/**
+ * \fn READER_PERIPH_InitRstLine(void)
+ * \return READER_Status execution code. READER_OK indicates successful execution. Any other value is an error.
+ * Initializes the GPIO peripheral in charge of providing the RST signal to teh smartcard.
+ */
 READER_Status READER_PERIPH_InitRstLine(void){
 	GPIO_InitTypeDef gpioInitStruct;
 	
@@ -57,7 +78,11 @@ READER_Status READER_PERIPH_InitRstLine(void){
 }
 
 
-
+/**
+ * \fn READER_PERIPH_InitPwrLine(void)
+ * \return READER_Status execution code. READER_OK indicates successful execution. Any other value is an error.
+ * Initializes the GPIO peripheral in charge of the power supply of the smartcard.
+ */
 READER_Status READER_PERIPH_InitPwrLine(void){
 	GPIO_InitTypeDef gpioInitStruct;
 	
@@ -73,9 +98,11 @@ READER_Status READER_PERIPH_InitPwrLine(void){
 }
 
 
-
-
-
+/**
+ * \fn READER_PERIPH_Init(void)
+ * \return READER_Status execution code. READER_OK indicates successful execution. Any other value is an error.
+ * Initializes all the peripherals (I/O, CLK, RST, VCC).
+ */
 READER_Status READER_PERIPH_Init(void){
 	if(READER_PERIPH_InitIOLine() != READER_OK)  return READER_ERR;
 	if(READER_PERIPH_InitClkLine() != READER_OK) return READER_ERR;
@@ -119,12 +146,7 @@ void READER_PERIPH_ErrHandler(void){
 	
 	__HAL_RCC_GPIOD_CLK_ENABLE();
 	HAL_GPIO_Init(GPIOD, &gpioInitStruct);
-	
-	
-	
-	//HAL_GPIO_TogglePin(GPIOD, GPIO_PIN_14);
-	//HAL_Delay(100);
-	//HAL_GPIO_TogglePin(GPIOD, GPIO_PIN_14);
+
 	
 	while(1){
 		HAL_GPIO_TogglePin(GPIOD, GPIO_PIN_14);
