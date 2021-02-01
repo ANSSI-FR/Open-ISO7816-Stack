@@ -1,7 +1,8 @@
 /**
  * \file reader_hal.c
  * \copyright This file is part of the Open-ISO7816-Stack project and is distributed under the MIT license. See LICENSE file in the root directory. 
- * This file is the higher level of the abstraction layer (HAL).
+ * This file is the higher level of the abstraction layer (HAL). The code contained in this file is almost not hardware dependent.
+ * TODO: The goal in the next versions is to move the last (very few) pieces of hardware dependent code from this file to reader_hal_basis.c or reader_hal_comm_settings.c.
  */
 
 #include "reader_hal.h"
@@ -13,7 +14,7 @@
  * \fn READER_Status READER_HAL_InitWithDefaults(READER_HAL_CommSettings *pSettings)
  * \return The function returns an execution code of type READER_Status that indicates if the function behaved as expected or not.
  * \param *pSettings is a pointer on a READER_HAL_CommSettings data structure that contains low level communication settings for the hardware abstraction layer.
- * This function is used in order to initialize the READER_HAL_CommSettings structure pointed by *pSettings to the initial default values as defined in the ISO7816-3 section 8.3.
+ * This function is used to initialize the READER_HAL_CommSettings structure pointed by *pSettings to the initial default values as defined in the ISO7816-3 section 8.3.
  */ 
 READER_Status READER_HAL_InitWithDefaults(READER_HAL_CommSettings *pSettings){
 	READER_Status retVal;
@@ -32,6 +33,17 @@ READER_Status READER_HAL_InitWithDefaults(READER_HAL_CommSettings *pSettings){
 }
 
 
+/**
+ * \fn READER_HAL_SendCharFrameTickstart(READER_HAL_CommSettings *pSettings, READER_HAL_Protocol protocol, uint8_t *frame, uint32_t frameSize, uint32_t timeout, uint32_t *pTickstart)
+ * \return READER_Status execution code. READER_OK indicates successful execution. Any other value is an error.
+ * \param *pSettings is a pointer on a READER_HAL_CommSettings data structure. It has to be previously initialized and has to contain correct comminication parameters.
+ * \param protocol is a READER_HAL_Protocol value indicating wether this function is called from a T=0 or a T=1 context (it has some slight influence over the character transmission).
+ * \param *frame Pointer over an uint8_t array containing teh characters to be sent.
+ * \param frameSize number of characters to be sent.
+ * \param timeout Timeout value to be used (in milliseconds). If set to READER_HAL_USE_ISO_WT then, the default value as defined in ISO7816-3 is going to be used.
+ * \param *pTickstart is a pointer to an unint32_t value. After execution it will set the pointed variable to the "timestamp" (in milliseconds) of the leading edge of the last character of the frame being sent. 
+ * This function pushes an array of bytes on the transmission line. Blocking mode function.
+ */
 READER_Status READER_HAL_SendCharFrameTickstart(READER_HAL_CommSettings *pSettings, READER_HAL_Protocol protocol, uint8_t *frame, uint32_t frameSize, uint32_t timeout, uint32_t *pTickstart){
 	READER_Status retVal;
 	uint32_t characterDelay;
@@ -77,12 +89,13 @@ READER_Status READER_HAL_SendCharFrameTickstart(READER_HAL_CommSettings *pSettin
 
 /**
  * \fn READER_Status READER_HAL_SendCharFrame(READER_HAL_CommSettings *pSettings, READER_HAL_Protocol protocol, uint8_t *frame, uint32_t frameSize, uint32_t timeout)
- * \brief This function pushes an array of bytes on the transmission line. Blocking mode function.
  * \return READER_Status execution code. READER_OK indicates successful execution. Any other value is an error.
  * \param *pSettings is a pointer on a READER_HAL_CommSettings data structure. It has to be previously initialized and has to contain correct comminication parameters.
+ * \param protocol is a READER_HAL_Protocol value indicating wether this function is called from a T=0 or a T=1 context (it has some slight influence over the character transmission).
  * \param *frame Pointer over a byte array of characters to be sent.
  * \param frameSize number of bytes to be sent.
  * \param timeout Timeout value to be used (in milliseconds). If set to READER_HAL_USE_ISO_WT then, the default value as defined in ISO7816-3 is going to be used.
+ * This function pushes an array of bytes on the transmission line. Blocking mode function.
  */
 READER_Status READER_HAL_SendCharFrame(READER_HAL_CommSettings *pSettings, READER_HAL_Protocol protocol, uint8_t *frame, uint32_t frameSize, uint32_t timeout){
 	READER_Status retVal;
@@ -96,7 +109,19 @@ READER_Status READER_HAL_SendCharFrame(READER_HAL_CommSettings *pSettings, READE
 }
 
 
-/* Retourne le timestamp du leading edge de la frame (Tickstart) ...  */
+/**
+ * \fn READER_HAL_RcvCharFrameCountTickstart(READER_HAL_CommSettings *pSettings, READER_HAL_Protocol protocol, uint8_t *frame, uint32_t frameSize, uint32_t *rcvCount, uint32_t timeout, uint32_t *pTickstart)
+ * \return READER_Status execution code. READER_OK indicates successful execution. Any other value is an error. READER_TIMEOUT indicates that a timeout has occured.
+ * \param *pSettings is a pointer on a READER_HAL_CommSettings data structure. It has to be previously initialized and has to contain correct comminication parameters.
+ * \param protocol is a READER_HAL_Protocol value indicating wether this function is called from a T=0 or a T=1 context (it has some slight influence over the character transmission and reception).
+ * \param *frame is a pointer to an uint8_t bytes buffer where the received data has to be copied to.
+ * \param frameSize number of bytes expected to be received.
+ * \param timeout Timeout value to be applied (in milliseconds).
+ * \param *rcvCount is a pointer to an uint32_t value. After execution it will set the pointed variable to the number of bytes the function managed to receive.
+ * \param *pTickstart is a pointer to an unint32_t value. After execution it will set the pointed variable to the "timestamp" (in milliseconds) of the leading edge of the received frame. 
+ * The purpose of this function is to receive a frame of bytes from the I/O transmission line. This one is the most complete one of the set of functions having a similar purpose 
+ * (READER_HAL_RcvCharFrameCount and READER_HAL_RcvCharFrame) as it returns as well the tickstart (timestamp of the leading edge of the received frame) and the number of fully received bytes.
+ */
 READER_Status READER_HAL_RcvCharFrameCountTickstart(READER_HAL_CommSettings *pSettings, READER_HAL_Protocol protocol, uint8_t *frame, uint32_t frameSize, uint32_t *rcvCount, uint32_t timeout, uint32_t *pTickstart){
 	READER_Status retVal;
 	uint32_t i = 0;
@@ -136,16 +161,17 @@ READER_Status READER_HAL_RcvCharFrameCountTickstart(READER_HAL_CommSettings *pSe
 	return READER_OK;
 }
 
-
-/* ATTENTION, VERIFIER SI DESCRIPTION TOUJOURS VALIDE ...  */
-/**
- * \fn READER_Status READER_HAL_RcvCharFrameCount(uint8_t *frame, uint32_t frameSize, uint32_t *rcvCount, uint32_t timeout)
- * \brief Cette fonction permet se se mettre à l'écoute d'une chaine d'octets sur la ligne IO. Cette fonction a un comportement bloquant. La fonction indique le nombre de caractères qu'elle a pu lire.
- * \return Valeur de type READER_Status. READER_OK si l'exécution s'est correctement déroulée. Toute autre valeur suggère une erreur.
- * \param *frame Pointeur sur le buffer à utiliser pour stocker les octets reçus.
- * \param frameSize Nombre d'octets à recevoir.
- * \param timeout Valeur du timeout en milisecondes à utiliser. Si cette valeur est READER_HAL_USE_ISO_WT alors le timeout utilisé sera celui spécifié dans la norme ISO.
- * \param *rcvCount Pointeur sur une variable de type unit32_t. Elle sera remplie avec le nombre de caractères qui ont pu être lus. Si pas de necessite de recuperer cette valeur alors il est possible d'indoquer NULL.
+ 
+ /**
+ * \fn READER_HAL_RcvCharFrameCount(READER_HAL_CommSettings *pSettings, READER_HAL_Protocol protocol, uint8_t *frame, uint32_t frameSize, uint32_t *rcvCount, uint32_t timeout)
+ * \return READER_Status execution code. READER_OK indicates successful execution. Any other value is an error. READER_TIMEOUT indicates that a timeout has occured.
+ * \param *pSettings is a pointer on a READER_HAL_CommSettings data structure. It has to be previously initialized and has to contain correct comminication parameters.
+ * \param protocol is a READER_HAL_Protocol value indicating wether this function is called from a T=0 or a T=1 context (it has some slight influence over the character transmission and reception).
+ * \param *frame is a pointer to an uint8_t bytes buffer where the received data has to be copied to.
+ * \param frameSize number of bytes expected to be received.
+ * \param timeout Timeout value to be applied (in milliseconds).
+ * \param *rcvCount is a pointer to an uint32_t value. After execution it will set the pointed variable to the number of bytes the function managed to receive.
+ * The purpose of this function is to receive a frame of bytes from the I/O transmission line. It returns as well the number of fully received bytes.
  */
 READER_Status READER_HAL_RcvCharFrameCount(READER_HAL_CommSettings *pSettings, READER_HAL_Protocol protocol, uint8_t *frame, uint32_t frameSize, uint32_t *rcvCount, uint32_t timeout){
 	READER_Status retVal;
@@ -162,21 +188,18 @@ READER_Status READER_HAL_RcvCharFrameCount(READER_HAL_CommSettings *pSettings, R
 
 
 
-/**
- * \fn READER_HAL_RcvCharFrame(uint8_t *frame, uint32_t frameSize, uint32_t timeout)
- * \brief Cette fonction permet se se mettre à l'écoute d'une chaine d'octets sur la ligne IO. Cette fonction a un comportement bloquant.
- * \return Valeur de type READER_Status. READER_OK si l'exécution s'est correctement déroulée. Toute autre valeur suggère une erreur.
- * \param *frame Pointeur sur le buffer à utiliser pour stocker les octets reçus.
- * \param frameSize Nombre d'octets à recevoir.
- * \param timeout Valeur du timeout en milisecondes à utiliser. Si cette valeur est READER_HAL_USE_ISO_WT alors le timeout utilisé sera celui spécifié dans la norme ISO.
+ /**
+ * \fn READER_HAL_RcvCharFrame(READER_HAL_CommSettings *pSettings, READER_HAL_Protocol protocol, uint8_t *frame, uint32_t frameSize, uint32_t timeout)
+ * \return READER_Status execution code. READER_OK indicates successful execution. Any other value is an error. READER_TIMEOUT indicates that a timeout has occured.
+ * \param *pSettings is a pointer on a READER_HAL_CommSettings data structure. It has to be previously initialized and has to contain correct comminication parameters.
+ * \param protocol is a READER_HAL_Protocol value indicating wether this function is called from a T=0 or a T=1 context (it has some slight influence over the character transmission and reception).
+ * \param *frame is a pointer to an uint8_t bytes buffer where the received data has to be copied to.
+ * \param frameSize number of bytes expected to be received.
+ * \param timeout Timeout value to be applied (in milliseconds).
+ * The purpose of this function is to receive a frame of bytes from the I/O transmission line.
+ * This function is a simplified interface to the READER_HAL_RcvCharFrameCountTickstart function when there is no need for knowing the tickstart and the count of received bytes.
+ * It has as well legacy purposes.
  */
- 
- /* Cette fonction est plus limitee que la fonction READER_HAL_RcvCharFrameCount()
-  * Cette fonction fourni juste une interface simplifiee pour utiliser la fonction READER_HAL_RcvCharFrameCount()
-  * Elle fait la meme chose a part qu'elle ne compte pas le nombre de caracteres recus.
-  * Cette fonction est conservee pour des resos de compatibilite avec du code plus ancien.
-  * Elle peret egalement de ne pas s'embeter avec des parametres supplementaires lorsque il n'y a pas besoin de compter le nombre de caracteres recus.
-  */
 READER_Status READER_HAL_RcvCharFrame(READER_HAL_CommSettings *pSettings, READER_HAL_Protocol protocol, uint8_t *frame, uint32_t frameSize, uint32_t timeout){
 	READER_Status retVal;
 	uint32_t rcvCount;
@@ -198,7 +221,8 @@ void READER_HAL_ErrHandler(void){
 
 /**
  * \fn READER_Status READER_HAL_DoColdReset(void)
- * Cette fonction réalise la procédure de "Cold Reset" définie dans la norme ISO7816-3 section 6.2.2.
+ * \return READER_Status execution code. READER_OK means nominal execution.
+ * This function performs a cold reset procedure as defined in ISO/IEC7816-3 section 6.2.2.
  */
 READER_Status READER_HAL_DoColdReset(void){
 	READER_Status retVal;
