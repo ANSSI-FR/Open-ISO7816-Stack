@@ -2,9 +2,6 @@
 
 
 
-
-
-
 READER_Status READER_T0_CONTEXT_Init(READER_T0_ContextHandler *pContext, READER_HAL_CommSettings *pSettings){
 	READER_Status retVal;
 	
@@ -18,8 +15,6 @@ READER_Status READER_T0_CONTEXT_Init(READER_T0_ContextHandler *pContext, READER_
 	
 	return READER_OK;
 }
-
-
 
 
 /* Manipulation des commSettings ...  */
@@ -92,7 +87,6 @@ READER_Status READER_T0_CONTEXT_GetHalCommSettingsGT(READER_T0_ContextHandler *p
 	
 	return READER_OK;
 }
-
 
 
 READER_Status READER_T0_CONTEXT_SetHalCommSettingsFreq(READER_T0_ContextHandler *pContext, uint32_t freq){
@@ -171,8 +165,6 @@ READER_Status READER_T0_CONTEXT_SetHalCommSettingsGT(READER_T0_ContextHandler *p
 }
 
 
-
-
 READER_Status READER_T0_CONTEXT_ImportHalCommSettingsToContext(READER_T0_ContextHandler *pContext, READER_HAL_CommSettings *pSettings){
 	READER_HAL_CommSettings *pCommSettings;
 	READER_Status retVal;
@@ -187,7 +179,6 @@ READER_Status READER_T0_CONTEXT_ImportHalCommSettingsToContext(READER_T0_Context
 	
 	retVal = READER_T0_CONTEXT_GetHalCommSettingsPtr(pContext, &pCommSettings);
 	if(retVal != READER_OK) return READER_ERR;
-	
 	
 	retVal = READER_T0_CONTEXT_SetHalCommSettingsFreq(pContext, freq);
 	if(retVal != READER_OK) return READER_ERR;
@@ -209,8 +200,6 @@ READER_Status READER_T0_CONTEXT_ImportHalCommSettingsToContext(READER_T0_Context
 READER_Status READER_T0_CONTEXT_ExportHalCommSettingsFromContext(READER_T0_ContextHandler *pContext, READER_HAL_CommSettings *pSettings){
 	return READER_OK;
 }
-
-
 
 
 READER_Status READER_T0_CONTEXT_GetCurrentWI(READER_T0_ContextHandler *pContext, uint32_t *pCurrentWI){
@@ -238,7 +227,7 @@ READER_Status READER_T0_CONTEXT_GetCurrentWTMilli(READER_T0_ContextHandler *pCon
 	
 	
 	/* On calcule le nouveau currentWT. Voir ISO7816-3 section 10.2 ...  */
-	/* Attention, ici contrairment a la sec on manipule des millisecondes et pas des secondes (d'ou le x1000) ...  */
+	/* Attention, ici contrairement a la spec on manipule des millisecondes et pas des secondes (d'ou le x1000) ...  */
 	currentWT = (uint32_t)(1000 * currentWI * 960 * ((float)(currentFi) / (float)(currentFreq))) + 1;  /* Arrondi a l'entier superieur ...  */
 	
 	
@@ -258,11 +247,3 @@ READER_Status READER_T0_CONTEXT_SetCurrentWI(READER_T0_ContextHandler *pContext,
 	
 	return READER_OK;
 }
-
-
-//READER_Status READER_T0_CONTEXT_SetCurrentWT(READER_T0_ContextHandler *pContext, uint32_t newWT){
-//	pContext->currentWT = newWT;
-//	
-//	return READER_OK;
-//}
-

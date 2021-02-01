@@ -3,7 +3,7 @@
  * \copyright This file is part of the Open-ISO7816-Stack project and is distributed under the MIT license. See LICENSE file in the root directory. 
  * This file provides primitives for interacting with the hardware in order to manipulate ISO7816-3 signals (I/O line, clock, reset, power ...).
  * These primitives are mainly used in the reader_hal.c file to order to construct higher (abstraction) level primitives.
- * All the hardware dependent functions should be located in this file and reader_hal_comm_settings.c.
+ * All the hardware dependent functions should be located in this file, reader_hal_comm_settings.c and reader_periph.c.
  */
 
 

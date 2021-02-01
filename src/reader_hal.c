@@ -2,7 +2,7 @@
  * \file reader_hal.c
  * \copyright This file is part of the Open-ISO7816-Stack project and is distributed under the MIT license. See LICENSE file in the root directory. 
  * This file is the higher level of the abstraction layer (HAL). The code contained in this file is almost not hardware dependent.
- * TODO: The goal in the next versions is to move the last (very few) pieces of hardware dependent code from this file to reader_hal_basis.c or reader_hal_comm_settings.c.
+ * TODO: The goal in the next versions is to move the last (very few) pieces of hardware dependent code from this file to reader_hal_basis.c or reader_hal_comm_settings.c or reader_periph.c.
  */
 
 #include "reader_hal.h"

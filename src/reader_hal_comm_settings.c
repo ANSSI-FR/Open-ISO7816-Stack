@@ -1,3 +1,10 @@
+/**
+ * \file reader_hal_comm_settings.c
+ * \copyright This file is part of the Open-ISO7816-Stack project and is distributed under the MIT license. See LICENSE file in the root directory. 
+ * This file provides primitives for interacting (specifically configuring) with the hardware in order to manipulate ISO7816-3 signals (I/O line, clock, reset, power ...).
+ */
+
+
 #include "reader_hal_comm_settings.h"
 #include "stdint.h"
 #include "reader.h"
@@ -6,23 +13,19 @@
 
 
 
-
 extern SMARTCARD_HandleTypeDef smartcardHandleStruct;
 
 
 /**
- * \fn READER_Status READER_HAL_SetFreq(uint32_t newFreq)
- * \brief Cette fonction permet de changer la fréquence de l'horloge fournie à la carte à puce. Attention cette fonction dépend de la variable globale : globalCurrentSettings. Cette variable est locale au fichier "reader_hal.c". Cette structure contient en permanance les parametres de communication utilisés.
- * \return Valeur de type READER_Status. READER_OK si l'exécution s'est correctement déroulée. Toute autre valeur suggère une erreur.
- * \param newFreq uint32_t indiquant la nouvelle fréquence à adopter (en Hz). Attention, selon l'implémentation matérielle toutes les fréquences ne sont pas permises. Pour plus d'informations sur les fréquences supportées voir l'implémentation de la fonction READER_UTILS_ComputePrescFromFreq() dans le fichier "reader_utils.h". Attention l'implémentation de cette fonction varie selon la cible matérielle.
+ * \fn READER_HAL_SetFreq(READER_HAL_CommSettings *pSettings, uint32_t newFreq)
+ * \return READER_Status execution code. READER_OK indicates successful execution. Any other value is an error.
+ * \param *pSettings is a pointer on a READER_HAL_CommSettings data structure.
+ * \param newFreq is the new frequency (in Hz) to be applied to the CLK line (system clock provided to the smartcard). Currently, only a finite set of CLK values are supported. See implementation of the READER_UTILS_ComputePrescFromFreq() function for additional information.
+ * This function is intended to define (or update) the system clock frequency provided to the smartcard.
  */
 READER_Status READER_HAL_SetFreq(READER_HAL_CommSettings *pSettings, uint32_t newFreq){
-	//READER_Status retVal;
 	uint32_t oldFreq, oldBaudRate;
 	uint32_t newBaudRate;
-	//uint32_t newWaitTime;
-	//uint32_t newBlockWaitTimeEtu, newBlockWaitTimeMili;
-	//uint32_t BWI, WI;
 	
 	
 	/* On recupere la frequence et la baudrate actuel. Peut aussi etre recupere a partir des infos de *currentSettings */
@@ -56,17 +59,15 @@ READER_Status READER_HAL_SetFreq(READER_HAL_CommSettings *pSettings, uint32_t ne
 
 
 /**
- * \fn READER_Status READER_HAL_SetEtu(uint32_t Fi, uint32_t Di)
- * \brief Cette fonction permet de configurer la valeur du "Elementary Time Unit" (ETU) utilisé dans les communications sur la ligne IO. Attention cette fonction dépend de la variable globale : globalCurrentSettings. Cette variable est locale au fichier "reader_hal.c". Cette structure contient en permanance les parametres de communication utilisés.
- * \return Valeur de type READER_Status. READER_OK si l'exécution s'est correctement déroulée. Toute autre valeur suggère une erreur.
- * \param Fi "Clock Rate Conversion Integer"
- * \param Di "Baudrate Adjustement Integer"
+ * \fn READER_HAL_SetEtu(READER_HAL_CommSettings *pSettings, uint32_t Fi, uint32_t Di)
+ * \return READER_Status execution code. READER_OK indicates successful execution. Any other value is an error.
+ * \param *pSettings is a pointer on a READER_HAL_CommSettings data structure containg the current lowel level communication settings.
+ * \param Fi "Clock Rate Conversion Integer" see ISO/IEC7816-3 section 7.1.
+ * \param Di "Baudrate Adjustement Integer" see ISO/IEC7816-3 section 7.1.
+ * This function modifies the "Elementary Time Unit" (ETU, see ISO/IEC7816-3 section 7.1) currently being in use.
  */
 READER_Status READER_HAL_SetEtu(READER_HAL_CommSettings *pSettings, uint32_t Fi, uint32_t Di){
-	//READER_Status retVal;
 	uint32_t freq, newBaudRate;
-	//uint32_t newWT;
-	//uint32_t WI;
 	
 	/* On recupere les parametres de communication actuels. On aurait aussi pu le faire a partir de la structure globalCurrentSettings */
 	freq = READER_UTILS_GetCardFreq(READER_HAL_STM32_SYSCLK, READER_HAL_STM32_AHB_PRESC, READER_HAL_STM32_APB1_PRESC, smartcardHandleStruct.Init.Prescaler);
@@ -93,6 +94,13 @@ READER_Status READER_HAL_SetEtu(READER_HAL_CommSettings *pSettings, uint32_t Fi,
 }
 
 
+/**
+ * \fn READER_HAL_SetFi(READER_HAL_CommSettings *pSettings, uint32_t Fi)
+ * \return READER_Status execution code. READER_OK indicates successful execution. Any other value is an error.
+ * \param *pSettings is a pointer on a READER_HAL_CommSettings data structure containg the current lowel level communication settings.
+ * \param Fi "Clock Rate Conversion Integer" see ISO/IEC7816-3 section 7.1.
+ * This function modifies the "Clock Rate Conversion Integer" (Fi parameter, see ISO/IEC7816-3 section 7.1) currently being in use.
+ */
 READER_Status READER_HAL_SetFi(READER_HAL_CommSettings *pSettings, uint32_t Fi){
 	READER_Status retVal;
 	uint32_t Di;
@@ -106,6 +114,14 @@ READER_Status READER_HAL_SetFi(READER_HAL_CommSettings *pSettings, uint32_t Fi){
 	return READER_OK;
 }
 
+
+/**
+ * \fn READER_HAL_SetDi(READER_HAL_CommSettings *pSettings, uint32_t Di)
+ * \return READER_Status execution code. READER_OK indicates successful execution. Any other value is an error.
+ * \param *pSettings is a pointer on a READER_HAL_CommSettings data structure containg the current lowel level communication settings.
+ * \param Di "Baudrate Adjustement Integer" see ISO/IEC7816-3 section 7.1.
+ * This function modifies the "Baudrate Adjustement Integer" (Di parameter, see ISO/IEC7816-3 section 7.1) currently being in use.
+ */
 READER_Status READER_HAL_SetDi(READER_HAL_CommSettings *pSettings, uint32_t Di){
 	READER_Status retVal;
 	uint32_t Fi;
@@ -120,13 +136,12 @@ READER_Status READER_HAL_SetDi(READER_HAL_CommSettings *pSettings, uint32_t Di){
 }
 
 
-
-
 /**
- * \fn READER_Status READER_HAL_SetGT(uint32_t newGT)
- * \brief Cette fonction permet de configurer le "Gard Time" (GT) à utiliser lors des communications sur la ligne IO. Le GT est défini dans la norme ISO7816-3 à la section 7.2. Attention cette fonction dépend de la variable globale : globalCurrentSettings. Cette variable est locale au fichier "reader_hal.c". Cette structure contient en permanance les parametres de communication utilisés.
- * \return Valeur de type READER_Status. READER_OK si l'exécution s'est correctement déroulée. Toute autre valeur suggère une erreur.
- * \param uint32_t newGT uint32_t indiquant la nouvelle valeur de GT qu'il faut désormais utiliser. Cette valeur est un nombre entier d'ETU.
+ * \fn READER_HAL_SetGT(READER_HAL_CommSettings *pSettings, uint32_t newGT)
+ * \return READER_Status execution code. READER_OK indicates successful execution. Any other value is an error.
+ * \param *pSettings is a pointer on a READER_HAL_CommSettings data structure containg the current lowel level communication settings.
+ * \param newGT is the new GT (Guard Time) value to be set. This value is an integer number of ETUs (Elementary Time Unit, see ISO/IEC7816-3 section 7.1).
+ * This function configures the GT (Guard Time) to be used when communication over the I/O transmission line. See ISO/IEC7816-3 section 7.2.
  */
 READER_Status READER_HAL_SetGT(READER_HAL_CommSettings *pSettings, uint32_t newGT){
 	if(newGT < 12) return READER_ERR;
@@ -140,143 +155,23 @@ READER_Status READER_HAL_SetGT(READER_HAL_CommSettings *pSettings, uint32_t newG
 	return READER_OK;	
 }
 
-/**
- * \fn READER_Status READER_HAL_SetWT(uint32_t newWT)
- * \brief Cette fonction permet de configurer le "Wait Time" (WT) à utiliser lors des communications sur la ligne IO. Le GT est défini dans la norme ISO7816-3 à la section 7.2. Attention cette fonction dépend de la variable globale : globalCurrentSettings. Cette variable est locale au fichier "reader_hal.c". Cette structure contient en permanance les parametres de communication utilisés.
- * \return Valeur de type READER_Status. READER_OK si l'exécution s'est correctement déroulée. Toute autre valeur suggère une erreur.
- * \param uint32_t newGT uint32_t indiquant la nouvelle valeur de WT qu'il faut désormais utiliser. Cette valeur est un nombre entier d'ETU.
- 
- */
-//READER_Status READER_HAL_SetWT(READER_HAL_CommSettings *pSettings, uint32_t newWT){
-//	//globalWaitTimeMili = newWT;
-//	pSettings->WT = newWT;
-//	return READER_OK;
-//}
-
-//READER_Status READER_HAL_SetWI(READER_HAL_CommSettings *pSettings, uint32_t WI){
-//	READER_Status retVal;
-//	uint32_t WTMili;
-//	uint32_t f;
-//	uint32_t Fi;
-//	
-//	pSettings->WI = WI;
-//	
-//	/* Modification de WT en consequence. Voir ISO7816-3 section 10.2 */
-//	f = READER_HAL_GetFreq(pSettings);
-//	Fi = READER_HAL_GetFi(pSettings);
-//	
-//	WTMili = READER_UTILS_ComputeWT1(f, Fi, WI);
-//	retVal = READER_HAL_SetWT(pSettings, WTMili);
-//	if(retVal != READER_OK) return retVal;
-//	
-//	
-//	return READER_OK;
-//}
-
-
-//READER_Status READER_HAL_SetIFSC(uint32_t IFSC){
-//	globalCurrentSettings.IFSC = IFSC;
-//	
-//	return READER_OK;
-//}
-
-
-//READER_Status READER_HAL_SetIFSD(uint32_t IFSD){
-//	globalCurrentSettings.IFSD = IFSD;
-//	
-//	return READER_OK;
-//}
-
-
-//READER_Status READER_HAL_SetBWT(uint32_t BWT){
-//	globalCurrentSettings.BWT = BWT;
-//	
-//	return READER_OK;
-//}
-
-
-//READER_Status READER_HAL_SetBWI(uint32_t BWI){
-//	READER_Status retVal;
-//	uint32_t BWTEtu, BWTMili;
-//	uint32_t currentFreq, currentF, currentD;
-//	
-//	currentFreq = READER_HAL_GetFreq();
-//	currentF = READER_HAL_GetFi();
-//	currentD = READER_HAL_GetDi();
-//	
-//	BWTEtu = READER_UTILS_ComputeBWTEtu(BWI, currentFreq);
-//	BWTMili = READER_UTILS_ComputeBWTMili(BWTEtu, currentF, currentD, currentFreq);
-//	
-//	/* On modifie le BWT en consequence  */
-//	retVal = READER_HAL_SetBWT(BWTMili);
-//	if(retVal != READER_OK) return retVal;
-//	
-//	
-//	globalCurrentSettings.BWI = BWI;
-//	
-//	
-//	return READER_OK;
-//}
-
-
-//READER_Status READER_HAL_SetBGT(uint32_t BGT){
-//	globalCurrentSettings.BGT = BGT;
-//	
-//	return READER_OK;
-//}
-
-
-//READER_Status READER_HAL_SetRedundancyType(READER_HAL_CommSettings *pSettings, uint32_t rType){
-//	pSettings->redundancyType = rType;
-//	
-//	return READER_OK;
-//}
-
-
-
-
 
 /**
- * \fn uint32_t READER_HAL_GetWT(void)
- * \brief Cette fonction permet d'obtenir le Wait Time (WT) selon les parametres de communication actuels. Attention cette fonction dépend de la variable globale : globalCurrentSettings. Cette variable est locale au fichier "reader_hal.c".
- * \return Retourne la valeur du WT (tel que defini dans la norme ISO) en milisecondes.
- */
-//uint32_t READER_HAL_GetWT(READER_HAL_CommSettings *pSettings){
-//	pSettings->WT;
-//}
-
-
-//uint32_t READER_HAL_GetWI(READER_HAL_CommSettings *pSettings){
-//	pSettings->WI;
-//}
-
-
-//uint32_t READER_HAL_GetBWT(void){
-//	return globalCurrentSettings.BWT;
-//}
-
-//uint32_t READER_HAL_GetBWI(void){
-//	return globalCurrentSettings.BWI;
-//}
-
-//uint32_t READER_HAL_GetBGT(void){
-//	return globalCurrentSettings.BGT;
-//}
-
-
-/**
- * \fn uint32_t READER_HAL_GetGT(void)
- * \brief Cette fonction retourne le Guard Time (GT) actuellement utilisé par toutes les fonctions de la bibliothèque. 
- * \return Guard Time exprimé en nombre d'ETU.
+ * \fn READER_HAL_GetGT(READER_HAL_CommSettings *pSettings)
+ * \param *pSettings is a pointer on a READER_HAL_CommSettings data structure containg the current lowel level communication settings.
+ * \return GT value currently being in use. Expressed in number of ETU.
+ * Returns the GT (Guard Time, see ISO/IEC7816-3 section 7.2) value currently being used. This value is expressed as an integer number of ETU (Elementary Time Unit, see ISO/IEC7816-3 section 7.1).
  */
 uint32_t READER_HAL_GetGT(READER_HAL_CommSettings *pSettings){
 	return pSettings->GT;
 }
 
+
 /**
- * \fn uint32_t READER_HAL_GetGTMili(void)
- * \brief Cette fonction renvoie le Guard Time (GT) utilié actuellment.
- * \return Guard Time exprimé en milisecondes. Attention cette valeur est arrondie à l'entier supérieur. Dans certains cas cela peut être problématique, il faut rester vigilant.
+ * \fn READER_HAL_GetGTMili(READER_HAL_CommSettings *pSettings)
+ * \param *pSettings is a pointer on a READER_HAL_CommSettings data structure containg the current lowel level communication settings.
+ * \return GT value currently being applied to the communications over the I/O transmission line. Expressed in milliseconds.
+ * Returns the GT (Guard Time, see ISO/IEC7816-3 section 7.2) value currently being used. This value is expressed in milliseconds.
  */
 uint32_t READER_HAL_GetGTMili(READER_HAL_CommSettings *pSettings){
 	uint32_t freq, Fi, Di, GTEtu;
@@ -293,21 +188,35 @@ uint32_t READER_HAL_GetGTMili(READER_HAL_CommSettings *pSettings){
 	return GTMilli;
 }
 
+
+/**
+ * \fn READER_HAL_GetFreq(READER_HAL_CommSettings *pSettings)
+ * \param *pSettings is a pointer on a READER_HAL_CommSettings data structure containg the current lowel level communication settings.
+ * \return Current frequency of the system clock provided to the smartcard over the CLK line.
+ */
 uint32_t READER_HAL_GetFreq(READER_HAL_CommSettings *pSettings){
 	return pSettings->f;
 }
 
+
+/**
+ * \fn READER_HAL_GetFi(READER_HAL_CommSettings *pSettings)
+ * \param *pSettings is a pointer on a READER_HAL_CommSettings data structure containg the current lowel level communication settings.
+ * \return Current value of the Fi paramter being in use for ETU computation (see ISO/IEC7816-3 section 7.1).
+ */
 uint32_t READER_HAL_GetFi(READER_HAL_CommSettings *pSettings){
 	return pSettings->Fi;
 }
 
+
+/**
+ * \fn READER_HAL_GetDi(READER_HAL_CommSettings *pSettings)
+ * \param *pSettings is a pointer on a READER_HAL_CommSettings data structure containg the current lowel level communication settings.
+ * \return Current value of the Di paramter being in use for ETU computation (see ISO/IEC7816-3 section 7.1).
+ */
 uint32_t READER_HAL_GetDi(READER_HAL_CommSettings *pSettings){
 	return pSettings->Di;
 }
-
-//uint32_t READER_HAL_GetRedunancyType(READER_HAL_CommSettings *pSettings){
-//	return pSettings->redundancyType;
-//}
 
 
 /*
