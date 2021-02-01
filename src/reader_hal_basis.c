@@ -1,15 +1,12 @@
 /**
  * \file reader_hal_basis.c
- * \author Boris
- * Il a ete choisi de decomposer cette HAL en deux parties (en deux niveaux d'abstraction).
- * Ces deux parties correspondent aux fichiers reader_hal.c et reader_hal_basis.c.
- * Ce fichier (reader_hal_basis.c) sert a former des primitives pour les fonctions definies dans le fichier reader_hal.c (niveau d'abstraction superieur).
- * Le but de ce fichier est d'isoler encore plus finement les fonctions reelement dependantes du materiel.
- * En l'occurence, dans le cas de cette implementation, ce fichier est le seul a inclure la HAL de ST.
+ * \copyright This file is part of the Open-ISO7816-Stack project and is distributed under the MIT license. See LICENSE file in the root directory. 
+ * This file provides primitives for interacting with the hardware in order to manipulate ISO7816-3 signals (I/O line, clock, reset, power ...).
+ * These primitives are mainly used in the reader_hal.c file to order to construct higher (abstraction) level primitives.
+ * All the hardware dependent functions should be located in this file and reader_hal_comm_settings.c.
  */
 
 
-//#include "reader_hal_.h"
 #include "reader_hal_basis.h"
 #include "reader_periph.h"
 #include "stm32f4xx_hal.h"
@@ -17,13 +14,14 @@
 
 
 SMARTCARD_HandleTypeDef smartcardHandleStruct;
-//extern UART_HandleTypeDef uartHandleStruct;   // juste pour debug
-
-//uint32_t globalWaitTimeMili;
-//READER_HAL_CommSettings globalCurrentSettings;
 
 
-
+/**
+ * \fn READER_HAL_InitHardware(void)
+ * \return READER_Status execution code. READER_OK is nominal execution.
+ * This function initializes the hardware components which are necessary to execute the code and interrect with the smartcard. Mainly clock trees and GPIO configuration...
+ * It contains define flags to be adjusted depending on the stm32 target being in use. It is recommend to set those flag directly from the Makfile by following the instructions in the README file.
+ */
 READER_Status READER_HAL_InitHardware(void){
 	READER_Status retVal;
 	
@@ -64,10 +62,8 @@ READER_Status READER_HAL_InitHardware(void){
 	
 	HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_5);   // Attention pas de valeur de retour
 	
-	
 	/* Initialisation de tous les peripheriques materiels                                      */
 	if(READER_PERIPH_Init() != READER_OK) return READER_ERR;
-	
 	
 	/* Configuration de tous les etats initiaux des E/S                                        */
 	if(READER_HAL_SetIOLine(READER_HAL_STATE_OFF) != READER_OK)       return READER_ERR;
@@ -80,8 +76,15 @@ READER_Status READER_HAL_InitHardware(void){
 }
 
 
-
-/* Fonction "from scratch" pour recevoir un caractere */
+/**
+ * \fn READER_HAL_RcvChar(READER_HAL_CommSettings *pSettings, READER_HAL_Protocol protocol, uint8_t *character, uint32_t timeout)
+ * \return READER_Status execution code. READER_OK means successful reception of a character. READER_TIMEOUT means timeout. Any other value indicates an error.
+ * \param *pSettings is a pointer on a READER_HAL_CommSettings data structure. It has to be previously initialized and has to contain correct comminication parameters.
+ * \param protocol is a READER_HAL_Protocol value indicating wether this function is called from a T=0 or a T=1 context (it has some slight influence over the character transmission).
+ * \param *character is a pointer to an uint8_t variable where the received byte is going to be copied in.
+ * \param timeout is the timeout value to be applied for the reception of the character.
+ * This function is used to receive a single byte/character from the I/O transmission line.
+ */
 READER_Status READER_HAL_RcvChar(READER_HAL_CommSettings *pSettings, READER_HAL_Protocol protocol, uint8_t *character, uint32_t timeout){
 	uint32_t newTimeout, currentGTMilli, tickstart;
 	uint8_t dummy;
@@ -148,6 +151,15 @@ READER_Status READER_HAL_RcvChar(READER_HAL_CommSettings *pSettings, READER_HAL_
 }
 
 
+/**
+ * \fn READER_HAL_SendChar(READER_HAL_CommSettings *pSettings, READER_HAL_Protocol protocol, uint8_t character, uint32_t timeout)
+ * \return READER_Status execution code. READER_OK means successful transmission of the character. READER_TIMEOUT means timeout. Any other value indicates an error.
+ * \param *pSettings is a pointer on a READER_HAL_CommSettings data structure. It has to be previously initialized and has to contain correct comminication parameters.
+ * \param protocol is a READER_HAL_Protocol value indicating wether this function is called from a T=0 or a T=1 context (it has some slight influence over the character transmission).
+ * \param character is the character to be sent.
+ * \param timeout is the timeout value to be applied for the transmission of the character.
+ * This function is used to transmit a single byte/character on the I/O transmission line.
+ */
 READER_Status READER_HAL_SendChar(READER_HAL_CommSettings *pSettings, READER_HAL_Protocol protocol, uint8_t character, uint32_t timeout){
 	uint32_t tickstart;
 	uint32_t guardTime;
@@ -245,7 +257,6 @@ READER_Status READER_HAL_SetRstLine(READER_HAL_State state){
 }
 
 
-
 /**
  * \fn READER_Status READER_HAL_SetIOLine(READER_HAL_State state)
  * \brief Cette fonction permet de changer l'état de la broche IO.
@@ -317,7 +328,6 @@ void READER_HAL_Delay(uint32_t tMili){
 uint32_t READER_HAL_GetTick(void){
 	return (uint32_t)HAL_GetTick();
 }
-
 
 
 /**
