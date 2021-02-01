@@ -1,7 +1,7 @@
 /**
  * \file reader_t0_apdu.h
  * \copyright This file is part of the Open-ISO7816-Stack project and is distributed under the MIT license. See LICENSE file in the root directory. 
- * \brief This file contains the code of all the functions defined in reader_t0_apdu.h. These functions are the ones needed to send APDU commands an receive APDU responses when using the protocol T=0.  
+ * This file contains the code of all the functions defined in reader_t0_apdu.h. These functions are the ones needed to send APDU commands an receive APDU responses when using the protocol T=0.  
  */
 
 #include "reader_t0_apdu.h"
