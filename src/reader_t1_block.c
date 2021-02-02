@@ -1,7 +1,7 @@
 /**
  * \file reader_t1_block.c
- * \author Boris
- * This file contains the code of the functions that are dealing with T=1 Block objects.
+ * \copyright This file is part of the Open-ISO7816-Stack project and is distributed under the MIT license. See LICENSE file in the root directory. 
+ * This file contains the functions to operate safely on the READER_T1_Block data stuctures representing the T=1 Block objects.
  */
 
 
@@ -10,6 +10,13 @@
 
 
 
+/**
+ * \fn READER_T1_SetBlockSAD(READER_T1_Block *pBlock, uint8_t blockSAD)
+ * \return READER_Status execution code. READER_OK indicates successful execution. Any other value is an error.
+ * \param *pBlock is a pointer on a READER_T1_Block data structure we want to operate on.
+ * \param blockSAD is the "Source Node Address" as defined in ISO/IEC7816-3 section 11.3.2.1. It identifies the source of the block. It may be used to distinguish between multiple logical connections when they coexist. Most of the time it is set to 0x00.
+ * This function sets the SAD (source address of a T=1 block structure). SAD is a part of the NAD byte. See ISO/IEC7816-3 section 11.3.2.1.
+ */
 READER_Status READER_T1_SetBlockSAD(READER_T1_Block *pBlock, uint8_t blockSAD){
 	READER_Status retVal;
 	uint8_t *pCurrentNAD;
@@ -23,9 +30,9 @@ READER_Status READER_T1_SetBlockSAD(READER_T1_Block *pBlock, uint8_t blockSAD){
 	blockFrame = READER_T1_GetBlockFrame(pBlock);
 	
 	pCurrentNAD = blockFrame + READER_T1_BLOCKFRAME_NAD_POSITION;
-	*pCurrentNAD = (*pCurrentNAD & 0xF8) | (blockSAD & 0x07);                              /* Voir ISO7816-3 section 11.3.2.1 */
+	*pCurrentNAD = (*pCurrentNAD & 0xF8) | (blockSAD & 0x07);                              /* See ISO7816-3 section 11.3.2.1 */
 	
-	/* On met a jour le checksum du Block */
+	/* Updating block's checksum ...  */
 	retVal = READER_T1_UpdateBlockChecksum(pBlock);
 	if(retVal != READER_OK) return retVal;
 	
@@ -33,6 +40,13 @@ READER_Status READER_T1_SetBlockSAD(READER_T1_Block *pBlock, uint8_t blockSAD){
 }
 
 
+/**
+ * \fn READER_T1_SetBlockDAD(READER_T1_Block *pBlock, uint8_t blockDAD)
+ * \return READER_Status execution code. READER_OK indicates successful execution. Any other value is an error.
+ * \param *pBlock is a pointer on a READER_T1_Block data structure we want to operate on.
+ * \param blockDAD is the "Destination Node Address" as defined in ISO/IEC7816-3 section 11.3.2.1. It identifies the intended destination of the block. It may be used to distinguish between multiple logical connections when they coexist. Most of the time it is set to 0x00.
+ * This function sets the DAD (destination address of a T=1 block structure). DAD is a part of the NAD byte. See ISO/IEC7816-3 section 11.3.2.1.
+ */
 READER_Status READER_T1_SetBlockDAD(READER_T1_Block *pBlock, uint8_t blockDAD){
 	READER_Status retVal;
 	uint8_t *pCurrentNAD;
@@ -45,9 +59,9 @@ READER_Status READER_T1_SetBlockDAD(READER_T1_Block *pBlock, uint8_t blockDAD){
 	blockFrame = READER_T1_GetBlockFrame(pBlock);
 	
 	pCurrentNAD = blockFrame + READER_T1_BLOCKFRAME_NAD_POSITION;
-	*pCurrentNAD = (*pCurrentNAD & 0x8F) | (4<<(blockDAD & 0x07));                              /* Voir ISO7816-3 section 11.3.2.1 */
+	*pCurrentNAD = (*pCurrentNAD & 0x8F) | (4<<(blockDAD & 0x07));                              /* See ISO7816-3 section 11.3.2.1 */
 	
-	/* On met a jour le checksum du Block */
+	/* Updating block's checksum ...  */
 	retVal = READER_T1_UpdateBlockChecksum(pBlock);
 	if(retVal != READER_OK) return retVal;
 	
@@ -55,6 +69,13 @@ READER_Status READER_T1_SetBlockDAD(READER_T1_Block *pBlock, uint8_t blockDAD){
 }
 
 
+/**
+ * \fn READER_T1_SetBlockNAD(READER_T1_Block *pBlock, uint8_t blockNAD)
+ * \return READER_Status execution code. READER_OK indicates successful execution. Any other value is an error.
+ * \param *pBlock is a pointer on a READER_T1_Block data structure we want to operate on.
+ * \param blockNAD is the value of the Node Address Byte (NAD) to be set. See ISO/IEC7816-3 section 11.3.2.1.
+ * This function sets the NAD byte of the T=1 block structure. See ISO/IEC7816-3 section 11.3.2.1.
+ */
 READER_Status READER_T1_SetBlockNAD(READER_T1_Block *pBlock, uint8_t blockNAD){
 	READER_Status retVal;
 	uint8_t *pCurrentNAD;
@@ -64,9 +85,9 @@ READER_Status READER_T1_SetBlockNAD(READER_T1_Block *pBlock, uint8_t blockNAD){
 	blockFrame = READER_T1_GetBlockFrame(pBlock);
 	
 	pCurrentNAD = blockFrame + READER_T1_BLOCKFRAME_NAD_POSITION;
-	*pCurrentNAD = blockNAD;                                                                   /* Voir ISO7816-3 section 11.3.2.1 */
+	*pCurrentNAD = blockNAD;                                                                   /* See ISO7816-3 section 11.3.2.1 */
 	
-	/* On met a jour le checksum du Block */
+	/* Updating block's checksum ...  */
 	retVal = READER_T1_UpdateBlockChecksum(pBlock);
 	if(retVal != READER_OK) return retVal;
 	
@@ -74,6 +95,13 @@ READER_Status READER_T1_SetBlockNAD(READER_T1_Block *pBlock, uint8_t blockNAD){
 }
 
 
+/**
+ * \fn READER_T1_SetBlockPCB(READER_T1_Block *pBlock, uint8_t blockPCB)
+ * \return READER_Status execution code. READER_OK indicates successful execution. Any other value is an error.
+ * \param *pBlock is a pointer on a READER_T1_Block data structure we want to operate on.
+ * \param blockPCB is the value of the PCB byte to be set for the T=1 block.
+ * This function the PCB byte of the T=1 block. It codes for the type of block (I-Block, R-Block, S-Block). See ISO/IEC7816-3 section 11.3.2.2.
+ */
 READER_Status READER_T1_SetBlockPCB(READER_T1_Block *pBlock, uint8_t blockPCB){
 	READER_Status retVal;
 	uint8_t *pCurrentPCB;
@@ -83,9 +111,9 @@ READER_Status READER_T1_SetBlockPCB(READER_T1_Block *pBlock, uint8_t blockPCB){
 	blockFrame = READER_T1_GetBlockFrame(pBlock);
 	
 	pCurrentPCB = blockFrame + READER_T1_BLOCKFRAME_PCB_POSITION;
-	*pCurrentPCB = blockPCB;                                                                   /* Voir ISO7816-3 section 11.3.2.1 */
+	*pCurrentPCB = blockPCB;                                                                   /* See ISO7816-3 section 11.3.2.1 */
 	
-	/* On met a jour le checksum du Block */
+	/* Updates block's checksum ...  */
 	retVal = READER_T1_UpdateBlockChecksum(pBlock);
 	if(retVal != READER_OK) return retVal;
 	
@@ -93,6 +121,13 @@ READER_Status READER_T1_SetBlockPCB(READER_T1_Block *pBlock, uint8_t blockPCB){
 }
 
 
+/**
+ * \fn READER_T1_SetBlockType(READER_T1_Block *pBlock, READER_T1_BlockType type)
+ * \return READER_Status execution code. READER_OK indicates successful execution. Any other value is an error.
+ * \param *pBlock is a pointer on a READER_T1_Block data structure we want to operate on.
+ * \param type is a READER_T1_BlockType value coding for the type of block (I-Block, R-Block, S-Block).
+ * This function configures the type of the block (I-Block, R-Block, S-Block).
+ */
 READER_Status READER_T1_SetBlockType(READER_T1_Block *pBlock, READER_T1_BlockType type){
 	/* Voir ISO7816-3 section 11.3.2.2 */
 	READER_Status retVal;
@@ -118,7 +153,7 @@ READER_Status READER_T1_SetBlockType(READER_T1_Block *pBlock, READER_T1_BlockTyp
 	retVal = READER_T1_SetBlockPCB(pBlock, newPCB);
 	if(retVal != READER_OK) return retVal;
 		
-	/* On met a jour le checksum du Block */
+	/* Updating block's checksum ...  */
 	retVal = READER_T1_UpdateBlockChecksum(pBlock);
 	if(retVal != READER_OK) return retVal;
 	
@@ -126,12 +161,20 @@ READER_Status READER_T1_SetBlockType(READER_T1_Block *pBlock, READER_T1_BlockTyp
 }
 
 
+/**
+ * \fn READER_T1_SetBlockLEN(READER_T1_Block *pBlock, uint8_t blockLEN)
+ * \return READER_Status execution code. READER_OK indicates successful execution. Any other value is an error.
+ * \param *pBlock is a pointer on a READER_T1_Block data structure we want to operate on.
+ * \param blockLEN is coding for the length of the data contained in an I-Block. See ISO/IEC7816-3 section 11.3.2.3. It shoud not be higher than 0xFE.
+ * This function sets the length of the data field contained in an I-Block. See ISO/IEC7816-3 section 11.3.2.3.
+ */
 READER_Status READER_T1_SetBlockLEN(READER_T1_Block *pBlock, uint8_t blockLEN){
 	READER_Status retVal;
 	uint8_t *pCurrentLEN;
 	uint8_t *blockFrame;
 
 	
+	/* We check that the value is not higher than the max one. See ISO/IEC7816-3 section 11.3.2.3. */
 	if(blockLEN > READER_T1_BLOCK_MAX_DATA_SIZE){
 		return READER_ERR;
 	}
@@ -141,7 +184,7 @@ READER_Status READER_T1_SetBlockLEN(READER_T1_Block *pBlock, uint8_t blockLEN){
 	pCurrentLEN = blockFrame + READER_T1_BLOCKFRAME_LEN_POSITION;
 	*pCurrentLEN = blockLEN;
 	
-	/* On met a jour le checksum du Block */
+	/* Updating block's checksum ...  */
 	retVal = READER_T1_UpdateBlockChecksum(pBlock);
 	if(retVal != READER_OK) return retVal;
 	
@@ -149,17 +192,18 @@ READER_Status READER_T1_SetBlockLEN(READER_T1_Block *pBlock, uint8_t blockLEN){
 }
 
 
+/**
+ * \fn READER_T1_SetBlockRedundancyType(READER_T1_Block *pBlock, READER_T1_RedundancyType type)
+ * \return READER_Status execution code. READER_OK indicates successful execution. Any other value is an error.
+ * \param *pBlock is a pointer on a READER_T1_Block data structure we want to operate on.
+ * \param type is a READER_T1_RedundancyType value encoding the type of corrector code to be used (LRC or CRC).
+ */
 READER_Status READER_T1_SetBlockRedundancyType(READER_T1_Block *pBlock, READER_T1_RedundancyType type){
 	if((type != READER_T1_CRC) && (type != READER_T1_LRC)){
 		return READER_ERR;
 	}
 	
 	pBlock->RedundancyType = type;
-
-	///* On met a jour le checksum du Block */
-	//retVal = READER_T1_UpdateBlockChecksum(pBlock);
-	//if(retVal != READER_OK) return retVal;
-	/* Ici, on  n'a pas besoin de recalculer le checksum, on a pas agit directement sur le Block ... */
 	
 	return READER_OK;
 }
@@ -184,15 +228,12 @@ READER_Status READER_T1_SetBlockLRC(READER_T1_Block *pBlock, uint8_t blockLRC){
 	retVal = READER_T1_SetBlockRedundancyType(pBlock, READER_T1_LRC);
 	if(retVal != READER_OK) return retVal;
 	
-	///* On met a jour le checksum du Block */
-	//retVal = READER_T1_UpdateBlockChecksum(pBlock);
-	//if(retVal != READER_OK) return retVal;
-	/* Pas besoin de mettre a jour le Checksum et surtout, le pb c'est que ca cree un appel recursif infini qui bloque tout ! */
 	
 	return READER_OK;
 }
 
 
+/* TODO: Implementing CRC (only LRC implemented yet) for the T=1 blocks. */
 READER_Status READER_T1_SetBlockCRC(READER_T1_Block *pBlock, uint16_t blockCRC){
 	READER_Status retVal;
 	uint8_t currentLEN;	
@@ -213,10 +254,6 @@ READER_Status READER_T1_SetBlockCRC(READER_T1_Block *pBlock, uint16_t blockCRC){
 	retVal = READER_T1_SetBlockRedundancyType(pBlock, READER_T1_CRC);
 	if(retVal != READER_OK) return retVal;
 	
-	///* On met a jour le checksum du Block */
-	//retVal = READER_T1_UpdateBlockChecksum(pBlock);
-	//if(retVal != READER_OK) return retVal;
-	/* Pas besoin de mettre a jour le Checksum et surtout, le pb c'est que ca cree un appel recursif infini qui bloque tout ! */
 	
 	return READER_OK;
 }
@@ -269,20 +306,6 @@ READER_Status READER_T1_SetBlockData(READER_T1_Block *pBlock, uint8_t *data, uin
 	retVal = READER_T1_SetBlockLEN(pBlock, dataSize);
 	if(retVal != READER_OK) return retVal;
 	
-	/* On peut s'en passer, de toute facon on mets a jour le checksum juste apres ...  */
-	///* On re-ecrit le champ LRC/CRC a la fin du Block ...  */
-	//if(rType == READER_T1_LRC){
-	//	retVal = READER_T1_SetBlockLRC(pBlock, tmpLRC);
-	//	if(retVal != READER_OK) return retVal;
-	//}
-	//else if(rType == READER_T1_CRC){
-	//	retVal = READER_T1_SetBlockCRC(pBlock, tmpCRC);
-	//	if(retVal != READER_OK) return retVal;
-	//}
-	//else{
-	//	return READER_ERR;
-	//}
-	
 	/* On met a jour le checksum du Block */
 	retVal = READER_T1_UpdateBlockChecksum(pBlock);
 	if(retVal != READER_OK) return retVal;
@@ -290,21 +313,12 @@ READER_Status READER_T1_SetBlockData(READER_T1_Block *pBlock, uint8_t *data, uin
 	return READER_OK;
 }
 
-
-
-
-
-
-
-
 uint8_t READER_T1_GetBlockSAD(READER_T1_Block *pBlock){
 	uint8_t *pCurrentNAD;
 	uint8_t *blockFrame;
 	
 	
-	blockFrame = READER_T1_GetBlockFrame(pBlock);
-	
-	
+	blockFrame = READER_T1_GetBlockFrame(pBlock);	
 	pCurrentNAD = blockFrame + READER_T1_BLOCKFRAME_NAD_POSITION;
 	
 	return (*pCurrentNAD) & 0x07;
@@ -317,7 +331,6 @@ uint8_t READER_T1_GetBlockDAD(READER_T1_Block *pBlock){
 	
 	
 	blockFrame = READER_T1_GetBlockFrame(pBlock);	
-	
 	pCurrentNAD = blockFrame + READER_T1_BLOCKFRAME_NAD_POSITION;
 	
 	return (*pCurrentNAD & 0xE0) >> 4;
@@ -330,7 +343,6 @@ uint8_t READER_T1_GetBlockNAD(READER_T1_Block *pBlock){
 	
 	
 	blockFrame = READER_T1_GetBlockFrame(pBlock);
-	
 	pCurrentNAD = blockFrame + READER_T1_BLOCKFRAME_NAD_POSITION;
 	
 	return *pCurrentNAD;
@@ -343,7 +355,6 @@ uint8_t READER_T1_GetBlockPCB(READER_T1_Block *pBlock){
 	
 	
 	blockFrame = READER_T1_GetBlockFrame(pBlock);	
-	
 	pCurrentPCB = blockFrame + READER_T1_BLOCKFRAME_PCB_POSITION;
 	
 	return *pCurrentPCB;
@@ -378,7 +389,6 @@ READER_T1_BlockType READER_T1_GetBlockType(READER_T1_Block *pBlock){
 }
 
 
-
 /**
  * \fn uint8_t READER_T1_GetBlockLEN(READER_T1_Block *pBlock)
  * \param *pBlock est un pointeur sur une stucture de type READER_T1_BLOCK.
@@ -394,9 +404,7 @@ uint8_t READER_T1_GetBlockLEN(READER_T1_Block *pBlock){
 	
 	
 	/* Ici on ne calcule pas une taille. On va lire dans la sructure du Block le champ LEN */
-	
 	blockFrame = READER_T1_GetBlockFrame(pBlock);
-	
 	pCurrentLEN = blockFrame + READER_T1_BLOCKFRAME_LEN_POSITION;
 	
 	return *pCurrentLEN;
@@ -465,9 +473,7 @@ uint8_t READER_T1_ComputeBlockLRC(READER_T1_Block *pBlock){
 	for(i=1; i<blockFrameSize; i++){
 		xorSum = xorSum ^ (pBlockFrame[i]);
 	}
-	//if(xorSum == 0xEA){
-	//	READER_PERIPH_ErrHandler();
-	//}
+	
 	return xorSum;
 }
 
@@ -480,9 +486,7 @@ uint16_t READER_T1_ComputeBlockCRC(READER_T1_Block *pBlock){
 	uint32_t i, j;
 	
 	
-	blockFrame = READER_T1_GetBlockFrame(pBlock);
-	
-	
+	blockFrame = READER_T1_GetBlockFrame(pBlock);	
 	len = READER_T1_GetBlockSizeWithoutCheck(pBlock);
 	
 	for(i=0; i<len; i++){
@@ -503,7 +507,7 @@ uint16_t READER_T1_ComputeBlockCRC(READER_T1_Block *pBlock){
  * \fn uint32_t READER_T1_GetBlockTotalSize(READER_T1_Block *pBlock)
  * \param *pBlock est un pointeur sur une stucture Block : READER_T1_BLOCK.
  * \return La fonction retourne un entier uint32_t. La valeur de cet entier est le nombre d'octets necessaires pour représenter le Block.
- *  Cette fonction calcule le nombre d'octets necessaires pour représeter le block tel que décrit dans ISO7816-3 section 11.3.1.
+ * Cette fonction calcule le nombre d'octets necessaires pour représeter le block tel que décrit dans ISO7816-3 section 11.3.1.
  * Il s'agt ici de la taille totale, c'est a dire :  len(Prologue field) + len(Information field) + len(Epilogue field)
  */
 uint32_t READER_T1_GetBlockTotalSize(READER_T1_Block *pBlock){
@@ -513,7 +517,6 @@ uint32_t READER_T1_GetBlockTotalSize(READER_T1_Block *pBlock){
 	
 	
 	tmpLen = READER_T1_GetBlockSizeWithoutCheck(pBlock);
-	
 	checkType = READER_T1_GetBlockRedundancyType(pBlock);
 	
 	if(checkType == READER_T1_CRC){
@@ -591,7 +594,6 @@ READER_Status READER_T1_UpdateBlockChecksum(READER_T1_Block *pBlock){
 }
 
 
-
 /**
  * \fn READER_Status READER_T1_ForgeBlock(READER_T1_Block *pBlock, READER_T1_RedundancyType rType)
  * Cette fonction permet de construire un Block vierge. La fonction prends un pointeur sur un structure Block qui n'est pas initialisée, la fonction initialise ce Block de sorte à ce qu'il puisse être utilisé par les autres fonctions.
@@ -623,7 +625,7 @@ READER_Status READER_T1_ForgeBlock(READER_T1_Block *pBlock, READER_T1_Redundancy
 
 
 /**
- * \fn READER_Status READER_T1_SendBlock(READER_T1_Block *pBlock, uint32_t currentCWT, uint32_t extraStartDelay, uint32_t *pTickstart)
+ * \fn READER_T1_SendBlock(READER_T1_Block *pBlock, uint32_t currentCWT, uint32_t extraStartDelay, uint32_t *pTickstart, READER_HAL_CommSettings *pSettings)
  * Cette fonction permet de placer une structure de type READER_T1_Block sur le support support de transmission.
  * Cette fonction permet l'envoi des octets et assure le respect des délais (WT, GT, BWT, BGT ...). Elle n'a pas conscience du contexte de communication.
  * Elle traduit le niveau logique Block en uen chaine de caractères à envoyer.
@@ -632,7 +634,8 @@ READER_Status READER_T1_ForgeBlock(READER_T1_Block *pBlock, READER_T1_Redundancy
  * \param currentCWT est un uint32_t qui indique la valeur de CWT (voir ISO7816-3 section 11.4.3) à appliquer pour l'envoi de ce Block. C'est une valeur en milisecondes.
  * \param extraStartDelay est un uint32_t permet d'indiquer un délai supplémentaire à appliquer avant de déclencher l'envoi du premier caractère du Block. C'est une valeur en milisecondes. Permet d'assurer le respect du BGT par exemple (voir ISO7816-3 section 11.4.3).
  * \param *pTickStart est un pointeur sur un uint32_t. Il permet  la fonction de retourner la date (en milisecondes) du début de l'envoi du dernier caractère du Block. (leading edge du dernier caractère du block, voir ISO7816-3 section 11.4.3).
- * \return La fonction retourne un code d'erreur de type READER_Status. READER_Ok indique le bon déroulement.
+ * \param *pSettings is a pointer on a READER_HAL_CommSettings data structure that should already be containing the low level communications settings for the hardware abstraction layer.
+ * \return La fonction retourne un code d'erreur de type READER_Status. READER_OK indique le bon déroulement.
  */
 READER_Status READER_T1_SendBlock(READER_T1_Block *pBlock, uint32_t currentCWT, uint32_t extraStartDelay, uint32_t *pTickstart, READER_HAL_CommSettings *pSettings){
 	READER_Status retVal;
@@ -661,13 +664,13 @@ READER_Status READER_T1_SendBlock(READER_T1_Block *pBlock, uint32_t currentCWT, 
 }
 
 
-/* A CORRIGER, DESCRIPTION N'EST PAS A JOUR !!!  ??  */
 /**
- * \fn READER_Status READER_T1_RcvBlock(READER_T1_Block *pBlock, uint32_t timeout)
+ * \fn READER_T1_RcvBlock(READER_T1_Block *pBlock, READER_T1_RedundancyType rType, uint32_t currentCWT, uint32_t extraTimeout, uint32_t *pTickstart, READER_HAL_CommSettings *pSettings
  * Cette fonction permet de recevoir un Block. La fonction recoit d'abord le prologue du Block, puis à partir des informations qui y sont contenues, elle recoit le reste du Block. Attention cette fonction ne vérifie pas l'intégrité du Block, pas de vérification du checksum.
  * \return La fonction revoie un code de type READER_Status. Le retour est READER_OK si le Block esr reçu en entier et si le formatage du Block reçu est correct.
  * \param *pBlock Pointeur sur une structure de type READER_T1_Block. Le contenu du Block reçu sera placé à l'intérieur.
  * \param timeout Il s'agit de la valeur du timeout pour chaque caractère en milisecondes.
+ * \param *pSettings is a pointer on a READER_HAL_CommSettings data structure that should already be containing the low level communications settings for the hardware abstraction layer.
  */
 READER_Status READER_T1_RcvBlock(READER_T1_Block *pBlock, READER_T1_RedundancyType rType, uint32_t currentCWT, uint32_t extraTimeout, uint32_t *pTickstart, READER_HAL_CommSettings *pSettings){
 	READER_Status retVal;
@@ -732,9 +735,7 @@ READER_Status READER_T1_RcvBlock(READER_T1_Block *pBlock, READER_T1_RedundancyTy
 	
 	/* On recoit les data et CRC/LRC d'un seul coups */
 	retVal = READER_HAL_RcvCharFrameCountTickstart(pSettings, READER_HAL_PROTOCOL_T1, buff, buffSize, &count, currentCWT, &tickstart);
-	//if(count == 6){
-	//	READER_PERIPH_ErrHandler();
-	//}
+	
 	if((retVal != READER_OK) && (retVal != READER_TIMEOUT)){
 		return retVal;
 	}
@@ -839,42 +840,6 @@ READER_Status READER_T1_CopyBlock(READER_T1_Block *pBlockDest, READER_T1_Block *
 	
 	return READER_OK;
 }
-
-
-
-//uint32_t READER_T1_GetBlockMBit(READER_T1_Block *pBlock){
-//	uint8_t blockPCB;
-//	uint32_t mBit;
-//	
-//	blockPCB = READER_T1_GetBlockPCB(pBlock);
-//	mBit = (uint32_t)((blockPCB & 0x20)>>5);            /* Voir ISO7816-3 section 11.3.2.2 */
-//	
-//	return mBit;
-//}
-
-
-//READER_Status READER_T1_SetBlockMBit(READER_T1_Block *pBlock, uint32_t mBit){
-//	READER_Status retVal;
-//	uint8_t blockPCB, newBlockPCB;
-//	
-//	
-//	blockPCB = READER_T1_GetBlockPCB(pBlock);
-//	
-//	if(mBit == 0){
-//		newBlockPCB = blockPCB & 0xDF;             /* On passe le 6ieme bit a 0. Voir ISO7816-3 section 11.3.2.2 */
-//	}
-//	else if(mBit == 1){
-//		newBlockPCB = blockPCB | 0x20;             /* On passe le 6ieme bit a 1. Voir ISO7816-3 section 11.3.2.2 */
-//	}
-//	else{
-//		return READER_ERR;
-//	}
-//	
-//	retVal = READER_T1_SetBlockPCB(pBlock, newBlockPCB);
-//	if(retVal != READER_OK) return retVal;
-//	
-//	return READER_OK;
-//}
 
 
 READER_Status READER_T1_CopyBlockData(READER_T1_Block *pBlock, uint8_t *destBuffer, uint32_t destBufferSize){
