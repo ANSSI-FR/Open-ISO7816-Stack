@@ -14,7 +14,7 @@
 /**
  * \fn READER_Status READER_T1_APDU_Init(READER_T1_ContextHandler *pContext, READER_HAL_CommSettings *pSettings)
  * \return The function returns an execution code of type READER_Status that indicates if the function behaved as expected or not.
- * \param *pContext is a pointer on a READER_T1_ContextHandler data structure to be initailized by these funtion.
+ * \param *pContext is a pointer on a READER_T1_ContextHandler data structure to be initialized by these funtion.
  * \param *pSettings is a pointer on a READER_HAL_CommSettings data structure that should already be containing the low level communications settings for the hardware abstraction layer.
  * The function have to be called before using APDUs with the T=1 protocol.
  * This function will initialize the T=1 communication context that is stored into the *pContext structure.  

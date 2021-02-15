@@ -1,5 +1,10 @@
-#include "reader_t1_block_forgery.h"
+/**
+ * \file reader_t1_block_forgery.c
+ * \copyright This file is part of the Open-ISO7816-Stack project and is distributed under the MIT license. See LICENSE file in the root directory. 
+ * This file contains functions aimed to ease the construction of READER_T1_Block data structures in some specific cases.
+ */
 
+#include "reader_t1_block_forgery.h"
 #include "reader_t1_error_handling.h"
 #include "reader_t1_buffer_handler.h"
 
@@ -27,7 +32,6 @@ READER_Status READER_T1_FORGE_ChainingRBlockForCard(READER_T1_ContextHandler *pC
 	
 	return READER_OK;
 }
-
 
 
 READER_Status READER_T1_FORGE_ErrorBlock(READER_T1_ContextHandler *pContext, READER_T1_Block *pBlockDest, uint32_t integrityFlag){
@@ -70,7 +74,6 @@ READER_Status READER_T1_FORGE_ErrorBlock(READER_T1_ContextHandler *pContext, REA
 	
 	return READER_OK;
 }
-
 
 
 READER_Status READER_T1_FORGE_NACKR0(READER_T1_ContextHandler *pContext, READER_T1_Block *pBlockDest, uint32_t integrityFlag){
@@ -240,7 +243,6 @@ READER_Status READER_T1_FORGE_DataIBlock(READER_T1_ContextHandler *pContext, REA
 }
 
 
-
 /**
  * \fn READER_Status READER_T1_FORGE_SliceDataAndFillBuffer(READER_T1_ContextHandler *pContext, uint8_t *dataBuff, uint32_t dataSize)
  * \brief Cette fonction décompose un buffer de données à envoyer en en ensemble de I-Blocks. Ces Blocks sont enfilés dans le Buffer d'envoi qui se trouve dans le contexte de communication.
@@ -370,7 +372,6 @@ READER_Status READER_T1_FORGE_FillBuffWithAPDU(READER_T1_ContextHandler *pContex
 	
 	return READER_OK;
 }
-
 
 
 READER_Status READER_T1_FORGE_FillBuffWithAPDUCase1(READER_T1_ContextHandler *pContext, READER_APDU_Command *pApduCmd){
@@ -625,8 +626,6 @@ READER_Status READER_T1_FORGE_SBlock(READER_T1_ContextHandler *pContext, READER_
 	
 	return READER_OK;
 }
-
-
 
 
 READER_Status READER_T1_FORGE_SBlockResynchRequest(READER_T1_ContextHandler *pContext, READER_T1_Block *pBlock){

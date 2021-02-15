@@ -1,8 +1,22 @@
+/**
+ * \file reader_t1_buffer_handler.c
+ * \copyright This file is part of the Open-ISO7816-Stack project and is distributed under the MIT license. See LICENSE file in the root directory. 
+ * The functions in this file are operating on the READER_T1_BlockBuffer contained inside the READER_T1_ContextHandler.
+ * The READER_T1_BlockBuffer is a FIFO-like data structure containing the T1 Blocks which are about to be sent.
+ */
+ 
+
 #include "reader_t1_buffer_handler.h"
 
 
 
-
+/**
+ * \fn READER_Status READER_T1_BUFFER_Init(READER_T1_ContextHandler *pContext)
+ * \return READER_Status execution code. READER_OK indicates successful execution. Any other value is an error.
+ * \param *pContext  is a pointer over a READER_T1_ContextHandler data structure storing the current T=1 communication context.
+ * This functions initializes the READER_T1_BlockBuffer contained in the current T=1 communication context (READER_T1_BlockBuffer) pointed out by *pContext.
+ * The READER_T1_BlockBuffer is a FIFO-like data structure containing the T1 Blocks which are about to be sent.
+ */
 READER_Status READER_T1_BUFFER_Init(READER_T1_ContextHandler *pContext){
 	READER_T1_BlockBuffer *pBlockBuff;    /* Pointeur sur le buffer */
 	READER_Status retVal;
@@ -89,6 +103,10 @@ READER_Status READER_T1_BUFFER_PlacesLeft(READER_T1_ContextHandler *pContext, ui
 }
 
 
+/**
+ * \fn READER_T1_BUFFER_IsEmpty(READER_T1_ContextHandler *pContext, READER_T1_BufferStatus *pStatus)
+ * This function tells you if the READER_T1_BlockBuffer contained in the current T=1 context is empty or not.
+ */
 READER_Status READER_T1_BUFFER_IsEmpty(READER_T1_ContextHandler *pContext, READER_T1_BufferStatus *pStatus){
 	uint32_t length;
 	READER_Status retVal;
@@ -109,6 +127,10 @@ READER_Status READER_T1_BUFFER_IsEmpty(READER_T1_ContextHandler *pContext, READE
 }
 
 
+/**
+ * \fn READER_T1_BUFFER_IsFull(READER_T1_ContextHandler *pContext, READER_T1_BufferStatus *pStatus)
+ * This function tells you if the READER_T1_BlockBuffer contained in the current T=1 context is full or not.
+ */
 READER_Status READER_T1_BUFFER_IsFull(READER_T1_ContextHandler *pContext, READER_T1_BufferStatus *pStatus){
 	uint32_t length;
 	READER_Status retVal;
@@ -127,6 +149,13 @@ READER_Status READER_T1_BUFFER_IsFull(READER_T1_ContextHandler *pContext, READER
 }
 
 
+/**
+ * \fn READER_T1_BUFFER_Enqueue(READER_T1_ContextHandler *pContext, READER_T1_Block *pBlock)
+ * \return READER_Status execution code. READER_OK indicates successful execution. Any other value is an error.
+ * \param *pContext  is a pointer over a READER_T1_ContextHandler data structure storing the current T=1 communication context. This context contains as well the READER_T1_BlockBuffer.
+ * \param *pBlock is a pointer on a READER_T1_Block data structure containing the block to be enqueued. The pointed block is gonna be copied/duplicated in the memory of the READER_T1_ContextHandler.
+ * This function adds a READER_T1_Block data structure at the end of the queue (last block to be dequeued) of the Blocks to be sent (READER_T1_BlockBuffer).
+ */
 READER_Status READER_T1_BUFFER_Enqueue(READER_T1_ContextHandler *pContext, READER_T1_Block *pBlock){
 	READER_T1_BlockBuffer *pBlockBuffer;
 	READER_T1_Block *pBlockTab;
@@ -176,7 +205,13 @@ READER_Status READER_T1_BUFFER_Enqueue(READER_T1_ContextHandler *pContext, READE
 }
 
 
-/* Cree une copie du Block a l'emplacement du pointeur de destination ... */
+/**
+ * \fn READER_T1_BUFFER_Dequeue(READER_T1_ContextHandler *pContext, READER_T1_Block *pBlock)
+ * \return READER_Status execution code. READER_OK indicates successful execution. Any other value is an error.
+ * \param *pContext  is a pointer over a READER_T1_ContextHandler data structure storing the current T=1 communication context. This context contains as well the READER_T1_BlockBuffer.
+ * \param *pBlock is a pointer on a READER_T1_Block data structure where the thequeued block has to be copied. .
+ * This function removes (deqeues) a READER_T1_Block data structure form the READER_T1_BlockBuffer (the oldest first) and puts it (copies it) to the location pointed out by *pBlock parameter.
+ */
 READER_Status READER_T1_BUFFER_Dequeue(READER_T1_ContextHandler *pContext, READER_T1_Block *pBlock){
 	READER_T1_BlockBuffer *pBlockBuffer;
 	READER_T1_Block *pBlockTab;
@@ -237,6 +272,13 @@ READER_Status READER_T1_BUFFER_Dequeue(READER_T1_ContextHandler *pContext, READE
 }
 
 
+/**
+ * \fn READER_T1_BUFFER_Stack(READER_T1_ContextHandler *pContext, READER_T1_Block *pBlock)
+ * \return READER_Status execution code. READER_OK indicates successful execution. Any other value is an error.
+ * \param *pContext  is a pointer over a READER_T1_ContextHandler data structure storing the current T=1 communication context. This context contains as well the READER_T1_BlockBuffer.
+ * \param *pBlock is a pointer on a READER_T1_Block data structure containing the block to be stacked. The pointed block is gonna be copied/duplicated in the memory of the READER_T1_ContextHandler.
+ * This function adds a READER_T1_Block data structure at the begining (next block to be dequeued/sent) of the queue of the Blocks to be sent (READER_T1_BlockBuffer).
+ */
 READER_Status READER_T1_BUFFER_Stack(READER_T1_ContextHandler *pContext, READER_T1_Block *pBlock){
 	READER_T1_BlockBuffer *pBlockBuffer;
 	READER_T1_Block *pBlockTab;
@@ -271,9 +313,6 @@ READER_Status READER_T1_BUFFER_Stack(READER_T1_ContextHandler *pContext, READER_
 	}
 	
 	/* Attention, important de faire une copie ici. Le Block que l'on stack existe generalement dans le contexte local d'une fonction. Il faut imperativement le copier dans la memoire du contexte. */
-	//if(newBottomIndex == 0){
-	//	READER_PERIPH_ErrHandler();
-	//}
 	retVal = READER_T1_CopyBlock(pBlockTab+newBottomIndex, pBlock);
 	if(retVal != READER_OK) return retVal;
 	
@@ -346,6 +385,10 @@ READER_Status READER_T1_BUFFER_GetBottomBlockType(READER_T1_ContextHandler *pCon
 }
 
 
+/**
+ * \fn READER_T1_BUFFER_DequeueAndDiscard(READER_T1_ContextHandler *pContext)
+ * Same function as READER_T1_BUFFER_Dequeue(READER_T1_ContextHandler *pContext, READER_T1_Block *pBlock) but instead of copying the dequeued block, it discards it.
+ */
 READER_Status READER_T1_BUFFER_DequeueAndDiscard(READER_T1_ContextHandler *pContext){
 	READER_T1_BlockBuffer *pBlockBuffer;
 	READER_T1_Block *pBlockTab, *pBlockBottom;
@@ -470,43 +513,6 @@ READER_Status READER_T1_BUFFER_SetLength(READER_T1_ContextHandler *pContext, uin
 	
 	return READER_OK;
 }
-
-
-//READER_Status READER_T1_BUFFER_Delete(READER_T1_ContextHandler *pContext, uint32_t index){
-//	READER_T1_BlockBuffer *pBlockBuffer;
-//	READER_T1_Block *pBlockTab;
-//	READER_Status retVal;
-//	uint32_t currentIndex;
-//	
-//	
-//	/* On recupere un pointeur sur la structure du buffer dans le contexte            */
-//	retVal = READER_T1_CONTEXT_GetBlockBuff(pContext, &pBlockBuffer);
-//	if(retVal != READER_OK) return retVal;
-//	
-//	/* Dans la stucture du Buffer on recupere un pointeur sur le tableau de Blocks    */
-//	pBlockTab = &(pBlockBuffer->blockBuff);
-//	
-//	/* On verifie que le Buffer n'est pas vide ...                                    */
-//	
-//	
-//	/* On regarde si index existe ...                                                 */
-//	
-//	
-//	/*  */
-//	
-//	
-//	return READER_OK;
-//}
-
-
-//READER_Status READER_T1_BUFFER_ShiftInBottomDirection(READER_T1_ContextHandler *pContext){
-//	
-//}
-//
-//
-//READER_Status READER_T1_BUFFER_ShiftInTopDirection(READER_T1_ContextHandler *pContext){
-//	
-//}
 
 
 /* On enleve les R-Blocks et S-BLocks qui se trouvent dans le Buffer */
