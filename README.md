@@ -101,7 +101,7 @@ To select the target for which the firmware has to be compiled you have to follo
 #TARGET=stm32f411
 #TARGET=stm32f407
 
-# Linker script file, has to be changed with target
+# Linker script file, has to be changed accordingly to the target
 #LDFILE=ld/STM32F411VEHx_FLASH.ld
 #LDFILE=ld/STM32F407VGTx_FLASH.ld
 
@@ -109,7 +109,7 @@ To select the target for which the firmware has to be compiled you have to follo
 #STARTUP_FILE=startup_stm32f411xe
 #STARTUP_FILE=startup_stm32f407xx
 
-# Value of the proprocessor constant (defining the target) given to $(CC) at compile time
+# Value of the preprocessor constant (defining the target) given to $(CC) at compile time
 #TARGET_DEFINE=TARGET_STM32F411
 #TARGET_DEFINE=TARGET_STM32F407
 ```
@@ -121,7 +121,7 @@ To select the target for which the firmware has to be compiled you have to follo
 #TARGET=stm32f411
 #TARGET=stm32f407
 
-# Value of the proprocessor constant (defining the target) given to $(CC) at compile time
+# Value of the preprocessor constant (defining the target) given to $(CC) at compile time
 #TARGET_DEFINE=TARGET_STM32F411
 #TARGET_DEFINE=TARGET_STM32F407
 ```
@@ -220,7 +220,8 @@ READER_HAL_CommSettings settings;
 ```
 
 *settings* is a data structre which contains all the parameters values currently used by READER_HAL hardware abstraction layer used by the library for low level communications (emission and reception of characters). 
-The user should not modify directly the values into this structure. It's recommended to use the functions exposed in the file *reader_hal_comm_settings.h*.
+The user should not modify directly the values present in this structure. 
+It's recommended to use the functions exposed in the file *reader_hal_comm_settings.h* to operate safely on it.
 
 
 ```c
@@ -228,14 +229,14 @@ READER_APDU_Command apduCmd;
 READER_APDU_Response apduResp;
 ```
 
-*apduCmd* and *apduResp* are data structures respectively representing an APDU command and an APDU response.
+*apduCmd* and *apduResp* are data structures respectively representing an APDU command and an APDU response objects defined in the ISO/IEC7816-3.
 
 ```c
 READER_T0_ContextHandler context1;
 READER_T1_ContextHandler context2;
 ```
 
-*context1* is a data structure which contains the current communication context when using the protocol T=0.
+*context1* is a data structure which contains the current communication context (current state of all the variables and protocol parameters) when using the protocol T=0.
 *context2* is a data structure which contains the current communication context when using the protocol T=1.
 
 
@@ -244,6 +245,7 @@ READER_T1_ContextHandler context2;
 ```c
 /* Initialization of the hardware abstraction layer with default values ...  */
 READER_HAL_InitWithDefaults(&settings);
+/* Resetting the card ...  */
 READER_HAL_DoColdReset();	
 ```
 
@@ -279,7 +281,7 @@ uint8_t SW1, SW2;
 /* Getting the SW from the APDU Response data structure ...   */
 READER_APDU_ExtractRespSW(&apduResp, &SW1, &SW2);
 
-/* Getting the data caontained into the APDU Response data structure ...  */
+/* Getting the data contained in the APDU Response data structure ...  */
 READER_APDU_ExtractRespDataPtr(&apduResp, &dataPtr, &dataSize);
 ```
 
@@ -287,12 +289,21 @@ READER_APDU_ExtractRespDataPtr(&apduResp, &dataPtr, &dataSize);
 ### Full example when using T=0 protocol
 
 ```c
+READER_HAL_CommSettings settings;
+READER_T0_ContextHandler context;
+READER_APDU_Command apduCmd;
+READER_APDU_Response apduResp;
+uint8_t buffer[] = {0x45, 0x75, 0x74, 0x77, 0x74, 0x75, 0x36, 0x41, 0x70, 0x70};
+
 /* Initialization of the hardware abstraction layer with default values ...  */
 READER_HAL_InitWithDefaults(&settings);
 READER_HAL_DoColdReset();	
 
-/* Initialization of the APDU API when using the protocol T=0 ...  */
+/* Initialization of the APDU communication context when using the protocol T=0 ...  */
 READER_T0_APDU_Init(&context, &settings);
+
+/* Forging the APDU command ...  */
+READER_APDU_Forge(&apduCmd, 0x00, 0xA4, 0x04, 0x00, 10, buffer, 0);
 
 /* Executing an APDU when using the protocol T=0 */
 READER_T0_APDU_Execute(&context, &apduCmd, &apduResp);
@@ -306,7 +317,7 @@ Pull requests are welcome. See `CONTRIBUTING.md`.
 
 ## Community
 
-If you’ve found a bug, or have an idea/suggestion/request, file an issue
+If you’ve found a bug, or have an idea/suggestion/request, fill an issue
 here on GitHub or contact the authors by email.
 
 

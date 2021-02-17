@@ -6,8 +6,8 @@
 The code is splitted in two main parts. The first one is the hardware dependant
 code. It is an hardware abstraction layer composed of all the functions that are
 directly interacting with the hardware. Typically it is the set of functions
-in charge of emission and reception of characters. The whole hardware
-depenent code is located in the files : *reader_hal_basis.c* and
+in charge of emission and reception of characters. The whole hardware-depenent 
+code is located in the files : *reader_hal_basis.c* and
 *reader_hal_comm_settings.c* in the *./src* directory. The orther part is the
 logic (hardware independant code) state machine to make the ISO7816 protocol
 work.
@@ -16,16 +16,12 @@ work.
 ## Testing the code
 
 The reader's code has to pass the tests described in the *./tests* directory.
-Tests are comiled and run on the local developpment machine.
-
-For running the tests, make sure you have the following tools installed on your local machine :
+Tests are compiled and run on the local developpment machine.
+To run the tests, make sure you have the following tools installed on your local machine :
 * gcc
 * lcov
 * ruby (CMock framework needs it for the scripts which are building mock's code)
-* libc of the arm cross-compiler ?
-``` shell
-$ dnf install arm-none-eabi-newlib.noarch
-```
+* libc of the arm cross-compiler ? (*dnf install arm-none-eabi-newlib.noarch*)
 * genhtml
 
 Eventually setup the path to ruby:
@@ -34,6 +30,7 @@ $ export RUBY=/path/to/ruby
 ```
 
 Set up the following parameters in the *Makefile_tests* file to the correct values according to the setup of your local machine :
+(note that the tests are built and run on your local machine, so you may provide path to your local compiler)
 
 ``` shell
 CC=gcc
@@ -54,7 +51,7 @@ then, you execute them by typing :
 $ make test
 ```
 
-You can obtain a code coverage report by using the following make istruction :
+You can obtain a code coverage report by using the following make instruction (after having the the tests with the previous command) :
 ``` shell
 $ make report
 ```
@@ -66,7 +63,8 @@ note : for the tests the specfified gcc and gcov versions are gcc-7 and gcov-7. 
 
 ### On-target debugging
 
-You need to install *openocd* tool on your local machine, then run the following bash script to run the openocd server.
+Debugging is done using a GDB debugger connected to an openocd server.
+You need to install *openocd* tool on your local machine, then run the following bash script to start the openocd server.
 
 ``` shell
 $ sudo apt-get install openocd
@@ -79,12 +77,13 @@ Possible values are :
  * stm32f407
 
 
-To manage the openocd server :
+The openocd server exposes a telnet interface you can use in order to manage it or run some specific commands.
+You can connect to it with the following method :
 ``` shell
 $ telnet localhost 4444
 ```
 
-Basic commands : shutdown
+A basic command might be the *shutdown* one.
 For more commands see : http://openocd.org/doc/html/General-Commands.html
 
 
