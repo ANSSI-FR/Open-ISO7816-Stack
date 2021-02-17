@@ -1,6 +1,14 @@
+/**
+ * \file reader_utils.c
+ * \copyright This file is part of the Open-ISO7816-Stack project and is distributed under the MIT license. See LICENSE file in the root directory. 
+ * This file contains various utility functions usefull in many places in the code. Typically the enable computing/converting values of various parameters.
+ */
+
+
 #include "reader.h"
 #include "reader_utils.h"
 #include "reader_hal_comm_settings.h"
+
 
 
 uint32_t READER_UTILS_ComputeBaudRate(uint32_t freq, uint32_t Fi, uint32_t Di){
@@ -39,11 +47,6 @@ uint32_t READER_UTILS_ComputeNewBaudRate(uint32_t oldBaudRate, uint32_t oldFreq,
 }
 
 
-//uint32_t READER_UTILS_ComputeTimeoutMiliSec(uint32_t baudRate, uint32_t WT){
-//	return ((1000 * WT) / baudRate) + 1;
-//}
-
-
 /**
  * \fn uint32_t READER_UTILS_ComputeWT1(uint32_t f, uint32_t Fi)
  * \brief Cette fonction permet de calculer le Wait Time (WT) en millisecondes. Il s'agit du WT défini dans la norme ISO7816-3 aux sections 7.2 et 10.2. La fonction READER_UTILS_ComputeWT1() calcule cette valeur à partir de la fréquence f et du "Clock rate conversion integer" Fi.
@@ -73,22 +76,6 @@ uint32_t READER_UTILS_ComputeWT2(uint32_t baudRate, uint32_t Di, uint32_t WI){
 	/* Voir explications de la fonction READER_UTILS_ComputeWT1()          */
 	return (uint32_t)(1000 * (float)(WI * 960 * Di) / (float)baudRate) + 1;
 }
-
-
-
-
-//uint32_t READER_UTILS_ComputeBWTEtu(uint32_t BWI, uint32_t f){
-//	/* Voir ISO7816-3 section 11.4.3 */
-//	uint32_t i;
-//	uint32_t Fd = READER_HAL_DEFAULT_FI;
-//	float power = 1;
-//	
-//	for(i=0; i<BWI; i++){
-//		power = power * 2;
-//	}
-//	
-//	return (uint32_t)(11 + (power*960*((float)Fd / (float)f)));
-//}
 
 
 uint32_t READER_UTILS_ComputeBWTMili(uint32_t BWTEtu, uint32_t F, uint32_t D, uint32_t f){

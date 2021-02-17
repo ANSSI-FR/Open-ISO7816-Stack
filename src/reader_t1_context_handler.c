@@ -1,3 +1,11 @@
+/**
+ * \file reader_t1_context_handler.c
+ * \copyright This file is part of the Open-ISO7816-Stack project and is distributed under the MIT license. See LICENSE file in the root directory. 
+ * This file contains all the functions which are necessary to operate safely on the READER_T1_ContextHandler data structure.
+ * READER_T1_ContextHandler is a data structure containing the current state of the T=1 communication settings.
+ */
+
+
 #include "reader_t1_context_handler.h"
 #include "reader_t1_buffer_handler.h"
 
@@ -203,11 +211,11 @@ READER_Status READER_T1_CONTEXT_GetCurrentEtuMilliFloat(READER_T1_ContextHandler
 }
 
 
-
 READER_Status READER_T1_CONTEXT_GetCurrentBGT(READER_T1_ContextHandler *pContext, uint32_t *pBgt){
 	*pBgt = pContext->currentBGT;
 	return READER_OK;
 }
+
 
 /* On retourne BGT en milisecondes ...  */
 READER_Status READER_T1_CONTEXT_GetCurrentBGTMilli(READER_T1_ContextHandler *pContext, uint32_t *pBgt){
@@ -392,7 +400,6 @@ READER_Status READER_T1_CONTEXT_GetCurrentRedundancyLen(READER_T1_ContextHandler
 }
 
 
-
 READER_Status READER_T1_CONTEXT_SetCurrentBGT(READER_T1_ContextHandler *pContext, uint32_t bgt){
 	pContext->currentBGT = bgt;
 	return READER_OK;
@@ -524,7 +531,6 @@ READER_Status READER_T1_CONTEXT_ExtendCurrentBWT(READER_T1_ContextHandler *pCont
 }
 
 
-
 /* Manipulation des compteurs de redemande d'infos et de demandes de resynchro ... */
 
 
@@ -539,13 +545,6 @@ READER_Status READER_T1_CONTEXT_SetRepeatCounter(READER_T1_ContextHandler *pCont
 	return READER_OK;
 }
 
-
-
-
-
-
-
-
 READER_Status READER_T1_CONTEXT_GetResynchCounter(READER_T1_ContextHandler *pContext, uint32_t *pCounter){
 	*pCounter = pContext->resynchCounter;
 	return READER_OK;
@@ -556,10 +555,6 @@ READER_Status READER_T1_CONTEXT_SetResynchCounter(READER_T1_ContextHandler *pCon
 	pContext->resynchCounter = counter;
 	return READER_OK;
 }
-
-
-
-
 
 READER_Status READER_T1_CONTEXT_GetACKStatus(READER_T1_ContextHandler *pContext, READER_T1_ACKStatus *pACKStatus){
 	if(pContext->ACKStatus == READER_T1_ACK){
@@ -686,7 +681,7 @@ READER_Status READER_T1_CONTEXT_GetLastIBlockRcvd(READER_T1_ContextHandler *pCon
 
 
 /**
- * \fn READER_Status READER_T1_CONTEXT_GetLastIBlockSentSeqNum(READER_T1_ContextHandler *pContext, uint32_t *pSeqNum)
+ * \fn READER_T1_CONTEXT_GetLastIBlockSentSeqNum(READER_T1_ContextHandler *pContext, uint32_t *pSeqNum)
  * \brief Cette fonction permet de connaitre (à partir du contexte de communication) le numéro de séquence du dernier I-Block envoyé.
  * \param *pContext est un pointeur sur une structure de type READER_T1_ContextHandler. La structure pointée stocke le contexte actuel de communication.
  * \param *pSeqNum est un pointeur sur un uint32_t. Ce pointeur permet à la fonction de retouner le résultat (0 ou 1).
@@ -717,7 +712,6 @@ READER_Status READER_T1_CONTEXT_GetLastIBlockSentSeqNum(READER_T1_ContextHandler
 	
 	return READER_OK;
 }
-
 
 
 /**
@@ -759,8 +753,6 @@ READER_Status READER_T1_CONTEXT_GetLastIBlockRcvdSeqSum(READER_T1_ContextHandler
 }
 
 
-
-/* On retourne READER_OK si existe, READER_DOESNT_EXIST so n'existe pas et READER_ERR en cas d'erreur interne ...  */
 /**
  * \fn READER_Status READER_T1_CONTEXT_LastSentExists(READER_T1_ContextHandler *pContext)
  * \brief Cette fonction permet de savoir (à partir du contexte de communication) si il existe un dernier Block envoyé (est ce que on a deja envoyé un Block).
@@ -786,7 +778,6 @@ READER_Status READER_T1_CONTEXT_LastSentExists(READER_T1_ContextHandler *pContex
  * \param *pContext est un pointeur sur une structure de type READER_T1_ContextHandler. La structure pointée stocke le contexte actuel de communication.
  * \return La fonction retourne un code d'erreur du type READER_Status. READER_OK indique le bon déroulement. READER_DOESNT_EXIST indique que le dernier I-Block envoyé n'existe pas.
  */
-/* On retourne READER_OK si existe, READER_DOESNT_EXIST so n'existe pas et READER_ERR en cas d'erreur interne ...  */
 READER_Status READER_T1_CONTEXT_LastIBlockSentExists(READER_T1_ContextHandler *pContext){
 	if(pContext->lastIBlockSentExistenceFlag == READER_T1_BLOCK_EXISTS_YES){
 		return READER_OK;
@@ -800,7 +791,6 @@ READER_Status READER_T1_CONTEXT_LastIBlockSentExists(READER_T1_ContextHandler *p
 }
 
 
-/* On retourne READER_OK si existe, READER_DOESNT_EXIST si n'existe pas et READER_ERR en cas d'erreur interne ...  */
 /**
  * \fn READER_Status READER_T1_CONTEXT_LastRcvdExists(READER_T1_ContextHandler *pContext)
  * \brief Cette fonction permet de savoir (à partir du contexte de communication) si il existe un dernier Block recu (est ce que on a deja recu un Block).
@@ -820,7 +810,6 @@ READER_Status READER_T1_CONTEXT_LastRcvdExists(READER_T1_ContextHandler *pContex
 }
 
 
-/* On retourne READER_OK si existe, READER_DOESNT_EXIST so n'existe pas et READER_ERR en cas d'erreur interne ...  */
 /**
  * \fn READER_Status READER_T1_CONTEXT_LastIBlockRcvdExists(READER_T1_ContextHandler *pContext)
  * \brief Cette fonction permet de savoir (à partir du contexte de communication) si il existe un dernier I-Block recu (est ce que on a deja recu un I-Block).
@@ -838,7 +827,6 @@ READER_Status READER_T1_CONTEXT_LastIBlockRcvdExists(READER_T1_ContextHandler *p
 		return READER_ERR;
 	}	
 }
-
 
 
 /**
@@ -1004,9 +992,6 @@ READER_Status READER_T1_CONTEXT_GetLastRcvdType(READER_T1_ContextHandler *pConte
 }
 
 
-
-
-
 /* Manipulation des numeros de sequence */
 READER_Status READER_T1_CONTEXT_GetDeviceCompleteSeqNum(READER_T1_ContextHandler *pContext, uint32_t *pSeqNum){
 	*pSeqNum = pContext->deviceCompleteSeqNum;
@@ -1101,7 +1086,6 @@ READER_Status READER_T1_CONTEXT_ComputeNextCardSeqNum(READER_T1_ContextHandler *
 }
 
 
-
 /**
  * \fn READER_Status READER_T1_CONTEXT_GetCardExpectedSeqNum(READER_T1_ContextHandler *pContext, uint32_t *pSeqNum)
  * \brief Cette fonction permet de calculer (à partir du contexte de communication) le numero de sequence attendu par le DEVICE pour le prochain I-Block en provenance de la CARTE.
@@ -1125,7 +1109,6 @@ READER_Status READER_T1_CONTEXT_GetCardExpectedSeqNum(READER_T1_ContextHandler *
 
 
 /* Gestion du chainage */
-
 
 /**
  * \fn READER_Status READER_T1_CONTEXT_CardIsChainingLastBlock(READER_T1_ContextHandler *pContext, READER_T1_ChainingStatus *pChainingStatus)
@@ -1180,7 +1163,6 @@ READER_Status READER_T1_CONTEXT_DeviceIsChainingLastBlock(READER_T1_ContextHandl
 	//
 	//return READER_OK;
 }
-
 
 
 /**
@@ -1266,7 +1248,6 @@ READER_Status READER_T1_CONTEXT_DeviceIsChaining(READER_T1_ContextHandler *pCont
 }
 
 
-
 /**
  * \fn READER_Status READER_T1_CONTEXT_CardIsChaining(READER_T1_ContextHandler *pContext, READER_T1_ChainingStatus *pChainingStatus)
  * \brief Cette fonction permet de déterminer (a partir du contexte de communication) si la CARTE est dans une situation de chainage.
@@ -1295,7 +1276,6 @@ READER_Status READER_T1_CONTEXT_CardIsChaining(READER_T1_ContextHandler *pContex
 }
 
 
-
 /**
  * \fn READER_Status READER_T1_CONTEXT_SetDeviceChainingSituationFlag(READER_T1_ContextHandler *pContext, READER_T1_ChainingStatus chainingStatus)
  * \brief Cette fonction mets à jour le contexte de communication avec la situation de chainage coté DEVICE.
@@ -1319,7 +1299,6 @@ READER_Status READER_T1_CONTEXT_SetDeviceChainingSituationFlag(READER_T1_Context
 }
 
 
-
 /**
  * \fn READER_Status READER_T1_CONTEXT_SetDeviceChainingLastBlockFlag(READER_T1_ContextHandler *pContext, READER_T1_ChainingStatus chainingStatus)
  * \brief Cette fonction mets à jour le contexte de communication avec la valeur du M-Bit du dernier I-Block envoyé par le DEVICE. C'est à dire, on indique si le DEVICE à l'intention de chainer le Block qu'il vient probablement d'envoyer.
@@ -1340,7 +1319,6 @@ READER_Status READER_T1_CONTEXT_SetDeviceChainingLastBlockFlag(READER_T1_Context
 	
 	return READER_OK;
 }
-
 
 
 /**
@@ -1388,7 +1366,6 @@ READER_Status READER_T1_CONTEXT_SetCardChainingLastBlockFlag(READER_T1_ContextHa
 }
 
 
-
 /* Manipuation des S-Blocks */
 /**
  * \fn READER_Status READER_T1_CONTEXT_IsSBlockResponseExpectedNow(READER_T1_ContextHandler *pContext, READER_T1_FlagStatus *pFlag)
@@ -1410,7 +1387,6 @@ READER_Status READER_T1_CONTEXT_IsSBlockResponseExpectedNow(READER_T1_ContextHan
 	
 	return READER_OK;
 }
-
 
 
 /**
@@ -1572,8 +1548,6 @@ READER_Status READER_T1_CONTEXT_CheckSBlockRequestsCounter(READER_T1_ContextHand
 }
 
 
-
-
 READER_Status READER_T1_CONTEXT_SetSBlockExpectedINF(READER_T1_ContextHandler *pContext, uint8_t expectedINF){
 	pContext->SBlockExpectedINF = expectedINF;
 	
@@ -1588,7 +1562,6 @@ READER_Status READER_T1_CONTEXT_GetSBlockExpectedINF(READER_T1_ContextHandler *p
 	
 	return READER_OK;
 }
-
 
 
 /* On prends un S-Block Response et on verifie que le champ INF correspond a celui qui etait attendu ...  */
@@ -1632,7 +1605,6 @@ READER_Status READER_T1_CONTEXT_CheckSBlockExpectedINF(READER_T1_ContextHandler 
 }
 
 
-
 /**
  * \fn READER_Status READER_T1_CONTEXT_GetBlockBuff(READER_T1_ContextHandler *pContext, READER_T1_BlockBuffer **ppBlockBuff)
  * \brief Cette fonction permet de récupérer un pointeur sur la structure du Buffer d'envoi (READER_T1_BlockBuffer) qui se trouve à l'intérieur du contexte de communication (READER_T1_ContextHandler).
@@ -1654,7 +1626,6 @@ READER_Status READER_T1_CONTEXT_GetBlockBuff(READER_T1_ContextHandler *pContext,
 	
 	return READER_OK;
 }
-
 
 
 /**
@@ -1758,7 +1729,6 @@ READER_Status READER_T1_CONTEXT_GetHalCommSettingsGT(READER_T1_ContextHandler *p
 }
 
 
-
 READER_Status READER_T1_CONTEXT_SetHalCommSettingsFreq(READER_T1_ContextHandler *pContext, uint32_t freq){
 	READER_HAL_CommSettings *pCommSettings;
 	READER_Status retVal;
@@ -1835,8 +1805,6 @@ READER_Status READER_T1_CONTEXT_SetHalCommSettingsGT(READER_T1_ContextHandler *p
 }
 
 
-
-
 READER_Status READER_T1_CONTEXT_ImportHalCommSettingsToContext(READER_T1_ContextHandler *pContext, READER_HAL_CommSettings *pSettings){
 	READER_HAL_CommSettings *pCommSettings;
 	READER_Status retVal;
@@ -1873,6 +1841,3 @@ READER_Status READER_T1_CONTEXT_ImportHalCommSettingsToContext(READER_T1_Context
 READER_Status READER_T1_CONTEXT_ExportHalCommSettingsFromContext(READER_T1_ContextHandler *pContext, READER_HAL_CommSettings *pSettings){
 	return READER_OK;
 }
-
-
-

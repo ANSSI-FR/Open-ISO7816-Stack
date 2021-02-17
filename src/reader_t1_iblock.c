@@ -1,6 +1,11 @@
+/**
+ * \file reader_t1_iblock.c
+ * \copyright This file is part of the Open-ISO7816-Stack project and is distributed under the MIT license. See LICENSE file in the root directory. 
+ * This file provides functions for operating safely on READER_T1_Block data structures in the cases when it is an I-Block.
+ */
+
+
 #include "reader_t1_iblock.h"
-
-
 
 
 

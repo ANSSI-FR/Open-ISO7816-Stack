@@ -1,8 +1,13 @@
+/**
+ * \file reader_t1_error_handling.c
+ * \copyright This file is part of the Open-ISO7816-Stack project and is distributed under the MIT license. See LICENSE file in the root directory. 
+ * The code here defines the behaviour of the state machine when some error happens.
+ */
+
+
 #include "reader_t1_error_handling.h"
 #include "reader_hal.h"
 #include "reader_hal_comm_settings.h"
-
-
 
 
 
@@ -25,7 +30,6 @@ READER_Status READER_T1_ERR_ClearRepeatCounter(READER_T1_ContextHandler *pContex
 }
 
 
-
 READER_Status READER_T1_ERR_CheckRepeatCounter(READER_T1_ContextHandler *pContext){
 	if(pContext->repeatCounter < READER_T1_MAX_REAPEAT){
 		return READER_OK;
@@ -34,7 +38,6 @@ READER_Status READER_T1_ERR_CheckRepeatCounter(READER_T1_ContextHandler *pContex
 		return READER_NO;
 	}
 }
-
 
 
 READER_Status READER_T1_ERR_IncResynchCounter(READER_T1_ContextHandler *pContext){
@@ -65,7 +68,6 @@ READER_Status READER_T1_ERR_CheckResynchCounter(READER_T1_ContextHandler *pConte
 		return READER_NO;
 	}
 }
-
 
 
 READER_Status READER_T1_ERR_IsItFirstReception(READER_T1_ContextHandler *pContext){
@@ -100,8 +102,6 @@ READER_Status READER_T1_ERR_ForgeErrorBlock(READER_T1_ContextHandler *pContext, 
 	
 	return READER_OK;
 }
-
-
 
 
 READER_Status READER_T1_ERR_DealWithError(READER_T1_ContextHandler *pContext, uint32_t integrityFlag){
@@ -281,4 +281,3 @@ READER_Status READER_T1_ERR_StackErrorBlock(READER_T1_ContextHandler *pContext, 
 
 	return READER_OK;
 }
-

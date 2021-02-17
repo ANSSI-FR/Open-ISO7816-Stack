@@ -1,5 +1,10 @@
-#include "reader_t1_sblock.h"
+/**
+ * \file reader_t1_sblock.c
+ * \copyright This file is part of the Open-ISO7816-Stack project and is distributed under the MIT license. See LICENSE file in the root directory. 
+ * This file provides functions for operating safely on READER_T1_Block data structures in the cases when it is an S-Block.
+ */
 
+#include "reader_t1_sblock.h"
 
 
 
@@ -21,7 +26,6 @@ READER_Status READER_T1_ForgeSBlock(READER_T1_Block *pBlock, READER_T1_SBlockTyp
 	
 	return READER_OK;
 }
-
 
 
 READER_Status READER_T1_SetBlockSType(READER_T1_Block *pBlock, READER_T1_SBlockType type){
@@ -74,7 +78,6 @@ READER_Status READER_T1_SetBlockSType(READER_T1_Block *pBlock, READER_T1_SBlockT
 	
 	return READER_OK;
 }
-
 
 
 READER_T1_SBlockType READER_T1_GetBlockSType(READER_T1_Block *pBlock){
@@ -140,7 +143,7 @@ uint8_t READER_T1_GetBlockSPayload(READER_T1_Block *pBlock){
 }
 
 
-/* Retourne READER_OK si c'est une S-Block Request, READER_NO si ca n'en n'est pas une. Retounre toute autre valeur en cas d'erreru interne. */
+/* Retourne READER_OK si c'est une S-Block Request, READER_NO si ca n'en n'est pas une. Retourne toute autre valeur en cas d'erreur interne. */
 READER_Status READER_T1_IsSBlockRequest(READER_T1_Block *pBlock){
 	READER_T1_BlockType bType;
 	READER_T1_SBlockType SBlockType;

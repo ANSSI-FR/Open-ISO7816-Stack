@@ -1,9 +1,15 @@
+/**
+ * \file reader_t1_control.c
+ * \copyright This file is part of the Open-ISO7816-Stack project and is distributed under the MIT license. See LICENSE file in the root directory. 
+ * Functions defining the behaviour of the protocol state machine when sending/receiving a T=1 Block.
+ * Most important functions here are READER_T1_CONTROL_SendBlock() and READER_T1_CONTROL_RcvBlock().
+ */
+
+
 #include "reader_t1_control.h"
 
 
-//extern UART_HandleTypeDef uartHandleStruct;
-
-/* Permet de faire des verificatios elementaires sur un R-Block ...       */
+/* Permet de faire des verifications elementaires sur un R-Block ...       */
 /* Retourne  READER_NO si e n'est pas un R-Block valide. READER_OK sinon. */
 READER_Status READER_T1_CONTROL_CheckRBlockIsValid(READER_T1_Block *pBlock){
 	READER_T1_BlockType bType;
@@ -76,8 +82,8 @@ READER_Status READER_T1_CONTROL_IsRBlockACK(READER_T1_ContextHandler *pContext, 
 	READER_T1_ACKType ACKType;
 	uint32_t tmpNextIBlockSeqNum, tmpBlockSeqNum;
 	
-	/* On procede de la maniere suivante (non detaille dans la spec) :                                            */
-	/* Du cote du Device, un R-Block recu est considere comme un ACK si et seulement si (1) et (2) :              */
+	/* On procede de la maniere suivante (non detaille dans la spec) :                                             */
+	/* Du cote du Device, un R-Block recu est considere comme un ACK si et seulement si (1) et (2) :               */
 	/*      (1) Le Device est en train de chainer le dernier I-Block  (M-Bit du dernier == 1)                      */
 	/*      (2) Le numero de sequence contenu dans le R-Block correspond au I-Block suivant que l'on veut envoyer  */
 	/*      (3) Le R-Block n'indique pas une erreur voir ISO7816-3 section 11.3.2.2                                */
@@ -256,13 +262,12 @@ READER_Status READER_T1_CONTROL_IsIBlockACK(READER_T1_ContextHandler *pContext, 
 }
 
 
-
 /**
- * \fn READER_Status READER_T1_CONTROL_SendBlock(READER_T1_ContextHandler *pContext, READER_T1_Block *pBlockToSend)
- * \brief Cette fonction envoie un Block en tenant compte du contexte de communication. Elle mets également à jour le contexte de communication selon le type de Block envoyé.
+ * \fn READER_T1_CONTROL_SendBlock(READER_T1_ContextHandler *pContext, READER_T1_Block *pBlockToSend)
  * \param *pContext est un pointeur sur une structure de type READER_T1_ContextHandler. Cette structure contient le contexte de communication.
  * \param *pBlockToSend est un pointeur sur uen structure de type READER_T1_Block. Il s'agit du Block à envoyer.
  * \return La fonction retourne un code d'erreur de type READER_Status.
+ * Cette fonction envoie un Block en tenant compte du contexte de communication. Elle mets également à jour le contexte de communication selon le type de Block envoyé.
  */
 READER_Status READER_T1_CONTROL_SendBlock(READER_T1_ContextHandler *pContext, READER_T1_Block *pBlockToSend){
 	READER_Status retVal;
@@ -345,15 +350,13 @@ READER_Status READER_T1_CONTROL_SendBlock(READER_T1_ContextHandler *pContext, RE
 }
 
 
-
-
 /**
  * \fn READER_Status READER_T1_CONTROL_IBlockSentUpdateContext(READER_T1_ContextHandler *pContext, READER_T1_Block *pBlock)
- * \brief Cette fonction mets à jour le contexte de communication à la suite de l'envoi d'un I-Block.
- * Principalement, il s'agit de mettre a jour : le dernier Block envoyé, les flags de chainage et les numéros de séquence.
  * \param *pContext est un pointeur sur une structure de type READER_T1_ContextHandler. La structure pointée contient tout le contexte de communication courant.
  * \param *pBlock est un pointeur sur une structure de type READER_T1_Block. Il doit pointeur sur le Block qui vient d'être envoyé (a priori un I-Block).
  * \return La fonction retourne un code d'erreur de type READER_Status. READER_OK indique que le contexte a correctement été mis à jour.
+ * Cette fonction mets à jour le contexte de communication à la suite de l'envoi d'un I-Block.
+ * Principalement, il s'agit de mettre a jour : le dernier Block envoyé, les flags de chainage et les numéros de séquence.
  */
 READER_Status READER_T1_CONTROL_IBlockSentUpdateContext(READER_T1_ContextHandler *pContext, READER_T1_Block *pBlock){
 	READER_Status retVal;
@@ -394,26 +397,21 @@ READER_Status READER_T1_CONTROL_IBlockSentUpdateContext(READER_T1_ContextHandler
 	if(retVal != READER_OK) return retVal;
 	
 	
-	
 	return READER_OK;
 }
-
 
 
 READER_Status READER_T1_CONTROL_RBlockSentUpdateContext(READER_T1_ContextHandler *pContext, READER_T1_Block *pBlock){
-	
-	
 	return READER_OK;
 }
-
 
 
 /**
  * \fn READER_Status READER_T1_CONTROL_SBlockSentUpdateContext(READER_T1_ContextHandler *pContext, READER_T1_Block *pBlock)
- * \brief Cette fonction permet de mettre à jour le contexte de communication à la suite de l'envoi d'un Block de type S-Block.
  * \param *pContext est un pointeur sur une structure de type READER_T1_ContextHandler. Cette structure stocke le contexte courant de communication.
  * \param *pBlock est un pointeur sur un structure de type READER_T1_Block. Il s'agit d'un pointeur sur le Block qui vient d'être envoyé (à priori un S-Block).
  * \return La fonction retourne un code d'erreur de type READER_Status. READER_Ok indique le bon déroulement.
+ * Cette fonction permet de mettre à jour le contexte de communication à la suite de l'envoi d'un Block de type S-Block.
  */
 READER_Status READER_T1_CONTROL_SBlockSentUpdateContext(READER_T1_ContextHandler *pContext, READER_T1_Block *pBlock){
 	READER_Status retVal;
@@ -442,13 +440,12 @@ READER_Status READER_T1_CONTROL_SBlockSentUpdateContext(READER_T1_ContextHandler
 }
 
 
-
 /**
  * \fn READER_Status READER_T1_CONTROL_SBlockRequestSentUpdateContext(READER_T1_ContextHandler *pContext, READER_T1_Block *pBlock)
- * \brief Cette fonction permet de mettre à jour le contexte de communication à la suite de l'envoi d'un Block de type S-Block REQUEST.
  * \param *pContext est un pointeur sur une structure de type READER_T1_ContextHandler. Cette structure stocke le contexte courant de communication.
  * \param *pBlock est un pointeur sur un structure de type READER_T1_Block. Il s'agit d'un pointeur sur le Block qui vient d'être envoyé (à priori un S-Block REQUEST).
  * \return La fonction retourne un code d'erreur de type READER_Status. READER_Ok indique le bon déroulement.
+ * Cette fonction permet de mettre à jour le contexte de communication à la suite de l'envoi d'un Block de type S-Block REQUEST.
  */
 READER_Status READER_T1_CONTROL_SBlockRequestSentUpdateContext(READER_T1_ContextHandler *pContext, READER_T1_Block *pBlock){
 	READER_Status retVal;
@@ -504,31 +501,26 @@ READER_Status READER_T1_CONTROL_SBlockRequestSentUpdateContext(READER_T1_Context
 }
 
 
-
 /**
  * \fn READER_Status READER_T1_CONTROL_SBlockResponseSentUpdateContext(READER_T1_ContextHandler *pContext, READER_T1_Block *pBlock)
- * \brief Cette fonction permet de mettre à jour le contexte de communication à la suite de l'envoi d'un Block de type S-Block REPONSE.
  * \param *pContext est un pointeur sur une structure de type READER_T1_ContextHandler. Cette structure stocke le contexte courant de communication.
  * \param *pBlock est un pointeur sur un structure de type READER_T1_Block. Il s'agit d'un pointeur sur le Block qui vient d'être envoyé (à priori un S-Block RESPONSE).
  * \return La fonction retourne un code d'erreur de type READER_Status. READER_Ok indique le bon déroulement.
+ * Cette fonction permet de mettre à jour le contexte de communication à la suite de l'envoi d'un Block de type S-Block REPONSE.
  */
 READER_Status READER_T1_CONTROL_SBlockResponseSentUpdateContext(READER_T1_ContextHandler *pContext, READER_T1_Block *pBlock){
 	//READER_Status retVal;
-	
-	
-	
 	
 	return READER_OK;
 }
 
 
-
 /**
- * \fn READER_Status READER_T1_CONTROL_RcvBlock(READER_T1_ContextHandler *pContext, READER_T1_Block *pBlock)
- * \brief Cette fonction permet de recevoir un Block en tenant compte du contexte de communication actuel. A la réception du Block, la fonction applique les règles du protocole T=1 selone ce qui a été recu. Elle met aussi a jour le contexte de communication.
+ * \fn READER_Status READER_T1_CONTROL_RcvBlock(READER_T1_ContextHandler *pContext, READER_T1_Block *pBlock) 
  * \return La fonction retourne un code d'erreur de type READER_Status. READER_OK indique le bon déroulement.
  * \param \param *pContext est un pointeur sur une structure de type READER_T1_ContextHandler. Cette structure stocke le contexte courant de communication.
  * \param *pBlock est un pointeur sur un structure de type READER_T1_Block.
+ * Cette fonction permet de recevoir un Block en tenant compte du contexte de communication actuel. A la réception du Block, la fonction applique les règles du protocole T=1 selon ce qui a été recu. Elle met aussi a jour le contexte de communication.
  */
 READER_Status READER_T1_CONTROL_RcvBlock(READER_T1_ContextHandler *pContext, READER_T1_Block *pBlock){
 	READER_Status retVal;
@@ -862,7 +854,6 @@ READER_Status READER_T1_CONTROL_ApplySBlockRcvd(READER_T1_ContextHandler *pConte
 }
 
 
-
 READER_Status READER_T1_CONTROL_ApplySBlockRequestRcvd(READER_T1_ContextHandler *pContext, READER_T1_Block *pBlock){
 	READER_Status retVal;
 	READER_T1_FlagStatus flag;
@@ -1015,7 +1006,6 @@ READER_Status READER_T1_CONTROL_ApplySBlockResponseRcvd(READER_T1_ContextHandler
 }
 
 
-
 READER_Status READER_T1_CONTROL_ApplySBlockResynch(READER_T1_ContextHandler *pContext, READER_T1_Block *pBlock){
 	READER_Status retVal;
 	READER_T1_SBlockType SBlockType;
@@ -1053,13 +1043,12 @@ READER_Status READER_T1_CONTROL_ApplySBlockResynch(READER_T1_ContextHandler *pCo
 }
 
 
-
 /**
  * \fn READER_Status READER_T1_CONTROL_ApplySBlockIfsc(READER_T1_ContextHandler *pContext, READER_T1_Block *pBlock)
- * \brief Cette fonction sert à appliquer au contexte une requette IFS en provenance de la CARTE.
  * \param *pContext est un pointeur sur une structure de type READER_T1_ContextHandler. La structure pointée stocke le contexte actuel de communication.
  * \param *pBlock est un pointeur sur une structure de type READER_T1_Block. Il s'agit du S-Block IFS Request recu en provenance de la CARTE.
  * \return La fonction retourne un code d'erreur de type READER_Status. READER_OK indique le bon déroulement de la fonction. READER_BAD_VALUE indique que le IFSC demandé par la CARTE n'est pas supporté par le DEVICE.
+ * Cette fonction sert à appliquer au contexte une requette IFS en provenance de la CARTE.
  */
 READER_Status READER_T1_CONTROL_ApplySBlockIfsc(READER_T1_ContextHandler *pContext, READER_T1_Block *pBlock){
 	READER_Status retVal;
@@ -1120,9 +1109,7 @@ READER_Status READER_T1_CONTROL_ApplySBlockIfsd(READER_T1_ContextHandler *pConte
 }
 
 
-READER_Status READER_T1_CONTROL_ApplySBlockAbort(READER_T1_ContextHandler *pContext, READER_T1_Block *pBlock){
-	
-	
+READER_Status READER_T1_CONTROL_ApplySBlockAbort(READER_T1_ContextHandler *pContext, READER_T1_Block *pBlock){	
 	return READER_OK;
 }
 
@@ -1289,10 +1276,10 @@ READER_Status READER_T1_CONTROL_SBlockResponseNotReceived(READER_T1_ContextHandl
 
 /**
  * \fn READER_Status READER_T1_CONTROL_CheckExpectedINF(READER_T1_ContextHandler *pContext, READER_T1_Block *pRcvdSBlockResp)
- * \brief Lors de la reception d'un S-Block Response, cette fonction permet de vérifier que le champs INF contenu dans la réponse est bien celui qui est attendu par le contexte de communication (voir ISO7816-3 section 11.6.2.3, Rules 3 et 4).
  * \param *pContext est un pointeur sur une structure de type READER_T1_ContextHandler. La structure pointée stocke le contexte actuel de communication.
  * \param *pRcvdSBlockResp est un pointeur sur uns structure de type READER_T1_Block. Il doit pointer sur le S-Block Response à vérifier.
  * \return La fonction retourne un code d'erreur de type READER_Status. READER_OK indique que le champs INF contenu dans le S-Block Response correspond bien à celui qui est attendu. READER_NO indique que le champs INF de ce Block ne correspond pas. Toute autre valeur indique une erreur interne à la fonction.
+ * Lors de la reception d'un S-Block Response, cette fonction permet de vérifier que le champs INF contenu dans la réponse est bien celui qui est attendu par le contexte de communication (voir ISO7816-3 section 11.6.2.3, Rules 3 et 4).
  */
 READER_Status READER_T1_CONTROL_CheckExpectedINF(READER_T1_ContextHandler *pContext, READER_T1_Block *pRcvdSBlockResp){
 	READER_Status retVal;
@@ -1375,7 +1362,6 @@ READER_Status READER_T1_CONTROL_CheckIfThisSBlockResponseIsCorrect(READER_T1_Con
 			return READER_NO;
 		}
 	}
-	
 
 	
 	return READER_OK;

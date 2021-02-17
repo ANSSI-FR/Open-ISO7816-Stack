@@ -110,3 +110,4 @@ $ monitor reset halt
 * Implementing PPS negociation. See ISO/IEC7816-3 section 9.
 * Implementing inverted convention for the character level transmission/reception. See ISO/IEC7816-3 section 8.1.
 * Implementing CRC (only LRC implemented yet) for the T=1 blocks.
+* Translating some remaining doxygen comments from french to english
