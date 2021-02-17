@@ -1,6 +1,6 @@
 /**
  * \file reader_atr.h
- * \author Boris
+ * \copyright This file is part of the Open-ISO7816-Stack project and is distributed under the MIT license. See LICENSE file in the root directory. 
  * This file contains the prototypes of the functions to deal with ATR.
  */
  
@@ -10,8 +10,6 @@
 
 
 #include <stdint.h>
-//#include "reader_hal.h"
-//#include "reader_t1.h"
 #include "reader.h"
 #include "reader_hal_comm_settings.h"
 

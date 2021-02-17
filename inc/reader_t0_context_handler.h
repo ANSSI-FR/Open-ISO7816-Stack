@@ -1,6 +1,6 @@
 /**
  * \file reader_t0_context_handler.h
- * \author Boris
+ * \copyright This file is part of the Open-ISO7816-Stack project and is distributed under the MIT license. See LICENSE file in the root directory. 
  * This file contains the prototypes and the type definitions needed to deal with the T=0 protocol communication context.
  */
 
@@ -34,7 +34,6 @@ struct READER_T0_ContextHandler{
 
 
 
-
 READER_Status READER_T0_CONTEXT_Init(READER_T0_ContextHandler *pContext, READER_HAL_CommSettings *pSettings);
 
 READER_Status READER_T0_CONTEXT_GetHalCommSettingsPtr(READER_T0_ContextHandler *pContext, READER_HAL_CommSettings **ppCommSettings);
@@ -59,6 +58,5 @@ READER_Status READER_T0_CONTEXT_GetCurrentWI(READER_T0_ContextHandler *pContext,
 READER_Status READER_T0_CONTEXT_GetCurrentWTMilli(READER_T0_ContextHandler *pContext, uint32_t *pCurrentWT);
 
 READER_Status READER_T0_CONTEXT_SetCurrentWI(READER_T0_ContextHandler *pContext, uint32_t newWI);
-//READER_Status READER_T0_CONTEXT_SetCurrentWT(READER_T0_ContextHandler *pContext, uint32_t newWT);
 
 #endif

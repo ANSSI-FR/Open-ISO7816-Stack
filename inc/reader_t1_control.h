@@ -1,3 +1,9 @@
+/**
+ * \file reader_t1_control.h
+ * \copyright This file is part of the Open-ISO7816-Stack project and is distributed under the MIT license. See LICENSE file in the root directory. 
+ */
+
+
 #ifndef __READER_T1_CONTROL_H__
 #define __READER_T1_CONTROL_H__
 
@@ -19,7 +25,7 @@ READER_Status READER_T1_CONTROL_SendBlock(READER_T1_ContextHandler *pContext, RE
 READER_Status READER_T1_CONTROL_RcvBlock(READER_T1_ContextHandler *pContext, READER_T1_Block *pBlock);
 
 
-/* Mises a jour du contexte lors de m'envoi d'un Block ...  */
+/* Mises a jour du contexte lors de l'envoi d'un Block ...  */
 READER_Status READER_T1_CONTROL_IBlockSentUpdateContext(READER_T1_ContextHandler *pContext, READER_T1_Block *pBlock);
 READER_Status READER_T1_CONTROL_RBlockSentUpdateContext(READER_T1_ContextHandler *pContext, READER_T1_Block *pBlock);
 READER_Status READER_T1_CONTROL_SBlockSentUpdateContext(READER_T1_ContextHandler *pContext, READER_T1_Block *pBlock);

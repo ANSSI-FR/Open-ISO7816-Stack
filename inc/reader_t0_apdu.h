@@ -1,6 +1,6 @@
 /**
  * \file reader_t0_apdu.h
- * \author Boris
+ * \copyright This file is part of the Open-ISO7816-Stack project and is distributed under the MIT license. See LICENSE file in the root directory. 
  * 
  * In this file we define all the prototype of the functions used to manipulate APDUs with the T=0 protocol.
  */
@@ -36,12 +36,6 @@ READER_Status READER_T0_APDU_RcvResponse(READER_T0_ContextHandler *pContext, uin
 
 
 READER_Status READER_T0_APDU_MapTpduRespToApdu(READER_T0_ContextHandler *pContext, READER_TPDU_Response *pTpduResp, READER_APDU_Response *pApduResp);
-
-
-
-
-
-
 
 
 #endif

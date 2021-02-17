@@ -1,7 +1,6 @@
 /**
 * \file reader_t1_block.h
-* \author Boris
-* This file contains the prototypes and the type definitions needed to deal with T=1 Block objects.
+* \copyright This file is part of the Open-ISO7816-Stack project and is distributed under the MIT license. See LICENSE file in the root directory. 
 */
 
 #ifndef __READER_T1_BLOCK_H__
@@ -12,7 +11,6 @@
 #include "reader.h"
 #include "reader_hal_comm_settings.h"
 #include "reader_hal.h"
-//#include "reader_t1.h"
 
 
 
@@ -126,7 +124,6 @@ READER_Status READER_T1_SetBlockRedundancyType(READER_T1_Block *pBlock, READER_T
 READER_Status READER_T1_SetBlockLRC(READER_T1_Block *pBlock, uint8_t blockLRC);
 READER_Status READER_T1_SetBlockCRC(READER_T1_Block *pBlock, uint16_t blockCRC);
 READER_Status READER_T1_SetBlockData(READER_T1_Block *pBlock, uint8_t *data, uint8_t dataSize);
-//READER_Status READER_T1_SetBlockMBit(READER_T1_Block *pBlock, uint32_t mBit);
 
 READER_Status READER_T1_UpdateBlockChecksum(READER_T1_Block *pBlock);
 
@@ -149,7 +146,6 @@ uint8_t* READER_T1_GetBlockData(READER_T1_Block *pBlock);
 uint32_t READER_T1_GetBlockTotalSize(READER_T1_Block *pBlock);
 uint32_t READER_T1_GetBlockSizeWithoutCheck(READER_T1_Block *pBlock);
 uint8_t* READER_T1_GetBlockFrame(READER_T1_Block *pBlock);
-//uint32_t READER_T1_GetBlockMBit(READER_T1_Block *pBlock);
 
 READER_Status READER_T1_CheckBlockIntegrity(READER_T1_Block *pBlock, READER_T1_RedundancyType rType);
 

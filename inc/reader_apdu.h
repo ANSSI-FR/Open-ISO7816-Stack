@@ -1,7 +1,7 @@
 /**
  * \file reader_apdu.h
- * \author Boris
- * \brief This file contains the definition of the APDU data structure and the prototypes of the functions to operate on the APDUs.
+ * \copyright This file is part of the Open-ISO7816-Stack project and is distributed under the MIT license. See LICENSE file in the root directory. 
+ * This file contains the definition of the APDU data structure and the prototypes of the functions to operate on the APDUs.
  */
 
 

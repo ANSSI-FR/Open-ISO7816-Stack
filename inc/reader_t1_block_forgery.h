@@ -1,6 +1,6 @@
 /**
 * \file reader_t1_block_forgery.h
-* \author Boris
+* \copyright This file is part of the Open-ISO7816-Stack project and is distributed under the MIT license. See LICENSE file in the root directory. 
 */
 
 
@@ -9,7 +9,6 @@
 
 
 
-//#include "reader_t1.h"
 #include "reader.h"
 #include "reader_t1_rblock.h"
 #include "reader_t1_iblock.h"

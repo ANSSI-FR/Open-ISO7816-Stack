@@ -1,7 +1,7 @@
 /**
 * \file reader_t1_buffer_handler.h
-* \author Boris
-* This file provide the prototypes and type definitions to the functions operating on the Block buffer.
+* \copyright This file is part of the Open-ISO7816-Stack project and is distributed under the MIT license. See LICENSE file in the root directory. 
+* This file provide the prototypes and type definitions for the functions operating on the Block buffer.
 */
 
 
@@ -43,9 +43,6 @@ READER_Status READER_T1_BUFFER_GetLength(READER_T1_ContextHandler *pContext, uin
 READER_Status READER_T1_BUFFER_SetLength(READER_T1_ContextHandler *pContext, uint32_t length);
 READER_Status READER_T1_BUFFER_IncLength(READER_T1_ContextHandler *pContext);
 READER_Status READER_T1_BUFFER_DecLength(READER_T1_ContextHandler *pContext);
-//READER_Status READER_T1_BUFFER_DeleteBlock(READER_T1_ContextHandler *pContext, uint32_t index);
-//READER_Status READER_T1_BUFFER_ShiftInBottomDirection(READER_T1_ContextHandler *pContext);
-//READER_Status READER_T1_BUFFER_ShiftInTopDirection(READER_T1_ContextHandler *pContext);
 
 
 READER_Status READER_T1_BUFFER_StripControlBlocks(READER_T1_ContextHandler *pContext);

@@ -1,9 +1,14 @@
+/**
+ * \file reader_t1_error_handling.h
+ * \copyright This file is part of the Open-ISO7816-Stack project and is distributed under the MIT license. See LICENSE file in the root directory. 
+ */
+
+
 #ifndef __READER_T1_ERROR_HANDLING_H__
 #define __READER_T1_ERROR_HANDLING_H__
 
 
 #include "reader_t1.h"
-
 
 
 
@@ -25,9 +30,6 @@ READER_Status READER_T1_ERR_PrepareResynchRequ(READER_T1_ContextHandler *pContex
 READER_Status READER_T1_ERR_DoResynch(READER_T1_ContextHandler *pContext);
 
 READER_Status READER_T1_ERR_DoReset(READER_T1_ContextHandler *pContext);
-
-
-
 
 
 #endif

@@ -1,7 +1,6 @@
 /**
  * \file reader_hal_basis.h
- * \author Boris
- * This file contains the prototypes of the primitives that are interacting with hardware.
+ * \copyright This file is part of the Open-ISO7816-Stack project and is distributed under the MIT license. See LICENSE file in the root directory. 
  */
 
 
@@ -15,8 +14,6 @@
 #include "reader_hal_comm_settings.h"
 #include <stdint.h>
 
-
-/* Ici, on a uniqumeent les fonctions de la hal qui interagissent avec la hardware ...  */
 
 
 /**
@@ -41,10 +38,6 @@ enum READER_HAL_Protocol{
 
 
 
-
-
-
-
 READER_Status READER_HAL_InitHardware(void);
 READER_Status READER_HAL_RcvChar(READER_HAL_CommSettings *pSettings, READER_HAL_Protocol protocol, uint8_t *character, uint32_t timeout);
 READER_Status READER_HAL_SendChar(READER_HAL_CommSettings *pSettings, READER_HAL_Protocol protocol, uint8_t character, uint32_t timeout);
@@ -55,7 +48,6 @@ READER_Status READER_HAL_SetPwrLine(READER_HAL_State state);
 READER_Status READER_HAL_SetRstLine(READER_HAL_State state);
 READER_Status READER_HAL_SetClkLine(READER_HAL_State state);
 READER_Status READER_HAL_SetIOLine(READER_HAL_State state);
-
 
 
 

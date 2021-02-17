@@ -1,6 +1,6 @@
 /**
 * \file reader_t1_context_handler.h
-* \author Boris
+* \copyright This file is part of the Open-ISO7816-Stack project and is distributed under the MIT license. See LICENSE file in the root directory. 
 * This file contains the prototypes and the type definitions needed to deal with T=1 communication context.
 */
 
@@ -9,12 +9,9 @@
 
 
 #include "reader.h"
-//#include "reader_hal.h"
 #include "reader_t1_block.h"
 #include "reader_apdu.h"
 #include "reader_t1_sblock.h"
-//#include "reader_t1.h"
-
 
 
 
@@ -178,7 +175,6 @@ READER_Status READER_T1_CONTEXT_InitRcptBuff(READER_T1_ContextHandler *pContext)
 READER_Status READER_T1_CONTEXT_GetCurrentBGT(READER_T1_ContextHandler *pContext, uint32_t *pBgt);
 READER_Status READER_T1_CONTEXT_GetCurrentBGTMilli(READER_T1_ContextHandler *pContext, uint32_t *pBgt);
 READER_Status READER_T1_CONTEXT_GetCurrentBWTMilli(READER_T1_ContextHandler *pContext, uint32_t *pBwt);
-//READER_Status READER_T1_CONTEXT_GetCurrentCGT(READER_T1_ContextHandler *pContext, uint32_t *pCgt);
 READER_Status READER_T1_CONTEXT_GetCurrentCWT(READER_T1_ContextHandler *pContext, uint32_t *pCwt);
 READER_Status READER_T1_CONTEXT_GetCurrentCWTMilli(READER_T1_ContextHandler *pContext, uint32_t *pCwtMilli);
 READER_Status READER_T1_CONTEXT_GetCurrentCWI(READER_T1_ContextHandler *pContext, uint32_t *pCwi);
@@ -191,10 +187,7 @@ READER_Status READER_T1_CONTEXT_GetCurrentRedundancyLen(READER_T1_ContextHandler
 READER_Status READER_T1_CONTEXT_GetCurrentEtuMilliFloat(READER_T1_ContextHandler *pContext, float *pEtuMilli);
 
 READER_Status READER_T1_CONTEXT_SetCurrentBGT(READER_T1_ContextHandler *pContext, uint32_t bgt);
-//READER_Status READER_T1_CONTEXT_SetCurrentBWT(READER_T1_ContextHandler *pContext, uint32_t bwt);
-//READER_Status READER_T1_CONTEXT_SetCurrentCGT(READER_T1_ContextHandler *pContext, uint32_t cgt);
 READER_Status READER_T1_CONTEXT_SetCurrentBWTMultiplier(READER_T1_ContextHandler *pContext, uint32_t multiplier);
-//READER_Status READER_T1_CONTEXT_SetCurrentCWT(READER_T1_ContextHandler *pContext, uint32_t cwt);
 READER_Status READER_T1_CONTEXT_SetCurrentCWI(READER_T1_ContextHandler *pContext, uint32_t cwi);
 READER_Status READER_T1_CONTEXT_SetCurrentBWI(READER_T1_ContextHandler *pContext, uint32_t bwi);
 READER_Status READER_T1_CONTEXT_SetCurrentIFSC(READER_T1_ContextHandler *pContext, uint32_t ifsc);

@@ -1,7 +1,7 @@
 /**
  * \file reader_tpdu.h
- * \author Boris
- * \brief This file contains the typedefs and the prototypes of all the functions that are dealing with TPDUs.
+ * \copyright This file is part of the Open-ISO7816-Stack project and is distributed under the MIT license. See LICENSE file in the root directory. 
+ * This file contains the typedefs and the prototypes of all the functions that are dealing with TPDUs.
  */
 
 
@@ -93,18 +93,14 @@ struct READER_TPDU_Response{
 };
 
 
-//READER_Status READER_TPDU_Execute(READER_TPDU_Command *pTpdu, READER_TPDU_Response *pResp, uint32_t timeout, READER_HAL_CommSettings *pSettings);
-
 READER_Status READER_TPDU_Send(READER_TPDU_Command *tpdu, READER_TPDU_Response *pTpduResp, uint32_t timeout, READER_HAL_CommSettings *pSettings);
 READER_Status READER_TPDU_SendHeader(READER_TPDU_Command *tpdu, uint32_t timeout, READER_HAL_CommSettings *pSettings);
 READER_Status READER_TPDU_SendDataOneshot(READER_TPDU_Command *tpdu, uint32_t timeout, READER_HAL_CommSettings *pSettings);
 READER_Status READER_TPDU_SendDataSliced(READER_TPDU_Command *tpdu, uint32_t timeout, READER_HAL_CommSettings *pSettings);
 
 READER_Status READER_TPDU_RcvSW(uint8_t *SW1, uint8_t *SW2, uint32_t timeout, READER_HAL_CommSettings *pSettings);
-//READER_Status READER_TPDU_RcvDataField(uint8_t *buffer, uint32_t Ne, uint32_t timeout, READER_HAL_CommSettings *pSettings);
 READER_Status READER_TPDU_RcvResponse(READER_TPDU_Response *pResp, uint32_t expectedDataSize, uint32_t timeout, READER_HAL_CommSettings *pSettings);
 
-//READER_Status READER_TPDU_WaitProcedureByte(uint8_t *procedureByte, uint8_t INS, uint32_t timeout, READER_HAL_CommSettings *pSettings);
 READER_Status READER_TPDU_WaitACK(uint8_t INS, uint32_t *ACKType, uint8_t *pSW1, uint8_t *pSW2, uint32_t timeout, READER_HAL_CommSettings *pSettings);
 
 READER_Status READER_TPDU_IsACK(uint8_t byte, uint8_t INS);
