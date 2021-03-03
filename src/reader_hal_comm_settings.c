@@ -261,5 +261,7 @@ uint32_t READER_HAL_ComputePrescFromFreq(uint32_t freq){
 	}
 }
 #else
+	#ifndef TEST
 	#error No target is defined. Impossible to go through compilation. Please define a target by setting a constant in the style TARGET_STM32F411 or TARGET_STM32F407. See documentation for the list of supported targets.
+	#endif
 #endif

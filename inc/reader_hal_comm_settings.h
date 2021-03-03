@@ -26,7 +26,9 @@
 #elif TARGET_STM32F407
 	#define READER_HAL_STM32_SYSCLK       (uint32_t)(168000000)
 #else
+	#ifndef TEST
 	#error No target is defined. Impossible to go through compilation. Please define a target by setting a constant in the style TARGET_STM32F411 or TARGET_STM32F407. See documentation for the list of supported targets.
+	#endif
 #endif
 
 #define READER_HAL_STM32_APB1_PRESC   (uint32_t)(4)
@@ -38,7 +40,7 @@
  * \struct READER_HAL_CommSettings
  * This structure contains all the low level communication settings that are needed by the abstraction layer to work propelly.
  * These parameters are defined in ISO7816-3 section 7.1.
- * Warning : the values in this structure should not by modified otherwise than by the intended accessors.
+ * Warning : the values in this structure should not by modified by other means that the intended accessors.
  */
 typedef struct READER_HAL_CommSettings READER_HAL_CommSettings;
 struct READER_HAL_CommSettings{

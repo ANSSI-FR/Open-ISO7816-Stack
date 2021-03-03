@@ -47,7 +47,9 @@ READER_Status READER_HAL_InitHardware(void){
 	RCC_OscInitStruct.PLL.PLLN = 336;
 	RCC_OscInitStruct.PLL.PLLP = RCC_PLLP_DIV2;
 #else
+	#ifndef TEST
 	#error No target is defined. Impossible to go through compilation. Please define a target by setting a constant in the style TARGET_STM32F411 or TARGET_STM32F407. See documentation for the list of supported targets.
+	#endif
 #endif
 	RCC_OscInitStruct.PLL.PLLQ = 7;	
 	
