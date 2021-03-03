@@ -18,7 +18,7 @@ LDFILE=ld/STM32F411VEHx_FLASH.ld
 STARTUP_FILE=startup_stm32f411xe
 #STARTUP_FILE=startup_stm32f407xx
 
-# Value of the proprocessor constant (defining the target) given to $(CC) at compile time
+# Value of the preprocessor constant (defining the target) given to $(CC) at compile time
 TARGET_DEFINE=TARGET_STM32F411
 #TARGET_DEFINE=TARGET_STM32F407
 

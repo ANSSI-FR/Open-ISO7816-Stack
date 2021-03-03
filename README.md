@@ -45,8 +45,7 @@ First, clone project's repository on your local machine :
 
 ``` shell
 $ git clone git@git.bouffard.info:Apprentissage-Boris/iso7816-reader.git
-$ git submodule init
-$ git submodule update
+$ git submodule update --init --recursive
 ```
 
 The project is relying on the following submodules : 
