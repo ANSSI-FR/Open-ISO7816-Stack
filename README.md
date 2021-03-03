@@ -7,11 +7,11 @@ This project aims to provide an open-source implementation of the ISO7816-3 comm
 This protocol is ruling the interactions between a smartcard and a card reader when using its contacts to communicate.
 It is defined by the ISO/IEC 7816-3 specification which can be found [here](https://www.iso.org/standard/38770.html).
 
-This code is designed to be run on an embedded target and is organized according to several abstraction layers, thus allowing you to easily make your own implementation for a target which might not be supported yet.
+This code is designed to be run on an embedded target and is organized accordingly to several abstraction layers, thus allowing you to easily make your own implementation for a target which might not be supported yet.
 The software is written in pure C code and is thoroughly tested to asses its compliance with the protocol specification.
 
-At its higher abstraction level, this librairy provides an API allowing you to send and receive APDUs to/from a smartcard.
-At the same time, the lower level APIs are allowing you to interract directly with the arcanes of the T=0 and T=1 underlying protocols.
+At its higher abstraction level, this library provides an API allowing you to send and receive APDUs to/from a smartcard.
+At the same time, the lower level APIs are allowing you to interact directly with the arcanes of the T=0 and T=1 underlying protocols.
 
 
 ## Copyright and license
@@ -34,7 +34,7 @@ The currently supported targets are :
 * stm32f407
 * stm32f411
 
-It is recommended to use the developpment boards associated to those components (discovery boards).
+It is recommended to use the development boards associated to those components (discovery boards).
 So you won't have to change some settings in the code (especially oscillator frequency provided by the board).
 
 
@@ -54,16 +54,16 @@ The project is relying on the following submodules :
 * *CMock*, is a mocking framework used jointly with the unity framework. Usefull for testing parts of code relying on hardware functions.
 
 
-### Installing toolchain and dependencies
+### Installing tool-chain and dependencies
 
-You have to install the ARM toolchain and cross-compiler on your local machine.
+You have to install the ARM tool-chain and cross-compiler on your local machine.
 Typically can be achieved by doing :
 ``` shell
 $ apt-get install arm-none-eabi-*
 ```
 
-You need as well to install the ST toolchain for flashing the target (stlink), especially the *st-flash* executable.
-You can get it fron the ST website, or on fedora distributions you can do :
+You need as well to install the ST tool-chain for flashing the target (stlink), especially the *st-flash* executable.
+You can get it from the ST website, or on fedora distributions you can do :
 
 ``` shell
 $ dnf install stlink-devel
@@ -94,7 +94,7 @@ STFLASH=st-flash
 
 To select the target for which the firmware has to be compiled you have to follow those steps :
 
-1. In the main directory open the Makefile and uncomment the lines corresponding to your target :
+1. In the main directory open the Makefile and uncoment the lines corresponding to your target :
 
 ``` shell
 # Target can be stm32f407, stm32f411.
@@ -114,7 +114,7 @@ To select the target for which the firmware has to be compiled you have to follo
 #TARGET_DEFINE=TARGET_STM32F407
 ```
 
-2. In the ./lib directory open the Makefile and uncomment the lines corresponding to your target :
+2. In the ./lib directory open the Makefile and uncoment the lines corresponding to your target :
 
 ``` shell
 # Target can be stm32f407, stm32f411.
@@ -136,7 +136,7 @@ $ make all
 $ make upload
 ```
 
-## Building a static librairy and linking it to another project
+## Building a static library and linking it to another project
 
 ### Building the static library
 
@@ -149,13 +149,13 @@ $ make reader
 	
 A file libreader.a containing the static library is then generated.
 
-### Including the library to your own projet and compiling it
+### Including the library to your own project and compiling it
 
 
-To compile your projet with the reader library, the static library and all the
-headers in *reader/inc* must be accessible by your projet.
+To compile your project with the reader library, the static library and all the
+headers in *reader/inc* must be accessible by your project.
 
-Your projet should include reader_lib.h file as:
+Your project should include reader_lib.h file as:
 
 ``` c
 #include "reader_lib.h"
@@ -168,7 +168,7 @@ compilation time with the gcc *-I* option by the following way :
 $ gcc -Ireader/inc
 ``` 
 	
-When linking your own projet you have to point out the path to the static library :
+When linking your own project you have to point out the path to the static library :
 
 ``` shell
 $ ld -Lpath/to/staticlib/folder/ -lreader
@@ -194,7 +194,7 @@ The follwing signals have to be wired to the discovery board :
 | Feature                          | Implemented? | Tested? |
 | -------------------------------- | ------------ | ------- |
 | ATR reception and decoding       | X            |         |
-| PPS Negociation                  |              |         |
+| PPS Negotiation                  |              |         |
 | T=0 Case 1                       | X            | X       |
 | T=0 Case 2S                      | X            | X       |
 | T=0 Case 3S                      | X            | X       |
@@ -203,10 +203,10 @@ The follwing signals have to be wired to the discovery board :
 | T=0 Case 3E                      | X            |         |
 | T=0 Case 4E                      |              |         |
 | T=1 Normal operation             | X            | X       |
-| T=1 Chaning                      | X            | X       |
+| T=1 Changing                      | X            | X       |
 | T=1 Error handling               | X            | X       |
-| T=1 IFS Adjustement              | X            | X       |
-| T=1 WTX Adjustement              | X            | X       |
+| T=1 IFS Adjustment              | X            | X       |
+| T=1 WTX Adjustment              | X            | X       |
 | T=1 ABORT Request                | X            |         |
 | T=1 RESYNCH Request              | X            |         |
 	
@@ -219,7 +219,7 @@ The follwing signals have to be wired to the discovery board :
 READER_HAL_CommSettings settings;
 ```
 
-*settings* is a data structre which contains all the parameters values currently used by READER_HAL hardware abstraction layer used by the library for low level communications (emission and reception of characters). 
+*settings* is a data structure which contains all the parameters values currently used by READER_HAL hardware abstraction layer used by the library for low level communications (emission and reception of characters). 
 The user should not modify directly the values present in this structure. 
 It's recommended to use the functions exposed in the file *reader_hal_comm_settings.h* to operate safely on it.
 
@@ -240,7 +240,7 @@ READER_T1_ContextHandler context2;
 *context2* is a data structure which contains the current communication context when using the protocol T=1.
 
 
-### Initalizing the API with default parameters values
+### Initializing the API with default parameters values
 
 ```c
 /* Initialization of the hardware abstraction layer with default values ...  */
@@ -271,7 +271,7 @@ READER_T0_APDU_Execute(&context, &apduCmd, &apduResp);
 READER_T1_APDU_Execute(&context, &apduCmd, &apduResp);
 ```
 	
-### Extracting informations form the APDU Response structure
+### Extracting information form the APDU Response structure
 
 ```c
 uint8_t *dataPtr;
@@ -319,5 +319,3 @@ Pull requests are welcome. See `CONTRIBUTING.md`.
 
 If you’ve found a bug, or have an idea/suggestion/request, fill an issue
 here on GitHub or contact the authors by email.
-
-

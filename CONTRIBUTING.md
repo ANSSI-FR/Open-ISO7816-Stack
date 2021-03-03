@@ -1,22 +1,22 @@
-# Developpement informations and contributing
+# Development information and contributing
 
 
 ## General code organization
 
-The code is splitted in two main parts. The first one is the hardware dependant
+The code is split in two main parts. The first one is the hardware dependent
 code. It is an hardware abstraction layer composed of all the functions that are
 directly interacting with the hardware. Typically it is the set of functions
-in charge of emission and reception of characters. The whole hardware-depenent 
+in charge of emission and reception of characters. The whole hardware-dependent 
 code is located in the files : *reader_hal_basis.c* and
-*reader_hal_comm_settings.c* in the *./src* directory. The orther part is the
-logic (hardware independant code) state machine to make the ISO7816 protocol
+*reader_hal_comm_settings.c* in the *./src* directory. The other part is the
+logic (hardware independent code) state machine to make the ISO7816 protocol
 work.
 
 
 ## Testing the code
 
 The reader's code has to pass the tests described in the *./tests* directory.
-Tests are compiled and run on the local developpment machine.
+Tests are compiled and run on the local development machine.
 To run the tests, make sure you have the following tools installed on your local machine :
 * gcc
 * lcov
@@ -58,7 +58,7 @@ $ make report
 A report in an HTML format is then available in the *tests/cov* directory.
 
 
-note : for the tests the specfified gcc and gcov versions are gcc-7 and gcov-7. Seems to be compatibility problems with gcc-9 and gcov-9. Still needs to be tested for gcc-8 and gcov-8.
+note : for the tests the specified gcc and gcov versions are gcc-7 and gcov-7. Seems to be compatibility problems with gcc-9 and gcov-9. Still needs to be tested for gcc-8 and gcov-8.
 
 
 ### On-target debugging
@@ -106,7 +106,7 @@ $ monitor reset halt
 	
 ## To Do
 
-* Implementing PPS negociation. See ISO/IEC7816-3 section 9.
+* Implementing PPS negotiation. See ISO/IEC7816-3 section 9.
 * Implementing inverted convention for the character level transmission/reception. See ISO/IEC7816-3 section 8.1.
 * Implementing CRC (only LRC implemented yet) for the T=1 blocks.
 * Translating some remaining doxygen comments from french to english
