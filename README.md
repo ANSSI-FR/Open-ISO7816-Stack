@@ -50,8 +50,8 @@ $ git submodule update
 ```
 
 The project is relying on the following submodules : 
-* *Unity*, is a unit-test framework for testing the project.
-* *CMock*, is a mocking framework used jointly with the unity framework. Usefull for testing parts of code relying on hardware functions.
+* *Unity*, is a unit-test framework for testing the project. (see project's page [here](http://www.throwtheswitch.org/unity))
+* *CMock*, is a mocking framework used jointly with the unity framework. Useful for testing parts of code relying on hardware peripherals. (see project's page [here](http://www.throwtheswitch.org/cmock))
 
 
 ### Installing tool-chain and dependencies
@@ -89,6 +89,9 @@ AR = arm-none-eabi-ar
 OBJCOPY=arm-none-eabi-objcopy
 STFLASH=st-flash
 ```
+
+NOTE: if you have several ARM cross-compilers installed on your local machine (typically if you have a concurrent Xilinx toolchain)
+it is recommended to explicitly indicate the absolute path to the correct compiler to avoid problems.
 
 ### Selecting the target
 

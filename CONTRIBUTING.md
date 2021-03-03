@@ -17,6 +17,7 @@ work.
 
 The reader's code has to pass the tests described in the *./tests* directory.
 Tests are compiled and run on the local development machine.
+When necessary, hardware dependent code is mocked and simulated thanks to CMock.
 To run the tests, make sure you have the following tools installed on your local machine :
 * gcc
 * lcov
@@ -51,14 +52,14 @@ then, you execute them by typing :
 $ make test
 ```
 
-You can obtain a code coverage report by using the following make instruction (after having the the tests with the previous command) :
+You can obtain a code coverage report by using the following make instruction (after having run the the tests with the previous command) :
 ``` shell
 $ make report
 ```
 A report in an HTML format is then available in the *tests/cov* directory.
 
 
-note : for the tests the specified gcc and gcov versions are gcc-7 and gcov-7. Seems to be compatibility problems with gcc-9 and gcov-9. Still needs to be tested for gcc-8 and gcov-8.
+NOTE: for the tests the specified gcc and gcov versions are gcc-7 and gcov-7. Seems to be compatibility problems with gcc-9 and gcov-9. Still needs to be tested for gcc-8 and gcov-8.
 
 
 ### On-target debugging
@@ -71,14 +72,14 @@ $ sudo apt-get install openocd
 $ ./start_openocd.sh <target>
 ```
 
-*target* is a value depending on the target you are debugging.
+<*target*> is a value depending on the target you are debugging.
 Possible values are :
  * stm32f411
  * stm32f407
 
 
 The openocd server exposes a telnet interface you can use in order to manage it or run some specific commands.
-You can connect to it with the following method :
+You can connect to with the following method :
 ``` shell
 $ telnet localhost 4444
 ```
@@ -98,8 +99,8 @@ $ sudo apt-get install gdb-multiarch
 run :
 ``` shell
 $ gdb-multiarch out/test.elf
-$ target remote localhost:3333
-$ monitor reset halt
+gdb> target remote localhost:3333
+gdb> monitor reset halt
 ```
 
 
