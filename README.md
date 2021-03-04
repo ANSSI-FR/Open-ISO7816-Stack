@@ -18,7 +18,7 @@ At the same time, the lower level APIs are allowing you to interact directly wit
 
 Copyright ANSSI (2017-2021)
 
-This software is licensed under a MIT license. See LICENSE file at the root folder of the project.
+This software is licensed under a MIT license. See LICENSE file in the root folder of the project.
 
 ## Authors
 
@@ -84,7 +84,7 @@ Then, do the same for the Makefile in the *./lib* directory :
 
 ``` shell
 CC=arm-none-eabi-gcc
-AR = arm-none-eabi-ar
+AR=arm-none-eabi-ar
 OBJCOPY=arm-none-eabi-objcopy
 STFLASH=st-flash
 ```
@@ -157,14 +157,14 @@ A file libreader.a containing the static library is then generated.
 To compile your project with the reader library, the static library and all the
 headers in *reader/inc* must be accessible by your project.
 
-Your project should include reader_lib.h file as:
+Your project should include reader_lib.h file in this way:
 
 ``` c
 #include "reader_lib.h"
 ```
 	
-To build your project, all *reader/inc* headers should be indicated at the
-compilation time with the gcc *-I* option by the following way :
+To build your project, all *reader/inc* headers might have to be passed to the compiler,
+for example with the gcc *-I* option in the following way :
 
 ``` shell
 $ gcc -Ireader/inc
@@ -205,17 +205,19 @@ The follwing signals have to be wired to the discovery board :
 | T=0 Case 3E                      | X            |         |
 | T=0 Case 4E                      |              |         |
 | T=1 Normal operation             | X            | X       |
-| T=1 Changing                      | X            | X       |
+| T=1 Chaining                     | X            | X       |
 | T=1 Error handling               | X            | X       |
-| T=1 IFS Adjustment              | X            | X       |
-| T=1 WTX Adjustment              | X            | X       |
+| T=1 IFS Adjustment               | X            | X       |
+| T=1 WTX Adjustment               | X            | X       |
 | T=1 ABORT Request                | X            |         |
 | T=1 RESYNCH Request              | X            |         |
 	
 
-## Using the API
+## Using the API for executing APDU commands
 
 ### Data structures
+
+The following data structures are involved in the process of sending an APDU to the card and receiving its response.
 
 ```c
 READER_HAL_CommSettings settings;
@@ -231,7 +233,7 @@ READER_APDU_Command apduCmd;
 READER_APDU_Response apduResp;
 ```
 
-*apduCmd* and *apduResp* are data structures respectively representing an APDU command and an APDU response objects defined in the ISO/IEC7816-3.
+*apduCmd* and *apduResp* are data structures respectively representing an APDU command and APDU response objects as defined in the ISO/IEC7816-3.
 
 ```c
 READER_T0_ContextHandler context1;
@@ -242,7 +244,7 @@ READER_T1_ContextHandler context2;
 *context2* is a data structure which contains the current communication context when using the protocol T=1.
 
 
-### Initializing the API with default parameters values
+### Initializing the API with default values
 
 ```c
 /* Initialization of the hardware abstraction layer with default values ...  */

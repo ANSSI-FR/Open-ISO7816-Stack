@@ -9,8 +9,7 @@ directly interacting with the hardware. Typically it is the set of functions
 in charge of emission and reception of characters. The whole hardware-dependent 
 code is located in the files : *reader_hal_basis.c* and
 *reader_hal_comm_settings.c* in the *./src* directory. The other part is the
-logic (hardware independent code) state machine to make the ISO7816 protocol
-work.
+logic (hardware independent code) state machine to make the ISO/IEC7816-3 protocol to work.
 
 
 ## Testing the code
@@ -25,7 +24,7 @@ To run the tests, make sure you have the following tools installed on your local
 * libc of the arm cross-compiler ? (*dnf install arm-none-eabi-newlib.noarch*)
 * genhtml
 
-Eventually setup the path to ruby:
+Eventually, if necessary, setup the path to ruby:
 ``` shell
 $ export RUBY=/path/to/ruby
 ```
@@ -43,7 +42,7 @@ GENHTML=genhtml
 ```
 
 
-Finally, you can compile all the test executables by doing the following from the main project directory :
+Finally, you can compile all the test executables by doing the following from the main directory :
 ``` shell
 $ make tests
 ```
@@ -79,7 +78,7 @@ Possible values are :
 
 
 The openocd server exposes a telnet interface you can use in order to manage it or run some specific commands.
-You can connect to with the following method :
+You can connect to the openocd server using the following method :
 ``` shell
 $ telnet localhost 4444
 ```
@@ -110,4 +109,4 @@ gdb> monitor reset halt
 * Implementing PPS negotiation. See ISO/IEC7816-3 section 9.
 * Implementing inverted convention for the character level transmission/reception. See ISO/IEC7816-3 section 8.1.
 * Implementing CRC (only LRC implemented yet) for the T=1 blocks.
-* Translating some remaining doxygen comments from french to english
+* Translating some remaining comments from french to english
