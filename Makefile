@@ -4,23 +4,37 @@ OBJCOPY=/usr/bin/arm-none-eabi-objcopy
 STLINK=~/stlink/build/Release/
 STFLASH=st-flash
 
+
 # TARGET CONFIG HERE
 
 # Target can be stm32f407, stm32f411.
 TARGET=stm32f411
 #TARGET=stm32f407
 
+
+ifeq ($(TARGET), stm32f411)
+
 # Linker script file, has to be changed with target
 LDFILE=ld/STM32F411VEHx_FLASH.ld
-#LDFILE=ld/STM32F407VGTx_FLASH.ld
-
 # Name of the startup file in the startup/ folder (without the .s extension)
 STARTUP_FILE=startup_stm32f411xe
-#STARTUP_FILE=startup_stm32f407xx
-
 # Value of the preprocessor constant (defining the target) given to $(CC) at compile time
 TARGET_DEFINE=TARGET_STM32F411
-#TARGET_DEFINE=TARGET_STM32F407
+
+
+else ifeq($(TARGET), stm32f407)
+
+LDFILE=ld/STM32F407VGTx_FLASH.ld
+STARTUP_FILE=startup_stm32f407xx
+TARGET_DEFINE=TARGET_STM32F407
+
+else
+
+@echo The TARGET parameter has been wrongly defined in the Makefile. Target does not exist. Build failed.
+exit 1 
+
+endif
+
 
 # END OF TARGET CONFIG
 

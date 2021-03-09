@@ -10,9 +10,22 @@ OBJCOPY=/usr/bin/arm-none-eabi-objcopy
 TARGET=stm32f411
 #TARGET=stm32f407
 
+
+ifeq ($(TARGET), stm32f411)
+
 # Value of the proprocessor constant (defining the target) given to $(CC) at compile time
 TARGET_DEFINE=TARGET_STM32F411
-#TARGET_DEFINE=TARGET_STM32F407
+
+else ifeq($(TARGET), stm32f407)
+
+TARGET_DEFINE=TARGET_STM32F407
+
+else
+
+@echo The TARGET parameter has been wrongly defined in the Makefile. Target does not exist. Build failed.
+exit 1 
+
+endif
 
 # TARGET DEFINITION ENDS HERE
 

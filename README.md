@@ -96,36 +96,20 @@ it is recommended to explicitly indicate the absolute path to the correct compil
 
 To select the target for which the firmware has to be compiled you have to follow those steps :
 
-1. In the main directory open the Makefile and uncoment the lines corresponding to your target :
+1. In the main directory open the Makefile and uncoment the line corresponding to your target :
 
 ``` shell
 # Target can be stm32f407, stm32f411.
 #TARGET=stm32f411
 #TARGET=stm32f407
-
-# Linker script file, has to be changed accordingly to the target
-#LDFILE=ld/STM32F411VEHx_FLASH.ld
-#LDFILE=ld/STM32F407VGTx_FLASH.ld
-
-# Name of the startup file in the startup/ folder (without the .s extension)
-#STARTUP_FILE=startup_stm32f411xe
-#STARTUP_FILE=startup_stm32f407xx
-
-# Value of the preprocessor constant (defining the target) given to $(CC) at compile time
-#TARGET_DEFINE=TARGET_STM32F411
-#TARGET_DEFINE=TARGET_STM32F407
 ```
 
-2. In the ./lib directory open the Makefile and uncoment the lines corresponding to your target :
+2. In the ./lib directory open the Makefile and uncoment the line corresponding to your target :
 
 ``` shell
 # Target can be stm32f407, stm32f411.
 #TARGET=stm32f411
 #TARGET=stm32f407
-
-# Value of the preprocessor constant (defining the target) given to $(CC) at compile time
-#TARGET_DEFINE=TARGET_STM32F411
-#TARGET_DEFINE=TARGET_STM32F407
 ```
 
 
