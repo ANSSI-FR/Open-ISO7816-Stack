@@ -3,9 +3,9 @@
 
 ## Introduction
 
-This project aims to provide an open-source implementation of the ISO7816-3 communication protocol from the reader side.
+This project aims at providing an open-source implementation of the ISO7816-3 communication protocol from the reader side.
 This protocol is ruling the interactions between a smartcard and a card reader when using its contacts to communicate.
-It is defined by the ISO/IEC 7816-3 specification which can be found [here](https://www.iso.org/standard/38770.html).
+It is defined by the [ISO/IEC 7816-3 specification](https://www.iso.org/standard/38770.html).
 
 This code is designed to be run on an embedded target and is organized accordingly to several abstraction layers, thus allowing you to easily make your own implementation for a target which might not be supported yet.
 The software is written in pure C code and is thoroughly tested to asses its compliance with the protocol specification.
@@ -37,6 +37,7 @@ The currently supported targets are :
 It is recommended to use the development boards associated to those components (discovery boards).
 So you won't have to change some settings in the code (especially oscillator frequency provided by the board).
 
+If you are interested into adding a new target, your contributions are welcome, please have a look in the CONTRIBUTING.md file. 
 
 
 ## Getting project's code and cross-compiling it on your local machine
@@ -62,10 +63,10 @@ $ apt-get install arm-none-eabi-*
 ```
 
 You need as well to install the ST tool-chain for flashing the target (stlink), especially the *st-flash* executable.
-You can get it from the ST website, or on fedora distributions you can do :
+You can get it from the [git repository](https://github.com/stlink-org/stlink), or on debian-like distributions you can do :
 
 ``` shell
-$ dnf install stlink-devel
+$ apt-get install stlink-tools
 ```
 
 ### Setting-up the Makefile
@@ -235,14 +236,10 @@ READER_T1_ContextHandler context2;
 READER_HAL_InitWithDefaults(&settings);
 /* Resetting the card ...  */
 READER_HAL_DoColdReset();	
-```
 
-```c
 /* Initialization of the APDU API when using the protocol T=0 ...  */
 READER_T0_APDU_Init(&context, &settings);
-```
 
-```c
 /* Initialization of the APDU API when using the protocol T=1 ...  */
 READER_T1_APDU_Init(&context, &settings);
 ```

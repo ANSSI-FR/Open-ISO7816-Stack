@@ -5,7 +5,7 @@
 
 The code is split in two main parts. The first one is the hardware dependent
 code. It is an hardware abstraction layer composed of all the functions that are
-directly interacting with the hardware. Typically it is the set of functions
+directly interacting with the hardware. Typically, it is the set of functions
 in charge of emission and reception of characters. The whole hardware-dependent 
 code is located in the files : *reader_hal_basis.c* and
 *reader_hal_comm_settings.c* in the *./src* directory. The other part is the
@@ -21,7 +21,7 @@ To run the tests, make sure you have the following tools installed on your local
 * gcc
 * lcov
 * ruby (CMock framework needs it for the scripts which are building mock's code)
-* libc of the arm cross-compiler ? (*dnf install arm-none-eabi-newlib.noarch*)
+* libc of the arm cross-compiler
 * genhtml
 
 Eventually, if necessary, setup the path to ruby:
@@ -46,7 +46,7 @@ Finally, you can compile all the test executables by doing the following from th
 ``` shell
 $ make tests
 ```
-then, you execute them by typing :
+then, you execute them :
 ``` shell
 $ make test
 ```
