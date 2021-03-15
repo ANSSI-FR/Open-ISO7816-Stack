@@ -596,7 +596,6 @@ READER_Status READER_T1_CONTEXT_GetLastRcvd(READER_T1_ContextHandler *pContext, 
 
 
 READER_Status READER_T1_CONTEXT_GetLastIBlockRcvd(READER_T1_ContextHandler *pContext, READER_T1_Block **ppBlockDest){
-	READER_T1_BlockType bType;
 	READER_Status retVal;
 	
 	

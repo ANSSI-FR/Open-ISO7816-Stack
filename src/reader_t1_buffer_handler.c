@@ -413,7 +413,6 @@ READER_Status READER_T1_BUFFER_DequeueAndDiscard(READER_T1_ContextHandler *pCont
 
 
 READER_Status READER_T1_BUFFER_IncLength(READER_T1_ContextHandler *pContext){
-	READER_T1_BlockBuffer *pBlockBuffer;
 	READER_Status retVal;
 	uint32_t currentLength;
 	
@@ -440,7 +439,6 @@ READER_Status READER_T1_BUFFER_IncLength(READER_T1_ContextHandler *pContext){
 
 
 READER_Status READER_T1_BUFFER_DecLength(READER_T1_ContextHandler *pContext){
-	READER_T1_BlockBuffer *pBlockBuffer;
 	READER_Status retVal;
 	uint32_t currentLength;
 	

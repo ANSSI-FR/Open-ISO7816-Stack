@@ -173,7 +173,6 @@ READER_Status READER_T1_CONTROL_IsRBlockError(READER_T1_ContextHandler *pContext
 /* Retourne READER_OK si ce I-Block indique une erreur. READER_NO si il n'indique pas d'erreur. Autre valeur si la fonction a rencontre une erreur. */
 READER_Status READER_T1_CONTROL_IsIBlockACK(READER_T1_ContextHandler *pContext, READER_T1_Block *pBlock){
 	READER_Status retVal;
-	READER_T1_Block *pTmpBlock;
 	uint32_t seqNum1, seqNum2;
 	READER_T1_SeqNumber seqNum;
 	
@@ -879,7 +878,7 @@ READER_Status READER_T1_CONTROL_ApplySBlockRequestRcvd(READER_T1_ContextHandler 
 READER_Status READER_T1_CONTROL_ApplySBlockResponseRcvd(READER_T1_ContextHandler *pContext, READER_T1_Block *pBlock){
 	READER_Status retVal;
 	READER_T1_FlagStatus flag;
-	READER_T1_SBlockType expectedSBlockType, rcvdSBlockType;
+	READER_T1_SBlockType rcvdSBlockType;
 	
 	
 	/* Verifications elementaires sur le suppose S-Block recu ...  */

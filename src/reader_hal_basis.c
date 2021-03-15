@@ -22,9 +22,7 @@ SMARTCARD_HandleTypeDef smartcardHandleStruct;
  * This function initializes the hardware components which are necessary to execute the code and interrect with the smartcard. Mainly clock trees and GPIO configuration...
  * It contains define flags to be adjusted depending on the stm32 target being in use. It is recommend to set those flag directly from the Makfile by following the instructions in the README file.
  */
-READER_Status READER_HAL_InitHardware(void){
-	READER_Status retVal;
-	
+READER_Status READER_HAL_InitHardware(void){	
 	RCC_ClkInitTypeDef RCC_ClkInitStruct;
 	RCC_OscInitTypeDef RCC_OscInitStruct;
 	

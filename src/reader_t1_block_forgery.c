@@ -173,7 +173,6 @@ READER_Status READER_T1_FORGE_NACK72(READER_T1_ContextHandler *pContext, READER_
 READER_Status READER_T1_FORGE_ACKIBlock(READER_T1_ContextHandler *pContext, READER_T1_Block *pBlockDest){
 	READER_Status retVal;
 	READER_T1_SeqNumber seqNum;
-	READER_T1_RedundancyType rType;
 	uint32_t tmpSeqNum;
 	
 	
@@ -208,7 +207,6 @@ READER_Status READER_T1_FORGE_DataIBlock(READER_T1_ContextHandler *pContext, REA
 	uint32_t nextDeviceSeqNum;
 	READER_Status retVal;
 	READER_T1_MBit tmpMBit;
-	READER_T1_RedundancyType rType;
 	
 	
 	/* On calcule le numero de sequence que l'on doit placer dans le I-Block qu'on va forger ...  */
@@ -250,7 +248,6 @@ READER_Status READER_T1_FORGE_SliceDataAndFillBuffer(READER_T1_ContextHandler *p
 	READER_T1_Block tmpBlock;
 	READER_T1_SeqNumber seqNum;
 	READER_T1_MBit mBit;
-	READER_T1_RedundancyType rType;
 	uint32_t tmpSeqNum;
 	uint32_t currentIFSC;
 	uint32_t nbBlocksNeeded, buffPlacesLeft;
