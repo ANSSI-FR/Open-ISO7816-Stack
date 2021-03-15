@@ -28,9 +28,7 @@
 #define READER_T1_CONTEXT_DEFAULT_BWI       (uint32_t)(4)         /* Voir ISO7816-3 section 11.4.3 */
 #define READER_T1_CONTEXT_DEFAULT_BWT       (uint32_t)(11 + 2*2*2*2 * 960 * ((float)READER_HAL_DEFAULT_FI / (float)READER_HAL_DEFAULT_FREQ))    /* Voir ISO7816-3 section 11.4.3       */
 #define READER_T1_CONTEXT_DEFAULT_BGT       (uint32_t)(22)        /* 22 etu, Voir ISO7816-3 section 11.2 */
-//#define READER_T1_CONTEXT_DEFAULT_CWT_MILLI       (uint32_t)((2*2*2*2*2*2*2*2*2*2*2*2*2 + 11.0) * READER_UTILS_ComputeEtuMiliFloat(READER_HAL_DEFAULT_FI, READER_HAL_DEFAULT_DI, READER_HAL_DEFAULT_FREQ))
 #define READER_T1_CONTEXT_DEFAULT_CWT_ETU   (uint32_t)(12)        /* Voir ISO7816-3 section 11.4.3 */
-//#define READER_T1_CONTEXT_DEFAULT_CGT       READER_HAL_DEFAULT_GT
 #define READER_T1_CONTEXT_DEFAULT_CORRCODE  READER_T1_LRC         /* Voir ISO7816-3 section 11.4.4 */
 #define READER_T1_CONTEXT_DEFAULT_BWTMULTIPLIER  (uint32_t)(1)
 

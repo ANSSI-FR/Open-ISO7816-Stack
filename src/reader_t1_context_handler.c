@@ -38,17 +38,8 @@ READER_Status READER_T1_CONTEXT_InitCommSettings(READER_T1_ContextHandler *pCont
 	retVal = READER_T1_CONTEXT_SetCurrentBGT(pContext, READER_T1_CONTEXT_DEFAULT_BGT);
 	if(retVal != READER_OK) return retVal;
 	
-	//retVal = READER_T1_CONTEXT_SetCurrentBWT(pContext, READER_T1_CONTEXT_DEFAULT_BWT);
-	//if(retVal != READER_OK) return retVal;
-	
 	retVal = READER_T1_CONTEXT_SetCurrentBWTMultiplier(pContext, READER_T1_CONTEXT_DEFAULT_BWTMULTIPLIER);
 	if(retVal != READER_OK) return retVal;
-	
-	//retVal = READER_T1_CONTEXT_SetCurrentCGT(pContext, READER_T1_CONTEXT_DEFAULT_CGT);
-	//if(retVal != READER_OK) return retVal;
-	
-	//retVal = READER_T1_CONTEXT_SetCurrentCWT(pContext, READER_T1_CONTEXT_DEFAULT_CWT_ETU);
-	//if(retVal != READER_OK) return retVal;
 	
 	retVal = READER_T1_CONTEXT_SetCurrentBWI(pContext, READER_T1_CONTEXT_DEFAULT_BWI);
 	if(retVal != READER_OK) return retVal;
@@ -85,18 +76,6 @@ READER_Status READER_T1_CONTEXT_InitContextSettings(READER_T1_ContextHandler *pC
 	retVal = READER_T1_CONTEXT_SetACKStatus(pContext, READER_T1_NOACK);
 	if(retVal != READER_OK) return retVal;
 	
-	//retVal = READER_T1_CONTEXT_SetLastSent(pContext, NULL);
-	//if(retVal != READER_OK) return retVal;
-	//
-	//retVal = READER_T1_CONTEXT_SetLastIBlockSent(pContext, NULL);
-	//if(retVal != READER_OK) return retVal;
-	//
-	//retVal = READER_T1_CONTEXT_SetLastRcvd(pContext, NULL);
-	//if(retVal != READER_OK) return retVal;
-	//
-	//retVal = READER_T1_CONTEXT_SetLastIBlockRcvd(pContext, NULL);
-	//if(retVal != READER_OK) return retVal;
-	
 	retVal = READER_T1_CONTEXT_SetDeviceChainingLastBlockFlag(pContext, READER_T1_CHAINING_NO);
 	if(retVal != READER_OK) return retVal;
 	
@@ -115,8 +94,6 @@ READER_Status READER_T1_CONTEXT_InitContextSettings(READER_T1_ContextHandler *pC
 	retVal = READER_T1_CONTEXT_SetSBlockRequestsCounter(pContext, 0);
 	if(retVal != READER_OK) return retVal;
 	
-	//retVal = READER_T1_CONTEXT_SetTickLastSentStart(pContext);
-	//if(retVal != READER_OK) return retVal;
 	
 	pContext->lastSentExistenceFlag = READER_T1_BLOCK_EXISTS_NO;
 	pContext->lastIBlockSentExistenceFlag = READER_T1_BLOCK_EXISTS_NO;
@@ -217,7 +194,6 @@ READER_Status READER_T1_CONTEXT_GetCurrentBGT(READER_T1_ContextHandler *pContext
 }
 
 
-/* On retourne BGT en milisecondes ...  */
 READER_Status READER_T1_CONTEXT_GetCurrentBGTMilli(READER_T1_ContextHandler *pContext, uint32_t *pBgt){
 	READER_Status retVal;
 	float currentEtuMilli;
@@ -273,12 +249,6 @@ READER_Status READER_T1_CONTEXT_GetCurrentBWTMilli(READER_T1_ContextHandler *pCo
 	
 	return READER_OK;
 }
-
-
-//READER_Status READER_T1_CONTEXT_GetCurrentCGT(READER_T1_ContextHandler *pContext, uint32_t *pCgt){
-//	*pCgt = pContext->currentCGT;
-//	return READER_OK;
-//}
 
 
 /* On recupere la valeur en nombre d'ETU ...  */
@@ -406,18 +376,6 @@ READER_Status READER_T1_CONTEXT_SetCurrentBGT(READER_T1_ContextHandler *pContext
 }
 
 
-//READER_Status READER_T1_CONTEXT_SetCurrentBWT(READER_T1_ContextHandler *pContext, uint32_t bwt){
-//	pContext->currentBWT = bwt;
-//	return READER_OK;
-//}
-
-
-//READER_Status READER_T1_CONTEXT_SetCurrentCGT(READER_T1_ContextHandler *pContext, uint32_t cgt){
-//	pContext->currentCGT = cgt;
-//	return READER_OK;
-//}
-
-
 READER_Status READER_T1_CONTEXT_SetCurrentBWTMultiplier(READER_T1_ContextHandler *pContext, uint32_t multiplier){
 	if(multiplier == 0){
 		return READER_BAD_ARG;
@@ -427,18 +385,6 @@ READER_Status READER_T1_CONTEXT_SetCurrentBWTMultiplier(READER_T1_ContextHandler
 	
 	return READER_OK;
 }
-
-
-//READER_Status READER_T1_CONTEXT_SetCurrentCWT(READER_T1_ContextHandler *pContext, uint32_t cwt){
-//	/* Verification sur la nouvelle valeur de CWT. VAleur minimale 12 ETU, voir ISO7816-3 section 11.4.3 ...  */
-//	if(cwt < 12){
-//		return READER_BAD_ARG;
-//	}
-//	
-//	pContext->currentCWT = cwt;
-//	
-//	return READER_OK;
-//}
 
 
 READER_Status READER_T1_CONTEXT_SetCurrentCWI(READER_T1_ContextHandler *pContext, uint32_t cwi){
@@ -588,7 +534,6 @@ READER_Status READER_T1_CONTEXT_SetACKStatus(READER_T1_ContextHandler *pContext,
 
 /* Manipulation des derniers blocs envoyes/recus                                                                                      */
 
-
 READER_Status READER_T1_CONTEXT_GetLastSent(READER_T1_ContextHandler *pContext, READER_T1_Block **ppBlockDest){
 	READER_Status retVal;
 	
@@ -664,12 +609,6 @@ READER_Status READER_T1_CONTEXT_GetLastIBlockRcvd(READER_T1_ContextHandler *pCon
 		return READER_DOESNT_EXIST;
 	}
 	
-	
-	/* On verifie que c'est bien un I-Block ...  */
-	//bType = READER_T1_GetBlockType(&(pContext->lastIBlockRcvd));
-	//if(bType != READER_T1_IBLOCK){
-	//	return READER_ERR;
-	//}
 	retVal = READER_T1_CheckIBlock(&(pContext->lastIBlockRcvd));
 	if(retVal != READER_OK) return retVal;
 	
@@ -1077,7 +1016,6 @@ READER_Status READER_T1_CONTEXT_ComputeNextCardSeqNum(READER_T1_ContextHandler *
 	retVal = READER_T1_CONTEXT_GetCardCompleteSeqNum(pContext, &cardSeqNum);
 	if(retVal != READER_OK) return retVal;
 	
-	//nextCardSeqNum = (cardSeqNum + 1) & 0x00000001;     /* Numero de sequence modulo 2 ... */
 	nextCardSeqNum = (cardSeqNum) & 0x00000001;     /* Numero de sequence modulo 2 ... */
 	
 	*pSeqNum = nextCardSeqNum;
@@ -1099,7 +1037,6 @@ READER_Status READER_T1_CONTEXT_GetCardExpectedSeqNum(READER_T1_ContextHandler *
 	
 	
 	retVal = READER_T1_CONTEXT_GetCardSeqNum(pContext, &seqNum);
-	//retVal = READER_T1_CONTEXT_ComputeNextCardSeqNum(pContext, &seqNum);
 	if(retVal != READER_OK) return retVal;
 	
 	*pSeqNum = seqNum;
@@ -1134,34 +1071,6 @@ READER_Status READER_T1_CONTEXT_DeviceIsChainingLastBlock(READER_T1_ContextHandl
 	}
 	
 	return READER_OK;
-	
-	//READER_Status retVal;
-	//READER_T1_Block *pBlock;
-	//READER_T1_MBit mBit;
-	//
-	//
-	///* On recupere a partir du context handler un pointeur sur le dernier I-Block qu'on a envoye */
-	//retVal = READER_T1_CONTEXT_GetLastIBlockSent(pContext, &pBlock);
-	//if((retVal != READER_OK) && (retVal != READER_DOESNT_EXIST)) return retVal;
-	//
-	//if(retVal == READER_DOESNT_EXIST){
-	//	*pChainingStatus = READER_T1_CHAINING_NO;
-	//}
-	//
-	///* On recupere le M-Bit du dernier I-Block ... */
-	//mBit = READER_T1_GetBlockMBit(pBlock);
-	//
-	//if(mBit == READER_T1_MBIT_ZERO){
-	//	*pChainingStatus = READER_T1_CHAINING_NO;
-	//}
-	//else if(mBit == READER_T1_MBIT_ONE){
-	//	*pChainingStatus = READER_T1_CHAINING_YES;
-	//}
-	//else{
-	//	return READER_ERR;
-	//}
-	//
-	//return READER_OK;
 }
 
 
@@ -1173,10 +1082,7 @@ READER_Status READER_T1_CONTEXT_DeviceIsChainingLastBlock(READER_T1_ContextHandl
  * \return La fonction retourne un code d'erreur de type READER_Status. READER_OK indique que la fonction s'est correctement déroulée.
  */
 READER_Status READER_T1_CONTEXT_CardIsChainingLastBlock(READER_T1_ContextHandler *pContext, READER_T1_ChainingStatus *pChainingStatus){
-	//READER_Status retVal;
 	READER_T1_ChainingStatus status;
-	//READER_T1_Block *pBlock;
-	//READER_T1_MBit mBit;
 	
 	
 	status = pContext->cardIsChainingLastBlock;
@@ -1193,30 +1099,6 @@ READER_Status READER_T1_CONTEXT_CardIsChainingLastBlock(READER_T1_ContextHandler
 	
 	
 	return READER_OK;
-	
-	///* On recupere un pointeur sur le dernier I-Block qu'on a recu de la carte */
-	//retVal = READER_T1_CONTEXT_GetLastIBlockRcvd(pContext, &pBlock);
-	//if((retVal != READER_OK) && (retVal != READER_DOESNT_EXIST)) return retVal;
-	//
-	///* On verifie qu'il existe effectivement un dernier I-Block Recu */
-	//if(retVal == READER_DOESNT_EXIST){
-	//	*pChainingStatus = READER_T1_CHAINING_NO;
-	//}
-	//
-	///* On recupere le mBit du dernier I-Block recu */
-	//mBit = READER_T1_GetBlockMBit(pBlock);
-	//
-	//if(mBit == READER_T1_MBIT_ZERO){
-	//	*pChainingStatus = READER_T1_CHAINING_NO;
-	//}
-	//else if(mBit == READER_T1_MBIT_ONE){
-	//	*pChainingStatus = READER_T1_CHAINING_YES;
-	//}
-	//else{
-	//	return READER_ERR;
-	//}
-	//
-	//return READER_OK;
 }
 
 

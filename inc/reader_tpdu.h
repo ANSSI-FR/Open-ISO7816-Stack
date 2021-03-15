@@ -112,5 +112,4 @@ READER_Status READER_TPDU_IsProcedureByte(uint8_t byte, uint8_t INS);
 READER_Status READER_TPDU_Forge(READER_TPDU_Command *tpdu, uint8_t CLA, uint8_t INS, uint8_t P1, uint8_t P2, uint8_t P3, uint8_t *dataBuff, uint32_t dataSize);
 
 
-
 #endif

@@ -156,7 +156,4 @@ uint16_t READER_APDU_LcToNc(uint16_t Lc);
 uint16_t READER_APDU_LeToNe(uint16_t Le);
 
 
-
-
-
 #endif

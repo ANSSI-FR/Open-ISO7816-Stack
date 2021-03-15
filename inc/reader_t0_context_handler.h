@@ -18,9 +18,6 @@
 
 
 #define READER_T0_CONTEXT_DEFAULT_WI         (uint32_t)(10)
-//#define READER_DEFAULT_WT_MILI    (uint32_t)((1000 * READER_DEFAULT_WI * 960 * READER_HAL_DEFAULT_FI) / (float)READER_HAL_DEFAULT_FREQ)      /* Voir ISO7816-3 section 10.2 */
-
-
 
 
 
@@ -28,10 +25,7 @@ typedef struct READER_T0_ContextHandler READER_T0_ContextHandler;
 struct READER_T0_ContextHandler{
 	READER_HAL_CommSettings halCommSettings;
 	uint32_t currentWI;
-	//uint32_t currentWT;
 };
-
-
 
 
 READER_Status READER_T0_CONTEXT_Init(READER_T0_ContextHandler *pContext, READER_HAL_CommSettings *pSettings);

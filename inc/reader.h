@@ -14,7 +14,6 @@
 
 
 
-
 /**
  * \enum READER_Status
  * This type is used to encode the returned execution code of all the functions of the project.

@@ -55,26 +55,11 @@ READER_Status READER_T1_BUFFER_Clear(READER_T1_ContextHandler *pContext){
 READER_Status READER_T1_BUFFER_GetLength(READER_T1_ContextHandler *pContext, uint32_t *pLength){
 	READER_T1_BlockBuffer *pBlockBuff;
 	READER_Status retVal;
-	//uint32_t indexBottom, indexTop;
-	//uint32_t placesUsed;
 	
 	
 	/* On recupere un pointeir sur la structure de Buffer d'envoi qui se trouve dans le contexte de communication...  */
 	retVal = READER_T1_CONTEXT_GetBlockBuff(pContext, &pBlockBuff);
 	if(retVal != READER_OK) return retVal;
-	
-	//indexBottom = pBlockBuff->indexBottom;
-	//indexTop = pBlockBuff->indexTop;
-	//
-	//if(indexBottom <= indexTop){
-	//	placesUsed = (indexTop - indexBottom) + 1;
-	//}
-	//else{
-	//	palcesUsed = READER_T1_CONTEXT_STATICBUFF_MAXSIZE - indexBottom;
-	//	placesUsed += indexTop + 1;
-	//}
-	//
-	//*length = placesUsed;
 	
 	*pLength = pBlockBuff->length;
 	
@@ -243,16 +228,6 @@ READER_Status READER_T1_BUFFER_Dequeue(READER_T1_ContextHandler *pContext, READE
 	retVal = READER_T1_CopyBlock(pBlock, pBlockTab+indexBottom);
 	if(retVal != READER_OK) return retVal;
 	
-	/* On mets a jour la valeur de indexBottom */
-	//retVal = READER_T1_BUFFER_GetLength(pContext, &length);
-	//if(retVal != READER_OK) return retVal;
-	
-	/* Si le Block suivant existe, alors on decale l'index de Bottom. */
-	//if(length > 1){
-	//	newBottomIndex = (indexBottom + 1) % READER_T1_CONTEXT_STATICBUFF_MAXSIZE;
-	//	pBlockBuffer->indexBottom = newBottomIndex;
-	//}
-	
 	newBottomIndex = (indexBottom + 1) % (uint32_t)(READER_T1_CONTEXT_STATICBUFF_MAXSIZE);
 	pBlockBuffer->indexBottom = newBottomIndex;
 	
@@ -317,7 +292,6 @@ READER_Status READER_T1_BUFFER_Stack(READER_T1_ContextHandler *pContext, READER_
 	if(retVal != READER_OK) return retVal;
 	
 	pBlockBuffer->indexBottom = newBottomIndex;
-	
 	
 	
 	/* On mets a jour la length */
@@ -605,15 +579,6 @@ READER_Status READER_T1_BUFFER_UpdateIfsc(READER_T1_ContextHandler *pContext, ui
 	uint8_t tmpBuff[READER_T1_BUFFER_MAXBYTES];
 	
 	
-	//retVal = READER_T1_CONTEXT_GetCurrentIFSC(pContext, &currentIFSC);
-	//if(retVal != READER_OK) return retVal;
-	
-	/* On ne peut pas forcement faire ce test, la valeur de currentIFSC n'est pas forcement initialisee au moment de l'appel de cette fonction ...  */
-	///* Si on peut s'eviter du travail ...  */
-	//if(newIFSC >= currentIFSC){
-	//	return READER_OK;
-	//}
-	
 	/* Si le Buffer est vide, il n'y a rien a faire, on a termine...  */
 	retVal = READER_T1_BUFFER_IsEmpty(pContext, &bufferStatus);
 	if(retVal != READER_OK) return retVal;
@@ -629,7 +594,6 @@ READER_Status READER_T1_BUFFER_UpdateIfsc(READER_T1_ContextHandler *pContext, ui
 		return READER_OK;
 	}
 
-	
 	/* On extrait les donnees de tous les I-Blocks qui sont dans le Buffer ...  */
 	retVal = READER_T1_BUFFER_ExtractRawDataFromBuffer(pContext, tmpBuff, READER_T1_BUFFER_MAXBYTES, &sizeExtracted);
 	if(retVal != READER_OK) return retVal;
@@ -646,7 +610,6 @@ READER_Status READER_T1_BUFFER_UpdateIfsc(READER_T1_ContextHandler *pContext, ui
 }
 
 
-/* Retourne une erreur si il y a trop de donnes dans le Buffer de Blocks par rapport au buffer fourni en parametres ...  */
 /**
  * \fn READER_Status READER_T1_BUFFER_ExtractRawDataFromBuffer(READER_T1_ContextHandler *pContext, uint8_t *destBuffer, uint32_t destBufferSize, uint32_t *pSizeExtracted)
  * \brief Cette fonction parcoure tous les I-Blocks du Buffer d'envoi, elle extrait les champs de données de ces I-Blocks et les réassemble dans un buffer de destination.
@@ -816,7 +779,6 @@ READER_Status READER_T1_BUFFER_DecIBlockCount(READER_T1_ContextHandler *pContext
 }
 
 
-
 READER_Status READER_T1_BUFFER_GetRBlockAndSBlockCount(READER_T1_ContextHandler *pContext, uint32_t *pCount){
 	READER_Status retVal;
 	uint32_t totalBlocksCount, IBlocksCount;
@@ -840,4 +802,3 @@ READER_Status READER_T1_BUFFER_GetRBlockAndSBlockCount(READER_T1_ContextHandler 
 	
 	return READER_OK;
 }
-

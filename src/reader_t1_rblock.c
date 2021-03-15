@@ -14,9 +14,7 @@ READER_Status READER_T1_SetBlockACKType(READER_T1_Block *pBlock, READER_T1_ACKTy
 	uint8_t currentPCB, newPCB;
 	
 	
-	
 	currentPCB = READER_T1_GetBlockPCB(pBlock);
-	
 	
 	if(ack == READER_T1_ACKTYPE_ACK){
 		newPCB = currentPCB & 0xD0;
@@ -65,9 +63,6 @@ READER_T1_ACKType READER_T1_GetBlockACKType(READER_T1_Block *pBlock){
 }
 
 
-
-
-
 READER_Status READER_T1_SetExpectedBlockSeqNumber(READER_T1_Block *pBlock, READER_T1_ExpSeqNumber seq){
 	/* Voir ISO7816-3 section 11.3.2.2 */
 	READER_Status retVal;
@@ -96,7 +91,6 @@ READER_Status READER_T1_SetExpectedBlockSeqNumber(READER_T1_Block *pBlock, READE
 READER_T1_ExpSeqNumber READER_T1_GetExpectedBlockSeqNumber(READER_T1_Block *pBlock){
 	/* Voir ISO7816-3 section 11.3.2.2 */
 	uint8_t currentPCB;
-	
 	
 	
 	currentPCB = READER_T1_GetBlockPCB(pBlock);
@@ -143,52 +137,3 @@ READER_Status READER_T1_CheckRBlock(READER_T1_Block *pBlock){
 	
 	return READER_OK;
 }
-
-
-
-//READER_Status READER_T1_SendBlockACK(READER_T1_Block *pBlock, READER_T1_ExpSeqNumber expctdBlockSeq, uint32_t timeout){
-//	READER_T1_Block block;
-//	READER_Status retVal;
-//	
-//	
-//	retVal = READER_T1_ForgeRBlock(&block, READER_T1_ACKTYPE_ACK, expctdBlockSeq);
-//	if(retVal != READER_OK) return retVal;
-//	
-//	retVal = READER_T1_SendBlock(&block, timeout);
-//	if(retVal != READER_OK) return retVal;
-//	
-//	
-//	return READER_OK;
-//}
-//
-//
-//READER_Status READER_T1_SendBlockNACK(READER_T1_Block *pBlock, READER_T1_ExpSeqNumber expctdBlockSeq, uint32_t timeout){
-//	READER_T1_Block block;
-//	READER_Status retVal;
-//	
-//	
-//	retVal = READER_T1_ForgeRBlock(&block, READER_T1_ACKTYPE_NACK, expctdBlockSeq);
-//	if(retVal != READER_OK) return retVal;
-//	
-//	retVal = READER_T1_SendBlock(&block, timeout);
-//	if(retVal != READER_OK) return retVal;
-//	
-//	
-//	return READER_OK;
-//}
-//
-//
-//READER_Status READER_T1_SendBlockNACK_CRCLRC(READER_T1_Block *pBlock, READER_T1_ExpSeqNumber expctdBlockSeq, uint32_t timeout){
-//	READER_T1_Block block;
-//	READER_Status retVal;
-//	
-//	
-//	retVal = READER_T1_ForgeRBlock(&block, READER_T1_ACKTYPE_NACK_CRCLRC, expctdBlockSeq);
-//	if(retVal != READER_OK) return retVal;
-//	
-//	retVal = READER_T1_SendBlock(&block, timeout);
-//	if(retVal != READER_OK) return retVal;
-//	
-//	
-//	return READER_OK;
-//}

@@ -105,4 +105,3 @@ READER_Status READER_T1_RCPTBUFF_CreateAPDUResp(READER_T1_ContextHandler *pConte
 	
 	return READER_OK;
 }
-

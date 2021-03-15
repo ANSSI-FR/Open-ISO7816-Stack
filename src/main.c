@@ -5,9 +5,6 @@
 #include "reader_atr.h"
 
 
-//UART_HandleTypeDef uartHandleStruct;
-//extern SMARTCARD_HandleTypeDef smartcardHandleStruct;
-
 
 uint8_t pSmartcardTxBuff[100];
 uint8_t pSmartcardRxBuff[100];
@@ -16,7 +13,6 @@ uint8_t pSmartcardRxBuff[100];
 #ifndef TEST
 int main(void){
 	READER_Status retVal;
-	//READER_ATR_Atr atr;
 	READER_APDU_Command apduCmd;
 	READER_APDU_Command cmd1, cmd2, cmd3;
 	READER_APDU_Response apduResp;
@@ -32,40 +28,9 @@ int main(void){
 	
 	READER_HAL_InitWithDefaults(&settings);
 	READER_HAL_DoColdReset();
-	//READER_HAL_RcvCharFrame(&settings, READER_HAL_PROTOCOL_T1, frame, 19, 100);  /* stub de la reception de l'ATR le temps des tests ...  */
-	
 	READER_T1_APDU_Init(&context, &settings);
 	
 	READER_HAL_Delay(100);
-	
-	//READER_APDU_Forge(&cmd1, 0x00, 0xA4, 0x04, 0x00, 10, buff1, 0);
-	//READER_T1_APDU_Execute(&context, &cmd1, &apduResp);
-	
-	
-	
-	///* Initialisation de la HAL ...  */
-	//retVal = READER_HAL_Init();
-	//if(retVal != READER_OK) return retVal;
-	//
-	///* Activation de la Carte ...    */
-	//retVal = READER_HAL_DoColdReset();
-	//if(retVal != READER_OK) return retVal;
-	//
-	///* Reception de l'ATR            */
-	//retVal = READER_ATR_Receive(&atr);
-	//if(retVal != READER_OK) return retVal;
-	
-	
-	
-	//initUart();
-	//READER_T1_APDU_Init(&context);
-	//READER_T0_APDU_Init();
-	
-	
-	//READER_T1_ForgeSBlockIfsRequest(&block, 0x05);
-	//READER_T1_BUFFER_Stack(&context, &block);
-	
-	//READER_HAL_Delay(100);
 	
 	
 	READER_APDU_Forge(&cmd1, 0x00, 0xA4, 0x04, 0x00, 10, buff1, 0);
@@ -80,155 +45,10 @@ int main(void){
 	READER_HAL_Delay(50);
 	READER_T1_APDU_Execute(&context, &cmd3, &apduResp);
 
-	
-	//READER_HAL_DoColdReset();
-	//READER_ATR_Receive(&atr);
-	//READER_ATR_ApplySettings(&atr);
-	
-	
-	//pSmartcardTxBuff[0] = 0x48;
-	//pSmartcardTxBuff[1] = 0x65;
-	//pSmartcardTxBuff[2] = 0x6C;
-	//pSmartcardTxBuff[3] = 0x6C;
-	//pSmartcardTxBuff[4] = 0x6F;
-	//pSmartcardTxBuff[5] = 0x57;
-	//pSmartcardTxBuff[6] = 0x6F;
-	//pSmartcardTxBuff[7] = 0x72;
-	//pSmartcardTxBuff[8] = 0x6C;
-	//pSmartcardTxBuff[9] = 0x64;
-	//pSmartcardTxBuff[10] = 0x41;
-	//pSmartcardTxBuff[11] = 0x70;
-	//pSmartcardTxBuff[12] = 0x70;
-	
-	//pSmartcardTxBuff[0] = 0xA0;
-	//pSmartcardTxBuff[1] = 0x00;
-	//pSmartcardTxBuff[2] = 0x00;
-	//pSmartcardTxBuff[3] = 0x00;
-	//pSmartcardTxBuff[4] = 0x62;
-	//pSmartcardTxBuff[5] = 0x03;
-	//pSmartcardTxBuff[6] = 0x01;
-	//pSmartcardTxBuff[7] = 0x0C;
-	//pSmartcardTxBuff[8] = 0x01;
-	//pSmartcardTxBuff[9] = 0x01;
-	
-	//READER_PERIPH_ErrHandler();
-	
-	//READER_T1_ForgeSBlockIfsRequest(&block, 0x05);
-	//READER_T1_BUFFER_Stack(&context, &block);
-	
-	
-	//READER_APDU_Forge(&apduCmd, 0x00, 0xA4, 0x04, 0x00, 10, pSmartcardTxBuff, 16);
-	//READER_T0_APDU_Execute(&apduCmd, &apduResp, READER_HAL_USE_ISO_WT);
-	//retVal = READER_T1_APDU_Execute(&context, &apduCmd, &apduResp);
-	//READER_PERIPH_ErrHandler();
-	//if(retVal != READER_OK){
-	//	READER_PERIPH_ErrHandler();
-	//}
-	//READER_PERIPH_ErrHandler();
-	
-	//READER_HAL_Delay(100);
-	//
-	//pSmartcardTxBuff[0] = 'A';
-	//pSmartcardTxBuff[1] = 'A';
-	//pSmartcardTxBuff[2] = 'A';
-	//pSmartcardTxBuff[3] = 'A';
-	//pSmartcardTxBuff[4] = 'A';
-	//pSmartcardTxBuff[5] = 'A';
-	//pSmartcardTxBuff[6] = 'A';
-	//pSmartcardTxBuff[7] = 'A';
-	//pSmartcardTxBuff[8] = 'A';
-	//pSmartcardTxBuff[9] = 'A';
-	//pSmartcardTxBuff[10] = 'A';
-	//pSmartcardTxBuff[11] = 'A';
-	//pSmartcardTxBuff[12] = 'A';
-	//pSmartcardTxBuff[13] = 'A';
-	//pSmartcardTxBuff[14] = 'A';
-	//pSmartcardTxBuff[15] = 'A';
-	//pSmartcardTxBuff[16] = 'A';
-	//pSmartcardTxBuff[17] = 'A';
-	//pSmartcardTxBuff[18] = 'A';
-	//pSmartcardTxBuff[19] = 'A';
-	//pSmartcardTxBuff[20] = 'B';
-	//pSmartcardTxBuff[21] = 'B';
-	//pSmartcardTxBuff[22] = 'B';
-	//pSmartcardTxBuff[23] = 'B';
-	//pSmartcardTxBuff[24] = 'B';
-	//pSmartcardTxBuff[25] = 'B';
-	//pSmartcardTxBuff[26] = 'B';
-	//pSmartcardTxBuff[27] = 'B';
-	//pSmartcardTxBuff[28] = 'B';
-	//pSmartcardTxBuff[29] = 'B';
-	//pSmartcardTxBuff[30] = 'B';
-	//pSmartcardTxBuff[31] = 'B';
-	//pSmartcardTxBuff[32] = 'B';
-	//pSmartcardTxBuff[33] = 'B';
-	//pSmartcardTxBuff[34] = 'B';
-	//pSmartcardTxBuff[35] = 'B';
-	//pSmartcardTxBuff[36] = 'B';
-	//pSmartcardTxBuff[37] = 'B';
-	//pSmartcardTxBuff[38] = 'B';
-	//
-	//
-	//READER_APDU_Forge(&apduCmd, 0x00, 0xA4, 0x04, 0x00, 38, pSmartcardTxBuff, 38);
-	//retVal = READER_T1_APDU_Execute(&context, &apduCmd, &apduResp);
-	//
-	
-	//if(retVal != READER_OK){
-	//	READER_PERIPH_ErrHandler();
-	//}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	//HAL_UART_Transmit(&uartHandleStruct, apduResp.dataBytes, apduResp.dataSize, 1000);
-	
-	//READER_APDU_Forge(&apduCmd, 0x80, 0x10, 0x00, 0x00, 0x10, pSmartcardTxBuff, 0x00);
-	//READER_T0_APDU_Execute(&apduCmd, &apduResp, READER_HAL_USE_ISO_WT);
-	//
-	//READER_APDU_Forge(&apduCmd, 0x80, 0x12, 0x00, 0x00, 0x00, NULL, 0x10);
-	//READER_T0_APDU_Execute(&apduCmd, &apduResp, READER_HAL_USE_ISO_WT);
-	
-	//READER_APDU_Forge(&apduCmd, 0xA0, 0xA4, 0x00, 0x00, 0x02, pSmartcardTxBuff, 0x00);
-	//READER_T0_APDU_Execute(&apduCmd, &apduResp, READER_HAL_USE_ISO_WT);
-	//
-	//READER_APDU_Forge(&apduCmd, 0xA0, 0xC0, 0x00, 0x00, 0x00, NULL, 0x20);
-	//READER_T0_APDU_Execute(&apduCmd, &apduResp, READER_HAL_USE_ISO_WT);
-	//
-	//READER_APDU_Forge(&apduCmd, 0xA0, 0x88, 0x00, 0x00, 0x10, pSmartcardTxBuff, 0x00);
-	//READER_T0_APDU_Execute(&apduCmd, &apduResp, READER_HAL_USE_ISO_WT);
-	//
-	//READER_APDU_Forge(&apduCmd, 0xA0, 0xC0, 0x00, 0x00, 0x00, NULL, 0x0C);
-	//READER_T0_APDU_Execute(&apduCmd, &apduResp, READER_HAL_USE_ISO_WT);
-	
-	//HAL_UART_Transmit(&uartHandleStruct, apduResp.dataBytes, apduResp.dataSize, 1000);
 
 	while(1){
 		READER_HAL_GetTick();
 	}
-
-	//READER_TPDU_Forge(&tpdu, 0x00, 0xA4, 0x04, 0x00, 0x0D, pSmartcardTxBuff, 0x0D);
-	//READER_TPDU_Send(&tpdu, READER_HAL_USE_ISO_WT);
-	//READER_TPDU_RcvSW(&SW1, &SW2, READER_HAL_USE_ISO_WT);
-	
-	//READER_HAL_Delay(10);
-	//
-	//READER_TPDU_Forge(&tpdu, 0x00, 0xC0, 0x00, 0x00, 0x12, NULL, 0);
-	//READER_TPDU_Send(&tpdu, READER_HAL_USE_ISO_WT);
-	//READER_TPDU_RcvResponse(&tpduResp, 0x12, READER_HAL_USE_ISO_WT);
-	
-	
-	
-	//HAL_UART_Transmit(&uartHandleStruct, tpduResp.dataBytes, 0x12, 1000);
-	//HAL_UART_Transmit(&uartHandleStruct, &(tpduResp.SW1), 0x01, 1000);
-	//HAL_UART_Transmit(&uartHandleStruct, &(tpduResp.SW2), 0x01, 1000);
-
-
 	
 	return 0;
 }

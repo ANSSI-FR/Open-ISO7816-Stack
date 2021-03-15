@@ -130,14 +130,7 @@ READER_Status READER_HAL_RcvChar(READER_HAL_CommSettings *pSettings, READER_HAL_
 		return READER_TIMEOUT;
 	}
 	
-	
-	/* On verifie Parity Error, Frame Error, Overrun Error */
-	//if( (USART2->SR & USART_SR_FE) || (USART2->SR & USART_SR_ORE) || (USART2->SR & USART_SR_PE) ){ 
-	//	//HAL_UART_Transmit_IT(&uartHandleStruct, "FE", 2);
-	//	*character = USART2->DR;
-	//	USART2->CR1 &= ~USART_CR1_RE;
-	//	return READER_ERR;
-	//}
+	/* TODO: Check for parity error, overrun error, frame error ...  */
 	
 	
 	/* On recupere la donnee recue dans le Data Register */

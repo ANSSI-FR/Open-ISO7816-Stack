@@ -193,10 +193,6 @@ READER_Status READER_TPDU_RcvSW(uint8_t *SW1, uint8_t *SW2, uint32_t timeout, RE
 	do{
 		retVal = READER_HAL_RcvChar(pSettings, READER_HAL_PROTOCOL_T0, &byte1, timeout);
 		
-		//if((retVal == READER_OK) && (READER_TPDU_IsNullByte(byte1) == READER_NO) &&  (READER_TPDU_IsSW1(byte1) == READER_NO)){
-		//	return READER_INCORRECT_SW1;
-		//}
-		
 	} while( (retVal==READER_OK) && (READER_TPDU_IsNullByte(byte1) == READER_OK) );
 	
 	if(retVal == READER_TIMEOUT){
@@ -222,38 +218,14 @@ READER_Status READER_TPDU_RcvSW(uint8_t *SW1, uint8_t *SW2, uint32_t timeout, RE
 }
 
 
-
-/**
- * \fn READER_Status READER_TPDU_RcvDataField(uint8_t *buffer, uint32_t Ne)
- * \brief Cette fonction permet de recevoir la partie data d'une TPDU Response.
- * \return Valeur de type READER_Status. READER_OK si l'exécution s'est correctement déroulée. Toute autre valeur suggère une erreur.
- * \param *buffer Pointeur sur un buffer dans lequel stocker les données reçues.
- * \param Ne (N expected) Nombre d'octets attendus dans la réponse.
- * \param timeout Pour l'instant non décidé si c'est le timeout pour chaque carac ou pour toute le frame. !!!!!!!!
- */
-//READER_Status READER_TPDU_RcvDataField(uint8_t *buffer, uint32_t Ne, uint32_t timeout, READER_HAL_CommSettings *pSettings){
-//	READER_Status retVal;
-//	
-//	if(Ne != 0){
-//		retVal = READER_HAL_RcvCharFrame(pSettings, READER_HAL_PROTOCOL_T0, buffer, Ne, timeout);
-//	}
-//	else{
-//		retVal = READER_OK;
-//	}
-//	
-//	return retVal;
-//}
-
-
-
 /**
  * \fn READER_Status READER_TPDU_RcvResponse(uint8_t *dataField, uint32_t Ne, uint16_t SW, uint32_t timeout)
- * \brief Cette fonction permet de recevoir la réponse à une commande TPDU. Elle permet de récupérer le champs de données et le Status Word (SW).
- *        Si il y a timeout et qu'on a reçu deux octets de données alors on considere que les deux octets reçus sont SW1 et SW2. Ils seront placés dans les champs SW1 et SW2 de la structure TPDU response.
  * \return Valeur de type READER_Status. READER_OK si l'exécution s'est correctement déroulée. Toute autre valeur suggère une erreur.
  * \param *pResp Un pointeur sur une structure de type READER_TPDU_Response. Toutes les données de la réponse (SW1SW2, data field) seront stockées dans cette structure.
  * \param expectedDataSize Nombre de caractères attendus en réponse.
  * \param timeout Valeur en milisecondes du timeout à appliquer pour la réception de chacun des caractères de la réponse. Indiquer la valeur READER_HAL_USE_ISO_WT pour utiliser le Wait Time (WT) tel que défini dans la norme ISO en guise de timeout. Indiquer toute autre valeur différente de READER_HAL_USE_ISO_WT pour un timeout personalisé (en milisecondes).
+ * Cette fonction permet de recevoir la réponse à une commande TPDU. Elle permet de récupérer le champs de données et le Status Word (SW).
+ * Si il y a timeout et qu'on a reçu deux octets de données alors on considere que les deux octets reçus sont SW1 et SW2. Ils seront placés dans les champs SW1 et SW2 de la structure TPDU response.
  */
 READER_Status READER_TPDU_RcvResponse(READER_TPDU_Response *pResp, uint32_t expectedDataSize, uint32_t timeout, READER_HAL_CommSettings *pSettings){
 	READER_Status retVal;
@@ -434,25 +406,6 @@ READER_Status READER_TPDU_IsProcedureByte(uint8_t byte, uint8_t INS){
 }
 
 
-//READER_Status READER_TPDU_WaitProcedureByte(uint8_t *procedureByte, uint8_t INS, uint32_t timeout, READER_HAL_CommSettings *pSettings){
-//	uint8_t byte;
-//	READER_Status retVal;
-//	
-//	
-//	retVal = READER_HAL_RcvChar(pSettings, READER_HAL_PROTOCOL_T0, &byte, timeout);
-//	if(retVal != READER_OK){
-//		return retVal;
-//	}
-//	
-//	if(READER_TPDU_IsProcedureByte(byte, INS)){
-//		*procedureByte = byte;
-//		return READER_OK;
-//	}
-//	else{
-//		return READER_ERR;
-//	}
-//}
-
 /**
  * \fn READER_Status READER_TPDU_WaitACK(uint8_t INS, uint8_t *ACKType, uint32_t timeout)
  * \brief Cette fonction permet d'attendre la réception d'un ACK en provenance de la carte.
@@ -471,7 +424,6 @@ READER_Status READER_TPDU_WaitACK(uint8_t INS, uint32_t *pACKType, uint8_t *pSW1
 		retVal = READER_HAL_RcvChar(pSettings, READER_HAL_PROTOCOL_T0, &byte, timeout);
 		
 	} while( (retVal==READER_OK) && (READER_TPDU_IsNullByte(byte) == READER_OK));
-	//} while( (retVal==READER_OK) && !(READER_TPDU_IsSW1(byte)) && !(READER_TPDU_IsACK(byte, INS)) && !(READER_TPDU_IsXoredACK(byte, INS)));
 	
 	if(retVal != READER_OK){
 		return retVal;

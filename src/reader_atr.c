@@ -115,68 +115,6 @@ READER_Status READER_ATR_Receive(READER_ATR_Atr *atr, READER_HAL_CommSettings *p
  READER_Status READER_ATR_ApplySettings(READER_ATR_Atr *atr){
 	 return READER_OK;
  }
-//READER_Status READER_ATR_ApplySettings(READER_ATR_Atr *atr){
-//	READER_Status retVal;
-//	uint32_t Fi, Di, R, f;
-//	uint32_t IFSC, BWI, BWTEtu, BWTMili, rType, WI;
-//	uint32_t newGT;
-//	
-//	/* Application des parametres Fi et Di (qui definissent le ETU) */
-//	if((atr->Fi != READER_ATR_VALUE_NOT_INDICATED) && (atr->Di != READER_ATR_VALUE_NOT_INDICATED)){
-//		Fi = atr->Fi;
-//		Di = atr->Di;
-//	}
-//	else if((atr->Fi != READER_ATR_VALUE_NOT_INDICATED) && (atr->Di == READER_ATR_VALUE_NOT_INDICATED)){
-//		Fi = atr->Fi;
-//		Di = READER_HAL_GetDi();
-//	}
-//	else if((atr->Fi == READER_ATR_VALUE_NOT_INDICATED) && (atr->Di != READER_ATR_VALUE_NOT_INDICATED)){
-//		Fi = READER_HAL_GetFi();
-//		Di = atr->Di;
-//	}
-//	else{
-//		Fi = READER_HAL_GetFi();
-//		Di = READER_HAL_GetDi();
-//	}
-//	
-//	retVal = READER_HAL_SetEtu(Fi, Di);
-//	if(retVal != READER_OK) return retVal;
-//	
-//	/* Application de WI                        */
-//	WI = READER_ATR_GetWI(atr);
-//	retVal = READER_HAL_SetWI(WI);
-//	if(retVal != READER_OK) return retVal;
-//	
-//	/* Application du parametre GT (guard time) */
-//	Fi = READER_HAL_GetFi();
-//	Di = READER_HAL_GetDi();
-//	R = Fi / Di;
-//	f = READER_HAL_GetFreq(pSettings);
-//	newGT = (uint32_t)((float)READER_HAL_DEFAULT_GT + (float)R*((float)atr->N / (float)f));    /* Voir ISO7816-3 section 8.3, TC1 */
-//
-//	retVal = READER_HAL_SetGT(newGT);                   
-//	if(retVal != READER_OK) return retVal; 
-//	
-//	/* Application de parametres T1 */
-//	IFSC = READER_ATR_GetIFSC(atr);
-//	BWI = READER_ATR_GetBWI(atr);
-//	BWTEtu = READER_UTILS_ComputeBWTEtu(BWI, f);
-//	BWTMili = READER_UTILS_ComputeBWTMili(BWTEtu, Fi, Di, f);
-//	rType = READER_ATR_GetRedundancyType(atr);
-//	
-//	//retVal = READER_HAL_SetIFSC(IFSC);
-//	//if(retVal != READER_OK) return retVal;
-//	
-//	//retVal = READER_HAL_SetBWT(BWTMili);
-//	//if(retVal != READER_OK) return retVal;
-//	
-//	retVal = READER_HAL_SetRedundancyType(rType);
-//	if(retVal != READER_OK) return retVal;
-// 
-//	
-//	return READER_OK;   
-//}
-
 
 
 READER_Status READER_ATR_InitStruct(READER_ATR_Atr *atr){

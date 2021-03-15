@@ -44,5 +44,4 @@ READER_Status READER_T1_ForgeRBlock(READER_T1_Block *pBlock, READER_T1_ACKType a
 READER_Status READER_T1_CheckRBlock(READER_T1_Block *pBlock);
 
 
-
 #endif

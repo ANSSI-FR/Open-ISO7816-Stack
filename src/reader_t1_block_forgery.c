@@ -15,12 +15,6 @@ READER_Status READER_T1_FORGE_ChainingRBlockForCard(READER_T1_ContextHandler *pC
 	READER_Status retVal;
 	
 	
-	///* On recupere le expected Sequence Number qu'on attend du prochain I-Block de la carte */
-	//retVal = READER_T1_CONTEXT_GetCardSeqNum(pContext, &cardSeqNum);
-	//if(retVal != READER_OK) return retVal;
-	//
-	//nextSeqNum = (cardSeqNum + 1) & 0x00000001;     /* Numero de sequence modulo 2 ... */
-	
 	/* On recupere le expected Sequence Number qu'on attend du prochain I-Block de la carte */
 	retVal = READER_T1_CONTEXT_ComputeNextCardSeqNum(pContext, &nextSeqNum);
 	if(retVal != READER_OK) return retVal;
@@ -208,7 +202,6 @@ READER_Status READER_T1_FORGE_ACKIBlock(READER_T1_ContextHandler *pContext, READ
 }
 
 
-/* C'est un peu nul comme fonction ...  */
 /* Attention ca se base sur le numero de sequence contenu dans le contexte. Si on appelle deux fois de suite cette fonction alors les Blocks generes auront le meme numero de sequence ....  */
 /* Cette fonction permet de fabriquer un I-Block en calculant automatiqumenet le numero de sequence a partir du Contexte ... */
 READER_Status READER_T1_FORGE_DataIBlock(READER_T1_ContextHandler *pContext, READER_T1_Block *pBlockDest, uint8_t *dataBuff, uint32_t dataSize, uint32_t mBit){

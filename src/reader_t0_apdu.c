@@ -635,9 +635,6 @@ READER_Status READER_T0_APDU_ExecuteCase4S(READER_T0_ContextHandler *pContext, R
 		
 		retVal = READER_T0_APDU_ExecuteCase2S(pContext, &newApduCmd, pApduResp);
 		if(retVal != READER_OK) return retVal;
-		
-		//retVal = READER_APDU_CopyResponse(&newApduResp, pApduResp);
-		//if(retVal != READER_OK) return retVal;
 	}
 	/* Cas 4S.3 */
 	else if(tpduResp.SW1 == 0x61){

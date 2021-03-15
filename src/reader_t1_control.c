@@ -173,9 +173,7 @@ READER_Status READER_T1_CONTROL_IsRBlockError(READER_T1_ContextHandler *pContext
 /* Retourne READER_OK si ce I-Block indique une erreur. READER_NO si il n'indique pas d'erreur. Autre valeur si la fonction a rencontre une erreur. */
 READER_Status READER_T1_CONTROL_IsIBlockACK(READER_T1_ContextHandler *pContext, READER_T1_Block *pBlock){
 	READER_Status retVal;
-	//READER_T1_BlockType bType;
 	READER_T1_Block *pTmpBlock;
-	//READER_T1_MBit mBit;
 	uint32_t seqNum1, seqNum2;
 	READER_T1_SeqNumber seqNum;
 	
@@ -228,37 +226,6 @@ READER_Status READER_T1_CONTROL_IsIBlockACK(READER_T1_ContextHandler *pContext, 
 	else{
 		return READER_NO;
 	}
-	
-	
-	/* On recupere le type du dernier Block envoye (et on verifie en meme temps si il existe) */
-	//retVal = READER_T1_CONTEXT_GetLastSentType(pContext, &bType);
-	//if((retVal != READER_OK) && (retVal != READER_DOESNT_EXIST)) return retVal;
-	//
-	//if(retVal == READER_DOESNT_EXIST){
-	//	return READER_NO;
-	//}
-	
-	/* On examine le type du dernier Block envoye ...                                         */
-	
-	//if(bType != READER_T1_IBLOCK){
-	//	return READER_NO;
-	//}
-	
-	/* On regarde le M-Bit du dernier I-Block qu'on a envoye           */
-	//retVal = READER_T1_CONTEXT_GetLastSent(pContext, &pTmpBlock);
-	//if(retVal != READER_OK) return retVal;
-	//
-	//mBit = READER_T1_GetBlockMBit(pTmpBlock);
-	//
-	//if(mBit == READER_T1_MBIT_ONE){
-	//	return READER_NO;
-	//}
-	
-	/* On verifie que le numero de sequence du I-Block recu est correct  */
-	//retVal = READER_T1_CONTROL_IsSeqNumValid(pContext, pBlock);
-	//if(retVal != READER_OK) return retVal;
-	
-	//return READER_OK;
 }
 
 
@@ -271,16 +238,11 @@ READER_Status READER_T1_CONTROL_IsIBlockACK(READER_T1_ContextHandler *pContext, 
  */
 READER_Status READER_T1_CONTROL_SendBlock(READER_T1_ContextHandler *pContext, READER_T1_Block *pBlockToSend){
 	READER_Status retVal;
-	//READER_T1_Block blockToSend;
 	READER_T1_BlockType bType;
 	READER_HAL_CommSettings *pSettings;
 	uint32_t currentCWT, currentBGT;
 	uint32_t tickLastBlock, extraStartDelay, tick;
 		
-	
-	///* On recupere le Block suivant a envoyer dans le Buffer du Contexte        */
-	//retVal = READER_T1_BUFFER_Enqueue(pContext, &blockToSend);
-	//if(retVal != READER_OK) return retVal; 
 	
 	/* On recupere un pointeur sur les parametres de communication bas niveau ...  */
 	retVal = READER_T1_CONTEXT_GetHalCommSettingsPtr(pContext, &pSettings);
@@ -384,9 +346,6 @@ READER_Status READER_T1_CONTROL_IBlockSentUpdateContext(READER_T1_ContextHandler
 	else if(mBit == READER_T1_MBIT_ZERO){
 		retVal = READER_T1_CONTEXT_SetDeviceChainingLastBlockFlag(pContext, READER_T1_CHAINING_NO);
 		if(retVal != READER_OK) return retVal;
-		
-		//retVal = READER_T1_CONTEXT_SetDeviceChainingSituationFlag(pContext, READER_T1_CHAINING_NO);
-		//if(retVal != READER_OK) return retVal;
 	}
 	else{
 		return READER_ERR;
@@ -492,10 +451,6 @@ READER_Status READER_T1_CONTROL_SBlockRequestSentUpdateContext(READER_T1_Context
 	/* On mets a jour la valeur du champs INF qu'on attend en reponse pour l'acquittement de ce S-Block */
 	pContext->SBlockExpectedINF = expectedINF;
 	
-	/* On remets a zero le compteur de S-Block Requests successives ...  */
-	//retVal = READER_T1_CONTEXT_ClearSBlockRequestsCounter(pContext);
-	//if(retVal != READER_OK) return retVal;
-	
 	
 	return READER_OK;
 }
@@ -509,8 +464,6 @@ READER_Status READER_T1_CONTROL_SBlockRequestSentUpdateContext(READER_T1_Context
  * Cette fonction permet de mettre à jour le contexte de communication à la suite de l'envoi d'un Block de type S-Block REPONSE.
  */
 READER_Status READER_T1_CONTROL_SBlockResponseSentUpdateContext(READER_T1_ContextHandler *pContext, READER_T1_Block *pBlock){
-	//READER_Status retVal;
-	
 	return READER_OK;
 }
 
@@ -748,14 +701,7 @@ READER_Status READER_T1_CONTROL_ApplyIBlockRcvd(READER_T1_ContextHandler *pConte
 			retVal = READER_T1_BUFFER_Stack(pContext, &tmpBlock);
 			if(retVal != READER_OK) return retVal;
 		}
-		else if(lastBlockChainingStatus == READER_T1_CHAINING_NO){
-			/* On prepare un I-Block d'ACK       */
-			//retVal = READER_T1_FORGE_ACKIBlock(pContext, &tmpBlock);
-			//if(retVal != READER_OK) return retVal;
-			//
-			//retVal = READER_T1_BUFFER_Stack(pContext, &tmpBlock);
-			//if(retVal != READER_OK) return retVal;
-			
+		else if(lastBlockChainingStatus == READER_T1_CHAINING_NO){			
 			retVal = READER_T1_CONTEXT_SetCardChainingSituationFlag(pContext, READER_T1_CHAINING_NO);
 			if(retVal != READER_OK) return retVal;
 		}
@@ -902,11 +848,6 @@ READER_Status READER_T1_CONTROL_ApplySBlockRequestRcvd(READER_T1_ContextHandler 
 			/* Selon ISO7816-3 section 11.6.3.2, rule 6, seul le Device peut initier une RESYNCH Request ...  */
 			/* Donc ici, on fait le choix d'ignorer le Block Recu ...                                         */
 			return READER_OK;
-			//retVal = READER_T1_CONTROL_ApplySBlockResynch(pContext, pBlock);
-			//if(retVal != READER_OK) return retVal;
-			//
-			//retVal = READER_T1_FORGE_SBlockResynchResponse(pContext, &responseBlock);
-			//if(retVal != READER_OK) return retVal;
 		}
 		else if(rcvdSBlockType == READER_T1_STYPE_WTX_REQU){
 			retVal = READER_T1_CONTROL_ApplySBlockWtx(pContext, pBlock);

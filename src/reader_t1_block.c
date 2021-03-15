@@ -279,11 +279,6 @@ READER_Status READER_T1_SetBlockData(READER_T1_Block *pBlock, uint8_t *data, uin
 		return READER_ERR;
 	}
 	
-	//bType = READER_T1_GetBlockType(pBlock);
-	//if(bType != READER_T1_IBLOCK){
-	//	return READER_ERR;
-	//}
-	
 	/* On sauvegarde temporairement le champ LRC/CRC (il va etre ecrase quand on va ecrire les donnees) */
 	rType = READER_T1_GetBlockRedundancyType(pBlock);
 	if(rType == READER_T1_LRC){
@@ -786,12 +781,7 @@ READER_Status READER_T1_RcvBlock(READER_T1_Block *pBlock, READER_T1_RedundancyTy
 	else{
 		return READER_ERR;
 	}
-	
-	/* A la fin parceque potentiellment traitement long */
-	/* On complete le nv block forge avec les data      */
-	
-	//retVal = READER_T1_SetBlockData(pBlock, buff, buffSize); 
-	//if(retVal != READER_OK) return retVal;
+
 	
 	return READER_OK;
 }

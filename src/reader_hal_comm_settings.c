@@ -39,18 +39,6 @@ READER_Status READER_HAL_SetFreq(READER_HAL_CommSettings *pSettings, uint32_t ne
 	
 	if(HAL_SMARTCARD_Init(&smartcardHandleStruct) != HAL_OK) return READER_ERR;
 	
-	/* On modifie en consequence la valeur du Wait Time (WT) (car WT est dependant de f) */
-	//WI = READER_HAL_GetWI(pSettings);
-	//newWaitTime = READER_UTILS_ComputeWT1(newFreq, READER_HAL_GetFi(pSettings), WI);
-	//retVal = READER_HAL_SetWT(pSettings, newWaitTime); 
-	//if(retVal != READER_OK) return retVal;
-	
-	/* On modifie en consequence la valeur du BWT Voir ISO7816-3 section 11.4.3 */
-	//BWI = READER_HAL_GetBWI();
-	//newBlockWaitTimeEtu = READER_UTILS_ComputeBWTEtu(BWI, newFreq);
-	//newBlockWaitTimeMili = READER_UTILS_ComputeBWTMili(newBlockWaitTimeEtu, READER_HAL_GetFi(), READER_HAL_GetDi(), newFreq);
-	//READER_HAL_SetBWT(newBlockWaitTimeMili);
-	
 	/* Mise a jour des informations dans la structure qui contient les parametres de communication */
 	pSettings->f = newFreq;
 	
@@ -79,12 +67,6 @@ READER_Status READER_HAL_SetEtu(READER_HAL_CommSettings *pSettings, uint32_t Fi,
 	/* On applique les changements au bloc materiel USART */
 	smartcardHandleStruct.Init.BaudRate = newBaudRate;
 	if(HAL_SMARTCARD_Init(&smartcardHandleStruct) != HAL_OK) return READER_ERR;
-	
-	/* Le changement de l'etu a pour consequence la modification du Wait Time (WT) */
-	//WI = READER_HAL_GetWI(pSettings);
-	//newWT = READER_UTILS_ComputeWT1(freq, Fi, WI);
-	//retVal = READER_HAL_SetWT(pSettings, newWT);
-	//if(retVal != READER_OK) return retVal;	
 	
 	/* On met a jour la structure globalCurrentSettings */
 	pSettings->Fi = Fi;
