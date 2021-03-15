@@ -30,7 +30,6 @@ endif
 # TARGET DEFINITION ENDS HERE
 
 
-
 CPU_CIBLE=cortex-m4
 
 LIBPREFIX=lib
@@ -68,7 +67,6 @@ CFLAGS+= -Os
 #CFLAGS+= -pedantic-errors
 CFLAGS+= $(DEFS)
 CFLAGS+= $(INCS)
-
 
 
 #SRCS=$(shell ls $(HALDIR)/Src)

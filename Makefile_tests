@@ -18,7 +18,6 @@ EXCLUDED_FROM_COMPILATION+= $(HEADERS_TO_MOCK:.h=.c)
 
 
 
-
 DIR_TESTS=./tests
 DIR_UNITY=./Unity
 DIR_CMOCK=./CMock
@@ -76,12 +75,8 @@ CFLAGS+= -g
 CFLAGS+= -fprofile-arcs -ftest-coverage
 
 
-
-
 OUTPUT_NAME=test
 OUTPUT_ELF=$(OUTPUT_NAME).elf
-
-
 
 
 
@@ -94,7 +89,6 @@ DEPS=$(addprefix $(DIR_DEP)/,$(SRCS:.c=.d))
 
 TEST_SRCS=$(notdir $(shell ls $(DIR_TESTS)/*.c))
 TEST_OBJS=$(addprefix $(DIR_TEST_OBJ)/,$(TEST_SRCS:.c=.o))
-
 
 
 
@@ -115,28 +109,28 @@ report:
 	$(GENHTML) -o $(DIR_COV)/cov_report -t "COV REPORT" $(DIR_COV)/lconv.info
 
 clean:
-	rm --verbose -rf $(DIR_OUT) 
-	rm --verbose -rf $(DIR_COV) 
-	rm --verbose -rf $(DIR_DEP)
-	rm --verbose -rf $(DIR_OBJ)
-	rm --verbose -rf $(DIR_LIB)
-	rm --verbose -rf $(DIR_TEST_OBJ)
-	rm --verbose -rf $(DIR_MOCKS_SRCS)
-	rm --verbose -rf $(DIR_MOCKS_OBJS)
-	rm --verbose -rf $(DIR_MOCKS)
+	rm -rf $(DIR_OUT) 
+	rm -rf $(DIR_COV) 
+	rm -rf $(DIR_DEP)
+	rm -rf $(DIR_OBJ)
+	rm -rf $(DIR_LIB)
+	rm -rf $(DIR_TEST_OBJ)
+	rm -rf $(DIR_MOCKS_SRCS)
+	rm -rf $(DIR_MOCKS_OBJS)
+	rm -rf $(DIR_MOCKS)
 
 
 dirs:
-	mkdir --verbose --parents $(DIR_TESTS)
-	mkdir --verbose --parents $(DIR_COV)
-	mkdir --verbose --parents $(DIR_MOCKS)
-	mkdir --verbose --parents $(DIR_MOCKS_SRCS)
-	mkdir --verbose --parents $(DIR_MOCKS_OBJS)
-	mkdir --verbose --parents $(DIR_OBJ)
-	mkdir --verbose --parents $(DIR_DEP)
-	mkdir --verbose --parents $(DIR_OUT)
-	mkdir --verbose --parents $(DIR_LIB)
-	mkdir --verbose --parents $(DIR_TEST_OBJ)
+	mkdir --parents $(DIR_TESTS)
+	mkdir --parents $(DIR_COV)
+	mkdir --parents $(DIR_MOCKS)
+	mkdir --parents $(DIR_MOCKS_SRCS)
+	mkdir --parents $(DIR_MOCKS_OBJS)
+	mkdir --parents $(DIR_OBJ)
+	mkdir --parents $(DIR_DEP)
+	mkdir --parents $(DIR_OUT)
+	mkdir --parents $(DIR_LIB)
+	mkdir --parents $(DIR_TEST_OBJ)
 
 
 
