@@ -13,12 +13,14 @@ TARGET=stm32f411
 
 ifeq ($(TARGET), stm32f411)
 
-# Value of the proprocessor constant (defining the target) given to $(CC) at compile time
+# Value of the preprocessor constant (defining the target) given to $(CC) at compile time
 TARGET_DEFINE=TARGET_STM32F411
+TARGET_DEFINE_CMSIS=STM32F411xE
 
 else ifeq($(TARGET), stm32f407)
 
 TARGET_DEFINE=TARGET_STM32F407
+TARGET_DEFINE_CMSIS=STM32F407xx
 
 else
 
@@ -39,9 +41,9 @@ LIBAR=$(LIBPREFIX)$(TARGET)_hal$(LIBSUFIX)
 
 
 LIBDIR=./$(TARGET)
-HALDIR=$(LIBDIR)/HAL
-CMSISDIR=$(LIBDIR)/CMSIS
-BSPDIR=$(LIBDIR)/BSP
+HALDIR=$(LIBDIR)/STM32CubeF4/Drivers/STM32F4xx_HAL_Driver
+CMSISDIR=$(LIBDIR)/STM32CubeF4/Drivers/CMSIS
+BSPDIR=$(LIBDIR)/STM32CubeF4/Drivers/BSP
 
 
 INCS=-I$(HALDIR)/Inc
@@ -52,6 +54,7 @@ INCS+=-I../inc
 
 DEFS+= -DUSE_HAL_DRIVER
 DEFS+= -D$(TARGET_DEFINE)
+DEFS+= -D$(TARGET_DEFINE_CMSIS)
 #DEFS+= -DUSE_HAL_GPIO_MODULE
 
 
