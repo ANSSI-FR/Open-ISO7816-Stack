@@ -45,14 +45,14 @@ If you are interested into adding a new target, your contributions are welcome, 
 First, clone project's repository on your local machine :
 
 ``` shell
-$ git clone git@git.bouffard.info:Apprentissage-Boris/iso7816-reader.git
+$ git clone https://github.com/ANSSI-FR/Open-ISO7816-Stack.git
 $ git submodule update --init --recursive
 ```
 
 The project is relying on the following submodules : 
-* *Unity*, is a unit-test framework for testing the project. (see project's page [here](http://www.throwtheswitch.org/unity))
-* *CMock*, is a mocking framework used jointly with the unity framework. Useful for testing parts of code relying on hardware peripherals. (see project's page [here](http://www.throwtheswitch.org/cmock))
-
+* *Unity*, is a unit-test framework for testing the project. ([see project's page](http://www.throwtheswitch.org/unity))
+* *CMock*, is a mocking framework used jointly with the unity framework. Useful for testing parts of code relying on hardware peripherals. ([see project's page](http://www.throwtheswitch.org/cmock))
+* *./lib/<target>/STM32CubeF4*, is a set of hardware abstraction layer libraries provided by [STMicroelectronics](https://github.com/STMicroelectronics/STM32CubeF4). 
 
 ### Installing tool-chain and dependencies
 
