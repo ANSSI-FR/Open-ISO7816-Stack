@@ -1,6 +1,6 @@
-CC=/usr/bin/arm-none-eabi-gcc
-AR=/usr/bin/arm-none-eabi-ar
-OBJCOPY=/usr/bin/arm-none-eabi-objcopy
+CC=arm-none-eabi-gcc
+AR=arm-none-eabi-ar
+OBJCOPY=arm-none-eabi-objcopy
 
 
 
@@ -12,21 +12,15 @@ TARGET=stm32f411
 
 
 ifeq ($(TARGET), stm32f411)
-
-# Value of the preprocessor constant (defining the target) given to $(CC) at compile time
-TARGET_DEFINE=TARGET_STM32F411
-TARGET_DEFINE_CMSIS=STM32F411xE
-
-else ifeq($(TARGET), stm32f407)
-
-TARGET_DEFINE=TARGET_STM32F407
-TARGET_DEFINE_CMSIS=STM32F407xx
-
+	# Value of the preprocessor constant (defining the target) given to $(CC) at compile time
+	TARGET_DEFINE=TARGET_STM32F411
+	TARGET_DEFINE_CMSIS=STM32F411xE
+else ifeq ($(TARGET), stm32f407)
+	TARGET_DEFINE=TARGET_STM32F407
+	TARGET_DEFINE_CMSIS=STM32F407xx
 else
-
-@echo The TARGET parameter has been wrongly defined in the Makefile. Target does not exist. Build failed.
-exit 1 
-
+	@echo The TARGET parameter has been wrongly defined in the Makefile. Target does not exist. Build failed.
+	exit 1 
 endif
 
 # TARGET DEFINITION ENDS HERE
