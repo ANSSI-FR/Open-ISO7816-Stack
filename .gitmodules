@@ -1,0 +1,15 @@
+[submodule "cmock"]
+	path = cmock
+	url = https://github.com/throwtheswitch/cmock.git
+[submodule "Unity"]
+	path = Unity
+	url = https://github.com/ThrowTheSwitch/Unity.git
+[submodule "CMock"]
+	path = CMock
+	url = https://github.com/ThrowTheSwitch/CMock.git
+[submodule "lib/stm32f407/STM32CubeF4"]
+	path = lib/stm32f407/STM32CubeF4
+	url = https://github.com/STMicroelectronics/STM32CubeF4.git
+[submodule "lib/stm32f411/STM32CubeF4"]
+	path = lib/stm32f411/STM32CubeF4
+	url = https://github.com/STMicroelectronics/STM32CubeF4.git

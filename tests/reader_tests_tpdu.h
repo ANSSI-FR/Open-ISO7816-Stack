@@ -1,0 +1,54 @@
+#ifndef __READER_TESTS_TPDU_H__
+#define __READER_TESTS_TPDU_H__
+
+
+#include "reader_tpdu.h"
+
+
+
+
+
+void test_READER_TPDU_all(void);
+
+void test_READER_TPDU_Forge_shouldVerifyDataSize(void);
+void test_READER_TPDU_Forge_shouldCopyHeader(void);
+void test_READER_TPDU_Forge_shouldCopyData(void);
+void test_READER_TPDU_SendHeader_shouldSendRightFrame(void);
+void test_READER_TPDU_SendDataOneshot_shouldSendRightFrame(void);
+void test_READER_TPDU_SendDataOneshot_shouldVerifyDataSize(void);
+void test_READER_TPDU_Send_shouldWork(void);
+void test_READER_TPDU_Send_shoulWaitOnNullByte(void);
+void test_READER_TPDU_IsACK_shouldWork(void);
+void test_READER_TPDU_IsXoredACK_shouldWork(void);
+void test_READER_TPDU_IsNullByte_shouldWork(void);
+void test_READER_TPDU_IsSW1_shouldWork(void);
+void test_READER_TPDU_IsProcedureByte_shouldWork(void);
+void test_READER_TPDU_WaitACK_shouldDetectINS(void);
+void test_READER_TPDU_WaitACK_shouldDetectIfSWInsteadOfACK(void);
+void test_READER_TPDU_WaitACK_shouldDetectXoredINS(void);
+void test_READER_TPDU_WaitACK_shouldTimeout(void);
+void test_READER_TPDU_WaitACK_shouldWaitOnNullByte(void);
+void test_READER_TPDU_Send_shouldVerifyDataSize(void);
+void test_READER_TPDU_RcvSW_shouldTimeoutOnSW1(void);
+void test_READER_TPDU_RcvSW_shouldTimeoutOnSW2(void);
+void test_READER_TPDU_RcvSW_shouldWaitOnNullByte(void);
+void test_READER_TPDU_RcvSW_shouldDetectIncorrectSW1(void);
+void test_READER_TPDU_RcvSW_shouldReturnCorrectData(void);
+void test_READER_TPDU_RcvResponse_shouldVerifyExpectedSize(void);
+void test_READER_TPDU_RcvResponse_shouldTimeout_case1(void);
+void test_READER_TPDU_RcvResponse_shouldTimeout_case2(void);
+void test_READER_TPDU_RcvResponse_shouldTimeout_case3(void);
+void test_READER_TPDU_RcvResponse_shouldTimeout_case4(void);
+void test_READER_TPDU_RcvResponse_shouldTimeout_case5(void);
+void test_READER_TPDU_RcvResponse_shouldTimeout_case6(void);
+void test_READER_TPDU_RcvResponse_shouldTimeout_case7(void);
+void test_READER_TPDU_RcvResponse_shouldRetrieveCorrectData(void);
+void test_READER_TPDU_RcvResponse_shouldDetectIfSWInsteadOfData_Case1(void);
+void test_READER_TPDU_RcvResponse_shouldDetectIfSWInsteadOfData_Case2(void);
+void test_READER_TPDU_RcvResponse_shouldDetectIfSWInsteadOfData_Case3(void);
+
+
+
+
+
+#endif

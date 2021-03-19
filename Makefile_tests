@@ -1,0 +1,171 @@
+CC=gcc
+LD=gcc
+RUBY=ruby
+LCOV=lcov
+GENHTML=genhtml
+
+
+
+HEADERS_TO_MOCK=reader_hal_basis.h
+HEADERS_TO_MOCK+= reader_periph.h
+HEADERS_TO_MOCK+= reader_hal_comm_settings.h
+
+EXCLUDED_FROM_COMPILATION=startup_stm32f407xx.s
+EXCLUDED_FROM_COMPILATION+= stm32f4xx_hal_msp.c
+EXCLUDED_FROM_COMPILATION+= stm32f4xx_it.c
+EXCLUDED_FROM_COMPILATION+= system_stm32f4xx.c
+EXCLUDED_FROM_COMPILATION+= $(HEADERS_TO_MOCK:.h=.c)
+
+
+
+DIR_TESTS=./tests
+DIR_UNITY=./Unity
+DIR_CMOCK=./CMock
+CMOCK_SCRIPT=$(DIR_CMOCK)/lib/cmock.rb
+CMOCK_CONFIG=./cmock_conf.yml
+
+DIR_UNITY_SRC=$(DIR_UNITY)/src
+DIR_CMOCK_SRC=$(DIR_CMOCK)/src
+DIR_READER_SRC=./src
+DIR_READER_INC=./inc
+
+DIR_MOCKS=$(DIR_TESTS)/mocks
+DIR_MOCKS_SRCS=$(DIR_MOCKS)/src
+DIR_MOCKS_OBJS=$(DIR_MOCKS)/obj
+DIR_OUT=$(DIR_TESTS)/out
+DIR_DEP=$(DIR_TESTS)/dep
+DIR_OBJ=$(DIR_TESTS)/obj
+DIR_LIB=$(DIR_TESTS)/lib
+DIR_TEST_OBJ=$(DIR_TESTS)/testobj
+DIR_COV=$(DIR_TESTS)/cov
+
+
+UNITY_OBJ=unity.o
+CMOCK_OBJ=cmock.o
+
+
+
+HEADERS_TO_MOCK_PATHS=$(addprefix $(DIR_READER_INC)/,$(HEADERS_TO_MOCK))
+
+MOCKS_PREFIX=mock_
+MOCKS_SRCS_FILE_NAMES=$(addprefix $(MOCKS_PREFIX),$(HEADERS_TO_MOCK:.h=.c))
+MOCKS_SRCS=$(addprefix $(DIR_MOCKS_SRCS)/,$(MOCKS_SRCS_FILE_NAMES))
+MOCKS_OBJS_FILE_NAMES=$(addprefix $(MOCKS_PREFIX),$(HEADERS_TO_MOCK:.h=.o))
+MOCKS_OBJS=$(addprefix $(DIR_MOCKS_OBJS)/,$(MOCKS_OBJS_FILE_NAMES))
+
+
+
+INCS= -I$(DIR_UNITY_SRC)
+INCS+= -I$(DIR_READER_INC)
+INCS+= -I$(DIR_READER_SRC)
+INCS+= -I$(DIR_CMOCK_SRC)
+INCS+= -I$(DIR_MOCKS_SRCS)
+
+DEFS= -DTEST -DCMOCK_MEM_DYNAMIC -UCMOCK_MEM_STATIC
+
+
+#CFLAGS+= -Wall
+#CFLAGS+= -Wextra
+#CFLAGS+= -ansi
+#CFLAGS+= -pedantic
+CFLAGS+= -O0
+CFLAGS+= $(DEFS)
+CFLAGS+= $(INCS)
+CFLAGS+= -g
+CFLAGS+= -fprofile-arcs -ftest-coverage
+
+
+OUTPUT_NAME=test
+OUTPUT_ELF=$(OUTPUT_NAME).elf
+
+
+
+EXCLUDED=$(addprefix --hide ,$(EXCLUDED_FROM_COMPILATION))
+
+SRCS=$(shell ls $(DIR_READER_SRC) $(EXCLUDED))
+OBJS=$(addprefix $(DIR_OBJ)/,$(SRCS:.c=.o))
+DEPS=$(addprefix $(DIR_DEP)/,$(SRCS:.c=.d))
+
+
+TEST_SRCS=$(notdir $(shell ls $(DIR_TESTS)/*.c))
+TEST_OBJS=$(addprefix $(DIR_TEST_OBJ)/,$(TEST_SRCS:.c=.o))
+
+
+
+.PHONY: all dirs clean test report
+
+.PRECIOUS:$(MOCKS_SRCS)
+
+
+
+all:dirs $(DIR_OUT)/$(OUTPUT_ELF)
+
+
+test:
+	./$(DIR_OUT)/$(OUTPUT_ELF)
+
+report:
+	$(LCOV) --directory $(DIR_OBJ) -c -o $(DIR_COV)/lconv.info
+	$(GENHTML) -o $(DIR_COV)/cov_report -t "COV REPORT" $(DIR_COV)/lconv.info
+
+clean:
+	rm -rf $(DIR_OUT) 
+	rm -rf $(DIR_COV) 
+	rm -rf $(DIR_DEP)
+	rm -rf $(DIR_OBJ)
+	rm -rf $(DIR_LIB)
+	rm -rf $(DIR_TEST_OBJ)
+	rm -rf $(DIR_MOCKS_SRCS)
+	rm -rf $(DIR_MOCKS_OBJS)
+	rm -rf $(DIR_MOCKS)
+
+
+dirs:
+	mkdir --parents $(DIR_TESTS)
+	mkdir --parents $(DIR_COV)
+	mkdir --parents $(DIR_MOCKS)
+	mkdir --parents $(DIR_MOCKS_SRCS)
+	mkdir --parents $(DIR_MOCKS_OBJS)
+	mkdir --parents $(DIR_OBJ)
+	mkdir --parents $(DIR_DEP)
+	mkdir --parents $(DIR_OUT)
+	mkdir --parents $(DIR_LIB)
+	mkdir --parents $(DIR_TEST_OBJ)
+
+
+
+
+$(DIR_OUT)/$(OUTPUT_ELF):$(OBJS) $(MOCKS_OBJS) $(DIR_LIB)/$(UNITY_OBJ) $(DIR_LIB)/$(CMOCK_OBJ) $(TEST_OBJS)
+	$(LD) $(CFLAGS) $(LDFLAGS) $^ -o $@
+
+$(DIR_TEST_OBJ)/%.o:$(DIR_TESTS)/%.c
+	$(CC) $(CFLAGS) -c $< -o $@
+
+
+$(DIR_LIB)/$(UNITY_OBJ):$(DIR_UNITY_SRC)/unity.c $(DIR_UNITY_SRC)/unity.h $(DIR_UNITY_SRC)/unity_internals.h
+	$(CC) $(CFLAGS) -c $< -o $@
+
+$(DIR_LIB)/$(CMOCK_OBJ):$(DIR_CMOCK_SRC)/cmock.c $(DIR_CMOCK_SRC)/cmock.h $(DIR_CMOCK_SRC)/cmock_internals.h
+	$(CC) $(CFLAGS) -c $< -o $@
+
+
+
+$(DIR_MOCKS_OBJS)/%.o:$(DIR_MOCKS_SRCS)/%.c $(HEADERS_TO_MOCK_PATHS)
+	$(CC) $(CFLAGS) -c $< -o $@
+
+$(DIR_MOCKS_SRCS)/%.c:$(HEADERS_TO_MOCK_PATHS)
+	$(RUBY) $(CMOCK_SCRIPT) -o$(CMOCK_CONFIG) $(DIR_READER_INC)/$(basename $(notdir $(subst mock_,,$@))).h
+
+
+$(DIR_OBJ)/%.o:$(DIR_READER_SRC)/%.c $(DIR_DEP)/%.d
+	$(CC) $(CFLAGS) -c -MD -MT $*.o -MF $(DIR_DEP)/$*.d $< -o $@
+
+$(DIR_OBJ)/%.o:$(DIR_DEP)/%.d
+	$(CC) $(CFLAGS) -c -MD -MT $*.o -MF $(DIR_DEP)/$*.d $< -o $@
+
+
+
+$(DIR_DEP)/%.d: ;
+
+
+-include $(DEPS)
