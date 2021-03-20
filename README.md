@@ -18,7 +18,7 @@ At the same time, the lower level APIs are allowing you to interact directly wit
 
 Copyright ANSSI (2017-2021)
 
-This software is licensed under a MIT license. See LICENSE file in the root folder of the project.
+This software is licensed under MIT license. See LICENSE file in the root folder of the project.
 
 ## Authors
 
@@ -37,7 +37,7 @@ The currently supported targets are :
 It is recommended to use the development boards associated to those components (discovery boards).
 So you won't have to change some settings in the code (especially oscillator frequency provided by the board).
 
-If you are interested into adding a new target, your contributions are welcome, please have a look in the CONTRIBUTING.md file. 
+If you are interested into adding a new target, your contributions are welcome, please have a look at the CONTRIBUTING.md file. 
 
 
 ## Getting project's code and cross-compiling it on your local machine
@@ -51,8 +51,8 @@ $ git submodule update --init --recursive
 
 The project is relying on the following submodules : 
 * *Unity*, is a unit-test framework for testing the project. ([see project's page](http://www.throwtheswitch.org/unity))
-* *CMock*, is a mocking framework used jointly with the unity framework. Useful for testing parts of code relying on hardware peripherals. ([see project's page](http://www.throwtheswitch.org/cmock))
-* *./lib/<target>/STM32CubeF4*, is a set of hardware abstraction layer libraries provided by [STMicroelectronics](https://github.com/STMicroelectronics/STM32CubeF4). 
+* *CMock*, is a mocking framework used jointly with the Unity. Useful for testing parts of code relying on hardware peripherals. ([see project's page](http://www.throwtheswitch.org/cmock))
+* *./lib/target/STM32CubeF4*, is a set of hardware abstraction layer libraries provided by [STMicroelectronics](https://github.com/STMicroelectronics/STM32CubeF4). 
 
 ### Installing tool-chain and dependencies
 
@@ -71,7 +71,7 @@ $ apt-get install stlink-tools
 
 ### Setting-up the Makefile
 
-In the main directory Makefile set the following parameters to the correct values :
+In the main directory Makefile set the following parameters to their correct values :
 
 ``` shell
 CC=arm-none-eabi-gcc
@@ -116,7 +116,7 @@ To select the target for which the firmware has to be compiled you have to follo
 
 ### Compiling and uploading the project to the target
 
-Use the following commands from the main directory to compile the project and upload it to the target.
+Use the following commands from the main directory to compile the project and flash it to the target.
 
 ``` shell
 $ make all
