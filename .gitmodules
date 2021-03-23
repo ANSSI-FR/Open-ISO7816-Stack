@@ -7,9 +7,21 @@
 [submodule "CMock"]
 	path = CMock
 	url = https://github.com/ThrowTheSwitch/CMock.git
-[submodule "lib/stm32f407/STM32CubeF4"]
-	path = lib/stm32f407/STM32CubeF4
-	url = https://github.com/STMicroelectronics/STM32CubeF4.git
-[submodule "lib/stm32f411/STM32CubeF4"]
-	path = lib/stm32f411/STM32CubeF4
-	url = https://github.com/STMicroelectronics/STM32CubeF4.git
+[submodule "lib/stm32f407/CMSIS"]
+	path = lib/stm32f407/CMSIS
+	url = git@github.com:ARM-software/CMSIS.git
+[submodule "lib/stm32f407/CMSIS_DEVICE"]
+	path = lib/stm32f407/CMSIS_DEVICE
+	url = git@github.com:STMicroelectronics/cmsis_device_f4.git
+[submodule "lib/stm32f407/HAL"]
+	path = lib/stm32f407/HAL
+	url = git@github.com:STMicroelectronics/stm32f4xx_hal_driver.git
+[submodule "lib/stm32f411/CMSIS"]
+	path = lib/stm32f411/CMSIS
+	url = git@github.com:ARM-software/CMSIS.git
+[submodule "lib/stm32f411/CMSIS_DEVICE"]
+	path = lib/stm32f411/CMSIS_DEVICE
+	url = git@github.com:STMicroelectronics/cmsis_device_f4.git
+[submodule "lib/stm32f411/HAL"]
+	path = lib/stm32f411/HAL
+	url = git@github.com:STMicroelectronics/stm32f4xx_hal_driver.git

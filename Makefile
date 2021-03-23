@@ -12,6 +12,11 @@ TARGET=stm32f411
 
 
 ifeq ($(TARGET), stm32f411)
+	LIB=$(TARGET)_hal
+	HALDIR=$(LIBDIR)/$(TARGET)/HAL
+	CMSISDIR=$(LIBDIR)/$(TARGET)/CMSIS/CMSIS
+	CMSISDEVICEDIR=$(LIBDIR)/$(TARGET)/CMSIS_DEVICE
+	
 	# Linker script file, has to be changed with target
 	LDFILE=ld/STM32F411VEHx_FLASH.ld
 	# Name of the startup file in the startup/ folder (without the .s extension)
@@ -19,11 +24,18 @@ ifeq ($(TARGET), stm32f411)
 	# Value of the preprocessor constant (defining the target) given to $(CC) at compile time
 	TARGET_DEFINE=TARGET_STM32F411
 	TARGET_DEFINE_CMSIS=STM32F411xE
+	
 else ifeq ($(TARGET), stm32f407)
+	LIB=$(TARGET)_hal
+	HALDIR=$(LIBDIR)/$(TARGET)/HAL
+	CMSISDIR=$(LIBDIR)/$(TARGET)/CMSIS/CMSIS
+	CMSISDEVICEDIR=$(LIBDIR)/$(TARGET)/CMSIS_DEVICE
+	
 	LDFILE=ld/STM32F407VGTx_FLASH.ld
 	STARTUP_FILE=startup_stm32f407xx
 	TARGET_DEFINE=TARGET_STM32F407
 	TARGET_DEFINE_CMSIS=STM32F407xx
+	
 else
 	@echo The TARGET parameter has been wrongly defined in the Makefile. Target does not exist. Build failed.
 	exit 1 
@@ -35,8 +47,6 @@ endif
 
 CPU_CIBLE=cortex-m4
 
-
-
 MAKEFILE_TESTS=Makefile_tests
 
 INCDIR=inc
@@ -47,15 +57,6 @@ DEPDIR=dep
 OBJDIR=obj
 TESTDIR=tests
 STARTUPDIR=startup
-
-
-LIB=$(TARGET)_hal
-HALDIR=$(LIBDIR)/$(TARGET)/STM32CubeF4/Drivers/STM32F4xx_HAL_Driver
-CMSISDIR=$(LIBDIR)/$(TARGET)/STM32CubeF4/Drivers/CMSIS
-BSPDIR=$(LIBDIR)/$(TARGET)/STM32CubeF4/Drivers/BSP
-
-
-
 
 
 OUTPUT_NAME=reader
@@ -71,7 +72,6 @@ OUTPUT_AR=lib$(OUTPUT_NAME).a
 DEFS+= -DUSE_HAL_DRIVER
 DEFS+= -D$(TARGET_DEFINE)
 DEFS+= -D$(TARGET_DEFINE_CMSIS)
-#DEFS+= -DUSE_HAL_GPIO_MODULE
 
 
 INCS= -I$(INCDIR)
@@ -79,8 +79,7 @@ INCS+= -I$(LIBDIR)/$(TARGET)
 INCS+= -I$(HALDIR)/Inc
 INCS+= -I$(HALDIR)/Inc/Legacy
 INCS+= -I$(CMSISDIR)/Include
-INCS+= -I$(CMSISDIR)/Device/ST/STM32F4xx/Include
-INCS+= -I./src_hw_dependent
+INCS+= -I$(CMSISDEVICEDIR)/Include
 
 
 CFLAGS= -mcpu=$(CPU_CIBLE)
