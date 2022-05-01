@@ -7,8 +7,8 @@ STFLASH=st-flash
 # TARGET CONFIG HERE
 
 # Target can be stm32f407, stm32f411.
-TARGET=stm32f411
-#TARGET=stm32f407
+#TARGET=stm32f411
+TARGET=stm32f407
 
 
 ifeq ($(TARGET), stm32f411)
