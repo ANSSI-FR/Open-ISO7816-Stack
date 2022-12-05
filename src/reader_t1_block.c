@@ -246,7 +246,7 @@ READER_Status READER_T1_SetBlockCRC(READER_T1_Block *pBlock, uint16_t blockCRC){
 	
 	/* On place le CRC au bon endroit            */
 	currentLEN = READER_T1_GetBlockLEN(pBlock);
-	pCurrentCRC = (uint16_t*)(blockFrame + READER_T1_BLOCKFRAME_LEN_POSITION + currentLEN);
+	pCurrentCRC = (uint16_t*)(blockFrame + READER_T1_BLOCK_PROLOGUE_SIZE + currentLEN);
 	
 	*pCurrentCRC = blockCRC;
 	
@@ -435,7 +435,7 @@ uint16_t READER_T1_GetBlockCRC(READER_T1_Block *pBlock){
 	blockFrame = READER_T1_GetBlockFrame(pBlock);
 	
 	currentLEN = READER_T1_GetBlockLEN(pBlock);
-	pCurrentCRC = (uint16_t*)(blockFrame + READER_T1_BLOCKFRAME_LEN_POSITION + currentLEN);
+	pCurrentCRC = (uint16_t*)(blockFrame + READER_T1_BLOCK_PROLOGUE_SIZE + currentLEN);
 	
 	return *pCurrentCRC;
 }
